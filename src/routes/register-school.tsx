@@ -230,28 +230,6 @@ function RegisterSchoolPage() {
         console.error("Failed to send confirmation email:", err);
       }
 
-      // Send notification to super admins
-      try {
-        const { data: superAdmins } = await supabase
-          .from("users")
-          .select("email")
-          .eq("role", "super_admin")
-          .not("email", "is", null);
-
-        if (superAdmins?.length) {
-          const { sendEmail } = await import("@/lib/sendEmail");
-          await sendEmail({
-            data: {
-              to: superAdmins[0].email ?? "",
-              subject: `New school registration: ${schoolName.trim()}`,
-              html: `<p>${adminFirstName.trim()} ${adminLastName.trim()} from ${schoolName.trim()} has submitted a registration request.</p><p>Review it at <a href="https://app.karawhiua.app/admin/schools/pending">the admin dashboard</a>.</p>`,
-            },
-          });
-        }
-      } catch (err) {
-        console.error("Failed to notify super admins:", err);
-      }
-
       setCompleted(true);
     } catch (err: any) {
       toast.error(err.message || "Something went wrong");
