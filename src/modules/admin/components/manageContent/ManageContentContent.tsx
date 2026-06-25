@@ -1,5 +1,4 @@
 import { useMemo, useState, ReactNode } from 'react';
-import NextImage from 'next/image';
 import { AssetInterface } from '@/models/assets/interfaces/AssetInterface';
 import { Card, CardContent } from '@/modules/application/components/DesignSystem/ui/card';
 import { Button } from '@/modules/application/components/DesignSystem/ui/button';
@@ -72,7 +71,7 @@ const AssetThumbnail = ({ asset }: { asset: AssetInterface }) => {
   if (asset.file_type.startsWith('image/')) {
     return (
       <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded bg-gray-100">
-        <NextImage src={asset.file_url} alt={asset.name} fill className="object-cover" />
+        <img src={asset.file_url} alt={asset.name} fill className="object-cover" />
       </div>
     );
   }
