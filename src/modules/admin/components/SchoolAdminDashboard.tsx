@@ -14,6 +14,7 @@ import { SchoolMessageService } from '@/models/schoolMessages/services/SchoolMes
 import { LeaderboardService } from '@/models/leaderboards/services/LeaderboardService';
 import { toast } from 'sonner';
 import ActivityLogPreview from './ActivityLogPreview';
+import { regenerateJoinCode } from '@/lib/registration.functions';
 
 interface SchoolAdminDashboardProps {
   user: UserInterface;
@@ -48,6 +49,11 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
   const [copied, setCopied] = useState(false);
   const [qrModalOpen, setQrModalOpen] = useState(false);
   const [qrCopied, setQrCopied] = useState(false);
+  const [joinCode, setJoinCode] = useState<string | null>(null);
+  const [joinCopied, setJoinCopied] = useState(false);
+  const [joinCodeLoading, setJoinCodeLoading] = useState(true);
+  const [regenerating, setRegenerating] = useState(false);
+  const [regenerateModal, setRegenerateModal] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const signUpUrl = typeof window !== 'undefined' ? `${window.location.origin}/schools/${schoolId}/signup` : '';
@@ -89,6 +95,48 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
 
     fetchAllStats();
   }, [schoolId]);
+
+  // Fetch join code
+  useEffect(() => {
+    if (!schoolId) { setJoinCodeLoading(false); return; }
+    const sb = createSupabaseClient();
+    sb.from("schools")
+      .select("join_code")
+      .eq("id", schoolId)
+      .single()
+      .then(({ data }) => {
+        setJoinCode(data?.join_code || null);
+        setJoinCodeLoading(false);
+      })
+      .catch(() => setJoinCodeLoading(false));
+  }, [schoolId]);
+
+  const handleCopyJoinLink = async () => {
+    const url = `${window.location.origin}/join/${joinCode}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setJoinCopied(true);
+      toast.success("Join link copied to clipboard!");
+      setTimeout(() => setJoinCopied(false), 2000);
+    } catch {
+      toast.error("Failed to copy");
+    }
+  };
+
+  const handleRegenerateJoinCode = async () => {
+    if (!schoolId) return;
+    setRegenerating(true);
+    try {
+      const { regenerateJoinCode } = await import("@/lib/registration.functions");
+      const result = await regenerateJoinCode({ data: { schoolId } });
+      setJoinCode(result.joinCode);
+      toast.success("New join link generated!");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to regenerate link");
+    }
+    setRegenerating(false);
+    setRegenerateModal(false);
+  };
 
   const handleCopySignUpUrl = async () => {
     const url = `${window.location.origin}/schools/${schoolId}/signup`;
@@ -204,6 +252,58 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
           Managing {schoolName}
         </p>
       </div>
+
+      {/* School Join Link */}
+      {!joinCodeLoading && joinCode && (
+        <Card className="border-brand-green/30 bg-green-50">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <LinkIcon size={18} className="text-brand-green" />
+              Your School Join Link
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-2 mb-2">
+              <code className="flex-1 text-sm bg-white px-3 py-2 rounded border border-brand-green/20 break-all">
+                {typeof window !== "undefined" && `${window.location.origin}/join/${joinCode}`}
+              </code>
+              <Button size="sm" onClick={handleCopyJoinLink} className="bg-brand-green text-white hover:bg-brand-green-soft shrink-0">
+                {joinCopied ? <Check size={14} /> : <Copy size={14} />}
+                {joinCopied ? "Copied" : "Copy"}
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Share this link with students so they can join {schoolName}.{" "}
+              <button
+                type="button"
+                onClick={() => setRegenerateModal(true)}
+                className="underline text-brand-green cursor-pointer"
+              >
+                Regenerate link
+              </button>
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
+      <Dialog open={regenerateModal} onOpenChange={setRegenerateModal}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Regenerate join link?</DialogTitle>
+            <p className="text-sm text-gray-500">This will invalidate the current link. Students with the old link cannot use it.</p>
+          </DialogHeader>
+          <div className="flex gap-2 justify-end">
+            <Button variant="outline" onClick={() => setRegenerateModal(false)}>Cancel</Button>
+            <Button
+              onClick={handleRegenerateJoinCode}
+              disabled={regenerating}
+              className="bg-brand-green text-white hover:bg-brand-green-soft"
+            >
+              {regenerating ? "Regenerating…" : "Confirm"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
