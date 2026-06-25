@@ -5,7 +5,7 @@ export async function fetchUserEmails(userIds: string[]): Promise<Record<string,
 
   const adminClient = createClient(
     import.meta.env.VITE_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    process.env.SW_SERVICE_ROLE_KEY!,
     { auth: { autoRefreshToken: false, persistSession: false } }
   );
 
