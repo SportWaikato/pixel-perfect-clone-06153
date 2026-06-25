@@ -141,8 +141,8 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
 
   useEffect(() => {
     if (users.length === 0) { setEmailMap({}); return; }
-    fetchUserEmails(users.map(u => u.id)).then(setEmailMap).catch(console.error);
-  }, [users]);
+    fetchEmails({ data: { userIds: users.map(u => u.id) } }).then(setEmailMap).catch(console.error);
+  }, [users, fetchEmails]);
 
   const filteredUsers = useMemo(() => {
     let filtered = users.map(u => ({ ...u, email: emailMap[u.id] ?? u.email }));
