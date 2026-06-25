@@ -235,9 +235,14 @@ function SignUpForm({ redirectTo }: { redirectTo: string }) {
 
         // If we got an immediate session (email confirmation off), seed the users row
         if (data.user && data.session) {
+          const baseUsername = `${values.firstName}${values.lastName}`
+            .toLowerCase()
+            .replace(/[^a-z0-9]/g, "");
+          const username = `${baseUsername || "user"}${Math.floor(Math.random() * 10000)}`;
           await supabase.from("users").upsert(
             {
               id: data.user.id,
+              username,
               first_name: values.firstName,
               last_name: values.lastName,
               school_id: values.schoolId,
