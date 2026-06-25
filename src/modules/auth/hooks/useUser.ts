@@ -1,5 +1,3 @@
-'use client';
-
 import { useState, useEffect } from 'react';
 import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
 import { UserService } from '@/models/users/services/UserService';

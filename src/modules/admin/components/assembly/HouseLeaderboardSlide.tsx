@@ -1,9 +1,6 @@
-'use client';
-
 import { useEffect, useState } from 'react';
 import { m } from 'framer-motion';
 import { ChevronLeft } from 'lucide-react';
-import Image from 'next/image';
 import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
 import { AssemblyService } from '@/models/assembly/services/AssemblyService';
 import { HouseWeeklyPoints } from '@/models/assembly/interfaces/AssemblyWinnerInterface';
@@ -103,7 +100,7 @@ const HouseLeaderboardSlide = ({ schoolId, onBack, startDate, endDate, periodLab
       </button>
 
       <div className="mb-8 text-center">
-        <Image src="/assembly/house-leaderboard-icon.svg" alt="" width={64} height={64} className="mx-auto mb-3" />
+        <img src="/assembly/house-leaderboard-icon.svg" alt="" width={64} height={64} className="mx-auto mb-3" />
         <h2 className="text-4xl font-extrabold uppercase tracking-widest text-white">House Leaderboard</h2>
         <p className="mt-1 text-sm uppercase tracking-wider" style={{ color: '#FF6B2B' }}>
           {periodLabel ?? 'Points earned this week'}

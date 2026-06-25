@@ -1,5 +1,3 @@
-'use client';
-
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { UserAchievementInterface, AchievementInterface } from '@/models/achievements/interfaces/AchievementInterface';
 import { AchievementService } from '@/models/achievements/services/AchievementService';
@@ -20,10 +18,9 @@ import { checkHistoricalAchievements } from '@/modules/achievements/actions/chec
 import { recalculateUserStreaks } from '@/modules/activities/actions/recalculateStreaks';
 import { formatTimeDisplay, TIME_GOALS } from '@/models/application/constants/applicationConstants';
 import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@tanstack/react-router';
 import { useState, useEffect, useMemo } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
+import { Link } from '@tanstack/react-router';
 import { BadgeImageHelper } from '@/models/achievements/helpers/BadgeImageHelper';
 
 interface DashboardContentProps {
@@ -235,7 +232,7 @@ const DashboardContent = ({
                   className="w-28 h-28 rounded-full flex items-center justify-center"
                   style={{ background: 'radial-gradient(circle, rgba(251,176,64,0.25) 0%, rgba(251,176,64,0.08) 60%, transparent 80%)' }}
                 >
-                  <Image src="/fire.png" alt="Streak fire" width={64} height={64} priority />
+                  <img src="/fire.png" alt="Streak fire" width={64} height={64} priority />
                 </div>
               </div>
 
@@ -320,7 +317,7 @@ const DashboardContent = ({
                                   <div className="text-center">
                                     {BadgeImageHelper.hasBadgeImage(achievement) ? (
                                       <div className="w-32 h-32 mx-auto mb-2 relative overflow-hidden rounded-xl">
-                                        <Image
+                                        <img
                                           src={BadgeImageHelper.getBadgeImageUrl(achievement)}
                                           alt={achievement.name}
                                           fill

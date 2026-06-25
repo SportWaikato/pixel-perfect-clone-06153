@@ -1,5 +1,3 @@
-'use client';
-
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { SchoolInterface } from '@/models/schools/interfaces/SchoolInterface';
@@ -22,8 +20,8 @@ import SuperAdminInviteSection from './SuperAdminInviteSection';
 import { fetchUserEmails } from '@/modules/admin/actions/fetchUserEmails';
 import { toast } from 'sonner';
 import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { Link } from '@tanstack/react-router';
+import { useRouter } from '@tanstack/react-router';
 import {
   DropdownMenu,
   DropdownMenuContent,

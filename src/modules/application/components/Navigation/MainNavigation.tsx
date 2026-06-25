@@ -1,5 +1,3 @@
-'use client';
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/modules/application/components/DesignSystem/ui/button';
 import { Badge } from '@/modules/application/components/DesignSystem/ui/badge';
@@ -12,9 +10,8 @@ import {
   DropdownMenuTrigger,
 } from '@/modules/application/components/DesignSystem/ui/dropdown-menu';
 import UserAvatar from '@/modules/application/components/DesignSystem/ui/user-avatar';
-import Link from 'next/link';
-import Image from 'next/image';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { Link } from '@tanstack/react-router';
+import { useRouter, useRouterState, useSearch } from '@tanstack/react-router';
 import { cn } from '@/modules/common/utils';
 import { LayoutDashboard, Calendar, Trophy, MessageCircle, MessageSquare, User, LogOut, Menu, X, Settings, Users, Building, Award, Download, Zap } from 'lucide-react';
 import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
@@ -121,7 +118,7 @@ const MainNavigation = () => {
           <div className="flex items-center gap-8">
             <div className="flex items-center gap-3">
               <Link href="/dashboard" className="cursor-pointer hover:opacity-80 transition-opacity">
-                <Image
+                <img
                   src="/Logo.svg"
                   alt="Karawhiua Logo"
                   width={66}
@@ -160,7 +157,7 @@ const MainNavigation = () => {
         <div className="flex items-center gap-8 min-w-0 flex-1 overflow-hidden">
           <div className="flex items-center gap-3 shrink-0">
             <Link href={homeHref} className="cursor-pointer hover:opacity-80 transition-opacity">
-              <Image
+              <img
                 src="/Logo.svg"
                 alt="Karawhiua Logo"
                 width={66}

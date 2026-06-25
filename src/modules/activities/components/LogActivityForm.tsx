@@ -1,7 +1,5 @@
-'use client';
-
 import { Formik, Form, useField, Field, useFormikContext } from 'formik';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearch } from '@tanstack/react-router';
 import { logActivitySchema } from '@/models/forms/schemas/activitySchemas';
 import { useState, useEffect } from 'react';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';

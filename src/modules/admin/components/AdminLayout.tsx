@@ -1,5 +1,3 @@
-'use client';
-
 import { useState, useEffect } from 'react';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { Button } from '@/modules/application/components/DesignSystem/ui/button';
@@ -22,8 +20,8 @@ import {
   UserX,
   Monitor,
 } from 'lucide-react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { Link } from '@tanstack/react-router';
+import { useRouter } from '@tanstack/react-router';
 import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
 import { EventService } from '@/models/events/services/EventService';
 import { toast } from 'sonner';

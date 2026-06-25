@@ -1,5 +1,3 @@
-'use client';
-
 import { useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/modules/application/components/DesignSystem/ui/chart';

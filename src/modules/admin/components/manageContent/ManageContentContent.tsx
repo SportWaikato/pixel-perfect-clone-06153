@@ -1,7 +1,4 @@
-'use client';
-
 import { useMemo, useState, ReactNode } from 'react';
-import NextImage from 'next/image';
 import { AssetInterface } from '@/models/assets/interfaces/AssetInterface';
 import { Card, CardContent } from '@/modules/application/components/DesignSystem/ui/card';
 import { Button } from '@/modules/application/components/DesignSystem/ui/button';
@@ -45,7 +42,7 @@ const FileTypeBadge = ({ fileType }: { fileType: string }) => {
   const isImage = fileType.startsWith('image/');
   return (
     <Badge variant="secondary" className="gap-1 text-xs">
-      {isPdf ? <FileText size={10} /> : isVideo ? <Video size={10} /> : isImage ? <Image size={10} /> : <FileText size={10} />}
+      {isPdf ? <FileText size={10} /> : isVideo ? <Video size={10} /> : isImage ? <img size={10} /> : <FileText size={10} />}
       {isPdf ? 'PDF' : isVideo ? 'MP4' : isImage ? 'Image' : 'File'}
     </Badge>
   );
@@ -74,7 +71,7 @@ const AssetThumbnail = ({ asset }: { asset: AssetInterface }) => {
   if (asset.file_type.startsWith('image/')) {
     return (
       <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded bg-gray-100">
-        <NextImage src={asset.file_url} alt={asset.name} fill className="object-cover" />
+        <img src={asset.file_url} alt={asset.name} fill className="object-cover" />
       </div>
     );
   }

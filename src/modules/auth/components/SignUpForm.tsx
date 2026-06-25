@@ -1,7 +1,5 @@
-'use client';
-
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from 'formik';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@tanstack/react-router';
 import { createSignUpSchema } from '@/models/forms/schemas/authSchemas';
 import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
 import { UserService } from '@/models/users/services/UserService';

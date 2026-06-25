@@ -1,6 +1,4 @@
-'use client';
-
-import { usePathname } from 'next/navigation';
+import { useRouterState } from '@tanstack/react-router';
 import { useUser } from '@/modules/auth/hooks/useUser';
 import { Role } from '@/modules/auth/utils/roleUtils';
 import MainNavigation from './MainNavigation';

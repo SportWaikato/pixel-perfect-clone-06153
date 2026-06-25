@@ -1,12 +1,10 @@
-'use client';
-
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { Card, CardContent, CardHeader, CardTitle } from '@/modules/application/components/DesignSystem/ui/card';
 import { Button } from '@/modules/application/components/DesignSystem/ui/button';
 import { Badge } from '@/modules/application/components/DesignSystem/ui/badge';
 import { Users, Calendar, TrendingUp, Award, Copy, Check, Link as LinkIcon, Clock, ShieldAlert, Activity, MessageSquare, Crown, QrCode, Monitor } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/modules/application/components/DesignSystem/ui/dialog';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import QRCode from 'qrcode';
 import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';

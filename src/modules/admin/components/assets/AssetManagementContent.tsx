@@ -1,5 +1,3 @@
-'use client';
-
 import { useState, useEffect, useMemo, ReactNode } from 'react';
 import { AssetInterface } from '@/models/assets/interfaces/AssetInterface';
 import { SchoolInterface } from '@/models/schools/interfaces/SchoolInterface';
@@ -38,12 +36,10 @@ import { AssetService } from '@/models/assets/services/AssetService';
 import { SchoolService } from '@/models/schools/services/SchoolService';
 import useAdminData from '@/modules/common/hooks/useAdminData';
 import AssetCreateEditDialog from './AssetCreateEditDialog';
-import NextImage from 'next/image';
 import { Plus, Search, Edit, Trash2, FolderOpen, ArrowLeft, FileText, Image, Download, Loader2, Video } from 'lucide-react';
 import { toast } from 'sonner';
 import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-import Link from 'next/link';
-
+import { Link } from '@tanstack/react-router';
 type SortOption = 'newest' | 'oldest' | 'title_asc' | 'title_desc';
 
 const formatFileSize = (bytes: number): string => {
@@ -57,7 +53,7 @@ const FileTypeBadge = ({ fileType }: { fileType: string }) => {
   const isImage = fileType.startsWith('image/');
   return (
     <Badge variant="secondary" className="gap-1 text-xs">
-      {isPdf ? <FileText size={10} /> : isVideo ? <Video size={10} /> : isImage ? <Image size={10} /> : <FileText size={10} />}
+      {isPdf ? <FileText size={10} /> : isVideo ? <Video size={10} /> : isImage ? <img size={10} /> : <FileText size={10} />}
       {isPdf ? 'PDF' : isVideo ? 'MP4' : isImage ? 'Image' : 'File'}
     </Badge>
   );
@@ -86,7 +82,7 @@ const AssetThumbnail = ({ asset }: { asset: AssetInterface }) => {
   if (asset.file_type.startsWith('image/')) {
     return (
       <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded bg-gray-100">
-        <NextImage src={asset.file_url} alt={asset.name} fill className="object-cover" />
+        <img src={asset.file_url} alt={asset.name} fill className="object-cover" />
       </div>
     );
   }

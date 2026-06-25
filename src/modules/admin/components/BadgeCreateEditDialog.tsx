@@ -1,5 +1,3 @@
-'use client';
-
 import { useState } from 'react';
 import { AchievementInterface } from '@/models/achievements/interfaces/AchievementInterface';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/modules/application/components/DesignSystem/ui/dialog';
@@ -14,7 +12,6 @@ import { SelectItem } from '@/modules/application/components/DesignSystem/ui/sel
 import { Upload, Image as ImageIcon, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-import Image from 'next/image';
 import BadgeCriteriaBuilder from '@/modules/admin/components/badges/BadgeCriteriaBuilder';
 import {
   type BadgeFormValues,
@@ -205,7 +202,7 @@ const BadgeCreateEditDialog = ({ isOpen, onClose, onSuccess, badge }: BadgeCreat
                 {hasCurrentImage && (
                   <div className="flex items-center gap-4 rounded-lg border p-4">
                     <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
-                      <Image
+                      <img
                         src={getCurrentImageUrl()}
                         alt="Badge preview"
                         fill

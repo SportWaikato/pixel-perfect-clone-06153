@@ -1,5 +1,3 @@
-'use client';
-
 import { useState, useMemo } from 'react';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { AchievementInterface } from '@/models/achievements/interfaces/AchievementInterface';
@@ -16,9 +14,7 @@ import { BadgeImageHelper } from '@/models/achievements/helpers/BadgeImageHelper
 import { Plus, Search, Edit, Trash2, Award, ArrowLeft, CheckCircle, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-import Image from 'next/image';
-import Link from 'next/link';
-import dynamic from 'next/dynamic';
+import { Link } from '@tanstack/react-router';
 const BadgeCreateEditDialog = dynamic(() => import('./BadgeCreateEditDialog'), { ssr: false });
 
 interface BadgeManagementContentProps {
@@ -112,7 +108,7 @@ const BadgeManagementContent = ({ user }: BadgeManagementContentProps) => {
         <div className="flex justify-center">
           {BadgeImageHelper.hasBadgeImage(badge) ? (
             <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-gray-100">
-              <Image
+              <img
                 src={BadgeImageHelper.getBadgeImageUrl(badge)}
                 alt={badge.name}
                 fill

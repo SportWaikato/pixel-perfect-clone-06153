@@ -1,7 +1,5 @@
-'use client';
-
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from 'formik';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@tanstack/react-router';
 import { createSchoolSpecificSignUpSchema } from '@/models/forms/schemas/authSchemas';
 import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
 import { UserService } from '@/models/users/services/UserService';
@@ -17,7 +15,7 @@ import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
 import { isEmailAllowedResult } from '@/models/allowed-emails/utils/isEmailAllowed';
 import { useState, useEffect, useMemo } from 'react';
 import { cn } from '@/modules/common/utils';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import { getHousesBySchool } from '@/modules/auth/actions/getHousesBySchool';
 
 interface SchoolSpecificSignUpFormProps {

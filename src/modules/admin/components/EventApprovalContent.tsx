@@ -1,5 +1,3 @@
-'use client';
-
 import { useState, useEffect, useMemo } from 'react';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { EventInterface } from '@/models/events/interfaces/EventInterface';
@@ -16,8 +14,7 @@ import { CheckCircle, XCircle, Clock, Plus, ArrowLeft, Calendar, Users, Pencil, 
 import { toast } from 'sonner';
 import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
 import { formatEventDate } from '@/modules/common/utils/dateUtils';
-import Link from 'next/link';
-import dynamic from 'next/dynamic';
+import { Link } from '@tanstack/react-router';
 const CreateEventDialog = dynamic(() => import('./CreateEventDialog'), { ssr: false });
 const EditEventDialog = dynamic(() => import('./EditEventDialog'), { ssr: false });
 

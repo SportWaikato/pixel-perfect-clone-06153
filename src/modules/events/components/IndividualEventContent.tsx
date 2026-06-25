@@ -1,7 +1,5 @@
-'use client';
-
 import { useState, useEffect, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@tanstack/react-router';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { EventInterface } from '@/models/events/interfaces/EventInterface';
 import { ActivityInterface } from '@/models/activities/interfaces/ActivityInterface';
@@ -29,7 +27,6 @@ import { formatEventDate } from '@/modules/common/utils/dateUtils';
 import { toast } from 'sonner';
 import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
 import YouTubeVideoEmbed from './YouTubeVideoEmbed';
-import Image from 'next/image';
 import { getActivityIcon, getActivityColor } from '@/modules/activities/utils/activityIcons';
 import { ACTIVITY_TYPES } from '@/models/activities/interfaces/ActivityInterface';
 
@@ -333,7 +330,7 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
         <Card className="shadow-sm rounded-2xl border border-gray-100">
           <CardContent className="p-6 flex items-center gap-5">
             <div className="relative w-20 h-20 shrink-0">
-              <Image
+              <img
                 src={`/badges/${event.badge.image_filename}`}
                 alt={event.badge.name}
                 fill

@@ -1,8 +1,6 @@
-'use client';
-
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { Link } from '@tanstack/react-router';
+import { useRouterState } from '@tanstack/react-router';
 import { LayoutDashboard, Users, MessageSquare, Calendar, User, Building, Award } from 'lucide-react';
 import { cn } from '@/modules/common/utils';
 import { useUser } from '@/modules/auth/hooks/useUser';

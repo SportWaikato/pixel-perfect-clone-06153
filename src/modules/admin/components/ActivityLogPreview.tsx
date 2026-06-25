@@ -1,7 +1,5 @@
-'use client';
-
 import { useEffect, useState, useTransition, useMemo } from 'react';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import { AlertTriangle } from 'lucide-react';
 import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
 import { ActivityService } from '@/models/activities/services/ActivityService';

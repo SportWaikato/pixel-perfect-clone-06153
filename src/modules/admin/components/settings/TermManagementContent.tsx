@@ -1,10 +1,8 @@
-'use client';
-
 import { useState, useMemo } from 'react';
 import { Formik, Form } from 'formik';
 import * as yup from 'yup';
 import { Plus, Edit2, Trash2, Calendar, Monitor } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { SchoolTermInterface } from '@/models/terms/interfaces/SchoolTermInterface';
 import { SchoolTermService } from '@/models/terms/services/SchoolTermService';
