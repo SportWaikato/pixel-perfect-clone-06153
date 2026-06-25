@@ -197,7 +197,7 @@ describe('ActivityService.create — points pipeline', () => {
     });
 
     const streakCall = (supabase.rpc as ReturnType<typeof vi.fn>).mock.calls.find(
-      ([name]: [string]) => name === 'update_user_streak_for_date'
+      (args: unknown[]) => args[0] === 'update_user_streak_for_date'
     );
     expect(streakCall).toBeDefined();
     expect(streakCall![1]).toMatchObject({ p_user_id: 'user-1' });
