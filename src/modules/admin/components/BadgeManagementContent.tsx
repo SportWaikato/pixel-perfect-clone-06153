@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { useState, useMemo } from 'react';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { AchievementInterface } from '@/models/achievements/interfaces/AchievementInterface';
@@ -15,7 +16,7 @@ import { Plus, Search, Edit, Trash2, Award, ArrowLeft, CheckCircle, X } from 'lu
 import { toast } from 'sonner';
 import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
 import { Link } from '@tanstack/react-router';
-const BadgeCreateEditDialog = dynamic(() => import('./BadgeCreateEditDialog'), { ssr: false });
+const BadgeCreateEditDialog = React.lazy(() => import('./BadgeCreateEditDialog'));
 
 interface BadgeManagementContentProps {
   user: UserInterface;
@@ -111,8 +112,7 @@ const BadgeManagementContent = ({ user }: BadgeManagementContentProps) => {
               <img
                 src={BadgeImageHelper.getBadgeImageUrl(badge)}
                 alt={badge.name}
-                fill
-                className="object-contain"
+                className="absolute inset-0 w-full h-full object-cover object-contain"
               />
             </div>
           ) : (
@@ -190,7 +190,7 @@ const BadgeManagementContent = ({ user }: BadgeManagementContentProps) => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
-            <Link href="/admin/dashboard">
+            <Link to="/admin/dashboard">
               <ArrowLeft size={20} />
             </Link>
           </Button>

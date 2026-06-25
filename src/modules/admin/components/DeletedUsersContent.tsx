@@ -46,7 +46,7 @@ const DeletedUsersContent = ({ initialUsers }: DeletedUsersContentProps) => {
     <div className="p-6 space-y-6 min-h-screen">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
-          <Link href="/admin/users">
+          <Link to="/admin/users">
             <ArrowLeft size={20} />
           </Link>
         </Button>

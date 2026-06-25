@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useRouter } from '@tanstack/react-router';
+import { useRouter, useNavigate } from '@tanstack/react-router';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { EventInterface } from '@/models/events/interfaces/EventInterface';
 import { ActivityInterface } from '@/models/activities/interfaces/ActivityInterface';
@@ -44,6 +44,7 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
   const [actionLoading, setActionLoading] = useState(false);
   const [imageGenerating, setImageGenerating] = useState(false);
   const router = useRouter();
+  const navigate = useNavigate();
 
   const eventService = useMemo(() => new EventService(createSupabaseClient()), []);
   const activityService = useMemo(() => new ActivityService(createSupabaseClient()), []);
@@ -64,7 +65,7 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
 
       if (!eventData) {
         toast.error('Event not found');
-        router.push('/challenges');
+        navigate({ to: '/challenges' });
         return;
       }
 
@@ -78,7 +79,7 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
 
     } catch (error) {
       notifyAboutError(error);
-      router.push('/challenges');
+      navigate({ to: '/challenges' });
     } finally {
       setLoading(false);
     }
@@ -181,7 +182,7 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
       }
       setActionLoading(false);
     }
-    router.push(`/activities?challenge=${eventId}`);
+    navigate({ to: `/activities?challenge=${eventId}` });
   };
 
   if (loading) {
@@ -204,7 +205,7 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 min-h-screen">
       {/* Back button */}
-      <Button variant="ghost" onClick={() => router.push('/challenges')} className="gap-2 -ml-2 text-gray-600">
+      <Button variant="ghost" onClick={() => navigate({ to: '/challenges' })} className="gap-2 -ml-2 text-gray-600">
         <ArrowLeft size={16} />
         Back to Challenges
       </Button>
@@ -333,8 +334,7 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
               <img
                 src={`/badges/${event.badge.image_filename}`}
                 alt={event.badge.name}
-                fill
-                className="object-contain drop-shadow"
+                className="absolute inset-0 w-full h-full object-cover object-contain drop-shadow"
               />
             </div>
             <div>

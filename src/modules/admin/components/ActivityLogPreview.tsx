@@ -103,7 +103,7 @@ const ActivityLogPreview = ({ schoolId, schoolParam }: ActivityLogPreviewProps) 
           <p className="text-sm text-gray-600 mt-0.5">Overview of recent school activity</p>
         </div>
         <Button variant="outline" size="sm" asChild>
-          <Link href={`/admin/activity${schoolParam}`}>See all activity →</Link>
+          <Link to={`/admin/activity${schoolParam}`}>See all activity →</Link>
         </Button>
       </CardHeader>
       <CardContent>

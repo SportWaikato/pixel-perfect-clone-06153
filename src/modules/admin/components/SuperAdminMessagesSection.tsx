@@ -75,7 +75,7 @@ const SuperAdminMessagesSection = ({ schools }: SuperAdminMessagesSectionProps) 
           </Select>
           {selectedSchoolId && !isAllSchools && (
             <Button variant="outline" size="sm" asChild>
-              <Link href={`/admin/updates${schoolParam}`}>Manage →</Link>
+              <Link to={`/admin/updates${schoolParam}`}>Manage →</Link>
             </Button>
           )}
         </div>

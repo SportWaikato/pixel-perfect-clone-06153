@@ -71,7 +71,7 @@ const AssetThumbnail = ({ asset }: { asset: AssetInterface }) => {
   if (asset.file_type.startsWith('image/')) {
     return (
       <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded bg-gray-100">
-        <img src={asset.file_url} alt={asset.name} fill className="object-cover" />
+        <img src={asset.file_url} alt={asset.name} className="absolute inset-0 w-full h-full object-cover object-cover" />
       </div>
     );
   }

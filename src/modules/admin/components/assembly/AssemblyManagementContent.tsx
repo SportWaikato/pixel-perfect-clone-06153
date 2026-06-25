@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { useRouter } from '@tanstack/react-router';
+import { useRouter, useNavigate } from '@tanstack/react-router';
 import { Monitor, Trophy, Loader2, Settings, Calendar, AlertTriangle } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 import { AssemblyWinnerInterface } from '@/models/assembly/interfaces/AssemblyWinnerInterface';
@@ -29,9 +29,10 @@ const rollingBounds = (days: number) => {
 
 const AssemblyManagementContent = ({ winners, schoolId, terms, schools }: AssemblyManagementContentProps) => {
   const router = useRouter();
+  const navigate = useNavigate();
 
   const handleSchoolChange = (newSchoolId: string) => {
-    router.push(`/admin/assembly?schoolId=${newSchoolId}`);
+    navigate({ to: `/admin/assembly?schoolId=${newSchoolId}` });
   };
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<PeriodMode>(() => {
@@ -113,7 +114,7 @@ const AssemblyManagementContent = ({ winners, schoolId, terms, schools }: Assemb
 
     setLoading(true);
     const params = new URLSearchParams({ schoolId, startDate, endDate, periodLabel });
-    router.push(`/admin/assembly/present?${params.toString()}`);
+    navigate({ to: `/admin/assembly/present?${params.toString()}` });
   };
 
   const canEnter = mode !== 'term' || !!selectedTerm;
@@ -162,7 +163,7 @@ const AssemblyManagementContent = ({ winners, schoolId, terms, schools }: Assemb
             )}
           </div>
           <Button asChild variant="outline" size="sm" className="gap-2">
-            <Link href={`/admin/settings?schoolId=${schoolId}`}>
+            <Link to={`/admin/settings?schoolId=${schoolId}`}>
               <Settings className="h-4 w-4" /> Configure Terms
             </Link>
           </Button>
@@ -186,7 +187,7 @@ const AssemblyManagementContent = ({ winners, schoolId, terms, schools }: Assemb
               <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" />
               <span>
                 No school terms configured.{' '}
-                <Link href={`/admin/settings?schoolId=${schoolId}`} className="font-medium underline">
+                <Link to={`/admin/settings?schoolId=${schoolId}`} className="font-medium underline">
                   Set up terms in Settings
                 </Link>{' '}
                 to use term-based weekly scoring.

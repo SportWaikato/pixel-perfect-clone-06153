@@ -171,7 +171,7 @@ const EventsContent = ({ user, initialEvents, initialParticipation, initialEvent
                 : null;
 
               return (
-                <Link key={event.id} href={`/challenges/${event.id}`}>
+                <Link key={event.id} to={`/challenges/${event.id}`}>
                   <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow p-4 flex items-start gap-3 cursor-pointer">
                     <div
                       className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
@@ -266,7 +266,7 @@ const EventsContent = ({ user, initialEvents, initialParticipation, initialEvent
               const participating = userParticipation.includes(event.id);
 
               return (
-                <Link key={event.id} href={`/challenges/${event.id}`}>
+                <Link key={event.id} to={`/challenges/${event.id}`}>
                   <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow p-4 flex items-start gap-3 cursor-pointer opacity-80">
                     <div
                       className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5"

@@ -69,7 +69,7 @@ const AdminMobileBottomNav = () => {
           return (
             <Link
               key={tab.href}
-              href={tab.href}
+              to={tab.href}
               className="flex flex-col items-center gap-1 px-2 relative"
               aria-label={tab.label}
             >

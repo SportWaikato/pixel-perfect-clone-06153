@@ -237,7 +237,7 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
       <div className="p-6 space-y-6 min-h-screen">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
-            <Link href={backHref}><ArrowLeft size={20} /></Link>
+            <Link to={backHref}><ArrowLeft size={20} /></Link>
           </Button>
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Registration Access</h1>
@@ -292,7 +292,7 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
-          <Link href={backHref}><ArrowLeft size={20} /></Link>
+          <Link to={backHref}><ArrowLeft size={20} /></Link>
         </Button>
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Registration Access</h1>

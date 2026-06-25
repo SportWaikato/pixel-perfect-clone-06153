@@ -52,7 +52,7 @@ const Step6Success = ({ user, pointsEarned, onLogAnother }: Step6SuccessProps) =
           className="w-full py-3 rounded-2xl font-medium border-2"
           asChild
         >
-          <Link href="/activities">View your activity log</Link>
+          <Link to="/activities">View your activity log</Link>
         </Button>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from 'formik';
-import { useRouter } from '@tanstack/react-router';
+import { useRouter, useNavigate } from '@tanstack/react-router';
 import { createSignUpSchema } from '@/models/forms/schemas/authSchemas';
 import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
 import { UserService } from '@/models/users/services/UserService';
@@ -40,6 +40,7 @@ const SignUpForm = ({ schools }: SignUpFormProps) => {
   const [emailDomainError, setEmailDomainError] = useState(false);
   const [availableHouses, setAvailableHouses] = useState<HouseInterface[]>([]);
   const router = useRouter();
+  const navigate = useNavigate();
 
   const validationSchema = useMemo(() => createSignUpSchema(schools), [schools]);
 
@@ -130,7 +131,7 @@ const SignUpForm = ({ schools }: SignUpFormProps) => {
       });
 
       toast.success('Account created successfully!');
-      router.push('/auth/login');
+      navigate({ to: '/auth/login' });
     } catch (error) {
       notifyAboutError(error);
     } finally {

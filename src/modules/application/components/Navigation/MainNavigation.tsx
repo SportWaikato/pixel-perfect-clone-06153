@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/modules/application/components/DesignSystem/ui/dropdown-menu';
 import UserAvatar from '@/modules/application/components/DesignSystem/ui/user-avatar';
-import { Link } from '@tanstack/react-router';
+import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { useRouter, useRouterState, useSearch } from '@tanstack/react-router';
 import { cn } from '@/modules/common/utils';
 import { LayoutDashboard, Calendar, Trophy, MessageCircle, MessageSquare, User, LogOut, Menu, X, Settings, Users, Building, Award, Download, Zap } from 'lucide-react';
@@ -25,7 +25,8 @@ import { toast } from 'sonner';
 const MainNavigation = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const navigate = useNavigate();
+  const searchParams = useSearch({ strict: false });
   const { user, loading } = useUser();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -102,7 +103,7 @@ const MainNavigation = () => {
     const supabase = createSupabaseClient();
     await supabase.auth.signOut();
     toast.success('Logged out successfully');
-    router.push('/auth/login');
+    navigate({ to: '/auth/login' });
   };
 
   const closeMobileMenu = () => {
@@ -117,7 +118,7 @@ const MainNavigation = () => {
           {/* Logo and Desktop Navigation Skeleton */}
           <div className="flex items-center gap-8">
             <div className="flex items-center gap-3">
-              <Link href="/dashboard" className="cursor-pointer hover:opacity-80 transition-opacity">
+              <Link to="/dashboard" className="cursor-pointer hover:opacity-80 transition-opacity">
                 <img
                   src="/Logo.svg"
                   alt="Karawhiua Logo"
@@ -156,7 +157,7 @@ const MainNavigation = () => {
         {/* Logo and Desktop Navigation */}
         <div className="flex items-center gap-8 min-w-0 flex-1 overflow-hidden">
           <div className="flex items-center gap-3 shrink-0">
-            <Link href={homeHref} className="cursor-pointer hover:opacity-80 transition-opacity">
+            <Link to={homeHref} className="cursor-pointer hover:opacity-80 transition-opacity">
               <img
                 src="/Logo.svg"
                 alt="Karawhiua Logo"
@@ -186,7 +187,7 @@ const MainNavigation = () => {
                     isActive && "bg-white/20 text-white"
                   )}
                 >
-                  <Link href={item.href}>
+                  <Link to={item.href}>
                     <IconComponent size={16} />
                     {item.label}
                     {item.href === '/admin/challenges' && pendingEventsCount > 0 && (
@@ -242,7 +243,7 @@ const MainNavigation = () => {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link href="/profile" className="flex items-center gap-2">
+                <Link to="/profile" className="flex items-center gap-2">
                   <User size={16} />
                   Profile
                 </Link>
@@ -250,7 +251,7 @@ const MainNavigation = () => {
               {(user.role === Role.SCHOOL_ADMIN || user.role === Role.SUPER_ADMIN) && (
                 <>
                   <DropdownMenuItem asChild>
-                    <Link href="/admin/dashboard" className="flex items-center gap-2">
+                    <Link to="/admin/dashboard" className="flex items-center gap-2">
                       <Settings size={16} />
                       Admin Dashboard
                     </Link>
@@ -281,7 +282,7 @@ const MainNavigation = () => {
               return (
                 <Link
                   key={item.href}
-                  href={item.href}
+                  to={item.href}
                   onClick={closeMobileMenu}
                   className={cn(
                     "flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors",

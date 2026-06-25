@@ -1,6 +1,6 @@
 import { m } from 'framer-motion';
 import { X } from 'lucide-react';
-import { useRouter } from '@tanstack/react-router';
+import { useRouter, useNavigate } from '@tanstack/react-router';
 type Slide = 'leaderboard' | 'top-scorers' | 'prize-draw' | 'challenge';
 
 interface AssemblyMenuProps {
@@ -38,13 +38,14 @@ const cards = [
 
 const AssemblyMenu = ({ onSelect, isFullscreen, schoolId }: AssemblyMenuProps) => {
   const router = useRouter();
+  const navigate = useNavigate();
   const exitHref = schoolId ? `/admin/assembly?schoolId=${schoolId}` : '/admin/assembly';
 
   return (
     <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-8 py-12">
       {!isFullscreen && (
         <button
-          onClick={() => router.push(exitHref)}
+          onClick={() => navigate({ to: exitHref })}
           className="absolute right-6 top-6 rounded-full bg-white p-2 transition-colors hover:bg-white/90"
           style={{ color: '#357565' }}
         >
