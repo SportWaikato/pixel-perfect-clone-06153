@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { LOGOS } from "@/lib/logos";
 
 export const Route = createFileRoute("/join/$code")({
   ssr: false,
@@ -48,17 +49,28 @@ function JoinByCode() {
     navigate({ to: "/auth", search: { redirect: "/onboarding" } as any });
   };
 
+  const logoBlock = (
+    <img
+      src={LOGOS.WHITE_ON_GREEN}
+      alt="Karawhiua"
+      className="mb-6"
+      style={{ width: "160px", height: "auto" }}
+    />
+  );
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <p className="text-muted-foreground">Loading…</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
+        {logoBlock}
+        <p className="text-muted-foreground">Loading...</p>
       </div>
     );
   }
 
   if (error || !school) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
+        {logoBlock}
         <Card className="w-full max-w-md text-center">
           <CardHeader>
             <div className="text-5xl mb-2">🔗</div>
@@ -77,13 +89,14 @@ function JoinByCode() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
+      {logoBlock}
       <Card className="w-full max-w-md text-center">
         <CardHeader>
           <div className="text-5xl mb-2">👋</div>
           <CardTitle className="text-2xl">
             Join{" "}
-            <span style={{ color: "#0B4B39" }}>{school.name}</span>
+            <span style={{ color: "#0A4B39" }}>{school.name}</span>
           </CardTitle>
           <p className="text-sm text-muted-foreground mt-2">
             on Karawhiua Virtual Sports Day
@@ -97,7 +110,7 @@ function JoinByCode() {
               </p>
               <Button
                 className="w-full text-white hover:opacity-90"
-                style={{ backgroundColor: "#0B4B39" }}
+                style={{ backgroundColor: "#0A4B39" }}
                 onClick={() => navigate({ to: "/onboarding" })}
               >
                 Continue to onboarding
@@ -107,7 +120,7 @@ function JoinByCode() {
             <>
               <Button
                 className="w-full text-white hover:opacity-90"
-                style={{ backgroundColor: "#0B4B39" }}
+                style={{ backgroundColor: "#0A4B39" }}
                 onClick={handleSignUp}
               >
                 Sign up with email
@@ -118,7 +131,7 @@ function JoinByCode() {
                   type="button"
                   onClick={handleSignIn}
                   className="underline cursor-pointer"
-                  style={{ color: "#0B4B39" }}
+                  style={{ color: "#0A4B39" }}
                 >
                   Sign in
                 </button>

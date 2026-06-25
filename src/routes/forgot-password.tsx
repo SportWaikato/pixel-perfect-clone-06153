@@ -67,7 +67,7 @@ function ForgotPasswordPage() {
                   <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full bg-brand-green text-white hover:bg-brand-green-soft"
+                    style={{ backgroundColor: "#0A4B39", color: "#fff" }} className="w-full" 
                   >
                     {isSubmitting ? "Sending…" : "Send reset link"}
                   </Button>

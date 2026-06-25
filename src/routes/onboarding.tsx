@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { LOGOS } from "@/lib/logos";
 
 export const Route = createFileRoute("/onboarding")({
   ssr: false,
@@ -175,10 +176,12 @@ function OnboardingPage() {
     try {
       const { sendEmail } = await import("@/lib/sendEmail");
       const { studentWelcome } = await import("@/emails/index");
+      const houseColour = (houses as House[]).find((h) => h.name === houseName)?.color || "#0A4B39";
       const { subject, html } = studentWelcome(
         firstName.trim(),
         selectedSchool!.name,
         houseName,
+        houseColour,
       );
       await sendEmail({ data: { to: email, subject, html } });
     } catch (err) {
@@ -195,7 +198,7 @@ function OnboardingPage() {
         <Card className="w-full max-w-md text-center">
           <CardHeader>
             <div className="text-5xl mb-2">🎉</div>
-            <CardTitle className="text-2xl" style={{ color: "#0B4B39" }}>You're all set!</CardTitle>
+            <CardTitle className="text-2xl" style={{ color: "#0A4B39" }}>You're all set!</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p>
@@ -203,7 +206,7 @@ function OnboardingPage() {
               {selectedHouse ? <> in <strong>{(houses as House[]).find((h) => h.id === selectedHouse)?.name}</strong></> : ""}!
             </p>
             <Button
-              style={{ backgroundColor: "#0B4B39" }}
+              style={{ backgroundColor: "#0A4B39" }}
               className="text-white hover:opacity-90"
               onClick={() => navigate({ to: "/dashboard", replace: true })}
             >
@@ -219,8 +222,13 @@ function OnboardingPage() {
     <div className="min-h-screen bg-background p-4">
       <div className="mx-auto max-w-lg space-y-6">
         <div className="text-center">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground">Karawhiua</p>
-          <h1 className="text-2xl font-bold" style={{ color: "#0B4B39" }}>Set up your profile</h1>
+          <img
+            src={LOGOS.WHITE_ON_GREEN}
+            alt="Karawhiua"
+            className="mx-auto mb-2"
+            style={{ width: "140px", height: "auto" }}
+          />
+          <h1 className="text-2xl font-bold" style={{ color: "#0A4B39" }}>Set up your profile</h1>
           <p className="text-sm text-muted-foreground mt-1">Let's get you started</p>
         </div>
 
@@ -295,8 +303,8 @@ function OnboardingPage() {
                                 onClick={() => { setSelectedSchool(s); }}
                                 className={`w-full text-left p-3 rounded-lg border-2 transition-all ${
                                   selectedSchool?.id === s.id
-                                    ? "border-[#0B4B39] bg-green-50"
-                                    : "border-border hover:border-[#0B4B39]/50"
+                                    ? "border-[#0A4B39] bg-green-50"
+                                    : "border-border hover:border-[#0A4B39]/50"
                                 }`}
                               >
                                 <p className="font-medium">{s.name}</p>
@@ -307,7 +315,7 @@ function OnboardingPage() {
                         {searchQuery.length >= 2 && searchResults.length === 0 && (
                           <p className="text-sm text-muted-foreground mt-2">
                             No schools found.{" "}
-                            <Link to="/register-school" className="underline" style={{ color: "#0B4B39" }}>
+                            <Link to="/register-school" className="underline" style={{ color: "#0A4B39" }}>
                               Register your school
                             </Link>
                           </p>
@@ -333,8 +341,8 @@ function OnboardingPage() {
                         onClick={() => setSelectedHouse(h.id)}
                         className={`rounded-xl overflow-hidden border-2 transition-all ${
                           selectedHouse === h.id
-                            ? "border-[#0B4B39] shadow-md scale-[1.02]"
-                            : "border-border hover:border-[#0B4B39]/50"
+                            ? "border-[#0A4B39] shadow-md scale-[1.02]"
+                            : "border-border hover:border-[#0A4B39]/50"
                         }`}
                       >
                         <div className="h-24" style={{ background: h.color }} />
@@ -428,7 +436,7 @@ function OnboardingPage() {
           )}
           {step < totalSteps ? (
             <Button
-              style={{ backgroundColor: "#0B4B39" }}
+              style={{ backgroundColor: "#0A4B39" }}
               className="text-white hover:opacity-90"
               onClick={() => {
                 if (step === 1 && validateStep1()) setStep(2);
@@ -440,7 +448,7 @@ function OnboardingPage() {
             </Button>
           ) : (
             <Button
-              style={{ backgroundColor: "#0B4B39" }}
+              style={{ backgroundColor: "#0A4B39" }}
               className="text-white hover:opacity-90"
               onClick={handleSubmit}
               disabled={submitting}

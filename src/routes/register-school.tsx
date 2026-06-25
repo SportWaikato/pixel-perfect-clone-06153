@@ -9,6 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { checkDomainAvailable } from "@/lib/registration.functions";
+import { LOGOS } from "@/lib/logos";
 
 const REGIONS = [
   "Waikato", "Auckland", "Bay of Plenty", "Taranaki", "Manawatū-Whanganui",
@@ -20,10 +21,10 @@ const SCHOOL_TYPES = [
 ];
 
 const DEFAULT_HOUSES = [
-  { name: "", color: "#DC2626" },
-  { name: "", color: "#2563EB" },
-  { name: "", color: "#16A34A" },
-  { name: "", color: "#CA8A04" },
+  { name: "", color: "#D103D1" },
+  { name: "", color: "#0A4B39" },
+  { name: "", color: "#118061" },
+  { name: "", color: "#10EFEB" },
 ];
 
 export const Route = createFileRoute("/register-school")({
@@ -280,10 +281,16 @@ function RegisterSchoolPage() {
       try {
         const { sendEmail } = await import("@/lib/sendEmail");
         const { schoolRegistrationPending } = await import("@/emails/index");
+        const houseNamesJoined = customHouses
+          .filter((h) => h.name.trim())
+          .map((h) => h.name.trim())
+          .join(", ");
         const { subject, html } = schoolRegistrationPending(
           adminFirstName.trim(),
           schoolName.trim(),
-          adminEmail,
+          region,
+          primaryDomain,
+          houseNamesJoined,
         );
         await sendEmail({ data: { to: adminEmail, subject, html } });
       } catch (err) {
@@ -325,7 +332,7 @@ function RegisterSchoolPage() {
         <Card className="w-full max-w-md text-center">
           <CardHeader>
             <div className="text-5xl mb-2">🎉</div>
-            <CardTitle className="text-2xl" style={{ color: "#0B4B39" }}>
+            <CardTitle className="text-2xl" style={{ color: "#0A4B39" }}>
               Registration submitted!
             </CardTitle>
           </CardHeader>
@@ -337,7 +344,7 @@ function RegisterSchoolPage() {
               We'll email you at <strong>{adminEmail}</strong> once your school has been approved.
             </p>
             <Button
-              style={{ backgroundColor: "#0B4B39" }}
+              style={{ backgroundColor: "#0A4B39" }}
               className="text-white hover:opacity-90"
               onClick={() => navigate({ to: "/dashboard" })}
             >
@@ -353,8 +360,13 @@ function RegisterSchoolPage() {
     <div className="min-h-screen bg-background p-4">
       <div className="mx-auto max-w-lg space-y-6">
         <div className="text-center">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground">Karawhiua</p>
-          <h1 className="text-2xl font-bold" style={{ color: "#0B4B39" }}>Register your school</h1>
+          <img
+            src={LOGOS.WHITE_ON_GREEN}
+            alt="Karawhiua"
+            className="mx-auto mb-2"
+            style={{ width: "140px", height: "auto" }}
+          />
+          <h1 className="text-2xl font-bold" style={{ color: "#0A4B39" }}>Register your school</h1>
           <p className="text-sm text-muted-foreground mt-1">Get your school set up on the platform</p>
         </div>
 
@@ -640,7 +652,7 @@ function RegisterSchoolPage() {
           )}
           {step < totalSteps ? (
             <Button
-              style={{ backgroundColor: "#0B4B39" }}
+              style={{ backgroundColor: "#0A4B39" }}
               className="text-white hover:opacity-90"
               onClick={() => {
                 if (step === 1 && validateStep1()) setStep(2);
@@ -652,7 +664,7 @@ function RegisterSchoolPage() {
             </Button>
           ) : (
             <Button
-              style={{ backgroundColor: "#0B4B39" }}
+              style={{ backgroundColor: "#0A4B39" }}
               className="text-white hover:opacity-90"
               onClick={handleSubmit}
               disabled={submitting}
