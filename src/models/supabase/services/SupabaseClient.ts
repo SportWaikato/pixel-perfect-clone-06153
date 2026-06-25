@@ -1,8 +1,7 @@
-import { createClient } from '@supabase/supabase-js';
+// Shim for legacy Next.js `createSupabaseClient()` import sites.
+// Returns the shared TanStack browser singleton.
+import { supabase } from '@/integrations/supabase/client';
 
 export function createSupabaseClient() {
-  return createClient(
-    import.meta.env.VITE_SUPABASE_URL!,
-    import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY!
-  );
-} 
+  return supabase;
+}
