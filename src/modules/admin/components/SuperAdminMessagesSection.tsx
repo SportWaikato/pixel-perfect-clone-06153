@@ -1,7 +1,6 @@
-'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import { MessageSquare, MessageCircle } from 'lucide-react';
 import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
 import { SchoolUpdateService } from '@/models/schoolUpdates/services/SchoolUpdateService';

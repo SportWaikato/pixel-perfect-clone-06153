@@ -1,4 +1,3 @@
-'use client';
 
 import { useState, useEffect } from 'react';
 import { AssetInterface } from '@/models/assets/interfaces/AssetInterface';
@@ -15,7 +14,7 @@ import { SelectItem } from '@/modules/application/components/DesignSystem/ui/sel
 import { Upload, FileText, X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-import Image from 'next/image';
+;
 import SchoolCheckboxList from '@/modules/admin/components/SchoolCheckboxList';
 
 interface AssetCreateEditDialogProps {

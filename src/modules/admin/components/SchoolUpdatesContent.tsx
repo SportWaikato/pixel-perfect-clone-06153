@@ -1,4 +1,3 @@
-'use client';
 
 import { useState, useEffect } from 'react';
 import { Formik, Form } from 'formik';
@@ -20,7 +19,7 @@ import { StorageService } from '@/models/storage/services/StorageService';
 import { ArrowLeft, MessageSquare, Trash2, MessageCircle, CheckCheck, ImagePlus, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 
 interface SchoolUpdatesContentProps {
   user: UserInterface;

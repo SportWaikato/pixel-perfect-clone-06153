@@ -1,7 +1,7 @@
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { Button } from '@/modules/application/components/DesignSystem/ui/button';
 import { Flame, Plus } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 
 interface Step6SuccessProps {
   user: UserInterface;

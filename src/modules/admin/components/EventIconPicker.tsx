@@ -1,4 +1,3 @@
-'use client';
 
 import { getActivityIcon, getActivityColor } from '@/modules/activities/utils/activityIcons';
 

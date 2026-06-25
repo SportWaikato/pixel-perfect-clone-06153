@@ -1,4 +1,3 @@
-'use client';
 
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { ActivityInterface, ACTIVITY_TYPES } from '@/models/activities/interfaces/ActivityInterface';

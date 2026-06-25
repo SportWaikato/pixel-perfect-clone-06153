@@ -1,7 +1,6 @@
-'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@tanstack/react-router';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { EventInterface } from '@/models/events/interfaces/EventInterface';
 import { ActivityInterface } from '@/models/activities/interfaces/ActivityInterface';
@@ -29,7 +28,7 @@ import { formatEventDate } from '@/modules/common/utils/dateUtils';
 import { toast } from 'sonner';
 import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
 import YouTubeVideoEmbed from './YouTubeVideoEmbed';
-import Image from 'next/image';
+;
 import { getActivityIcon, getActivityColor } from '@/modules/activities/utils/activityIcons';
 import { ACTIVITY_TYPES } from '@/models/activities/interfaces/ActivityInterface';
 

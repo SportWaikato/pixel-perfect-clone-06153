@@ -1,7 +1,6 @@
-'use client';
 
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
+;
 import { CheckCircle2, Loader2 } from 'lucide-react';
 import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
 import { AchievementService } from '@/models/achievements/services/AchievementService';

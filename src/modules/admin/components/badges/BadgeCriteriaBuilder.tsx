@@ -1,4 +1,3 @@
-'use client';
 
 import { useMemo } from 'react';
 import { FormikInputField, FormikSelectField, FormikSwitchField } from '@/modules/common/components/Formik';

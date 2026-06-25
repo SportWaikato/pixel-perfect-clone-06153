@@ -1,4 +1,3 @@
-'use client';
 
 import { AlertTriangle, MoreHorizontal, RotateCcw, X } from 'lucide-react';
 import { ActivityInterface } from '@/models/activities/interfaces/ActivityInterface';

@@ -1,9 +1,8 @@
-'use client';
 
 import { useEffect, useState } from 'react';
 import { m } from 'framer-motion';
 import { ChevronLeft } from 'lucide-react';
-import Image from 'next/image';
+;
 import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
 import { AssemblyService } from '@/models/assembly/services/AssemblyService';
 import { HouseWeeklyPoints } from '@/models/assembly/interfaces/AssemblyWinnerInterface';

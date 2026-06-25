@@ -1,4 +1,3 @@
-'use server';
 
 import { createSupabaseServer } from '@/models/supabase/services/SupabaseServer';
 import { AchievementService } from '@/models/achievements/services/AchievementService';

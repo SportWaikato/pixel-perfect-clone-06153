@@ -1,4 +1,3 @@
-'use client';
 
 import { useState, useEffect, useMemo } from 'react';
 import { Formik, Form } from 'formik';
@@ -13,7 +12,7 @@ import { FormikTextareaField } from '@/modules/common/components/Formik';
 import { ArrowLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 
 interface UpdatesFeedProps {
   user: UserInterface;

@@ -1,7 +1,7 @@
-'use client';
+import React from 'react';
 
 import { useState } from 'react';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { ActivityInterface } from '@/models/activities/interfaces/ActivityInterface';
 import { SchoolInterface } from '@/models/schools/interfaces/SchoolInterface';
@@ -9,10 +9,10 @@ import { EventInterface } from '@/models/events/interfaces/EventInterface';
 import { Card, CardContent, CardHeader, CardTitle } from '@/modules/application/components/DesignSystem/ui/card';
 import { Badge } from '@/modules/application/components/DesignSystem/ui/badge';
 import { Button } from '@/modules/application/components/DesignSystem/ui/button';
-import dynamic from 'next/dynamic';
+
 import ActivityExportDialog from './ActivityExportDialog';
 
-const SchoolPerformanceChart = dynamic(() => import('./SchoolPerformanceChart'), {
+const SchoolPerformanceChart = React.lazy(() => import('./SchoolPerformanceChart'));//
   ssr: false,
   loading: () => <div className="w-full aspect-[3/1] min-h-[200px] max-h-[300px] bg-gray-100 animate-pulse rounded-lg" />,
 });
@@ -155,7 +155,7 @@ const AdminDashboardContent = ({
               </p>
             </CardHeader>
             <CardContent>
-              <SchoolPerformanceChart schools={schools} />
+              <React.Suspense fallback={<div>Loading...</div>}><SchoolPerformanceChart schools={schools} /></React.Suspense>
             </CardContent>
           </Card>
         </div>

@@ -1,8 +1,7 @@
-'use client';
 
 import { m } from 'framer-motion';
 import { ChevronLeft } from 'lucide-react';
-import Image from 'next/image';
+;
 import { EventInterface } from '@/models/events/interfaces/EventInterface';
 import { resolveEventIconType, getActivityIcon } from '@/modules/activities/utils/activityIcons';
 

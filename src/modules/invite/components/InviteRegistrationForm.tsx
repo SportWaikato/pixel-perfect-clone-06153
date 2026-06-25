@@ -1,4 +1,3 @@
-'use client';
 
 import { Formik, Form } from 'formik';
 import { inviteRegistrationSchema } from '@/models/forms/schemas/authSchemas';

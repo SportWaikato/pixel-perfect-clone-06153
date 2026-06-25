@@ -1,9 +1,8 @@
-'use client';
 
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from 'formik';
 import { object, string, number, boolean } from 'yup';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@tanstack/react-router';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { SchoolInterface } from '@/models/schools/interfaces/SchoolInterface';
 import { HouseInterface } from '@/models/houses/interfaces/HouseInterface';

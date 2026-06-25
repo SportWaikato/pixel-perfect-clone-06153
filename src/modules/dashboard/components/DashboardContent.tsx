@@ -1,4 +1,3 @@
-'use client';
 
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { UserAchievementInterface, AchievementInterface } from '@/models/achievements/interfaces/AchievementInterface';
@@ -20,10 +19,10 @@ import { checkHistoricalAchievements } from '@/modules/achievements/actions/chec
 import { recalculateUserStreaks } from '@/modules/activities/actions/recalculateStreaks';
 import { formatTimeDisplay, TIME_GOALS } from '@/models/application/constants/applicationConstants';
 import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@tanstack/react-router';
 import { useState, useEffect, useMemo } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
+import { Link } from '@tanstack/react-router';
+;
 import { BadgeImageHelper } from '@/models/achievements/helpers/BadgeImageHelper';
 
 interface DashboardContentProps {

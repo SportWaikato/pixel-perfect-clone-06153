@@ -1,4 +1,3 @@
-'use client';
 
 import { useState, useEffect, useMemo } from 'react';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
@@ -12,7 +11,7 @@ import { fetchUserEmails } from '@/modules/admin/actions/fetchUserEmails';
 import { toast } from 'sonner';
 import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
 import { ArrowLeft, RotateCcw, Loader2, Trash2 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 
 interface DeletedUsersContentProps {
   initialUsers: UserInterface[];

@@ -1,4 +1,4 @@
-'use client';
+import React from 'react';
 
 import { useState, useEffect, useMemo } from 'react';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
@@ -16,10 +16,10 @@ import { CheckCircle, XCircle, Clock, Plus, ArrowLeft, Calendar, Users, Pencil, 
 import { toast } from 'sonner';
 import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
 import { formatEventDate } from '@/modules/common/utils/dateUtils';
-import Link from 'next/link';
-import dynamic from 'next/dynamic';
-const CreateEventDialog = dynamic(() => import('./CreateEventDialog'), { ssr: false });
-const EditEventDialog = dynamic(() => import('./EditEventDialog'), { ssr: false });
+import { Link } from '@tanstack/react-router';
+
+const CreateEventDialog = React.lazy(() => import('./CreateEventDialog'));
+const EditEventDialog = React.lazy(() => import('./EditEventDialog'));
 
 interface EventApprovalContentProps {
   user: UserInterface;
@@ -493,14 +493,14 @@ const EventApprovalContent = ({ user, schools, initialSchoolId }: EventApprovalC
       })()}
 
       {/* Create Event Dialog */}
-      <CreateEventDialog
+      <React.Suspense fallback={<div>Loading...</div>}><CreateEventDialog
         open={showCreateDialog}
         onOpenChange={setShowCreateDialog}
         user={user}
         onEventCreated={() => fetchEvents(selectedSchoolId)}
       />
 
-      <EditEventDialog
+      <React.Suspense fallback={<div>Loading...</div>}><EditEventDialog
         open={showEditDialog}
         onOpenChange={open => {
           setShowEditDialog(open);

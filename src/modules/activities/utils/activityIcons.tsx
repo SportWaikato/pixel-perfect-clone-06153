@@ -1,4 +1,4 @@
-import Image from 'next/image';
+;
 
 // Feeling mappings for consistent UI display
 export const FEELING_MAPPINGS = {

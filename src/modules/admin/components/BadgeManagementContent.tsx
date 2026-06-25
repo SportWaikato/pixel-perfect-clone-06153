@@ -1,4 +1,4 @@
-'use client';
+import React from 'react';
 
 import { useState, useMemo } from 'react';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
@@ -16,10 +16,10 @@ import { BadgeImageHelper } from '@/models/achievements/helpers/BadgeImageHelper
 import { Plus, Search, Edit, Trash2, Award, ArrowLeft, CheckCircle, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-import Image from 'next/image';
-import Link from 'next/link';
-import dynamic from 'next/dynamic';
-const BadgeCreateEditDialog = dynamic(() => import('./BadgeCreateEditDialog'), { ssr: false });
+;
+import { Link } from '@tanstack/react-router';
+
+const BadgeCreateEditDialog = React.lazy(() => import('./BadgeCreateEditDialog'));
 
 interface BadgeManagementContentProps {
   user: UserInterface;
@@ -78,12 +78,12 @@ const BadgeManagementContent = ({ user }: BadgeManagementContentProps) => {
               size="sm" 
               className="h-8 w-8 p-0"
             >
-              <Edit size={14} />
+              <Edit size={14} </React.Suspense>
             </Button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-red-600 hover:text-red-700">
-                  <Trash2 size={14} />
+                  <Trash2 size={14} </React.Suspense>
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
@@ -117,11 +117,11 @@ const BadgeManagementContent = ({ user }: BadgeManagementContentProps) => {
                 alt={badge.name}
                 fill
                 className="object-contain"
-              />
+              </React.Suspense>
             </div>
           ) : (
             <div className="w-20 h-20 rounded-xl bg-gray-100 flex items-center justify-center">
-              <Award className="w-8 h-8 text-gray-400" />
+              <Award className="w-8 h-8 text-gray-400" </React.Suspense>
             </div>
           )}
         </div>
@@ -195,7 +195,7 @@ const BadgeManagementContent = ({ user }: BadgeManagementContentProps) => {
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
             <Link href="/admin/dashboard">
-              <ArrowLeft size={20} />
+              <ArrowLeft size={20} </React.Suspense>
             </Link>
           </Button>
           <div>
@@ -210,7 +210,7 @@ const BadgeManagementContent = ({ user }: BadgeManagementContentProps) => {
           className="gap-2"
           style={{ backgroundColor: '#0B4B39' }}
         >
-          <Plus size={16} />
+          <Plus size={16} </React.Suspense>
           Create Badge
         </Button>
       </div>
@@ -218,16 +218,16 @@ const BadgeManagementContent = ({ user }: BadgeManagementContentProps) => {
       {/* Search */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} </React.Suspense>
           <Input
             placeholder="Search badges..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-9"
-          />
+          </React.Suspense>
         </div>
         <Badge variant="secondary" className="gap-1">
-          <Award size={14} />
+          <Award size={14} </React.Suspense>
           {allBadges.length} total badges
         </Badge>
       </div>
@@ -236,11 +236,11 @@ const BadgeManagementContent = ({ user }: BadgeManagementContentProps) => {
       <Tabs defaultValue="active" className="space-y-6">
         <TabsList>
           <TabsTrigger value="active" className="gap-2">
-            <CheckCircle size={16} />
+            <CheckCircle size={16} </React.Suspense>
             Active Badges ({activeBadges.length})
           </TabsTrigger>
           <TabsTrigger value="inactive" className="gap-2">
-            <X size={16} />
+            <X size={16} </React.Suspense>
             Inactive Badges ({inactiveBadges.length})
           </TabsTrigger>
         </TabsList>
@@ -251,15 +251,15 @@ const BadgeManagementContent = ({ user }: BadgeManagementContentProps) => {
               <CardContent className="text-center py-12">
                 {searchTerm ? (
                   <>
-                    <Search className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                    <Search className="w-12 h-12 mx-auto mb-4 text-gray-300" </React.Suspense>
                     <h3 className="text-lg font-medium text-gray-900 mb-2">No badges found</h3>
                     <p className="text-gray-600">
                       No active badges match your search criteria.
                     </p>
-                  </>
+                  <</React.Suspense>
                 ) : (
                   <>
-                    <Award className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                    <Award className="w-12 h-12 mx-auto mb-4 text-gray-300" </React.Suspense>
                     <h3 className="text-lg font-medium text-gray-900 mb-2">No Active Badges</h3>
                     <p className="text-gray-600 mb-4">
                       Get started by creating your first achievement badge.
@@ -269,17 +269,17 @@ const BadgeManagementContent = ({ user }: BadgeManagementContentProps) => {
                       className="gap-2"
                       style={{ backgroundColor: '#0B4B39' }}
                     >
-                      <Plus size={16} />
+                      <Plus size={16} </React.Suspense>
                       Create Badge
                     </Button>
-                  </>
+                  <</React.Suspense>
                 )}
               </CardContent>
             </Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
               {activeBadges.map(badge => (
-                <BadgeCard key={badge.id} badge={badge} />
+                <BadgeCard key={badge.id} badge={badge} </React.Suspense>
               ))}
             </div>
           )}
@@ -291,27 +291,27 @@ const BadgeManagementContent = ({ user }: BadgeManagementContentProps) => {
               <CardContent className="text-center py-12">
                 {searchTerm ? (
                   <>
-                    <Search className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                    <Search className="w-12 h-12 mx-auto mb-4 text-gray-300" </React.Suspense>
                     <h3 className="text-lg font-medium text-gray-900 mb-2">No badges found</h3>
                     <p className="text-gray-600">
                       No inactive badges match your search criteria.
                     </p>
-                  </>
+                  <</React.Suspense>
                 ) : (
                   <>
-                    <X className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                    <X className="w-12 h-12 mx-auto mb-4 text-gray-300" </React.Suspense>
                     <h3 className="text-lg font-medium text-gray-900 mb-2">No Inactive Badges</h3>
                     <p className="text-gray-600">
                       All badges are currently active. Inactive badges will appear here.
                     </p>
-                  </>
+                  <</React.Suspense>
                 )}
               </CardContent>
             </Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
               {inactiveBadges.map(badge => (
-                <BadgeCard key={badge.id} badge={badge} />
+                <BadgeCard key={badge.id} badge={badge} </React.Suspense>
               ))}
             </div>
           )}
@@ -319,7 +319,7 @@ const BadgeManagementContent = ({ user }: BadgeManagementContentProps) => {
       </Tabs>
 
       {/* Create/Edit Dialog */}
-      <BadgeCreateEditDialog
+      <React.Suspense fallback={<div>Loading...</div>}><BadgeCreateEditDialog
         isOpen={showCreateDialog}
         onClose={() => {
           setShowCreateDialog(false);
@@ -327,7 +327,7 @@ const BadgeManagementContent = ({ user }: BadgeManagementContentProps) => {
         }}
         onSuccess={handleBadgeCreated}
         badge={editingBadge}
-      />
+      </React.Suspense>
     </div>
   );
 };

@@ -1,9 +1,8 @@
-'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { m, AnimatePresence } from 'framer-motion';
 import { ChevronLeft } from 'lucide-react';
-import Image from 'next/image';
+;
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
 import { AssemblyService } from '@/models/assembly/services/AssemblyService';

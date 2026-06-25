@@ -1,4 +1,3 @@
-'use client';
 
 import { useState } from 'react';
 import { AchievementInterface } from '@/models/achievements/interfaces/AchievementInterface';
@@ -14,7 +13,7 @@ import { SelectItem } from '@/modules/application/components/DesignSystem/ui/sel
 import { Upload, Image as ImageIcon, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-import Image from 'next/image';
+;
 import BadgeCriteriaBuilder from '@/modules/admin/components/badges/BadgeCriteriaBuilder';
 import {
   type BadgeFormValues,

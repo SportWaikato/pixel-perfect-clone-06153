@@ -1,8 +1,7 @@
-'use client';
 
 import { useEffect, useState, useTransition, useMemo } from 'react';
 import useAdminData from '@/modules/common/hooks/useAdminData';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import { AlertTriangle, ChevronLeft, ChevronRight, Loader2, X } from 'lucide-react';
 import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
 import { ActivityService } from '@/models/activities/services/ActivityService';

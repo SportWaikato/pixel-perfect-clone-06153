@@ -1,4 +1,3 @@
-'use client';
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/modules/application/components/DesignSystem/ui/button';
@@ -12,9 +11,9 @@ import {
   DropdownMenuTrigger,
 } from '@/modules/application/components/DesignSystem/ui/dropdown-menu';
 import UserAvatar from '@/modules/application/components/DesignSystem/ui/user-avatar';
-import Link from 'next/link';
-import Image from 'next/image';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { Link } from '@tanstack/react-router';
+;
+import { usePathname, useRouter, useSearchParams } from '@tanstack/react-router';
 import { cn } from '@/modules/common/utils';
 import { LayoutDashboard, Calendar, Trophy, MessageCircle, MessageSquare, User, LogOut, Menu, X, Settings, Users, Building, Award, Download, Zap } from 'lucide-react';
 import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';

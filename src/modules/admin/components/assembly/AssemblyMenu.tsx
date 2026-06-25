@@ -1,9 +1,8 @@
-'use client';
 
 import { m } from 'framer-motion';
 import { X } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
+import { useRouter } from '@tanstack/react-router';
+;
 
 type Slide = 'leaderboard' | 'top-scorers' | 'prize-draw' | 'challenge';
 

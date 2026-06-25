@@ -1,7 +1,6 @@
-'use client';
 
 import { Formik, Form, FormikHelpers } from 'formik';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@tanstack/react-router';
 import { resetPasswordSchema } from '@/models/forms/schemas/authSchemas';
 import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
 import { AuthService } from '@/models/auth/services/AuthService';
