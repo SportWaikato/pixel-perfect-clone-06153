@@ -207,7 +207,6 @@ function RegisterSchoolPage() {
         first_name: adminFirstName.trim(),
         last_name: adminLastName.trim(),
         username: adminEmail.split("@")[0],
-        email: adminEmail,
         school_id: school.id,
         role: "school_admin",
         is_admin: true,
