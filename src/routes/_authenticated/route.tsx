@@ -1,14 +1,30 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
+import type { UserInterface } from "@/models/users/interfaces/UserInterface";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
   beforeLoad: async ({ location }) => {
-    const { data, error } = await supabase.auth.getUser();
-    if (error || !data.user) {
+    const { data: auth, error: authErr } = await supabase.auth.getUser();
+    if (authErr || !auth.user) {
       throw redirect({ to: "/auth", search: { redirect: location.href } });
     }
-    return { user: data.user };
+
+    const { data: profile } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", auth.user.id)
+      .maybeSingle();
+
+    const needsOnboarding = !profile || !profile.school_id;
+    if (needsOnboarding && !location.pathname.startsWith("/onboarding")) {
+      throw redirect({ to: "/onboarding" });
+    }
+
+    return {
+      authUser: auth.user,
+      profile: (profile ?? null) as unknown as UserInterface | null,
+    };
   },
   component: () => <Outlet />,
 });
