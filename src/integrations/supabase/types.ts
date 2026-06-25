@@ -372,6 +372,8 @@ export type Database = {
           created_by: string | null
           description: string | null
           end_date: string
+          event_image_storage_path: string | null
+          event_image_url: string | null
           event_type: string
           icon_type: string | null
           id: string
@@ -407,6 +409,8 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           end_date: string
+          event_image_storage_path?: string | null
+          event_image_url?: string | null
           event_type: string
           icon_type?: string | null
           id?: string
@@ -442,6 +446,8 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           end_date?: string
+          event_image_storage_path?: string | null
+          event_image_url?: string | null
           event_type?: string
           icon_type?: string | null
           id?: string
@@ -779,6 +785,8 @@ export type Database = {
           created_at: string
           created_by: string
           id: string
+          image_storage_path: string | null
+          image_url: string | null
           is_active: boolean
           school_id: string
           title: string
@@ -789,6 +797,8 @@ export type Database = {
           created_at?: string
           created_by: string
           id?: string
+          image_storage_path?: string | null
+          image_url?: string | null
           is_active?: boolean
           school_id: string
           title: string
@@ -799,6 +809,8 @@ export type Database = {
           created_at?: string
           created_by?: string
           id?: string
+          image_storage_path?: string | null
+          image_url?: string | null
           is_active?: boolean
           school_id?: string
           title?: string
@@ -1137,6 +1149,7 @@ export type Database = {
       }
       users: {
         Row: {
+          class: string | null
           created_at: string | null
           current_streak: number | null
           first_name: string
@@ -1166,6 +1179,7 @@ export type Database = {
           year_group_rank: number | null
         }
         Insert: {
+          class?: string | null
           created_at?: string | null
           current_streak?: number | null
           first_name: string
@@ -1195,6 +1209,7 @@ export type Database = {
           year_group_rank?: number | null
         }
         Update: {
+          class?: string | null
           created_at?: string | null
           current_streak?: number | null
           first_name?: string
