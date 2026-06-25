@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useServerFn } from '@tanstack/react-start';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { Card, CardContent, CardHeader, CardTitle } from '@/modules/application/components/DesignSystem/ui/card';
 import { Button } from '@/modules/application/components/DesignSystem/ui/button';
@@ -19,13 +20,14 @@ const DeletedUsersContent = ({ initialUsers }: DeletedUsersContentProps) => {
   const [users, setUsers] = useState<UserInterface[]>(initialUsers);
   const [emailMap, setEmailMap] = useState<Record<string, string>>({});
   const [restoringId, setRestoringId] = useState<string | null>(null);
+  const fetchEmails = useServerFn(fetchUserEmails);
 
   const userService = useMemo(() => new UserService(createSupabaseClient()), []);
 
   useEffect(() => {
     if (users.length === 0) { setEmailMap({}); return; }
-    fetchUserEmails(users.map(u => u.id)).then(setEmailMap).catch(console.error);
-  }, [users]);
+    fetchEmails({ data: { userIds: users.map(u => u.id) } }).then(setEmailMap).catch(console.error);
+  }, [users, fetchEmails]);
 
   const handleRestore = async (userId: string, name: string) => {
     setRestoringId(userId);
