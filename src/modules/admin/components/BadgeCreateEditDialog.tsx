@@ -205,8 +205,7 @@ const BadgeCreateEditDialog = ({ isOpen, onClose, onSuccess, badge }: BadgeCreat
                       <img
                         src={getCurrentImageUrl()}
                         alt="Badge preview"
-                        fill
-                        className="object-contain"
+                        className="absolute inset-0 w-full h-full object-cover object-contain"
                       />
                     </div>
                     <div className="flex-1">

@@ -53,7 +53,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-import { useRouter } from '@tanstack/react-router';
+import { useRouter, useNavigate } from '@tanstack/react-router';
 interface SchoolManagementContentProps {
   user: UserInterface;
   initialSchools: SchoolInterface[];
@@ -65,6 +65,7 @@ const SchoolManagementContent = ({ user, initialSchools }: SchoolManagementConte
   const [editingSchool, setEditingSchool] = useState<SchoolInterface | null>(null);
   const [deletingSchool, setDeletingSchool] = useState<SchoolInterface | null>(null);
   const router = useRouter();
+  const navigate = useNavigate();
 
   const { data: schools, filteredData: filteredSchools, loading, searchTerm, setSearchTerm, refresh: refreshSchools } = useAdminData({
     fetchFn: () => schoolService.getAllWithStats(true),
@@ -303,7 +304,7 @@ const SchoolManagementContent = ({ user, initialSchools }: SchoolManagementConte
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
-                              onClick={() => router.push(`/admin/dashboard?schoolId=${school.id}`)}
+                              onClick={() => navigate({ to: `/admin/dashboard?schoolId=${school.id}` })}
                               className="cursor-pointer"
                             >
                               <LayoutDashboard className="h-4 w-4 mr-2" />

@@ -20,7 +20,7 @@ import {
   UserX,
   Monitor,
 } from 'lucide-react';
-import { Link } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import { useRouter } from '@tanstack/react-router';
 import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
 import { EventService } from '@/models/events/services/EventService';
@@ -35,6 +35,7 @@ const AdminLayout = ({ user, children }: AdminLayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [pendingEventsCount, setPendingEventsCount] = useState(0);
   const router = useRouter();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const supabase = createSupabaseClient();
@@ -61,7 +62,7 @@ const AdminLayout = ({ user, children }: AdminLayoutProps) => {
       const supabase = createSupabaseClient();
       await supabase.auth.signOut();
       toast.success('Logged out successfully');
-      router.push('/');
+      navigate({ to: '/' });
     } catch (error) {
       console.error('Error logging out:', error);
       toast.error('Error logging out');
@@ -91,7 +92,7 @@ const AdminLayout = ({ user, children }: AdminLayoutProps) => {
             {adminNavItems.map((item) => (
               <Link
                 key={item.name}
-                href={item.href}
+                to={item.href}
                 className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md mb-1 ${
                   item.current
                     ? 'bg-[#0B4B39]/10 text-[#0B4B39] font-semibold'
@@ -119,7 +120,7 @@ const AdminLayout = ({ user, children }: AdminLayoutProps) => {
             {adminNavItems.map((item) => (
               <Link
                 key={item.name}
-                href={item.href}
+                to={item.href}
                 className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md mb-1 ${
                   item.current
                     ? 'bg-[#0B4B39]/10 text-[#0B4B39] font-semibold'
@@ -163,7 +164,7 @@ const AdminLayout = ({ user, children }: AdminLayoutProps) => {
                 asChild
                 className="hidden sm:flex"
               >
-                <Link href="/dashboard">
+                <Link to="/dashboard">
                   <Home className="h-4 w-4 mr-2" />
                   Back to App
                 </Link>

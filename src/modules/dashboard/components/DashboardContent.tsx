@@ -87,7 +87,7 @@ const DashboardContent = ({
         const userPointsData = await userService.getUserPointsBreakdown(user.id);
         setTotalPoints(userPointsData.totalFinalPoints);
         
-        router.refresh();
+        router.invalidate();
       } else {
         toast.error(result.message);
       }
@@ -124,7 +124,7 @@ const DashboardContent = ({
       const result = await recalculateUserStreaks();
       if (result.success) {
         toast.success(result.message);
-        router.refresh();
+        router.invalidate();
       } else {
         toast.error(result.message);
       }
@@ -141,7 +141,7 @@ const DashboardContent = ({
           <h1 className="text-4xl font-black text-gray-800">{greeting}</h1>
           <p className="text-gray-700">Track your progress and achievements</p>
         </div>
-        <Link href="/activities" className="flex flex-col items-center justify-center w-20 h-20 rounded-full transition-opacity hover:opacity-80" style={{ backgroundColor: '#D103D1' }}>
+        <Link to="/activities" className="flex flex-col items-center justify-center w-20 h-20 rounded-full transition-opacity hover:opacity-80" style={{ backgroundColor: '#D103D1' }}>
           <Zap size={24} className="text-white" />
           <span className="text-white text-xs font-semibold leading-tight text-center">Log<br />Activity</span>
         </Link>
@@ -232,7 +232,7 @@ const DashboardContent = ({
                   className="w-28 h-28 rounded-full flex items-center justify-center"
                   style={{ background: 'radial-gradient(circle, rgba(251,176,64,0.25) 0%, rgba(251,176,64,0.08) 60%, transparent 80%)' }}
                 >
-                  <img src="/fire.png" alt="Streak fire" width={64} height={64} priority />
+                  <img src="/fire.png" alt="Streak fire" width={64} height={64} />
                 </div>
               </div>
 
@@ -320,7 +320,6 @@ const DashboardContent = ({
                                         <img
                                           src={BadgeImageHelper.getBadgeImageUrl(achievement)}
                                           alt={achievement.name}
-                                          fill
                                           sizes="128px"
                                           className={`object-contain ${isEarned ? '' : 'grayscale opacity-60'}`}
                                         />
@@ -384,7 +383,7 @@ const DashboardContent = ({
         <Card className="shadow-sm rounded-2xl border border-gray-100">
           <CardHeader className="flex flex-row items-center justify-between pb-3">
             <CardTitle className="text-lg font-bold text-gray-800">Recent Activities</CardTitle>
-            <Link href="/activities" className="text-sm text-[#0B4B39] font-medium hover:underline">
+            <Link to="/activities" className="text-sm text-[#0B4B39] font-medium hover:underline">
               View all
             </Link>
           </CardHeader>

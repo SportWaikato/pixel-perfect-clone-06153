@@ -279,7 +279,7 @@ const ChallengeSelector = ({ name, label, challenges }: { name: string; label: s
 
 const LogActivityForm = ({ user, onActivityAdded, editingActivity, onEditComplete, onCancelEdit }: LogActivityFormProps) => {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const searchParams = useSearch({ strict: false });
   const [challenges, setChallenges] = useState<EventInterface[]>([]);
   const [preselectedChallengeId, setPreselectedChallengeId] = useState<string | null>(null);
 
@@ -392,7 +392,7 @@ const LogActivityForm = ({ user, onActivityAdded, editingActivity, onEditComplet
         }
       }
       
-      router.refresh();
+      router.invalidate();
     } catch (error) {
       notifyAboutError(error);
     }

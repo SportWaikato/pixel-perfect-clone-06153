@@ -170,7 +170,7 @@ const UpdatesFeed = ({ user, initialUpdates = [], embedded = false }: UpdatesFee
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" asChild>
-            <Link href="/dashboard"><ArrowLeft size={20} /></Link>
+            <Link to="/dashboard"><ArrowLeft size={20} /></Link>
           </Button>
           <h1 className="text-3xl font-bold text-gray-900">Updates &amp; alerts</h1>
         </div>

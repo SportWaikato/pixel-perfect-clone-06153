@@ -49,7 +49,7 @@ const defaultState = (): WizardState => ({
 
 const LogActivityWizard = ({ user, initialChallenges, onActivityAdded }: LogActivityWizardProps) => {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const searchParams = useSearch({ strict: false });
   const [step, setStep] = useState(1);
   const [data, setData] = useState<WizardState>(defaultState);
   const [challenges] = useState<EventInterface[]>(initialChallenges);
@@ -103,11 +103,11 @@ const LogActivityWizard = ({ user, initialChallenges, onActivityAdded }: LogActi
 
   const handleBack = () => {
     if (challengePreselected && step === 2) {
-      router.back();
+      window.history.back();
       return;
     }
     if (step === 3 && getLockedActivityType()) {
-      challengePreselected ? router.back() : setStep(1);
+      challengePreselected ? window.history.back() : setStep(1);
       return;
     }
     setStep((s) => Math.max(s - 1, 1));
@@ -161,7 +161,7 @@ const LogActivityWizard = ({ user, initialChallenges, onActivityAdded }: LogActi
 
       setSucceeded(true);
       onActivityAdded?.();
-      router.refresh();
+      router.invalidate();
     } catch (error) {
       notifyAboutError(error);
     } finally {

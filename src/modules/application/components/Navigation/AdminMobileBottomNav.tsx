@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from '@tanstack/react-router';
-import { useRouterState } from '@tanstack/react-router';
+import { useRouterState, Link } from '@tanstack/react-router';
 import { LayoutDashboard, Users, MessageSquare, Calendar, User, Building, Award } from 'lucide-react';
 import { cn } from '@/modules/common/utils';
 import { useUser } from '@/modules/auth/hooks/useUser';
@@ -26,7 +25,7 @@ const SUPER_ADMIN_TABS = [
 ];
 
 const AdminMobileBottomNav = () => {
-  const pathname = usePathname();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { user } = useUser();
   const [pendingEventsCount, setPendingEventsCount] = useState(0);
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
@@ -69,7 +68,7 @@ const AdminMobileBottomNav = () => {
           return (
             <Link
               key={tab.href}
-              href={tab.href}
+              to={tab.href}
               className="flex flex-col items-center gap-1 px-2 relative"
               aria-label={tab.label}
             >

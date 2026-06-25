@@ -1,5 +1,4 @@
-import { Link } from '@tanstack/react-router';
-import { useRouterState } from '@tanstack/react-router';
+import { useRouterState, Link } from '@tanstack/react-router';
 import { LayoutDashboard, Trophy, Zap, Calendar, User } from 'lucide-react';
 import { cn } from '@/modules/common/utils';
 
@@ -12,7 +11,7 @@ const tabs = [
 ];
 
 const MobileBottomNav = () => {
-  const pathname = usePathname();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
     <nav
@@ -30,7 +29,7 @@ const MobileBottomNav = () => {
             return (
               <Link
                 key={tab.href}
-                href={tab.href}
+                to={tab.href}
                 className="flex flex-col items-center gap-1 -mt-5"
                 aria-label={tab.label}
               >
@@ -52,7 +51,7 @@ const MobileBottomNav = () => {
           return (
             <Link
               key={tab.href}
-              href={tab.href}
+              to={tab.href}
               className="flex flex-col items-center gap-1 px-2"
               aria-label={tab.label}
             >

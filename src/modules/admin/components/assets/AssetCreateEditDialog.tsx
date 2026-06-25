@@ -234,7 +234,7 @@ const AssetCreateEditDialog = ({ isOpen, onClose, onSuccess, asset }: AssetCreat
                   <div className="flex items-center gap-3 rounded-lg border p-3">
                     {hasPreview ? (
                       <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded bg-gray-100">
-                        <img src={previewUrl} alt="Preview" fill className="object-contain" />
+                        <img src={previewUrl} alt="Preview" className="absolute inset-0 w-full h-full object-cover object-contain" />
                       </div>
                     ) : (
                       <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded bg-gray-100">

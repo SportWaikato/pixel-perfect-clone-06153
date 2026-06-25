@@ -228,7 +228,7 @@ const TermManagementContent = ({ terms: initialTerms, schoolId, currentUser }: T
           <p className="mt-1 text-sm text-gray-500">Manage competition terms and school configuration.</p>
         </div>
         <Button asChild className="gap-2 bg-[#0B4B39] hover:bg-[#0a3f30]">
-          <Link href={`/admin/assembly${schoolId ? `?schoolId=${schoolId}` : ''}`}>
+          <Link to={`/admin/assembly${schoolId ? `?schoolId=${schoolId}` : ''}`}>
             <Monitor className="h-4 w-4" /> Assembly Mode
           </Link>
         </Button>

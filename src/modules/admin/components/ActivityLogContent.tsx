@@ -136,7 +136,7 @@ const ActivityLogContent = ({ user, schools, initialSchoolId }: ActivityLogConte
       {/* Header */}
       <div>
         <div className="mb-3">
-          <Link href={backHref} className="text-sm text-blue-600 hover:underline">
+          <Link to={backHref} className="text-sm text-blue-600 hover:underline">
             ← Back to dashboard
           </Link>
         </div>
