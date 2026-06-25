@@ -99,16 +99,21 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
   // Fetch join code
   useEffect(() => {
     if (!schoolId) { setJoinCodeLoading(false); return; }
-    const sb = createSupabaseClient();
-    sb.from("schools")
-      .select("join_code")
-      .eq("id", schoolId)
-      .single()
-      .then(({ data }) => {
+    const loadJoinCode = async () => {
+      try {
+        const sb = createSupabaseClient();
+        const { data } = await sb.from("schools")
+          .select("join_code")
+          .eq("id", schoolId)
+          .single();
         setJoinCode(data?.join_code || null);
+      } catch {
+        setJoinCode(null);
+      } finally {
         setJoinCodeLoading(false);
-      })
-      .catch(() => setJoinCodeLoading(false));
+      }
+    };
+    loadJoinCode();
   }, [schoolId]);
 
   const handleCopyJoinLink = async () => {

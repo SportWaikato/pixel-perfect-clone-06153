@@ -7,7 +7,7 @@ interface SendEmailInput {
 }
 
 export const sendEmail = createServerFn({ method: "POST" })
-  .validator((input: unknown) => {
+  .inputValidator((input: unknown) => {
     const { to, subject, html } = input as SendEmailInput;
     if (!to || !subject || !html) throw new Error("to, subject, and html are required");
     if (typeof to !== "string" || typeof subject !== "string" || typeof html !== "string") {
@@ -15,7 +15,7 @@ export const sendEmail = createServerFn({ method: "POST" })
     }
     return { to, subject, html };
   })
-  .handler(async ({ data }) => {
+  .handler(async ({ data }: { data: SendEmailInput }) => {
     const RESEND_API_KEY = process.env.RESEND_API_KEY;
     const FROM_EMAIL = process.env.VITE_FROM_EMAIL || "noreply@app.karawhiua.app";
 

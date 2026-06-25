@@ -1,18 +1,25 @@
+import { createServerFn } from '@tanstack/react-start';
 import { createClient } from '@supabase/supabase-js';
 
-export async function fetchUserEmails(userIds: string[]): Promise<Record<string, string>> {
-  if (!userIds.length) return {};
+export const fetchUserEmails = createServerFn({ method: 'POST' })
+  .inputValidator((input: unknown) => {
+    const { userIds } = input as { userIds: string[] };
+    if (!Array.isArray(userIds)) throw new Error('userIds must be an array');
+    return { userIds };
+  })
+  .handler(async ({ data }) => {
+    if (!data.userIds.length) return {};
 
-  const adminClient = createClient(
-    import.meta.env.VITE_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { autoRefreshToken: false, persistSession: false } }
-  );
+    const adminClient = createClient(
+      process.env.SUPABASE_URL!,
+      process.env.SW_SERVICE_ROLE_KEY!,
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    );
 
-  const { data, error } = await adminClient.rpc('get_user_emails_by_ids', { user_ids: userIds });
-  if (error) throw new Error(error.message);
+    const { data: rpcData, error } = await adminClient.rpc('get_user_emails_by_ids', { user_ids: data.userIds });
+    if (error) throw new Error(error.message);
 
-  return Object.fromEntries(
-    (data as { id: string; email: string }[]).map(row => [row.id, row.email])
-  );
-}
+    return Object.fromEntries(
+      (rpcData as { id: string; email: string }[]).map(row => [row.id, row.email])
+    );
+  });

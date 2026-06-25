@@ -93,8 +93,8 @@ function RegisterSchoolPage() {
     }
     setCheckingDomain(true);
     checkDomainAvailable({ data: { domain: primaryDomain } })
-      .then((avail) => {
-        setDomainAvailable(avail);
+      .then((result) => {
+        setDomainAvailable(result?.available ?? null);
         setCheckingDomain(false);
       })
       .catch(() => { setDomainAvailable(null); setCheckingDomain(false); });
@@ -159,9 +159,13 @@ function RegisterSchoolPage() {
       if (!signUpData.user) throw new Error("Failed to create account");
 
       // Insert school
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      const schoolCode = Array.from({ length: 8 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+
       const { data: school, error: schoolError } = await supabase
         .from("schools")
         .insert({
+          code: schoolCode,
           name: schoolName.trim(),
           region,
           school_type: schoolType,
@@ -192,8 +196,8 @@ function RegisterSchoolPage() {
         );
 
       if (housesError) {
-        await supabase.from("schools").delete().eq("id", school.id).catch(() => {});
-        await supabase.auth.admin.deleteUser(signUpData.user.id).catch(() => {});
+        try { await supabase.from("schools").delete().eq("id", school.id); } catch {}
+        try { await supabase.auth.admin.deleteUser(signUpData.user.id); } catch {}
         throw housesError;
       }
 
@@ -203,7 +207,6 @@ function RegisterSchoolPage() {
         first_name: adminFirstName.trim(),
         last_name: adminLastName.trim(),
         username: adminEmail.split("@")[0],
-        email: adminEmail,
         school_id: school.id,
         role: "school_admin",
         is_admin: true,
@@ -225,28 +228,6 @@ function RegisterSchoolPage() {
         await sendEmail({ data: { to: adminEmail, subject, html } });
       } catch (err) {
         console.error("Failed to send confirmation email:", err);
-      }
-
-      // Send notification to super admins
-      try {
-        const { data: superAdmins } = await supabase
-          .from("users")
-          .select("email")
-          .eq("role", "super_admin")
-          .not("email", "is", null);
-
-        if (superAdmins?.length) {
-          const { sendEmail } = await import("@/lib/sendEmail");
-          await sendEmail({
-            data: {
-              to: superAdmins[0].email ?? "",
-              subject: `New school registration: ${schoolName.trim()}`,
-              html: `<p>${adminFirstName.trim()} ${adminLastName.trim()} from ${schoolName.trim()} has submitted a registration request.</p><p>Review it at <a href="https://app.karawhiua.app/admin/schools/pending">the admin dashboard</a>.</p>`,
-            },
-          });
-        }
-      } catch (err) {
-        console.error("Failed to notify super admins:", err);
       }
 
       setCompleted(true);

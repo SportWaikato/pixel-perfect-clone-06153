@@ -835,6 +835,8 @@ export type Database = {
       }
       schools: {
         Row: {
+          approved_at: string | null
+          approved_by: string | null
           code: string
           created_at: string | null
           current_term_id: string | null
@@ -842,14 +844,24 @@ export type Database = {
           id: string
           is_active: boolean | null
           is_internal: boolean | null
+          join_code: string | null
+          join_link_active: boolean | null
           name: string
+          region: string | null
           registration_method: string
+          rejection_reason: string | null
+          school_type: string | null
+          secondary_email_domain: string | null
+          self_registered: boolean | null
+          status: string | null
           total_kilometers: number | null
           total_points: number | null
           total_students: number | null
           updated_at: string | null
         }
         Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
           code: string
           created_at?: string | null
           current_term_id?: string | null
@@ -857,14 +869,24 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           is_internal?: boolean | null
+          join_code?: string | null
+          join_link_active?: boolean | null
           name: string
+          region?: string | null
           registration_method?: string
+          rejection_reason?: string | null
+          school_type?: string | null
+          secondary_email_domain?: string | null
+          self_registered?: boolean | null
+          status?: string | null
           total_kilometers?: number | null
           total_points?: number | null
           total_students?: number | null
           updated_at?: string | null
         }
         Update: {
+          approved_at?: string | null
+          approved_by?: string | null
           code?: string
           created_at?: string | null
           current_term_id?: string | null
@@ -872,8 +894,16 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           is_internal?: boolean | null
+          join_code?: string | null
+          join_link_active?: boolean | null
           name?: string
+          region?: string | null
           registration_method?: string
+          rejection_reason?: string | null
+          school_type?: string | null
+          secondary_email_domain?: string | null
+          self_registered?: boolean | null
+          status?: string | null
           total_kilometers?: number | null
           total_points?: number | null
           total_students?: number | null

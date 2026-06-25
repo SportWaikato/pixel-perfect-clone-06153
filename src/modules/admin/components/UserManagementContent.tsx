@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
+import { useServerFn } from '@tanstack/react-start';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { SchoolInterface } from '@/models/schools/interfaces/SchoolInterface';
 import { Card, CardContent, CardHeader, CardTitle } from '@/modules/application/components/DesignSystem/ui/card';
@@ -60,6 +61,7 @@ interface UserManagementContentProps {
 const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools = [], initialInvites = [] }: UserManagementContentProps) => {
   const router = useRouter();
   const navigate = useNavigate();
+  const fetchEmails = useServerFn(fetchUserEmails);
   const isSuperAdmin = checkIsSuperAdmin(currentUser);
   const [houseFilter, setHouseFilter] = useState('all');
   const [yearGroupFilter, setYearGroupFilter] = useState('all');
@@ -139,8 +141,8 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
 
   useEffect(() => {
     if (users.length === 0) { setEmailMap({}); return; }
-    fetchUserEmails(users.map(u => u.id)).then(setEmailMap).catch(console.error);
-  }, [users]);
+    fetchEmails({ data: { userIds: users.map(u => u.id) } }).then(setEmailMap).catch(console.error);
+  }, [users, fetchEmails]);
 
   const filteredUsers = useMemo(() => {
     let filtered = users.map(u => ({ ...u, email: emailMap[u.id] ?? u.email }));
