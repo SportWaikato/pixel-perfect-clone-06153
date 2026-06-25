@@ -93,8 +93,8 @@ function RegisterSchoolPage() {
     }
     setCheckingDomain(true);
     checkDomainAvailable({ data: { domain: primaryDomain } })
-      .then((avail) => {
-        setDomainAvailable(avail);
+      .then((result) => {
+        setDomainAvailable(result?.available ?? null);
         setCheckingDomain(false);
       })
       .catch(() => { setDomainAvailable(null); setCheckingDomain(false); });
