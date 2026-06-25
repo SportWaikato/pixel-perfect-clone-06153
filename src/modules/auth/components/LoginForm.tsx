@@ -26,7 +26,7 @@ const LoginForm = () => {
     navigate({ to: getHomePath(role) });
     router.invalidate();
     const routes = ROUTES_BY_ROLE[role ?? 'student'] ?? ROUTES_BY_ROLE.student;
-    routes.forEach(path => router.prefetch(path));
+    routes.forEach(path => router.preloadRoute({ to: path }));
   };
 
   const handleSubmit = async (values: LoginValues, { setSubmitting }: FormikHelpers<LoginValues>) => {

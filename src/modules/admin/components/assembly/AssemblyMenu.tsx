@@ -55,7 +55,7 @@ const AssemblyMenu = ({ onSelect, isFullscreen, schoolId }: AssemblyMenuProps) =
 
       <div className="mb-10 text-center">
         <div className="mb-3 flex items-center justify-center">
-          <img src="/assembly/main-Logo.svg" alt="Karawhiua" width={160} height={92} priority />
+          <img src="/assembly/main-Logo.svg" alt="Karawhiua" width={160} height={92} />
         </div>
         <h1 className="text-3xl font-extrabold uppercase tracking-widest text-white">Assembly Update</h1>
       </div>

@@ -232,7 +232,7 @@ const DashboardContent = ({
                   className="w-28 h-28 rounded-full flex items-center justify-center"
                   style={{ background: 'radial-gradient(circle, rgba(251,176,64,0.25) 0%, rgba(251,176,64,0.08) 60%, transparent 80%)' }}
                 >
-                  <img src="/fire.png" alt="Streak fire" width={64} height={64} priority />
+                  <img src="/fire.png" alt="Streak fire" width={64} height={64} />
                 </div>
               </div>
 

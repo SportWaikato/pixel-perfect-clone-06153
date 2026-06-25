@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouterState } from '@tanstack/react-router';
 const NavigationProgress = () => {
-  const pathname = usePathname();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [width, setWidth] = useState(0);
   const [visible, setVisible] = useState(false);
   const activeRef = useRef(false);

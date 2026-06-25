@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/modules/application/components/DesignSystem/ui/dropdown-menu';
 import UserAvatar from '@/modules/application/components/DesignSystem/ui/user-avatar';
-import { Link, useNavigate, useSearch } from '@tanstack/react-router';
+import { useRouterState, Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { useRouter, useRouterState, useSearch } from '@tanstack/react-router';
 import { cn } from '@/modules/common/utils';
 import { LayoutDashboard, Calendar, Trophy, MessageCircle, MessageSquare, User, LogOut, Menu, X, Settings, Users, Building, Award, Download, Zap } from 'lucide-react';
@@ -23,7 +23,7 @@ import { EventService } from '@/models/events/services/EventService';
 import { toast } from 'sonner';
 
 const MainNavigation = () => {
-  const pathname = usePathname();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   const router = useRouter();
   const navigate = useNavigate();
   const searchParams = useSearch({ strict: false });
@@ -124,7 +124,6 @@ const MainNavigation = () => {
                   alt="Karawhiua Logo"
                   width={66}
                   height={37}
-                  priority
                 />
               </Link>
               <Badge variant="secondary" className="text-xs hidden md:inline-flex bg-white/20 text-white border-white/30">Beta</Badge>
@@ -163,7 +162,6 @@ const MainNavigation = () => {
                 alt="Karawhiua Logo"
                 width={66}
                 height={37}
-                priority
               />
             </Link>
             <Badge variant="secondary" className="text-xs hidden md:inline-flex bg-white/20 text-white border-white/30">Beta</Badge>

@@ -1,4 +1,4 @@
-import { Link } from '@tanstack/react-router';
+import { useRouterState, Link } from '@tanstack/react-router';
 import { useRouterState } from '@tanstack/react-router';
 import { LayoutDashboard, Trophy, Zap, Calendar, User } from 'lucide-react';
 import { cn } from '@/modules/common/utils';
@@ -12,7 +12,7 @@ const tabs = [
 ];
 
 const MobileBottomNav = () => {
-  const pathname = usePathname();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
     <nav

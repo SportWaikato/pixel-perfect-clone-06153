@@ -6,7 +6,7 @@ import MobileBottomNav from './MobileBottomNav';
 import AdminMobileBottomNav from './AdminMobileBottomNav';
 
 const ConditionalNavigation = () => {
-  const pathname = usePathname();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { user } = useUser();
   const isAuthPage = pathname?.startsWith('/auth/');
   const isSchoolSignupPage = pathname?.includes('/signup');
