@@ -1,4 +1,3 @@
-
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from 'formik';
 import { object, string, number, boolean } from 'yup';
 import { useState, useEffect } from 'react';
@@ -101,7 +100,7 @@ const ProfileContent = ({ user, initialSchools, initialHouses }: ProfileContentP
       await userService.update(user.id, updatePayload);
 
       toast.success('Profile updated successfully!');
-      router.refresh();
+      router.invalidate();
     } catch (error) {
       notifyAboutError(error);
     } finally {

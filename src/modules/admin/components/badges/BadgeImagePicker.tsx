@@ -1,6 +1,4 @@
-
 import { useEffect, useState } from 'react';
-;
 import { CheckCircle2, Loader2 } from 'lucide-react';
 import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
 import { AchievementService } from '@/models/achievements/services/AchievementService';
@@ -84,7 +82,7 @@ const BadgeImagePicker = ({ selectedUrl, onSelect }: BadgeImagePickerProps) => {
             }`}
           >
             <div className="relative h-full w-full">
-              <Image src={url} alt={badge.name} fill sizes="80px" className="object-contain" />
+              <img src={url} alt={badge.name} sizes="80px" className="absolute inset-0 w-full h-full object-cover object-contain" />
             </div>
             {isSelected && (
               <CheckCircle2 className="absolute -right-1 -top-1 h-4 w-4 fill-white text-[#0B4B39]" />

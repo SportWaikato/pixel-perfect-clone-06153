@@ -1,6 +1,5 @@
-
 import { Formik, Form, FormikHelpers } from 'formik';
-import { useRouter } from '@tanstack/react-router';
+import { useRouter, useNavigate } from '@tanstack/react-router';
 import { Link } from '@tanstack/react-router';
 import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
 import { UserService } from '@/models/users/services/UserService';
@@ -21,12 +20,13 @@ const ROUTES_BY_ROLE: Record<string, string[]> = {
 
 const LoginForm = () => {
   const router = useRouter();
+  const navigate = useNavigate();
 
   const redirectByRole = (role: UserRole | undefined) => {
-    router.push(getHomePath(role));
-    router.refresh();
+    navigate({ to: getHomePath(role) });
+    router.invalidate();
     const routes = ROUTES_BY_ROLE[role ?? 'student'] ?? ROUTES_BY_ROLE.student;
-    routes.forEach(path => router.prefetch(path));
+    routes.forEach(path => router.preloadRoute({ to: path }));
   };
 
   const handleSubmit = async (values: LoginValues, { setSubmitting }: FormikHelpers<LoginValues>) => {
@@ -78,7 +78,7 @@ const LoginForm = () => {
 
           <div className="text-right">
             <Link
-              href="/auth/forgot-password"
+              to="/auth/forgot-password"
               className="text-sm text-primary hover:underline"
             >
               Forgot Password?

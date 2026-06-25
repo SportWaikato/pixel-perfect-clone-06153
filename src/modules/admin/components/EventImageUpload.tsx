@@ -1,4 +1,3 @@
-
 import { useState, useRef } from 'react';
 import { Button } from '@/modules/application/components/DesignSystem/ui/button';
 import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';

@@ -1,4 +1,3 @@
-
 import { createSupabaseServer } from '@/models/supabase/services/SupabaseServer';
 import { ActivityService } from '@/models/activities/services/ActivityService';
 import { UserService } from '@/models/users/services/UserService';

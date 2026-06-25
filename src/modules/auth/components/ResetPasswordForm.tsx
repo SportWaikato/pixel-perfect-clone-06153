@@ -1,6 +1,5 @@
-
 import { Formik, Form, FormikHelpers } from 'formik';
-import { useRouter } from '@tanstack/react-router';
+import { useRouter, useNavigate } from '@tanstack/react-router';
 import { resetPasswordSchema } from '@/models/forms/schemas/authSchemas';
 import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
 import { AuthService } from '@/models/auth/services/AuthService';
@@ -13,6 +12,7 @@ type ResetPasswordValues = { password: string; confirmPassword: string };
 
 const ResetPasswordForm = () => {
   const router = useRouter();
+  const navigate = useNavigate();
 
   const handleSubmit = async (values: ResetPasswordValues, { setSubmitting }: FormikHelpers<ResetPasswordValues>) => {
     try {
@@ -22,8 +22,8 @@ const ResetPasswordForm = () => {
       await authService.updatePassword(values.password);
 
       toast.success('Password has been reset successfully!');
-      router.push('/auth/login');
-      router.refresh();
+      navigate({ to: '/auth/login' });
+      router.invalidate();
     } catch (error) {
       notifyAboutError(error);
     } finally {

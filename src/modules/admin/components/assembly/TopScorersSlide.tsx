@@ -1,8 +1,6 @@
-
 import { useEffect, useState } from 'react';
 import { m } from 'framer-motion';
 import { ChevronLeft } from 'lucide-react';
-;
 import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
 import { AssemblyService } from '@/models/assembly/services/AssemblyService';
 import { HouseTopScorer } from '@/models/assembly/interfaces/AssemblyWinnerInterface';
@@ -59,7 +57,7 @@ const TopScorersSlide = ({ schoolId, onBack, startDate, endDate, periodLabel }: 
       </button>
 
       <div className="mb-8 text-center">
-        <Image src="/assembly/top-score-by-houseicon.svg" alt="" width={64} height={64} className="mx-auto mb-3" />
+        <img src="/assembly/top-score-by-houseicon.svg" alt="" width={64} height={64} className="mx-auto mb-3" />
         <h2 className="text-4xl font-extrabold uppercase tracking-widest text-white">Top Scorers by House This Week</h2>
         <p className="mt-1 text-sm uppercase tracking-wider" style={{ color: '#FF6B2B' }}>Shout out to the top contributors this week</p>
       </div>

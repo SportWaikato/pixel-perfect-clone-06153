@@ -1,4 +1,3 @@
-
 import { createSupabaseServer } from '@/models/supabase/services/SupabaseServer';
 import { UserService } from '@/models/users/services/UserService';
 import { InviteService } from '@/models/invites/services/InviteService';
@@ -16,7 +15,7 @@ export async function createSuperAdminInvite(email: string): Promise<{ invite: S
   const inviteService = new InviteService(supabase);
   const invite = await inviteService.create(email, currentUser.id);
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || '';
+  const baseUrl = import.meta.env.VITE_APP_URL || '';
   const url = `${baseUrl}/invite/${invite.token}`;
 
   return { invite, url };

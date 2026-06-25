@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { getYouTubeEmbedUrl, getYouTubeThumbnailUrl } from '../utils/youtubeUtils';
 import { Play } from 'lucide-react';

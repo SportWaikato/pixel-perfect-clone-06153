@@ -1,5 +1,4 @@
-
-import { usePathname } from '@tanstack/react-router';
+import { useRouterState } from '@tanstack/react-router';
 import { useUser } from '@/modules/auth/hooks/useUser';
 import { Role } from '@/modules/auth/utils/roleUtils';
 import MainNavigation from './MainNavigation';
@@ -7,7 +6,7 @@ import MobileBottomNav from './MobileBottomNav';
 import AdminMobileBottomNav from './AdminMobileBottomNav';
 
 const ConditionalNavigation = () => {
-  const pathname = usePathname();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { user } = useUser();
   const isAuthPage = pathname?.startsWith('/auth/');
   const isSchoolSignupPage = pathname?.includes('/signup');

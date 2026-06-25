@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { SchoolInterface } from '@/models/schools/interfaces/SchoolInterface';
 import {

@@ -1,4 +1,3 @@
-
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { Card, CardContent, CardHeader, CardTitle } from '@/modules/application/components/DesignSystem/ui/card';
 import { Button } from '@/modules/application/components/DesignSystem/ui/button';
@@ -195,7 +194,7 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
       <div>
         {viewingSchoolId && (
           <div className="mb-3">
-            <Link href="/admin/schools" className="text-sm text-blue-600 hover:underline">
+            <Link to="/admin/schools" className="text-sm text-blue-600 hover:underline">
               ← Back to all schools
             </Link>
           </div>
@@ -247,7 +246,7 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
               </p>
             </div>
             <Button asChild className="w-full mt-4" style={{ backgroundColor: '#0B4B39' }}>
-              <Link href={`/admin/updates${schoolParam}`}>Manage messages</Link>
+              <Link to={`/admin/updates${schoolParam}`}>Manage messages</Link>
             </Button>
           </CardContent>
         </Card>
@@ -298,13 +297,13 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
                 <CardContent>
                   <p className="text-gray-600 mb-4">{action.description}</p>
                   <Button asChild className="w-full" style={{ backgroundColor: '#0B4B39' }}>
-                    <Link href={action.href}>
+                    <Link to={action.href}>
                       Open {action.title}
                     </Link>
                   </Button>
                   {action.secondaryHref && (
                     <Button asChild variant="outline" className="w-full mt-2">
-                      <Link href={action.secondaryHref}>
+                      <Link to={action.secondaryHref}>
                         {action.secondaryLabel}
                       </Link>
                     </Button>
@@ -403,7 +402,7 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
             </div>
           </div>
           <Button asChild style={{ backgroundColor: '#0B4B39' }}>
-            <Link href={`/admin/allowlist${schoolParam}`}>{isAllowList ? 'Manage Allow List' : 'Manage Block List'}</Link>
+            <Link to={`/admin/allowlist${schoolParam}`}>{isAllowList ? 'Manage Allow List' : 'Manage Block List'}</Link>
           </Button>
         </CardHeader>
       </Card>

@@ -1,4 +1,3 @@
-
 import { m } from 'framer-motion';
 
 const spotlights = [

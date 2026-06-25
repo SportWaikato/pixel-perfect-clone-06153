@@ -1,6 +1,5 @@
-
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from 'formik';
-import { useRouter } from '@tanstack/react-router';
+import { useRouter, useNavigate } from '@tanstack/react-router';
 import { createSchoolSpecificSignUpSchema } from '@/models/forms/schemas/authSchemas';
 import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
 import { UserService } from '@/models/users/services/UserService';
@@ -39,6 +38,7 @@ const SchoolSpecificSignUpForm = ({ school }: SchoolSpecificSignUpFormProps) => 
   const [houses, setHouses] = useState<HouseInterface[]>([]);
   const [loadingHouses, setLoadingHouses] = useState(true);
   const router = useRouter();
+  const navigate = useNavigate();
 
   const validationSchema = useMemo(() => createSchoolSpecificSignUpSchema(school), [school]);
 
@@ -100,7 +100,7 @@ const SchoolSpecificSignUpForm = ({ school }: SchoolSpecificSignUpFormProps) => 
       });
 
       toast.success(`Welcome to ${school.name}!`);
-      router.push('/auth/login');
+      navigate({ to: '/auth/login' });
     } catch (error) {
       notifyAboutError(error);
     } finally {
@@ -248,7 +248,7 @@ const SchoolSpecificSignUpForm = ({ school }: SchoolSpecificSignUpFormProps) => 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Already have an account?{' '}
-              <Link href="/auth/login" className="text-primary hover:underline">
+              <Link to="/auth/login" className="text-primary hover:underline">
                 Log in
               </Link>
             </p>

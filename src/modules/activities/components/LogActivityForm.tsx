@@ -1,6 +1,5 @@
-
 import { Formik, Form, useField, Field, useFormikContext } from 'formik';
-import { useRouter, useSearchParams } from '@tanstack/react-router';
+import { useRouter, useSearch } from '@tanstack/react-router';
 import { logActivitySchema } from '@/models/forms/schemas/activitySchemas';
 import { useState, useEffect } from 'react';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
@@ -280,7 +279,7 @@ const ChallengeSelector = ({ name, label, challenges }: { name: string; label: s
 
 const LogActivityForm = ({ user, onActivityAdded, editingActivity, onEditComplete, onCancelEdit }: LogActivityFormProps) => {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const searchParams = useSearch({ strict: false });
   const [challenges, setChallenges] = useState<EventInterface[]>([]);
   const [preselectedChallengeId, setPreselectedChallengeId] = useState<string | null>(null);
 
@@ -393,7 +392,7 @@ const LogActivityForm = ({ user, onActivityAdded, editingActivity, onEditComplet
         }
       }
       
-      router.refresh();
+      router.invalidate();
     } catch (error) {
       notifyAboutError(error);
     }

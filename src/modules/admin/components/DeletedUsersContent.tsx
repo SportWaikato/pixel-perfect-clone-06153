@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo } from 'react';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { Card, CardContent, CardHeader, CardTitle } from '@/modules/application/components/DesignSystem/ui/card';
@@ -12,7 +11,6 @@ import { toast } from 'sonner';
 import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
 import { ArrowLeft, RotateCcw, Loader2, Trash2 } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
-
 interface DeletedUsersContentProps {
   initialUsers: UserInterface[];
 }
@@ -48,7 +46,7 @@ const DeletedUsersContent = ({ initialUsers }: DeletedUsersContentProps) => {
     <div className="p-6 space-y-6 min-h-screen">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
-          <Link href="/admin/users">
+          <Link to="/admin/users">
             <ArrowLeft size={20} />
           </Link>
         </Button>

@@ -1,7 +1,5 @@
-
 import { m } from 'framer-motion';
 import { ChevronLeft } from 'lucide-react';
-;
 import { EventInterface } from '@/models/events/interfaces/EventInterface';
 import { resolveEventIconType, getActivityIcon } from '@/modules/activities/utils/activityIcons';
 
@@ -28,7 +26,7 @@ const ChallengeSlide = ({ assemblyEvent, onBack }: ChallengeSlideProps) => {
       </button>
 
       <div className="mb-8 text-center">
-        <Image src="/assembly/this-week-challenge-Icon.svg" alt="" width={64} height={64} className="mx-auto mb-3" />
+        <img src="/assembly/this-week-challenge-Icon.svg" alt="" width={64} height={64} className="mx-auto mb-3" />
         <h2 className="text-4xl font-extrabold uppercase tracking-widest text-white">Your Next Challenge</h2>
       </div>
 

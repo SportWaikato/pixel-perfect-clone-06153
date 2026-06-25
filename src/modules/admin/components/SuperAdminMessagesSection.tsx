@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from '@tanstack/react-router';
 import { MessageSquare, MessageCircle } from 'lucide-react';
@@ -76,7 +75,7 @@ const SuperAdminMessagesSection = ({ schools }: SuperAdminMessagesSectionProps) 
           </Select>
           {selectedSchoolId && !isAllSchools && (
             <Button variant="outline" size="sm" asChild>
-              <Link href={`/admin/updates${schoolParam}`}>Manage →</Link>
+              <Link to={`/admin/updates${schoolParam}`}>Manage →</Link>
             </Button>
           )}
         </div>

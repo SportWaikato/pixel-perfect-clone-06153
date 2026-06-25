@@ -1,4 +1,3 @@
-
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/modules/application/components/DesignSystem/ui/button';
 

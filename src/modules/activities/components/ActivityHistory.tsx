@@ -1,4 +1,3 @@
-
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { ActivityInterface, ACTIVITY_TYPES } from '@/models/activities/interfaces/ActivityInterface';
 import { Card, CardContent, CardHeader, CardTitle } from '@/modules/application/components/DesignSystem/ui/card';

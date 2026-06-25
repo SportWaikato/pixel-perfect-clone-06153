@@ -2,7 +2,6 @@ import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { Button } from '@/modules/application/components/DesignSystem/ui/button';
 import { Flame, Plus } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
-
 interface Step6SuccessProps {
   user: UserInterface;
   pointsEarned: number;
@@ -53,7 +52,7 @@ const Step6Success = ({ user, pointsEarned, onLogAnother }: Step6SuccessProps) =
           className="w-full py-3 rounded-2xl font-medium border-2"
           asChild
         >
-          <Link href="/activities">View your activity log</Link>
+          <Link to="/activities">View your activity log</Link>
         </Button>
       </div>
     </div>

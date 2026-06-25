@@ -1,4 +1,3 @@
-
 import { Formik, Form } from 'formik';
 import { inviteRegistrationSchema } from '@/models/forms/schemas/authSchemas';
 import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';

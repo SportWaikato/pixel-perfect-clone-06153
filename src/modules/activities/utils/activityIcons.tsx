@@ -1,5 +1,3 @@
-;
-
 // Feeling mappings for consistent UI display
 export const FEELING_MAPPINGS = {
   very_sad: { emoji: '😒', label: 'Disappointed' },
@@ -84,7 +82,7 @@ export const resolveEventIconType = (event: { icon_type?: string | null; event_t
 
 export const getActivityIcon = (activityType: string, size = 20) => {
   const src = glyphSrc[activityType] ?? '/glyphs/Outdoors.svg';
-  return <Image src={src} width={size} height={size} alt={activityType} className="object-contain" />;
+  return <img src={src} width={size} height={size} alt={activityType} className="object-contain" />;
 };
 
 export const getActivityColor = (activityType: string) => {

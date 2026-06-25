@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { SchoolInterface } from '@/models/schools/interfaces/SchoolInterface';
@@ -21,7 +20,7 @@ import SuperAdminInviteSection from './SuperAdminInviteSection';
 import { fetchUserEmails } from '@/modules/admin/actions/fetchUserEmails';
 import { toast } from 'sonner';
 import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-import { Link } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import { useRouter } from '@tanstack/react-router';
 import {
   DropdownMenu,
@@ -60,6 +59,7 @@ interface UserManagementContentProps {
 
 const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools = [], initialInvites = [] }: UserManagementContentProps) => {
   const router = useRouter();
+  const navigate = useNavigate();
   const isSuperAdmin = checkIsSuperAdmin(currentUser);
   const [houseFilter, setHouseFilter] = useState('all');
   const [yearGroupFilter, setYearGroupFilter] = useState('all');
@@ -178,9 +178,9 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
     setClassFilter('');
     setSearchTerm('');
     if (value === 'all') {
-      router.replace('/admin/users');
+      navigate({ replace: true, to: '/admin/users' });
     } else {
-      router.replace(`/admin/users?schoolId=${value}`);
+      navigate({ replace: true, to: `/admin/users?schoolId=${value}` });
     }
   };
 
@@ -323,7 +323,7 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
-            <Link href={backHref || '/admin/dashboard'}>
+            <Link to={backHref || '/admin/dashboard'}>
               <ArrowLeft size={20} />
             </Link>
           </Button>
@@ -334,7 +334,7 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
         </div>
         {isAdmin(currentUser) && (
           <Button variant="outline" size="sm" asChild>
-            <Link href="/admin/deleted-users" className="flex items-center gap-2">
+            <Link to="/admin/deleted-users" className="flex items-center gap-2">
               <Trash2 size={16} />
               Deleted Users
             </Link>

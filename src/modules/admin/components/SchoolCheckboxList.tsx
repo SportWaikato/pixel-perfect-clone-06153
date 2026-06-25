@@ -1,4 +1,3 @@
-
 import { Loader2 } from 'lucide-react';
 import { SchoolInterface } from '@/models/schools/interfaces/SchoolInterface';
 

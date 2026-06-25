@@ -1,9 +1,6 @@
-
 import { m } from 'framer-motion';
 import { X } from 'lucide-react';
-import { useRouter } from '@tanstack/react-router';
-;
-
+import { useRouter, useNavigate } from '@tanstack/react-router';
 type Slide = 'leaderboard' | 'top-scorers' | 'prize-draw' | 'challenge';
 
 interface AssemblyMenuProps {
@@ -41,13 +38,14 @@ const cards = [
 
 const AssemblyMenu = ({ onSelect, isFullscreen, schoolId }: AssemblyMenuProps) => {
   const router = useRouter();
+  const navigate = useNavigate();
   const exitHref = schoolId ? `/admin/assembly?schoolId=${schoolId}` : '/admin/assembly';
 
   return (
     <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-8 py-12">
       {!isFullscreen && (
         <button
-          onClick={() => router.push(exitHref)}
+          onClick={() => navigate({ to: exitHref })}
           className="absolute right-6 top-6 rounded-full bg-white p-2 transition-colors hover:bg-white/90"
           style={{ color: '#357565' }}
         >
@@ -57,7 +55,7 @@ const AssemblyMenu = ({ onSelect, isFullscreen, schoolId }: AssemblyMenuProps) =
 
       <div className="mb-10 text-center">
         <div className="mb-3 flex items-center justify-center">
-          <Image src="/assembly/main-Logo.svg" alt="Karawhiua" width={160} height={92} priority />
+          <img src="/assembly/main-Logo.svg" alt="Karawhiua" width={160} height={92} />
         </div>
         <h1 className="text-3xl font-extrabold uppercase tracking-widest text-white">Assembly Update</h1>
       </div>
@@ -72,7 +70,7 @@ const AssemblyMenu = ({ onSelect, isFullscreen, schoolId }: AssemblyMenuProps) =
             onClick={() => onSelect(card.id)}
             className="group flex flex-col items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-6 py-10 text-center backdrop-blur-sm transition-all hover:border-white/25 hover:bg-white/10"
           >
-            <Image src={card.icon} alt="" width={56} height={56} className="opacity-80 group-hover:opacity-100 transition-opacity" />
+            <img src={card.icon} alt="" width={56} height={56} className="opacity-80 group-hover:opacity-100 transition-opacity" />
             <div>
               <p className="text-lg font-extrabold uppercase tracking-wider text-white">{card.title}</p>
               {card.subtitle && <p className="mt-1 text-sm text-white/50">{card.subtitle}</p>}

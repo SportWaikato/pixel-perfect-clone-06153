@@ -1,5 +1,4 @@
-import React from 'react';
-
+import * as React from 'react';
 import { useState, useEffect, useMemo } from 'react';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { EventInterface } from '@/models/events/interfaces/EventInterface';
@@ -17,7 +16,6 @@ import { toast } from 'sonner';
 import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
 import { formatEventDate } from '@/modules/common/utils/dateUtils';
 import { Link } from '@tanstack/react-router';
-
 const CreateEventDialog = React.lazy(() => import('./CreateEventDialog'));
 const EditEventDialog = React.lazy(() => import('./EditEventDialog'));
 
@@ -207,7 +205,7 @@ const EventApprovalContent = ({ user, schools, initialSchoolId }: EventApprovalC
               </div>
               {onEdit && !onDelete && (
                 <div className="flex gap-2">
-                  <Link href={`/events/${event.id}`} target="_blank">
+                  <Link to={`/events/${event.id}`} target="_blank">
                     <Button type="button" variant="outline" size="sm">
                       <ExternalLink size={14} />
                       View
@@ -251,7 +249,7 @@ const EventApprovalContent = ({ user, schools, initialSchoolId }: EventApprovalC
                     </Button>
                   )
                 )}
-                <Link href={`/events/${event.id}`} target="_blank">
+                <Link to={`/events/${event.id}`} target="_blank">
                   <Button type="button" variant="outline" size="sm">
                     <ExternalLink size={14} />
                     View
@@ -350,7 +348,7 @@ const EventApprovalContent = ({ user, schools, initialSchoolId }: EventApprovalC
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
-            <Link href={backHref}>
+            <Link to={backHref}>
               <ArrowLeft size={20} />
             </Link>
           </Button>

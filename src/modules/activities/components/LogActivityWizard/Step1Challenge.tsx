@@ -1,4 +1,3 @@
-
 import { useRef, useState } from 'react';
 import { EventInterface } from '@/models/events/interfaces/EventInterface';
 import { Badge } from '@/modules/application/components/DesignSystem/ui/badge';

@@ -1,5 +1,4 @@
-import React from 'react';
-
+import * as React from 'react';
 import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
@@ -9,13 +8,9 @@ import { EventInterface } from '@/models/events/interfaces/EventInterface';
 import { Card, CardContent, CardHeader, CardTitle } from '@/modules/application/components/DesignSystem/ui/card';
 import { Badge } from '@/modules/application/components/DesignSystem/ui/badge';
 import { Button } from '@/modules/application/components/DesignSystem/ui/button';
-
 import ActivityExportDialog from './ActivityExportDialog';
 
-const SchoolPerformanceChart = React.lazy(() => import('./SchoolPerformanceChart'));//
-  ssr: false,
-  loading: () => <div className="w-full aspect-[3/1] min-h-[200px] max-h-[300px] bg-gray-100 animate-pulse rounded-lg" />,
-});
+const SchoolPerformanceChart = React.lazy(() => import('./SchoolPerformanceChart'));
 import SuperAdminMessagesSection from './SuperAdminMessagesSection';
 import {
   Users,
@@ -297,7 +292,7 @@ const AdminDashboardContent = ({
             </div>
           </div>
           <Button asChild variant="outline">
-            <Link href="/admin/allowlist">Manage Allow Lists</Link>
+            <Link to="/admin/allowlist">Manage Allow Lists</Link>
           </Button>
         </CardHeader>
       </Card>

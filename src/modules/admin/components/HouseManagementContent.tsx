@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo } from 'react';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { HouseInterface } from '@/models/houses/interfaces/HouseInterface';
@@ -246,7 +245,7 @@ const HouseManagementContent = ({ user, backHref, schoolId, schoolName, schools 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
-            <Link href={backHref || '/admin/dashboard'}>
+            <Link to={backHref || '/admin/dashboard'}>
               <ArrowLeft size={20} />
             </Link>
           </Button>

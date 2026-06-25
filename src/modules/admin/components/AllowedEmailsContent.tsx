@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo } from 'react';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { SchoolInterface } from '@/models/schools/interfaces/SchoolInterface';
@@ -19,7 +18,6 @@ import { ArrowLeft, Globe, ShieldCheck, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
 import { Link } from '@tanstack/react-router';
-
 interface AllowedEmailsContentProps {
   user: UserInterface;
   schools?: SchoolInterface[];
@@ -239,7 +237,7 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
       <div className="p-6 space-y-6 min-h-screen">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
-            <Link href={backHref}><ArrowLeft size={20} /></Link>
+            <Link to={backHref}><ArrowLeft size={20} /></Link>
           </Button>
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Registration Access</h1>
@@ -294,7 +292,7 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
-          <Link href={backHref}><ArrowLeft size={20} /></Link>
+          <Link to={backHref}><ArrowLeft size={20} /></Link>
         </Button>
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Registration Access</h1>

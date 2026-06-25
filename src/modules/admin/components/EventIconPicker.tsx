@@ -1,4 +1,3 @@
-
 import { getActivityIcon, getActivityColor } from '@/modules/activities/utils/activityIcons';
 
 const ICON_OPTIONS: { value: string; label: string }[] = [

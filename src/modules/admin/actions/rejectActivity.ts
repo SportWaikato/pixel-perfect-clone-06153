@@ -1,4 +1,3 @@
-
 import { SupabaseClient } from '@supabase/supabase-js';
 import { createSupabaseServer } from '@/models/supabase/services/SupabaseServer';
 import { UserService } from '@/models/users/services/UserService';

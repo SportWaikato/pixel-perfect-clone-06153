@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useEffect } from 'react';
 import { LazyMotion, domAnimation } from 'framer-motion';
 import { Maximize2 } from 'lucide-react';

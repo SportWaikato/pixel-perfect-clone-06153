@@ -1,4 +1,3 @@
-
 import { createSupabaseServer } from '@/models/supabase/services/SupabaseServer';
 import { HouseService } from '@/models/houses/services/HouseService';
 import { HouseInterface } from '@/models/houses/interfaces/HouseInterface';

@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { ActivityInterface } from '@/models/activities/interfaces/ActivityInterface';

@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useTransition, useMemo } from 'react';
 import useAdminData from '@/modules/common/hooks/useAdminData';
 import { Link } from '@tanstack/react-router';
@@ -137,7 +136,7 @@ const ActivityLogContent = ({ user, schools, initialSchoolId }: ActivityLogConte
       {/* Header */}
       <div>
         <div className="mb-3">
-          <Link href={backHref} className="text-sm text-blue-600 hover:underline">
+          <Link to={backHref} className="text-sm text-blue-600 hover:underline">
             ← Back to dashboard
           </Link>
         </div>

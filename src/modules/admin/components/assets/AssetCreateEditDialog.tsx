@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { AssetInterface } from '@/models/assets/interfaces/AssetInterface';
 import { SchoolInterface } from '@/models/schools/interfaces/SchoolInterface';
@@ -14,7 +13,6 @@ import { SelectItem } from '@/modules/application/components/DesignSystem/ui/sel
 import { Upload, FileText, X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-;
 import SchoolCheckboxList from '@/modules/admin/components/SchoolCheckboxList';
 
 interface AssetCreateEditDialogProps {
@@ -236,7 +234,7 @@ const AssetCreateEditDialog = ({ isOpen, onClose, onSuccess, asset }: AssetCreat
                   <div className="flex items-center gap-3 rounded-lg border p-3">
                     {hasPreview ? (
                       <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded bg-gray-100">
-                        <Image src={previewUrl} alt="Preview" fill className="object-contain" />
+                        <img src={previewUrl} alt="Preview" className="absolute inset-0 w-full h-full object-cover object-contain" />
                       </div>
                     ) : (
                       <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded bg-gray-100">
