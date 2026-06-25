@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,34 +19,11 @@ const SCHOOL_TYPES = [
   "Primary", "Intermediate", "Secondary", "Full Primary", "Composite",
 ];
 
-const HOUSE_TEMPLATES = [
-  {
-    name: "Classic",
-    houses: [
-      { name: "Kahurangi", color: "#1a5276" },
-      { name: "Whero", color: "#c0392b" },
-      { name: "Kōwhai", color: "#f39c12" },
-      { name: "Kākāriki", color: "#27ae60" },
-    ],
-  },
-  {
-    name: "Bold",
-    houses: [
-      { name: "Māia", color: "#8e44ad" },
-      { name: "Toa", color: "#d35400" },
-      { name: "Tū", color: "#2980b9" },
-      { name: "Aroha", color: "#e74c3c" },
-    ],
-  },
-  {
-    name: "Earth",
-    houses: [
-      { name: "Maunga", color: "#6c7a89" },
-      { name: "Awa", color: "#3498db" },
-      { name: "Rākau", color: "#2ecc71" },
-      { name: "Whenua", color: "#8b4513" },
-    ],
-  },
+const DEFAULT_HOUSES = [
+  { name: "", color: "#DC2626" },
+  { name: "", color: "#2563EB" },
+  { name: "", color: "#16A34A" },
+  { name: "", color: "#CA8A04" },
 ];
 
 export const Route = createFileRoute("/register-school")({
@@ -71,15 +48,18 @@ function RegisterSchoolPage() {
   const [checkingDomain, setCheckingDomain] = useState(false);
 
   // Step 3 — Houses
-  const [houseTemplate, setHouseTemplate] = useState<string | null>(null);
-  const [customHouses, setCustomHouses] = useState<{ name: string; color: string }[]>([]);
+  const [customHouses, setCustomHouses] = useState<{ name: string; color: string }[]>(
+    DEFAULT_HOUSES.map((h) => ({ ...h })),
+  );
 
   // Step 4 — Admin account
+  const [authMethod, setAuthMethod] = useState<"google" | "email" | null>(null);
   const [adminFirstName, setAdminFirstName] = useState("");
   const [adminLastName, setAdminLastName] = useState("");
   const [adminEmail, setAdminEmail] = useState("");
   const [adminPassword, setAdminPassword] = useState("");
   const [agreeTerms, setAgreeTerms] = useState(false);
+  const [googleProcessing, setGoogleProcessing] = useState(false);
 
   // Submit
   const [submitting, setSubmitting] = useState(false);
@@ -93,8 +73,8 @@ function RegisterSchoolPage() {
     }
     setCheckingDomain(true);
     checkDomainAvailable({ data: { domain: primaryDomain } })
-      .then((result) => {
-        setDomainAvailable(result?.available ?? null);
+      .then((avail) => {
+        setDomainAvailable(avail);
         setCheckingDomain(false);
       })
       .catch(() => { setDomainAvailable(null); setCheckingDomain(false); });
@@ -118,54 +98,130 @@ function RegisterSchoolPage() {
   };
 
   const validateStep3 = () => {
-    const houses = houseTemplate ? HOUSE_TEMPLATES.find((t) => t.name === houseTemplate)?.houses || [] : customHouses;
-    if (houses.length < 2) { toast.error("Add at least 2 houses"); return false; }
-    if (houses.some((h) => !h.name.trim())) { toast.error("Every house needs a name"); return false; }
+    if (customHouses.length < 2) { toast.error("Add at least 2 houses"); return false; }
+    if (customHouses.some((h) => !h.name.trim())) { toast.error("Every house needs a name"); return false; }
     return true;
   };
 
   const validateStep4 = () => {
-    if (!adminFirstName.trim()) { toast.error("Enter your first name"); return false; }
-    if (!adminLastName.trim()) { toast.error("Enter your last name"); return false; }
-    if (!adminEmail) { toast.error("Enter your email address"); return false; }
-    if (!adminEmail.includes(primaryDomain)) { toast.error("Your email must use the school domain"); return false; }
-    if (adminPassword.length < 8) { toast.error("Password must be at least 8 characters"); return false; }
+    if (!authMethod) { toast.error("Choose a sign-up method"); return false; }
+    if (authMethod === "google" && !adminEmail) { toast.error("Sign in with Google first"); return false; }
+    if (authMethod === "email") {
+      if (!adminFirstName.trim()) { toast.error("Enter your first name"); return false; }
+      if (!adminLastName.trim()) { toast.error("Enter your last name"); return false; }
+      if (!adminEmail) { toast.error("Enter your email address"); return false; }
+      if (!adminEmail.includes(primaryDomain)) { toast.error("Your email must use the school domain"); return false; }
+      if (adminPassword.length < 8) { toast.error("Password must be at least 8 characters"); return false; }
+    } else {
+      if (!adminFirstName.trim()) { toast.error("Enter your first name"); return false; }
+      if (!adminLastName.trim()) { toast.error("Enter your last name"); return false; }
+    }
     if (!agreeTerms) { toast.error("You must agree to the terms"); return false; }
     return true;
   };
+
+  const handleGoogleSignIn = useCallback(async () => {
+    if (!primaryDomain) {
+      toast.error("Please complete step 2 (email domain) first");
+      return;
+    }
+    setGoogleProcessing(true);
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: window.location.origin + "/register-school",
+      },
+    });
+
+    if (error) {
+      toast.error(error.message);
+      setGoogleProcessing(false);
+      return;
+    }
+
+    setGoogleProcessing(false);
+  }, [primaryDomain]);
+
+  // Listen for Google OAuth return (popup or redirect)
+  useEffect(() => {
+    const { data: listener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "SIGNED_IN" && session?.user) {
+        const user = session.user;
+        const email = user.email ?? "";
+        const domain = email.split("@")[1]?.toLowerCase();
+
+        if (!domain || domain !== primaryDomain) {
+          await supabase.auth.signOut();
+          toast.error(
+            `Your Google account email must match your school domain (@${primaryDomain}). Please use your school Google account or sign up with email below.`,
+          );
+          return;
+        }
+
+        setAdminEmail(email);
+        setAdminFirstName(user.user_metadata?.full_name?.split(" ")[0] ?? "");
+        setAdminLastName(user.user_metadata?.full_name?.split(" ").slice(1).join(" ") ?? "");
+        setAuthMethod("google");
+        toast.success("Signed in with Google!");
+      }
+    });
+
+    return () => listener.subscription.unsubscribe();
+  }, [primaryDomain]);
+
+  // Check for existing Google session on mount (for redirect flow)
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.auth.getUser();
+      if (data.user && data.user.email) {
+        const email = data.user.email;
+        const domain = email.split("@")[1]?.toLowerCase();
+        if (domain && domain === primaryDomain && authMethod === null && step === 4) {
+          setAdminEmail(email);
+          setAdminFirstName(data.user.user_metadata?.full_name?.split(" ")[0] ?? "");
+          setAdminLastName(data.user.user_metadata?.full_name?.split(" ").slice(1).join(" ") ?? "");
+          setAuthMethod("google");
+        }
+      }
+    })();
+  }, [primaryDomain, step, authMethod]);
 
   const handleSubmit = async () => {
     if (!validateStep4()) return;
     setSubmitting(true);
 
-    const houses = houseTemplate
-      ? HOUSE_TEMPLATES.find((t) => t.name === houseTemplate)?.houses || []
-      : customHouses;
+    const houses = customHouses;
 
     try {
-      // Create auth user
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email: adminEmail,
-        password: adminPassword,
-        options: {
-          data: {
-            first_name: adminFirstName.trim(),
-            last_name: adminLastName.trim(),
-          },
-        },
-      });
+      let userId: string;
 
-      if (signUpError) throw signUpError;
-      if (!signUpData.user) throw new Error("Failed to create account");
+      if (authMethod === "google") {
+        const { data: user, error: userErr } = await supabase.auth.getUser();
+        if (userErr || !user.user) throw new Error("Not authenticated with Google");
+        userId = user.user.id;
+      } else {
+        // Create auth user via email/password
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          email: adminEmail,
+          password: adminPassword,
+          options: {
+            data: {
+              first_name: adminFirstName.trim(),
+              last_name: adminLastName.trim(),
+            },
+          },
+        });
+
+        if (signUpError) throw signUpError;
+        if (!signUpData.user) throw new Error("Failed to create account");
+        userId = signUpData.user.id;
+      }
 
       // Insert school
-      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-      const schoolCode = Array.from({ length: 8 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
-
       const { data: school, error: schoolError } = await supabase
         .from("schools")
         .insert({
-          code: schoolCode,
           name: schoolName.trim(),
           region,
           school_type: schoolType,
@@ -179,8 +235,9 @@ function RegisterSchoolPage() {
         .single();
 
       if (schoolError) {
-        // Clean up auth user
-        await supabase.auth.admin.deleteUser(signUpData.user.id).catch(() => {});
+        if (authMethod !== "google") {
+          await supabase.auth.admin.deleteUser(userId).catch(() => {});
+        }
         throw schoolError;
       }
 
@@ -196,17 +253,20 @@ function RegisterSchoolPage() {
         );
 
       if (housesError) {
-        try { await supabase.from("schools").delete().eq("id", school.id); } catch {}
-        try { await supabase.auth.admin.deleteUser(signUpData.user.id); } catch {}
+        await supabase.from("schools").delete().eq("id", school.id).catch(() => {});
+        if (authMethod !== "google") {
+          await supabase.auth.admin.deleteUser(userId).catch(() => {});
+        }
         throw housesError;
       }
 
       // Insert user
       const { error: userError } = await supabase.from("users").insert({
-        id: signUpData.user.id,
+        id: userId,
         first_name: adminFirstName.trim(),
         last_name: adminLastName.trim(),
         username: adminEmail.split("@")[0],
+        email: adminEmail,
         school_id: school.id,
         role: "school_admin",
         is_admin: true,
@@ -228,6 +288,28 @@ function RegisterSchoolPage() {
         await sendEmail({ data: { to: adminEmail, subject, html } });
       } catch (err) {
         console.error("Failed to send confirmation email:", err);
+      }
+
+      // Send notification to super admins
+      try {
+        const { data: superAdmins } = await supabase
+          .from("users")
+          .select("email")
+          .eq("role", "super_admin")
+          .not("email", "is", null);
+
+        if (superAdmins?.length) {
+          const { sendEmail } = await import("@/lib/sendEmail");
+          await sendEmail({
+            data: {
+              to: superAdmins[0].email ?? "",
+              subject: `New school registration: ${schoolName.trim()}`,
+              html: `<p>${adminFirstName.trim()} ${adminLastName.trim()} from ${schoolName.trim()} has submitted a registration request.</p><p>Review it at <a href="https://app.karawhiua.app/admin/schools/pending">the admin dashboard</a>.</p>`,
+            },
+          });
+        }
+      } catch (err) {
+        console.error("Failed to notify super admins:", err);
       }
 
       setCompleted(true);
@@ -292,7 +374,7 @@ function RegisterSchoolPage() {
             <CardDescription>
               {step === 1 && "Tell us about your school."}
               {step === 2 && "Which email domains do your students use?"}
-              {step === 3 && "Set up the houses for your school."}
+              {step === 3 && "Name your school's houses and choose a colour for each one."}
               {step === 4 && "Create your admin account."}
             </CardDescription>
           </CardHeader>
@@ -367,69 +449,20 @@ function RegisterSchoolPage() {
             {/* Step 3 — Houses */}
             {step === 3 && (
               <>
-                <div>
-                  <Label>Choose a template or customise</Label>
-                  <div className="grid grid-cols-3 gap-2 mt-2">
-                    {HOUSE_TEMPLATES.map((t) => (
-                      <button
-                        key={t.name}
-                        type="button"
-                        onClick={() => { setHouseTemplate(t.name); setCustomHouses([]); }}
-                        className={`p-2 rounded-lg border-2 text-xs transition-all ${
-                          houseTemplate === t.name
-                            ? "border-[#0B4B39] bg-green-50"
-                            : "border-border hover:border-[#0B4B39]/50"
-                        }`}
-                      >
-                        <div className="flex gap-1 justify-center mb-1">
-                          {t.houses.map((h) => (
-                            <span key={h.name} className="w-4 h-4 rounded-full" style={{ background: h.color }} />
-                          ))}
-                        </div>
-                        <p className="font-medium">{t.name}</p>
-                      </button>
-                    ))}
-                    <button
-                      type="button"
-                      onClick={() => { setHouseTemplate(null); setCustomHouses(HOUSE_TEMPLATES[0].houses.map((h) => ({ ...h }))); }}
-                      className={`p-2 rounded-lg border-2 text-xs transition-all ${
-                        houseTemplate === null && customHouses.length > 0
-                          ? "border-[#0B4B39] bg-green-50"
-                          : "border-border hover:border-[#0B4B39]/50"
-                      }`}
-                    >
-                      <p className="text-lg mb-1">✏️</p>
-                      <p className="font-medium">Custom</p>
-                    </button>
-                  </div>
-                </div>
-
-                {houseTemplate && (
-                  <div className="space-y-2">
-                    {HOUSE_TEMPLATES.find((t) => t.name === houseTemplate)?.houses.map((h, i) => (
-                      <div key={i} className="flex items-center gap-3 p-2 rounded-lg border">
-                        <div className="w-8 h-8 rounded-lg" style={{ background: h.color }} />
-                        <span className="text-sm font-medium">{h.name}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {houseTemplate === null && customHouses.length > 0 && (
-                  <div className="space-y-2">
-                    {customHouses.map((h, i) => (
-                      <div key={i} className="flex items-center gap-3">
-                        <Input
-                          value={h.name}
-                          onChange={(e) => {
-                            const updated = [...customHouses];
-                            updated[i] = { ...updated[i], name: e.target.value };
-                            setCustomHouses(updated);
+                <div className="space-y-3">
+                  {customHouses.map((h, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <div className="relative">
+                        <div
+                          className="w-10 h-10 rounded-lg border cursor-pointer"
+                          style={{ backgroundColor: h.color }}
+                          onClick={() => {
+                            const input = document.getElementById(`house-color-${i}`) as HTMLInputElement;
+                            input?.click();
                           }}
-                          placeholder="House name"
-                          className="flex-1"
                         />
                         <Input
+                          id={`house-color-${i}`}
                           type="color"
                           value={h.color}
                           onChange={(e) => {
@@ -437,11 +470,47 @@ function RegisterSchoolPage() {
                             updated[i] = { ...updated[i], color: e.target.value };
                             setCustomHouses(updated);
                           }}
-                          className="w-12 h-10 p-1"
+                          className="sr-only"
                         />
                       </div>
-                    ))}
-                  </div>
+                      <Input
+                        value={h.name}
+                        onChange={(e) => {
+                          const updated = [...customHouses];
+                          updated[i] = { ...updated[i], name: e.target.value };
+                          setCustomHouses(updated);
+                        }}
+                        placeholder="House name"
+                        className="flex-1"
+                      />
+                      {customHouses.length > 2 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = customHouses.filter((_, idx) => idx !== i);
+                            setCustomHouses(updated);
+                          }}
+                          className="text-destructive hover:text-destructive/80 text-lg p-1"
+                          title="Remove house"
+                        >
+                          🗑️
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                {customHouses.length < 8 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="mt-2"
+                    onClick={() =>
+                      setCustomHouses([...customHouses, { name: "", color: "#6B7280" }])
+                    }
+                  >
+                    + Add another house
+                  </Button>
                 )}
               </>
             )}
@@ -449,51 +518,114 @@ function RegisterSchoolPage() {
             {/* Step 4 — Admin account */}
             {step === 4 && (
               <>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label htmlFor="adminFirstName">First name *</Label>
-                    <Input id="adminFirstName" value={adminFirstName} onChange={(e) => setAdminFirstName(e.target.value)} />
+                {/* Google sign-in button */}
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full flex items-center justify-center gap-2 h-11"
+                  onClick={handleGoogleSignIn}
+                  disabled={googleProcessing || authMethod === "google"}
+                >
+                  <svg className="w-5 h-5" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                  </svg>
+                  {authMethod === "google" ? "✓ Signed in with Google" : googleProcessing ? "Connecting…" : "Continue with Google"}
+                </Button>
+
+                {/* Divider */}
+                {authMethod !== "google" && (
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-card px-2 text-muted-foreground">or sign up with email</span>
+                    </div>
                   </div>
-                  <div>
-                    <Label htmlFor="adminLastName">Last name *</Label>
-                    <Input id="adminLastName" value={adminLastName} onChange={(e) => setAdminLastName(e.target.value)} />
+                )}
+
+                {authMethod === "google" && (
+                  <div className="space-y-3">
+                    <p className="text-sm text-muted-foreground">
+                      Signed in as <strong>{adminEmail}</strong>
+                    </p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label htmlFor="adminFirstName">First name *</Label>
+                        <Input id="adminFirstName" value={adminFirstName} onChange={(e) => setAdminFirstName(e.target.value)} />
+                      </div>
+                      <div>
+                        <Label htmlFor="adminLastName">Last name *</Label>
+                        <Input id="adminLastName" value={adminLastName} onChange={(e) => setAdminLastName(e.target.value)} />
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <input
+                        type="checkbox"
+                        id="agreeTerms"
+                        checked={agreeTerms}
+                        onChange={(e) => setAgreeTerms(e.target.checked)}
+                        className="mt-1"
+                      />
+                      <Label htmlFor="agreeTerms" className="text-sm">
+                        I confirm that I am authorised to register this school and agree to the terms of service.
+                      </Label>
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <Label htmlFor="adminEmail">Work email *</Label>
-                  <Input
-                    id="adminEmail"
-                    type="email"
-                    value={adminEmail}
-                    onChange={(e) => setAdminEmail(e.target.value)}
-                    placeholder={`you@${primaryDomain || "school.nz"}`}
-                  />
-                  {adminEmail && !adminEmail.includes(primaryDomain) && (
-                    <p className="text-xs text-destructive mt-1">Must use your school domain (@{primaryDomain})</p>
-                  )}
-                </div>
-                <div>
-                  <Label htmlFor="adminPassword">Password (8+ characters) *</Label>
-                  <Input
-                    id="adminPassword"
-                    type="password"
-                    value={adminPassword}
-                    onChange={(e) => setAdminPassword(e.target.value)}
-                    placeholder="Create a strong password"
-                  />
-                </div>
-                <div className="flex items-start gap-2">
-                  <input
-                    type="checkbox"
-                    id="agreeTerms"
-                    checked={agreeTerms}
-                    onChange={(e) => setAgreeTerms(e.target.checked)}
-                    className="mt-1"
-                  />
-                  <Label htmlFor="agreeTerms" className="text-sm">
-                    I confirm that I am authorised to register this school and agree to the terms of service.
-                  </Label>
-                </div>
+                )}
+
+                {authMethod !== "google" && (
+                  <>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label htmlFor="adminFirstName">First name *</Label>
+                        <Input id="adminFirstName" value={adminFirstName} onChange={(e) => setAdminFirstName(e.target.value)} />
+                      </div>
+                      <div>
+                        <Label htmlFor="adminLastName">Last name *</Label>
+                        <Input id="adminLastName" value={adminLastName} onChange={(e) => setAdminLastName(e.target.value)} />
+                      </div>
+                    </div>
+                    <div>
+                      <Label htmlFor="adminEmail">Work email *</Label>
+                      <Input
+                        id="adminEmail"
+                        type="email"
+                        value={adminEmail}
+                        onChange={(e) => setAdminEmail(e.target.value)}
+                        placeholder={`you@${primaryDomain || "school.nz"}`}
+                      />
+                      {adminEmail && !adminEmail.includes(primaryDomain) && (
+                        <p className="text-xs text-destructive mt-1">Must use your school domain (@{primaryDomain})</p>
+                      )}
+                    </div>
+                    <div>
+                      <Label htmlFor="adminPassword">Password (8+ characters) *</Label>
+                      <Input
+                        id="adminPassword"
+                        type="password"
+                        value={adminPassword}
+                        onChange={(e) => setAdminPassword(e.target.value)}
+                        placeholder="Create a strong password"
+                      />
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <input
+                        type="checkbox"
+                        id="agreeTerms"
+                        checked={agreeTerms}
+                        onChange={(e) => setAgreeTerms(e.target.checked)}
+                        className="mt-1"
+                      />
+                      <Label htmlFor="agreeTerms" className="text-sm">
+                        I confirm that I am authorised to register this school and agree to the terms of service.
+                      </Label>
+                    </div>
+                  </>
+                )}
               </>
             )}
           </CardContent>
