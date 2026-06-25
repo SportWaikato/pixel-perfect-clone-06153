@@ -61,6 +61,7 @@ interface UserManagementContentProps {
 const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools = [], initialInvites = [] }: UserManagementContentProps) => {
   const router = useRouter();
   const navigate = useNavigate();
+  const fetchEmails = useServerFn(fetchUserEmails);
   const isSuperAdmin = checkIsSuperAdmin(currentUser);
   const [houseFilter, setHouseFilter] = useState('all');
   const [yearGroupFilter, setYearGroupFilter] = useState('all');
