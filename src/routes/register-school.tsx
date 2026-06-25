@@ -196,8 +196,8 @@ function RegisterSchoolPage() {
         );
 
       if (housesError) {
-        await supabase.from("schools").delete().eq("id", school.id).catch(() => {});
-        await supabase.auth.admin.deleteUser(signUpData.user.id).catch(() => {});
+        try { await supabase.from("schools").delete().eq("id", school.id); } catch {}
+        try { await supabase.auth.admin.deleteUser(signUpData.user.id); } catch {}
         throw housesError;
       }
 
