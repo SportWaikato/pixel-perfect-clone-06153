@@ -1,7 +1,5 @@
-'use client';
-
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearch } from '@tanstack/react-router';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { EventInterface } from '@/models/events/interfaces/EventInterface';
 import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
@@ -12,8 +10,7 @@ import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
 import { Button } from '@/modules/application/components/DesignSystem/ui/button';
 import { ChevronLeft } from 'lucide-react';
 import { format as formatTz, toZonedTime } from 'date-fns-tz';
-import { useRouter } from 'next/navigation';
-
+import { useRouter } from '@tanstack/react-router';
 import { WizardState, EVENT_TYPE_TO_ACTIVITY_TYPE } from './types';
 import StepProgress from './StepProgress';
 import Step1Challenge from './Step1Challenge';

@@ -1,5 +1,3 @@
-'use server';
-
 import { createSupabaseServer } from '@/models/supabase/services/SupabaseServer';
 import { UserService } from '@/models/users/services/UserService';
 

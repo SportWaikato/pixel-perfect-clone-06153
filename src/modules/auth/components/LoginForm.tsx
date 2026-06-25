@@ -1,8 +1,6 @@
-'use client';
-
 import { Formik, Form, FormikHelpers } from 'formik';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useRouter } from '@tanstack/react-router';
+import { Link } from '@tanstack/react-router';
 import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
 import { UserService } from '@/models/users/services/UserService';
 import { Button } from '@/modules/application/components/DesignSystem/ui/button';

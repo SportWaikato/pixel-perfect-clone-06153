@@ -1,5 +1,3 @@
-'use client';
-
 import { useMemo, useState, ReactNode } from 'react';
 import NextImage from 'next/image';
 import { AssetInterface } from '@/models/assets/interfaces/AssetInterface';
@@ -45,7 +43,7 @@ const FileTypeBadge = ({ fileType }: { fileType: string }) => {
   const isImage = fileType.startsWith('image/');
   return (
     <Badge variant="secondary" className="gap-1 text-xs">
-      {isPdf ? <FileText size={10} /> : isVideo ? <Video size={10} /> : isImage ? <Image size={10} /> : <FileText size={10} />}
+      {isPdf ? <FileText size={10} /> : isVideo ? <Video size={10} /> : isImage ? <img size={10} /> : <FileText size={10} />}
       {isPdf ? 'PDF' : isVideo ? 'MP4' : isImage ? 'Image' : 'File'}
     </Badge>
   );

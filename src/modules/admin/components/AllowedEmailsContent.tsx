@@ -1,5 +1,3 @@
-'use client';
-
 import { useState, useEffect, useMemo } from 'react';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { SchoolInterface } from '@/models/schools/interfaces/SchoolInterface';
@@ -19,8 +17,7 @@ import useAdminData from '@/modules/common/hooks/useAdminData';
 import { ArrowLeft, Globe, ShieldCheck, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-import Link from 'next/link';
-
+import { Link } from '@tanstack/react-router';
 interface AllowedEmailsContentProps {
   user: UserInterface;
   schools?: SchoolInterface[];

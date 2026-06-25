@@ -1,7 +1,5 @@
-'use client';
-
 import { useState } from 'react';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { ActivityInterface } from '@/models/activities/interfaces/ActivityInterface';
 import { SchoolInterface } from '@/models/schools/interfaces/SchoolInterface';
@@ -9,7 +7,6 @@ import { EventInterface } from '@/models/events/interfaces/EventInterface';
 import { Card, CardContent, CardHeader, CardTitle } from '@/modules/application/components/DesignSystem/ui/card';
 import { Badge } from '@/modules/application/components/DesignSystem/ui/badge';
 import { Button } from '@/modules/application/components/DesignSystem/ui/button';
-import dynamic from 'next/dynamic';
 import ActivityExportDialog from './ActivityExportDialog';
 
 const SchoolPerformanceChart = dynamic(() => import('./SchoolPerformanceChart'), {

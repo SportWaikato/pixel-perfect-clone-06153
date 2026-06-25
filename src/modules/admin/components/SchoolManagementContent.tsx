@@ -1,5 +1,3 @@
-'use client';
-
 import { useState, useMemo } from 'react';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { SchoolInterface } from '@/models/schools/interfaces/SchoolInterface';
@@ -55,8 +53,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-import { useRouter } from 'next/navigation';
-
+import { useRouter } from '@tanstack/react-router';
 interface SchoolManagementContentProps {
   user: UserInterface;
   initialSchools: SchoolInterface[];

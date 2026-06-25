@@ -1,7 +1,5 @@
-'use client';
-
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { Link } from '@tanstack/react-router';
+import { useRouterState } from '@tanstack/react-router';
 import { LayoutDashboard, Trophy, Zap, Calendar, User } from 'lucide-react';
 import { cn } from '@/modules/common/utils';
 

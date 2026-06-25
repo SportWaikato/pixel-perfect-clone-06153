@@ -1,5 +1,3 @@
-'use client';
-
 import { useEffect, useMemo, useState } from 'react';
 import { Formik, Form, FormikProps } from 'formik';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';

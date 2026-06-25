@@ -1,5 +1,3 @@
-'use client';
-
 import { Field, useField } from 'formik';
 import { Switch } from '@/modules/application/components/DesignSystem/ui/switch';
 import { Label } from '@/modules/application/components/DesignSystem/ui/label';

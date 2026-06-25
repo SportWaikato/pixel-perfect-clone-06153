@@ -1,5 +1,3 @@
-'use client';
-
 import { useState, useEffect, useMemo } from 'react';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { HouseInterface } from '@/models/houses/interfaces/HouseInterface';
@@ -18,7 +16,7 @@ import useAdminData from '@/modules/common/hooks/useAdminData';
 import { ArrowLeft, Plus, Search, Edit, Trash2, Crown, Users, Trophy, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import { Formik, Form } from 'formik';
 import { object, string } from 'yup';
 import { FormikInputField } from '@/modules/common/components/Formik';

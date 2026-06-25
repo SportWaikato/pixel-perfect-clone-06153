@@ -1,8 +1,5 @@
-'use client';
-
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { usePathname } from 'next/navigation';
-
+import { useRouterState } from '@tanstack/react-router';
 const NavigationProgress = () => {
   const pathname = usePathname();
   const [width, setWidth] = useState(0);

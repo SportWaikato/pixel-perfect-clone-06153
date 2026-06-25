@@ -1,9 +1,7 @@
-'use client';
-
 import { useState, useMemo, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@tanstack/react-router';
 import { Monitor, Trophy, Loader2, Settings, Calendar, AlertTriangle } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import { AssemblyWinnerInterface } from '@/models/assembly/interfaces/AssemblyWinnerInterface';
 import { SchoolTermInterface } from '@/models/terms/interfaces/SchoolTermInterface';
 import { SchoolInterface } from '@/models/schools/interfaces/SchoolInterface';

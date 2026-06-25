@@ -1,5 +1,3 @@
-'use client';
-
 import { useState } from 'react';
 import { Formik, Form, FormikHelpers } from 'formik';
 import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';

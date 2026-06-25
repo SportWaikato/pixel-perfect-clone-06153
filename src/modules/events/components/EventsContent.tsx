@@ -1,5 +1,3 @@
-'use client';
-
 import { useState, useMemo } from 'react';
 import { UserInterface } from '@/models/users/interfaces/UserInterface';
 import { EventInterface } from '@/models/events/interfaces/EventInterface';
@@ -13,8 +11,7 @@ import { Search, Users, Plus, Target, Clock, ChevronRight, GraduationCap, Calend
 import { formatEventDate } from '@/modules/common/utils/dateUtils';
 import CreateEventDialog from '@/modules/admin/components/CreateEventDialog';
 import { getActivityIcon, getActivityColor, resolveEventIconType } from '@/modules/activities/utils/activityIcons';
-import Link from 'next/link';
-
+import { Link } from '@tanstack/react-router';
 interface EventsContentProps {
   user: UserInterface;
   initialEvents: EventInterface[];
