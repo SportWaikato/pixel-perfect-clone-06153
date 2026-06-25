@@ -159,9 +159,13 @@ function RegisterSchoolPage() {
       if (!signUpData.user) throw new Error("Failed to create account");
 
       // Insert school
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      const schoolCode = Array.from({ length: 8 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+
       const { data: school, error: schoolError } = await supabase
         .from("schools")
         .insert({
+          code: schoolCode,
           name: schoolName.trim(),
           region,
           school_type: schoolType,
