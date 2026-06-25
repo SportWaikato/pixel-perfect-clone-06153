@@ -1,0 +1,3 @@
+export const MAX_ACTIVITY_DURATION_MINUTES = 180;
+export const MAX_ACTIVITY_DAYS_AGO = 7;
+export const MAX_ACTIVITIES_PER_DAY = 3;

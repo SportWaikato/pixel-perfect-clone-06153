@@ -1,0 +1,406 @@
+'use client';
+
+import { useState, useMemo } from 'react';
+import { UserInterface } from '@/models/users/interfaces/UserInterface';
+import { 
+  SchoolLeaderboardEntry, 
+  HouseLeaderboardEntry, 
+  UserRankingSummary,
+  IndividualLeaderboardEntry
+} from '@/models/leaderboards/interfaces/LeaderboardInterface';
+import { LeaderboardService } from '@/models/leaderboards/services/LeaderboardService';
+import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
+import { Card, CardContent, CardHeader, CardTitle } from '@/modules/application/components/DesignSystem/ui/card';
+import { Badge } from '@/modules/application/components/DesignSystem/ui/badge';
+import { Progress } from '@/modules/application/components/DesignSystem/ui/progress';
+import { Button } from '@/modules/application/components/DesignSystem/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/modules/application/components/DesignSystem/ui/tabs';
+import { Trophy, Crown, Award, Info, RefreshCw, Loader2 } from 'lucide-react';
+import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
+import { formatTimeDisplay } from '@/models/application/constants/applicationConstants';
+
+interface LeaderboardContentProps {
+  user: UserInterface;
+  initialRankings: UserRankingSummary | null;
+  initialSchoolLeaderboard: SchoolLeaderboardEntry[];
+  initialHouseLeaderboard: HouseLeaderboardEntry[];
+  initialOverallLeaderboard: IndividualLeaderboardEntry[];
+}
+
+const LeaderboardContent = ({
+  user,
+  initialRankings,
+  initialSchoolLeaderboard,
+  initialHouseLeaderboard,
+  initialOverallLeaderboard,
+}: LeaderboardContentProps) => {
+  const [userRankings, setUserRankings] = useState(initialRankings);
+  const [schoolLeaderboard, setSchoolLeaderboard] = useState(initialSchoolLeaderboard);
+  const [houseLeaderboard, setHouseLeaderboard] = useState(initialHouseLeaderboard);
+  const [overallLeaderboard, setOverallLeaderboard] = useState(initialOverallLeaderboard);
+  const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('personal');
+
+  const leaderboardService = useMemo(() => new LeaderboardService(createSupabaseClient()), []);
+
+  const loadLeaderboardData = async () => {
+    try {
+      setLoading(true);
+      const [rankings, schools, houses, overall] = await Promise.all([
+        leaderboardService.getUserRankings(user.id),
+        leaderboardService.getSchoolLeaderboard(user.school_id),
+        user.school_id ? leaderboardService.getHouseLeaderboard(user.school_id) : Promise.resolve([]),
+        leaderboardService.getOverallLeaderboard({ limit: 100 })
+      ]);
+
+      setUserRankings(rankings);
+      setSchoolLeaderboard(schools);
+      setHouseLeaderboard(houses);
+      setOverallLeaderboard(overall);
+    } catch (error) {
+      notifyAboutError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getRankingEmoji = (rank: number) => {
+    if (rank === 1) return '🥇';
+    if (rank === 2) return '🥈';
+    if (rank === 3) return '🥉';
+    return `#${rank}`;
+  };
+
+  const getMotivationalMessage = (rank: number | null, total: number) => {
+    if (!rank) return 'Keep going! Log more activities to see your ranking.';
+    if (rank <= 3) return `Amazing! You're in the top 3! 🎉`;
+    if (total > 10 && rank <= 10) return `Great job! You're in the top 10! 💪`;
+    if (rank <= total * 0.25) return `You're in the top 25%! Keep it up! 🚀`;
+    if (rank <= total * 0.5) return `You're in the top half! Push for more! 📈`;
+    return `Every step counts! Keep climbing! 🏃‍♂️`;
+  };
+
+  const PersonalDashboard = () => (
+    <div className="space-y-8">
+      {/* Personal Rankings Summary */}
+      <Card
+        className="shadow-sm rounded-2xl border border-gray-200"
+        style={{ backgroundColor: '#f9fefd' }}
+      >
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-[#0B4B39]">
+            <Trophy className="w-5 h-5 text-yellow-500" />
+            Your Rankings
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-6 sm:p-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* School Ranking */}
+            <div className="text-center p-5 sm:p-6 bg-[#0B4B39]/5 border border-gray-200 rounded-2xl">
+              <div className="text-4xl sm:text-5xl font-bold text-[#0B4B39] mb-1">
+                {userRankings?.school_rank != null ? getRankingEmoji(userRankings.school_rank) : '?'}
+              </div>
+              <div className="text-sm text-gray-600">in your school</div>
+              <div className="text-xs text-gray-400 mt-1">
+                {user.school?.name}
+              </div>
+            </div>
+
+            {/* House Ranking */}
+            <div className="text-center p-5 sm:p-6 bg-[#0B4B39]/5 border border-gray-200 rounded-2xl">
+              <div className="text-4xl sm:text-5xl font-bold text-[#0B4B39] mb-1">
+                {userRankings?.house_rank != null ? getRankingEmoji(userRankings.house_rank) : '?'}
+              </div>
+              <div className="text-sm text-gray-600">in your house</div>
+              <div className="text-xs text-gray-400 mt-1">
+                {user.house?.name || '—'}
+              </div>
+            </div>
+
+            {/* Year Group Ranking */}
+            <div className="text-center p-5 sm:p-6 bg-[#0B4B39]/5 border border-gray-200 rounded-2xl">
+              <div className="text-4xl sm:text-5xl font-bold text-[#0B4B39] mb-1">
+                {userRankings?.year_group_rank != null ? getRankingEmoji(userRankings.year_group_rank) : '?'}
+              </div>
+              <div className="text-sm text-gray-600">in your year</div>
+              <div className="text-xs text-gray-400 mt-1">
+                {user.year_group ?? '—'}
+              </div>
+            </div>
+
+            {/* Overall Ranking */}
+            <div className="text-center p-5 sm:p-6 bg-[#0B4B39]/5 border border-gray-200 rounded-2xl">
+              <div className="text-4xl sm:text-5xl font-bold text-[#0B4B39] mb-1">
+                {userRankings?.overall_rank != null ? `#${userRankings.overall_rank}` : '?'}
+              </div>
+              <div className="text-sm text-gray-600">overall</div>
+            </div>
+
+          </div>
+
+          {/* Current Progress */}
+          <div className="mt-16 text-center">
+            <div className="text-3xl sm:text-4xl font-bold text-[#0B4B39] mb-3">
+              {formatTimeDisplay(user.total_minutes || 0)}
+            </div>
+            <p className="text-gray-600 mb-6">
+              {getMotivationalMessage(userRankings?.school_rank ?? null, userRankings?.school_total_users || 0)}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const SchoolCompetition = () => (
+    <div className="space-y-8">
+      <Card
+        className="shadow-sm rounded-2xl border border-gray-200"
+        style={{ backgroundColor: '#f9fefd' }}
+      >
+        <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1">
+            <CardTitle className="flex items-center gap-2 text-[#0B4B39]">
+              <Award className="w-5 h-5 text-yellow-500" />
+              School Competition
+            </CardTitle>
+            <p className="text-sm text-gray-600 mt-1">
+              Fair comparison based on points per student
+            </p>
+          </div>
+          <Badge variant="secondary" className="flex items-center gap-1 bg-[#0B4B39]/10 text-[#0B4B39] border-[#0B4B39]/20 self-start sm:self-auto">
+            <Info className="w-3 h-3" />
+            Pro-rata scoring
+          </Badge>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {schoolLeaderboard.slice(0, 10).map((school, index) => {
+              const isUserSchool = school.id === user.school_id;
+              return (
+                <div
+                  key={school.id}
+                  className={`flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between p-4 sm:p-5 rounded-2xl transition-all ${
+                    isUserSchool
+                      ? 'bg-[#0B4B39]/10 border-2 border-[#0B4B39]/30 shadow-md'
+                      : 'bg-[#0B4B39]/5 border border-gray-200 hover:bg-[#0B4B39]/10'
+                  }`}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="text-3xl sm:text-4xl font-bold w-14 sm:w-16 text-[#0B4B39]">
+                      {getRankingEmoji(school.rank)}
+                    </div>
+                    <div>
+                      <div className="font-semibold text-gray-800 text-sm sm:text-base">
+                        {school.name}
+                        {isUserSchool && (
+                          <Badge variant="secondary" className="ml-2 text-xs bg-[#0B4B39]/10 text-[#0B4B39] border-[#0B4B39]/20">
+                            Your School
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="text-xs sm:text-sm text-gray-500">
+                        {school.total_students} students • {school.total_points || 0} points total
+                        {/* {school.total_kilometers.toFixed(1)} km total */}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-left sm:text-right">
+                    <div className="text-base sm:text-lg font-bold text-[#0B4B39]">
+                      {Math.round(school.pro_rata_score)}
+                    </div>
+                    <div className="text-xs text-gray-400">pro-rata score</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="mt-6 p-4 bg-[#0B4B39]/5 border border-gray-200 rounded-2xl">
+            <div className="flex items-start gap-2">
+              <Info className="w-4 h-4 text-[#0B4B39] mt-0.5" />
+              <div className="text-sm text-gray-600">
+                <strong className="text-[#0B4B39]">Fair Competition:</strong> Pro-rata scoring calculates
+                (total points ÷ student count) × 100 to ensure fair comparison
+                between schools of different sizes.
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const HouseBattle = () => (
+    <div className="space-y-8">
+      <Card
+        className="shadow-sm rounded-2xl border border-gray-200"
+        style={{ backgroundColor: '#f9fefd' }}
+      >
+        <CardHeader className="space-y-2">
+          <CardTitle className="flex flex-wrap items-center gap-2 text-[#0B4B39] text-lg sm:text-xl">
+            <Crown className="w-5 h-5 text-yellow-500" />
+            House Battle - {user.school?.name}
+          </CardTitle>
+          <p className="text-sm text-gray-600">Competition between houses in your school</p>
+        </CardHeader>
+        <CardContent className="px-4 sm:px-6">
+          {houseLeaderboard.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              <Crown className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+              <p>No house data available</p>
+            </div>
+          ) : (
+            <div className="space-y-5">
+              {houseLeaderboard.map((house, index) => {
+                const isUserHouse = house.id === user.house_id;
+                const maxPoints = Math.max(...houseLeaderboard.map(h => h.total_points));
+                const progressPercent = maxPoints > 0 ? (house.total_points / maxPoints) * 100 : 0;
+
+                return (
+                  <div
+                    key={house.id}
+                    className={`p-4 rounded-2xl space-y-3 ${
+                      isUserHouse
+                        ? 'bg-[#0B4B39]/10 border-2 border-[#0B4B39]/30'
+                        : 'bg-[#0B4B39]/5 border border-gray-200'
+                    }`}
+                  >
+                    {/* Mobile Layout: Stacked */}
+                    <div className="flex items-start justify-between gap-3">
+                      {/* Left side: Rank, Color, Name */}
+                      <div className="flex items-start gap-3 flex-1">
+                        <div className="text-2xl font-bold text-[#0B4B39] flex-shrink-0">
+                          {getRankingEmoji(index + 1)}
+                        </div>
+                        <div
+                          className="w-4 h-4 rounded-full flex-shrink-0 mt-1"
+                          style={{ backgroundColor: house.color }}
+                        />
+                        <div className="min-w-0 flex-1">
+                          <div className="font-semibold text-gray-800 text-sm sm:text-base">
+                            {house.name}
+                            {isUserHouse && (
+                              <Badge
+                                variant="secondary"
+                                className="ml-2 text-[10px] sm:text-xs bg-[#0B4B39]/10 text-[#0B4B39] border-[#0B4B39]/20 inline-block"
+                              >
+                                Your House
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="text-xs text-gray-400 mt-0.5">
+                            {house.member_count} members
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Right side: Points */}
+                      <div className="text-right flex-shrink-0">
+                        <div className="font-bold text-lg text-[#0B4B39]">
+                          {house.total_points}
+                        </div>
+                        <div className="text-xs text-gray-400">points</div>
+                      </div>
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div className="relative">
+                      <Progress
+                        value={progressPercent}
+                        className="h-2.5"
+                        style={{
+                          '--progress-background': house.color,
+                          '--progress-foreground': house.color
+                        } as React.CSSProperties}
+                      />
+                      {isUserHouse && (
+                        <div
+                          className="absolute top-0 right-2 w-2 h-2.5 rounded"
+                          style={{ backgroundColor: house.color }}
+                        >
+                          <div className="absolute -top-0.5 -right-0.5 w-1 h-1 bg-white rounded-full animate-pulse"></div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-[#00ACEF]" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="px-4 py-6 sm:p-8 space-y-8 min-h-screen">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="space-y-1">
+          <h1 className="text-3xl sm:text-4xl font-black text-gray-800">Leaderboard</h1>
+          <p className="text-gray-700 text-sm sm:text-base">See how you and your school compare with others</p>
+        </div>
+        <Button 
+          onClick={loadLeaderboardData}
+          variant="outline"
+          className="gap-2 w-full sm:w-auto"
+          style={{ backgroundColor: '#0B4B39', color: 'white', borderColor: '#0B4B39' }}
+        >
+          <RefreshCw className="w-4 h-4" />
+          Refresh
+        </Button>
+      </div>
+      
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+        <TabsList
+          className="grid w-full grid-cols-3 items-center gap-2 shadow-sm rounded-2xl border border-gray-200 p-3 h-auto sm:p-4 sm:min-h-16"
+          style={{ backgroundColor: '#f9fefd' }}
+        >
+          <TabsTrigger
+            value="personal"
+            className="flex items-center justify-center gap-2 rounded-full px-3 py-2.5 text-xs font-medium text-gray-500 hover:text-[#0B4B39] hover:bg-[#0B4B39]/10 transition-all duration-150 sm:px-4 sm:py-2 sm:text-base data-[state=active]:bg-[#0B4B39] data-[state=active]:text-white"
+          >
+            <Trophy className="w-4 h-4" />
+            Your Rankings
+          </TabsTrigger>
+          <TabsTrigger
+            value="houses"
+            className="flex items-center justify-center gap-2 rounded-full px-3 py-2.5 text-xs font-medium text-gray-500 hover:text-[#0B4B39] hover:bg-[#0B4B39]/10 transition-all duration-150 sm:px-4 sm:py-2 sm:text-base data-[state=active]:bg-[#0B4B39] data-[state=active]:text-white"
+          >
+            <Crown className="w-4 h-4" />
+            House Battle
+          </TabsTrigger>
+          <TabsTrigger
+            value="schools"
+            className="flex items-center justify-center gap-2 rounded-full px-3 py-2.5 text-xs font-medium text-gray-500 hover:text-[#0B4B39] hover:bg-[#0B4B39]/10 transition-all duration-150 sm:px-4 sm:py-2 sm:text-base data-[state=active]:bg-[#0B4B39] data-[state=active]:text-white"
+          >
+            <Award className="w-4 h-4" />
+            School Competition
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="personal">
+          <PersonalDashboard />
+        </TabsContent>
+        
+        <TabsContent value="houses">
+          <HouseBattle />
+        </TabsContent>
+
+        <TabsContent value="schools">
+          <SchoolCompetition />
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+};
+
+export default LeaderboardContent; 
