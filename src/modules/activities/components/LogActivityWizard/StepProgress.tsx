@@ -1,4 +1,4 @@
-import { STEP_LABELS, TOTAL_STEPS } from './types';
+import { STEP_LABELS, TOTAL_STEPS } from "./types";
 
 interface StepProgressProps {
   currentStep: number;
@@ -15,7 +15,7 @@ const StepProgress = ({ currentStep }: StepProgressProps) => {
           <div
             key={i}
             className="h-1.5 flex-1 rounded-full transition-colors duration-300"
-            style={{ backgroundColor: i < currentStep ? '#0B4B39' : '#D1D5DB' }}
+            style={{ backgroundColor: i < currentStep ? "#0B4B39" : "#D1D5DB" }}
           />
         ))}
       </div>

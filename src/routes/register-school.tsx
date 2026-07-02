@@ -6,19 +6,31 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import { checkDomainAvailable } from "@/lib/registration.functions";
 import { LOGOS } from "@/lib/logos";
 
 const REGIONS = [
-  "Waikato", "Auckland", "Bay of Plenty", "Taranaki", "Manawatū-Whanganui",
-  "Wellington", "Canterbury", "Otago", "Southland", "Northland",
+  "Waikato",
+  "Auckland",
+  "Bay of Plenty",
+  "Taranaki",
+  "Manawatū-Whanganui",
+  "Wellington",
+  "Canterbury",
+  "Otago",
+  "Southland",
+  "Northland",
 ];
 
-const SCHOOL_TYPES = [
-  "Primary", "Intermediate", "Secondary", "Full Primary", "Composite",
-];
+const SCHOOL_TYPES = ["Primary", "Intermediate", "Secondary", "Full Primary", "Composite"];
 
 const DEFAULT_HOUSES = [
   { name: "", color: "#D103D1" },
@@ -78,46 +90,114 @@ function RegisterSchoolPage() {
         setDomainAvailable(avail);
         setCheckingDomain(false);
       })
-      .catch(() => { setDomainAvailable(null); setCheckingDomain(false); });
+      .catch(() => {
+        setDomainAvailable(null);
+        setCheckingDomain(false);
+      });
   }, [primaryDomain]);
 
-  const PERSONAL_DOMAINS = ["gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "icloud.com", "live.com", "protonmail.com"];
+  const PERSONAL_DOMAINS = [
+    "gmail.com",
+    "yahoo.com",
+    "hotmail.com",
+    "outlook.com",
+    "icloud.com",
+    "live.com",
+    "protonmail.com",
+  ];
 
   const validateStep1 = () => {
-    if (!schoolName.trim()) { toast.error("Enter your school name"); return false; }
-    if (!region) { toast.error("Select your region"); return false; }
-    if (!schoolType) { toast.error("Select your school type"); return false; }
+    if (!schoolName.trim()) {
+      toast.error("Enter your school name");
+      return false;
+    }
+    if (!region) {
+      toast.error("Select your region");
+      return false;
+    }
+    if (!schoolType) {
+      toast.error("Select your school type");
+      return false;
+    }
     return true;
   };
 
   const validateStep2 = () => {
-    if (!primaryDomain) { toast.error("Enter your school email domain"); return false; }
-    if (PERSONAL_DOMAINS.includes(primaryDomain)) { toast.error("Use your school domain, not a personal email domain"); return false; }
-    if (domainAvailable === false) { toast.error("This domain is already registered to another school"); return false; }
-    if (secondaryDomain && PERSONAL_DOMAINS.includes(secondaryDomain)) { toast.error("Secondary domain cannot be a personal domain"); return false; }
+    if (!primaryDomain) {
+      toast.error("Enter your school email domain");
+      return false;
+    }
+    if (PERSONAL_DOMAINS.includes(primaryDomain)) {
+      toast.error("Use your school domain, not a personal email domain");
+      return false;
+    }
+    if (domainAvailable === false) {
+      toast.error("This domain is already registered to another school");
+      return false;
+    }
+    if (secondaryDomain && PERSONAL_DOMAINS.includes(secondaryDomain)) {
+      toast.error("Secondary domain cannot be a personal domain");
+      return false;
+    }
     return true;
   };
 
   const validateStep3 = () => {
-    if (customHouses.length < 2) { toast.error("Add at least 2 houses"); return false; }
-    if (customHouses.some((h) => !h.name.trim())) { toast.error("Every house needs a name"); return false; }
+    if (customHouses.length < 2) {
+      toast.error("Add at least 2 houses");
+      return false;
+    }
+    if (customHouses.some((h) => !h.name.trim())) {
+      toast.error("Every house needs a name");
+      return false;
+    }
     return true;
   };
 
   const validateStep4 = () => {
-    if (!authMethod) { toast.error("Choose a sign-up method"); return false; }
-    if (authMethod === "google" && !adminEmail) { toast.error("Sign in with Google first"); return false; }
-    if (authMethod === "email") {
-      if (!adminFirstName.trim()) { toast.error("Enter your first name"); return false; }
-      if (!adminLastName.trim()) { toast.error("Enter your last name"); return false; }
-      if (!adminEmail) { toast.error("Enter your email address"); return false; }
-      if (!adminEmail.includes(primaryDomain)) { toast.error("Your email must use the school domain"); return false; }
-      if (adminPassword.length < 8) { toast.error("Password must be at least 8 characters"); return false; }
-    } else {
-      if (!adminFirstName.trim()) { toast.error("Enter your first name"); return false; }
-      if (!adminLastName.trim()) { toast.error("Enter your last name"); return false; }
+    if (!authMethod) {
+      toast.error("Choose a sign-up method");
+      return false;
     }
-    if (!agreeTerms) { toast.error("You must agree to the terms"); return false; }
+    if (authMethod === "google" && !adminEmail) {
+      toast.error("Sign in with Google first");
+      return false;
+    }
+    if (authMethod === "email") {
+      if (!adminFirstName.trim()) {
+        toast.error("Enter your first name");
+        return false;
+      }
+      if (!adminLastName.trim()) {
+        toast.error("Enter your last name");
+        return false;
+      }
+      if (!adminEmail) {
+        toast.error("Enter your email address");
+        return false;
+      }
+      if (!adminEmail.includes(primaryDomain)) {
+        toast.error("Your email must use the school domain");
+        return false;
+      }
+      if (adminPassword.length < 8) {
+        toast.error("Password must be at least 8 characters");
+        return false;
+      }
+    } else {
+      if (!adminFirstName.trim()) {
+        toast.error("Enter your first name");
+        return false;
+      }
+      if (!adminLastName.trim()) {
+        toast.error("Enter your last name");
+        return false;
+      }
+    }
+    if (!agreeTerms) {
+      toast.error("You must agree to the terms");
+      return false;
+    }
     return true;
   };
 
@@ -243,18 +323,22 @@ function RegisterSchoolPage() {
       }
 
       // Insert houses
-      const { error: housesError } = await supabase
-        .from("houses")
-        .insert(
-          houses.filter((h) => h.name.trim()).map((h) => ({
+      const { error: housesError } = await supabase.from("houses").insert(
+        houses
+          .filter((h) => h.name.trim())
+          .map((h) => ({
             school_id: school.id,
             name: h.name.trim(),
             color: h.color,
           })),
-        );
+      );
 
       if (housesError) {
-        await supabase.from("schools").delete().eq("id", school.id).catch(() => {});
+        await supabase
+          .from("schools")
+          .delete()
+          .eq("id", school.id)
+          .catch(() => {});
         if (authMethod !== "google") {
           await supabase.auth.admin.deleteUser(userId).catch(() => {});
         }
@@ -338,7 +422,8 @@ function RegisterSchoolPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <p>
-              Thanks, {adminFirstName}! Your request for <strong>{schoolName}</strong> is being reviewed.
+              Thanks, {adminFirstName}! Your request for <strong>{schoolName}</strong> is being
+              reviewed.
             </p>
             <p className="text-sm text-muted-foreground">
               We'll email you at <strong>{adminEmail}</strong> once your school has been approved.
@@ -366,12 +451,18 @@ function RegisterSchoolPage() {
             className="mx-auto mb-2"
             style={{ width: "140px", height: "auto" }}
           />
-          <h1 className="text-2xl font-bold" style={{ color: "#0A4B39" }}>Register your school</h1>
-          <p className="text-sm text-muted-foreground mt-1">Get your school set up on the platform</p>
+          <h1 className="text-2xl font-bold" style={{ color: "#0A4B39" }}>
+            Register your school
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Get your school set up on the platform
+          </p>
         </div>
 
         <div className="space-y-2">
-          <p className="text-sm text-muted-foreground text-center">Step {step} of {totalSteps}</p>
+          <p className="text-sm text-muted-foreground text-center">
+            Step {step} of {totalSteps}
+          </p>
           <Progress value={(step / totalSteps) * 100} className="h-2" />
         </div>
 
@@ -406,18 +497,30 @@ function RegisterSchoolPage() {
                 <div>
                   <Label>Region *</Label>
                   <Select value={region} onValueChange={setRegion}>
-                    <SelectTrigger><SelectValue placeholder="Select region" /></SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select region" />
+                    </SelectTrigger>
                     <SelectContent>
-                      {REGIONS.map((r) => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+                      {REGIONS.map((r) => (
+                        <SelectItem key={r} value={r}>
+                          {r}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
                   <Label>School type *</Label>
                   <Select value={schoolType} onValueChange={setSchoolType}>
-                    <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
                     <SelectContent>
-                      {SCHOOL_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                      {SCHOOL_TYPES.map((t) => (
+                        <SelectItem key={t} value={t}>
+                          {t}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -432,18 +535,26 @@ function RegisterSchoolPage() {
                   <Input
                     id="primaryDomain"
                     value={primaryDomain}
-                    onChange={(e) => setPrimaryDomain(e.target.value.toLowerCase().replace(/^@/, ""))}
+                    onChange={(e) =>
+                      setPrimaryDomain(e.target.value.toLowerCase().replace(/^@/, ""))
+                    }
                     placeholder="e.g. karawhiua.school.nz"
                   />
-                  {checkingDomain && <p className="text-xs text-muted-foreground mt-1">Checking availability…</p>}
+                  {checkingDomain && (
+                    <p className="text-xs text-muted-foreground mt-1">Checking availability…</p>
+                  )}
                   {!checkingDomain && domainAvailable === true && (
                     <p className="text-xs text-green-600 mt-1">✓ Domain available</p>
                   )}
                   {!checkingDomain && domainAvailable === false && (
-                    <p className="text-xs text-destructive mt-1">This domain is already registered</p>
+                    <p className="text-xs text-destructive mt-1">
+                      This domain is already registered
+                    </p>
                   )}
                   {primaryDomain && PERSONAL_DOMAINS.includes(primaryDomain) && (
-                    <p className="text-xs text-destructive mt-1">Use your school domain, not a personal email domain</p>
+                    <p className="text-xs text-destructive mt-1">
+                      Use your school domain, not a personal email domain
+                    </p>
                   )}
                 </div>
                 <div>
@@ -451,7 +562,9 @@ function RegisterSchoolPage() {
                   <Input
                     id="secondaryDomain"
                     value={secondaryDomain}
-                    onChange={(e) => setSecondaryDomain(e.target.value.toLowerCase().replace(/^@/, ""))}
+                    onChange={(e) =>
+                      setSecondaryDomain(e.target.value.toLowerCase().replace(/^@/, ""))
+                    }
                     placeholder="e.g. student.karawhiua.school.nz"
                   />
                 </div>
@@ -469,7 +582,9 @@ function RegisterSchoolPage() {
                           className="w-10 h-10 rounded-lg border cursor-pointer"
                           style={{ backgroundColor: h.color }}
                           onClick={() => {
-                            const input = document.getElementById(`house-color-${i}`) as HTMLInputElement;
+                            const input = document.getElementById(
+                              `house-color-${i}`,
+                            ) as HTMLInputElement;
                             input?.click();
                           }}
                         />
@@ -539,12 +654,28 @@ function RegisterSchoolPage() {
                   disabled={googleProcessing || authMethod === "google"}
                 >
                   <svg className="w-5 h-5" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                    <path
+                      fill="#4285F4"
+                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
+                    />
+                    <path
+                      fill="#34A853"
+                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                    />
+                    <path
+                      fill="#FBBC05"
+                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                    />
+                    <path
+                      fill="#EA4335"
+                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                    />
                   </svg>
-                  {authMethod === "google" ? "✓ Signed in with Google" : googleProcessing ? "Connecting…" : "Continue with Google"}
+                  {authMethod === "google"
+                    ? "✓ Signed in with Google"
+                    : googleProcessing
+                      ? "Connecting…"
+                      : "Continue with Google"}
                 </Button>
 
                 {/* Divider */}
@@ -554,7 +685,9 @@ function RegisterSchoolPage() {
                       <span className="w-full border-t" />
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-card px-2 text-muted-foreground">or sign up with email</span>
+                      <span className="bg-card px-2 text-muted-foreground">
+                        or sign up with email
+                      </span>
                     </div>
                   </div>
                 )}
@@ -567,11 +700,19 @@ function RegisterSchoolPage() {
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <Label htmlFor="adminFirstName">First name *</Label>
-                        <Input id="adminFirstName" value={adminFirstName} onChange={(e) => setAdminFirstName(e.target.value)} />
+                        <Input
+                          id="adminFirstName"
+                          value={adminFirstName}
+                          onChange={(e) => setAdminFirstName(e.target.value)}
+                        />
                       </div>
                       <div>
                         <Label htmlFor="adminLastName">Last name *</Label>
-                        <Input id="adminLastName" value={adminLastName} onChange={(e) => setAdminLastName(e.target.value)} />
+                        <Input
+                          id="adminLastName"
+                          value={adminLastName}
+                          onChange={(e) => setAdminLastName(e.target.value)}
+                        />
                       </div>
                     </div>
                     <div className="flex items-start gap-2">
@@ -583,7 +724,8 @@ function RegisterSchoolPage() {
                         className="mt-1"
                       />
                       <Label htmlFor="agreeTerms" className="text-sm">
-                        I confirm that I am authorised to register this school and agree to the terms of service.
+                        I confirm that I am authorised to register this school and agree to the
+                        terms of service.
                       </Label>
                     </div>
                   </div>
@@ -594,11 +736,19 @@ function RegisterSchoolPage() {
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <Label htmlFor="adminFirstName">First name *</Label>
-                        <Input id="adminFirstName" value={adminFirstName} onChange={(e) => setAdminFirstName(e.target.value)} />
+                        <Input
+                          id="adminFirstName"
+                          value={adminFirstName}
+                          onChange={(e) => setAdminFirstName(e.target.value)}
+                        />
                       </div>
                       <div>
                         <Label htmlFor="adminLastName">Last name *</Label>
-                        <Input id="adminLastName" value={adminLastName} onChange={(e) => setAdminLastName(e.target.value)} />
+                        <Input
+                          id="adminLastName"
+                          value={adminLastName}
+                          onChange={(e) => setAdminLastName(e.target.value)}
+                        />
                       </div>
                     </div>
                     <div>
@@ -611,7 +761,9 @@ function RegisterSchoolPage() {
                         placeholder={`you@${primaryDomain || "school.nz"}`}
                       />
                       {adminEmail && !adminEmail.includes(primaryDomain) && (
-                        <p className="text-xs text-destructive mt-1">Must use your school domain (@{primaryDomain})</p>
+                        <p className="text-xs text-destructive mt-1">
+                          Must use your school domain (@{primaryDomain})
+                        </p>
                       )}
                     </div>
                     <div>
@@ -633,7 +785,8 @@ function RegisterSchoolPage() {
                         className="mt-1"
                       />
                       <Label htmlFor="agreeTerms" className="text-sm">
-                        I confirm that I am authorised to register this school and agree to the terms of service.
+                        I confirm that I am authorised to register this school and agree to the
+                        terms of service.
                       </Label>
                     </div>
                   </>
@@ -646,7 +799,9 @@ function RegisterSchoolPage() {
         {/* Navigation */}
         <div className="flex justify-between">
           {step > 1 ? (
-            <Button variant="outline" onClick={() => setStep(step - 1)}>Back</Button>
+            <Button variant="outline" onClick={() => setStep(step - 1)}>
+              Back
+            </Button>
           ) : (
             <div />
           )}

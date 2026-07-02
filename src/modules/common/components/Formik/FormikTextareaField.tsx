@@ -1,6 +1,6 @@
-import { Field, ErrorMessage } from 'formik';
-import { Textarea } from '@/modules/application/components/DesignSystem/ui/textarea';
-import { Label } from '@/modules/application/components/DesignSystem/ui/label';
+import { Field, ErrorMessage } from "formik";
+import { Textarea } from "@/modules/application/components/DesignSystem/ui/textarea";
+import { Label } from "@/modules/application/components/DesignSystem/ui/label";
 
 interface FormikTextareaFieldProps {
   name: string;
@@ -19,9 +19,9 @@ const FormikTextareaField = ({ name, label, ...props }: FormikTextareaFieldProps
             <Textarea
               {...field}
               {...props}
-              value={field.value ?? ''}
+              value={field.value ?? ""}
               id={name}
-              className={meta.touched && meta.error ? 'border-red-500' : ''}
+              className={meta.touched && meta.error ? "border-red-500" : ""}
             />
             <ErrorMessage name={name} component="div" className="text-red-500 text-sm" />
           </>
@@ -31,4 +31,4 @@ const FormikTextareaField = ({ name, label, ...props }: FormikTextareaFieldProps
   );
 };
 
-export default FormikTextareaField; 
+export default FormikTextareaField;

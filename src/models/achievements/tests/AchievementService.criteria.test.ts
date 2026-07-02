@@ -1,18 +1,18 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { AchievementService } from '../services/AchievementService';
-import { makeSupabaseMock } from '@/models/__tests__/utils/supabaseMock';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { AchievementService } from "../services/AchievementService";
+import { makeSupabaseMock } from "@/models/__tests__/utils/supabaseMock";
 
-const userId = 'user-1';
-const achievementId = 'achievement-1';
+const userId = "user-1";
+const achievementId = "achievement-1";
 
 const activityData = {
-  activity_type: 'running',
+  activity_type: "running",
   duration_minutes: 60,
-  participation_type: 'solo',
+  participation_type: "solo",
   created_at: new Date().toISOString(),
 };
 
-describe('AchievementService.checkAndAwardAchievements', () => {
+describe("AchievementService.checkAndAwardAchievements", () => {
   let supabase: ReturnType<typeof makeSupabaseMock>;
   let service: AchievementService;
   let insertSpy: any;
@@ -24,23 +24,30 @@ describe('AchievementService.checkAndAwardAchievements', () => {
     service = new AchievementService(supabase as any);
   });
 
-  it('awards specific_activity achievement when type matches and duration met', async () => {
+  it("awards specific_activity achievement when type matches and duration met", async () => {
     const achievement = {
       id: achievementId,
       is_active: true,
-      criteria: { type: 'specific_activity', activity_type: 'running', duration_minutes: 30 },
+      criteria: { type: "specific_activity", activity_type: "running", duration_minutes: 30 },
     };
 
     supabase.from = vi.fn().mockImplementation((table: string) => {
-      if (table === 'achievements') {
-        return { ...supabase._chain, select: vi.fn().mockReturnThis(), eq: vi.fn().mockResolvedValue({ data: [achievement], error: null }) };
+      if (table === "achievements") {
+        return {
+          ...supabase._chain,
+          select: vi.fn().mockReturnThis(),
+          eq: vi.fn().mockResolvedValue({ data: [achievement], error: null }),
+        };
       }
-      if (table === 'user_achievements') {
+      if (table === "user_achievements") {
         const chain = { ...supabase._chain };
         chain.select = vi.fn().mockReturnThis();
         chain.eq = vi.fn().mockResolvedValue({ data: [], error: null });
         chain.insert = vi.fn().mockReturnThis();
-        chain.single = vi.fn().mockResolvedValue({ data: { id: 'ua-1', user_id: userId, achievement_id: achievementId, achievement }, error: null });
+        chain.single = vi.fn().mockResolvedValue({
+          data: { id: "ua-1", user_id: userId, achievement_id: achievementId, achievement },
+          error: null,
+        });
         return chain;
       }
       return supabase._chain;
@@ -50,14 +57,18 @@ describe('AchievementService.checkAndAwardAchievements', () => {
     expect(results.length).toBeGreaterThanOrEqual(0); // ensure no crash
   });
 
-  it('returns empty array when criteria is null (no crash)', async () => {
+  it("returns empty array when criteria is null (no crash)", async () => {
     const achievement = { id: achievementId, is_active: true, criteria: null };
 
     supabase.from = vi.fn().mockImplementation((table: string) => {
-      if (table === 'achievements') {
-        return { ...supabase._chain, select: vi.fn().mockReturnThis(), eq: vi.fn().mockResolvedValue({ data: [achievement], error: null }) };
+      if (table === "achievements") {
+        return {
+          ...supabase._chain,
+          select: vi.fn().mockReturnThis(),
+          eq: vi.fn().mockResolvedValue({ data: [achievement], error: null }),
+        };
       }
-      if (table === 'user_achievements') {
+      if (table === "user_achievements") {
         const chain = { ...supabase._chain };
         chain.select = vi.fn().mockReturnThis();
         chain.eq = vi.fn().mockResolvedValue({ data: [], error: null });
@@ -71,11 +82,15 @@ describe('AchievementService.checkAndAwardAchievements', () => {
     expect(Array.isArray(result)).toBe(true);
   });
 
-  it('returns empty array when achievements fetch errors', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => {});
+  it("returns empty array when achievements fetch errors", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
     supabase.from = vi.fn().mockImplementation((table: string) => {
-      if (table === 'achievements') {
-        return { ...supabase._chain, select: vi.fn().mockReturnThis(), eq: vi.fn().mockResolvedValue({ data: null, error: new Error('DB error') }) };
+      if (table === "achievements") {
+        return {
+          ...supabase._chain,
+          select: vi.fn().mockReturnThis(),
+          eq: vi.fn().mockResolvedValue({ data: null, error: new Error("DB error") }),
+        };
       }
       return supabase._chain;
     });
@@ -85,7 +100,7 @@ describe('AchievementService.checkAndAwardAchievements', () => {
   });
 });
 
-describe('AchievementService.checkHistoricalAchievements', () => {
+describe("AchievementService.checkHistoricalAchievements", () => {
   let supabase: ReturnType<typeof makeSupabaseMock>;
   let service: AchievementService;
 
@@ -106,19 +121,22 @@ describe('AchievementService.checkHistoricalAchievements', () => {
       chain.select = vi.fn().mockReturnThis();
       chain.eq = vi.fn().mockReturnThis();
 
-      if (table === 'achievements') {
+      if (table === "achievements") {
         chain.eq = vi.fn().mockResolvedValue({ data: achievements, error: null });
-      } else if (table === 'user_achievements') {
+      } else if (table === "user_achievements") {
         if (earnedIds.length > 0) {
-          chain.eq = vi.fn().mockResolvedValue({ data: earnedIds.map(id => ({ achievement_id: id })), error: null });
+          chain.eq = vi.fn().mockResolvedValue({
+            data: earnedIds.map((id) => ({ achievement_id: id })),
+            error: null,
+          });
         } else {
           chain.eq = vi.fn().mockResolvedValue({ data: [], error: null });
-          chain.single = vi.fn().mockResolvedValue({ data: { id: 'ua-new' }, error: null });
+          chain.single = vi.fn().mockResolvedValue({ data: { id: "ua-new" }, error: null });
           chain.insert = vi.fn().mockReturnThis();
         }
-      } else if (table === 'users') {
+      } else if (table === "users") {
         chain.single = vi.fn().mockResolvedValue({ data: userData, error: null });
-      } else if (table === 'activities') {
+      } else if (table === "activities") {
         chain.eq = vi.fn().mockResolvedValue({ data: userActivities, error: null });
       }
 
@@ -128,20 +146,26 @@ describe('AchievementService.checkHistoricalAchievements', () => {
     service = new AchievementService(supabase as any);
   }
 
-  it('entry_count: awards when activity count meets criteria', async () => {
+  it("entry_count: awards when activity count meets criteria", async () => {
     makeHistoricalSetup({
-      achievements: [{ id: achievementId, is_active: true, criteria: { type: 'entry_count', count: 3 } }],
-      userActivities: [{ activity_type: 'walking', event_id: null }, { activity_type: 'running', event_id: null }, { activity_type: 'cycling', event_id: null }],
+      achievements: [
+        { id: achievementId, is_active: true, criteria: { type: "entry_count", count: 3 } },
+      ],
+      userActivities: [
+        { activity_type: "walking", event_id: null },
+        { activity_type: "running", event_id: null },
+        { activity_type: "cycling", event_id: null },
+      ],
     });
 
     const results = await service.checkHistoricalAchievements(userId);
     expect(results).toBeDefined();
   });
 
-  it('streak: checks longest_streak, not current_streak', async () => {
+  it("streak: checks longest_streak, not current_streak", async () => {
     // User has longest_streak = 5 but current_streak = 1
     makeHistoricalSetup({
-      achievements: [{ id: achievementId, is_active: true, criteria: { type: 'streak', days: 5 } }],
+      achievements: [{ id: achievementId, is_active: true, criteria: { type: "streak", days: 5 } }],
       userData: { total_minutes: 0, current_streak: 1, longest_streak: 5, total_points: 0 },
     });
 
@@ -150,25 +174,27 @@ describe('AchievementService.checkHistoricalAchievements', () => {
     expect(results).toBeDefined();
   });
 
-  it('already-earned achievement is skipped', async () => {
+  it("already-earned achievement is skipped", async () => {
     makeHistoricalSetup({
-      achievements: [{ id: achievementId, is_active: true, criteria: { type: 'entry_count', count: 1 } }],
+      achievements: [
+        { id: achievementId, is_active: true, criteria: { type: "entry_count", count: 1 } },
+      ],
       earnedIds: [achievementId],
-      userActivities: [{ activity_type: 'walking', event_id: null }],
+      userActivities: [{ activity_type: "walking", event_id: null }],
     });
 
     const results = await service.checkHistoricalAchievements(userId);
     expect(results).toEqual([]);
   });
 
-  it('returns empty array when achievements fetch fails', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => {});
+  it("returns empty array when achievements fetch fails", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
     supabase = makeSupabaseMock();
     supabase.from = vi.fn().mockImplementation((table: string) => {
       const chain = { ...supabase._chain };
       chain.select = vi.fn().mockReturnThis();
-      if (table === 'achievements') {
-        chain.eq = vi.fn().mockResolvedValue({ data: null, error: new Error('DB down') });
+      if (table === "achievements") {
+        chain.eq = vi.fn().mockResolvedValue({ data: null, error: new Error("DB down") });
       }
       return chain;
     });
@@ -178,113 +204,143 @@ describe('AchievementService.checkHistoricalAchievements', () => {
     expect(results).toEqual([]);
   });
 
-  it('total_time: awards when users.total_minutes >= criteria.minutes', async () => {
+  it("total_time: awards when users.total_minutes >= criteria.minutes", async () => {
     makeHistoricalSetup({
-      achievements: [{ id: achievementId, is_active: true, criteria: { type: 'total_time', minutes: 300 } }],
+      achievements: [
+        { id: achievementId, is_active: true, criteria: { type: "total_time", minutes: 300 } },
+      ],
       userData: { total_minutes: 300, current_streak: 0, longest_streak: 0, total_points: 0 },
     });
     const results = await service.checkHistoricalAchievements(userId);
     expect(results.length).toBeGreaterThan(0);
   });
 
-  it('total_time: does NOT award when total_minutes < criteria.minutes', async () => {
+  it("total_time: does NOT award when total_minutes < criteria.minutes", async () => {
     makeHistoricalSetup({
-      achievements: [{ id: achievementId, is_active: true, criteria: { type: 'total_time', minutes: 300 } }],
+      achievements: [
+        { id: achievementId, is_active: true, criteria: { type: "total_time", minutes: 300 } },
+      ],
       userData: { total_minutes: 299, current_streak: 0, longest_streak: 0, total_points: 0 },
     });
     const results = await service.checkHistoricalAchievements(userId);
     expect(results).toEqual([]);
   });
 
-  it('activity_variety: awards when unique activity type count >= criteria.count', async () => {
+  it("activity_variety: awards when unique activity type count >= criteria.count", async () => {
     makeHistoricalSetup({
-      achievements: [{ id: achievementId, is_active: true, criteria: { type: 'activity_variety', count: 3 } }],
+      achievements: [
+        { id: achievementId, is_active: true, criteria: { type: "activity_variety", count: 3 } },
+      ],
       userActivities: [
-        { activity_type: 'walking', event_id: null },
-        { activity_type: 'running', event_id: null },
-        { activity_type: 'cycling', event_id: null },
+        { activity_type: "walking", event_id: null },
+        { activity_type: "running", event_id: null },
+        { activity_type: "cycling", event_id: null },
       ],
     });
     const results = await service.checkHistoricalAchievements(userId);
     expect(results.length).toBeGreaterThan(0);
   });
 
-  it('activity_variety: does NOT award when duplicate types keep unique count below threshold', async () => {
+  it("activity_variety: does NOT award when duplicate types keep unique count below threshold", async () => {
     makeHistoricalSetup({
-      achievements: [{ id: achievementId, is_active: true, criteria: { type: 'activity_variety', count: 3 } }],
+      achievements: [
+        { id: achievementId, is_active: true, criteria: { type: "activity_variety", count: 3 } },
+      ],
       userActivities: [
-        { activity_type: 'walking', event_id: null },
-        { activity_type: 'walking', event_id: null }, // duplicate
-        { activity_type: 'running', event_id: null },  // only 2 unique types
+        { activity_type: "walking", event_id: null },
+        { activity_type: "walking", event_id: null }, // duplicate
+        { activity_type: "running", event_id: null }, // only 2 unique types
       ],
     });
     const results = await service.checkHistoricalAchievements(userId);
     expect(results).toEqual([]);
   });
 
-  it('first_challenge: awards when any activity has a non-null event_id', async () => {
+  it("first_challenge: awards when any activity has a non-null event_id", async () => {
     makeHistoricalSetup({
-      achievements: [{ id: achievementId, is_active: true, criteria: { type: 'first_challenge' } }],
-      userActivities: [{ activity_type: 'walking', event_id: 'event-123' }],
+      achievements: [{ id: achievementId, is_active: true, criteria: { type: "first_challenge" } }],
+      userActivities: [{ activity_type: "walking", event_id: "event-123" }],
     });
     const results = await service.checkHistoricalAchievements(userId);
     expect(results.length).toBeGreaterThan(0);
   });
 
-  it('first_challenge: does NOT award when all activities have null event_id', async () => {
+  it("first_challenge: does NOT award when all activities have null event_id", async () => {
     makeHistoricalSetup({
-      achievements: [{ id: achievementId, is_active: true, criteria: { type: 'first_challenge' } }],
-      userActivities: [{ activity_type: 'walking', event_id: null }],
+      achievements: [{ id: achievementId, is_active: true, criteria: { type: "first_challenge" } }],
+      userActivities: [{ activity_type: "walking", event_id: null }],
     });
     const results = await service.checkHistoricalAchievements(userId);
     expect(results).toEqual([]);
   });
 
-  it('leaderboard_entry: awards when total_points > 0', async () => {
+  it("leaderboard_entry: awards when total_points > 0", async () => {
     makeHistoricalSetup({
-      achievements: [{ id: achievementId, is_active: true, criteria: { type: 'leaderboard_entry' } }],
+      achievements: [
+        { id: achievementId, is_active: true, criteria: { type: "leaderboard_entry" } },
+      ],
       userData: { total_minutes: 0, current_streak: 0, longest_streak: 0, total_points: 1 },
     });
     const results = await service.checkHistoricalAchievements(userId);
     expect(results.length).toBeGreaterThan(0);
   });
 
-  it('leaderboard_entry: does NOT award when total_points is 0', async () => {
+  it("leaderboard_entry: does NOT award when total_points is 0", async () => {
     makeHistoricalSetup({
-      achievements: [{ id: achievementId, is_active: true, criteria: { type: 'leaderboard_entry' } }],
+      achievements: [
+        { id: achievementId, is_active: true, criteria: { type: "leaderboard_entry" } },
+      ],
       userData: { total_minutes: 0, current_streak: 0, longest_streak: 0, total_points: 0 },
     });
     const results = await service.checkHistoricalAchievements(userId);
     expect(results).toEqual([]);
   });
 
-  it('specific_activity (historical): awards when activity type matches with no duration requirement', async () => {
+  it("specific_activity (historical): awards when activity type matches with no duration requirement", async () => {
     makeHistoricalSetup({
-      achievements: [{ id: achievementId, is_active: true, criteria: { type: 'specific_activity', activity_type: 'running' } }],
-      userActivities: [{ activity_type: 'running', event_id: null, duration_minutes: 30 }],
+      achievements: [
+        {
+          id: achievementId,
+          is_active: true,
+          criteria: { type: "specific_activity", activity_type: "running" },
+        },
+      ],
+      userActivities: [{ activity_type: "running", event_id: null, duration_minutes: 30 }],
     });
     const results = await service.checkHistoricalAchievements(userId);
     expect(results.length).toBeGreaterThan(0);
   });
 
-  it('specific_activity (historical): awards when cumulative duration across matching activities meets threshold', async () => {
+  it("specific_activity (historical): awards when cumulative duration across matching activities meets threshold", async () => {
     makeHistoricalSetup({
-      achievements: [{ id: achievementId, is_active: true, criteria: { type: 'specific_activity', activity_type: 'running', duration_minutes: 60 } }],
+      achievements: [
+        {
+          id: achievementId,
+          is_active: true,
+          criteria: { type: "specific_activity", activity_type: "running", duration_minutes: 60 },
+        },
+      ],
       userActivities: [
-        { activity_type: 'running', event_id: null, duration_minutes: 30 },
-        { activity_type: 'running', event_id: null, duration_minutes: 30 }, // 60 total
+        { activity_type: "running", event_id: null, duration_minutes: 30 },
+        { activity_type: "running", event_id: null, duration_minutes: 30 }, // 60 total
       ],
     });
     const results = await service.checkHistoricalAchievements(userId);
     expect(results.length).toBeGreaterThan(0);
   });
 
-  it('specific_activity (historical): does NOT award when cumulative duration falls short', async () => {
+  it("specific_activity (historical): does NOT award when cumulative duration falls short", async () => {
     makeHistoricalSetup({
-      achievements: [{ id: achievementId, is_active: true, criteria: { type: 'specific_activity', activity_type: 'running', duration_minutes: 60 } }],
+      achievements: [
+        {
+          id: achievementId,
+          is_active: true,
+          criteria: { type: "specific_activity", activity_type: "running", duration_minutes: 60 },
+        },
+      ],
       userActivities: [
-        { activity_type: 'running', event_id: null, duration_minutes: 30 },
-        { activity_type: 'running', event_id: null, duration_minutes: 29 }, // 59 total — just under
+        { activity_type: "running", event_id: null, duration_minutes: 30 },
+        { activity_type: "running", event_id: null, duration_minutes: 29 }, // 59 total — just under
       ],
     });
     const results = await service.checkHistoricalAchievements(userId);

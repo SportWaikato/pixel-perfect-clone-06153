@@ -11,5 +11,12 @@ function Page() {
   const { profile } = Route.useRouteContext();
   if (!profile) return null;
   const user = profile as UserInterface;
-  return <SchoolAdminDashboard user={user} viewingSchoolId={user.school_id} viewingSchoolName={user.school?.name ?? ''} viewingSchoolRegistrationMethod={user.school?.registration_method ?? undefined} />;
+  return (
+    <SchoolAdminDashboard
+      user={user}
+      viewingSchoolId={user.school_id}
+      viewingSchoolName={user.school?.name ?? ""}
+      viewingSchoolRegistrationMethod={user.school?.registration_method ?? undefined}
+    />
+  );
 }

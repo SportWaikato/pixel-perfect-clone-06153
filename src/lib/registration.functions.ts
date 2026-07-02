@@ -70,7 +70,12 @@ export const approveSchool = createServerFn({ method: "POST" })
     // Send approval email
     if (adminEmail) {
       try {
-        const { subject, html } = schoolApproved(firstName, school.name, joinCode, school.email_domain || "school.nz");
+        const { subject, html } = schoolApproved(
+          firstName,
+          school.name,
+          joinCode,
+          school.email_domain || "school.nz",
+        );
         await sendEmail({ data: { to: adminEmail, subject, html } });
       } catch (err) {
         console.error("Failed to send approval email:", err);

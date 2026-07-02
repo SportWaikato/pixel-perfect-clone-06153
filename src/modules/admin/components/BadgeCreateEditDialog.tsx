@@ -1,25 +1,35 @@
-import { useState } from 'react';
-import { AchievementInterface } from '@/models/achievements/interfaces/AchievementInterface';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/modules/application/components/DesignSystem/ui/dialog';
-import { Button } from '@/modules/application/components/DesignSystem/ui/button';
-import { Badge } from '@/modules/application/components/DesignSystem/ui/badge';
-import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
-import { AchievementService } from '@/models/achievements/services/AchievementService';
-import { BadgeImageHelper } from '@/models/achievements/helpers/BadgeImageHelper';
-import { Formik, Form } from 'formik';
-import { FormikInputField, FormikSelectField, FormikTextareaField } from '@/modules/common/components/Formik';
-import { SelectItem } from '@/modules/application/components/DesignSystem/ui/select';
-import { Upload, Image as ImageIcon, X } from 'lucide-react';
-import { toast } from 'sonner';
-import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-import BadgeCriteriaBuilder from '@/modules/admin/components/badges/BadgeCriteriaBuilder';
+import { useState } from "react";
+import { AchievementInterface } from "@/models/achievements/interfaces/AchievementInterface";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/modules/application/components/DesignSystem/ui/dialog";
+import { Button } from "@/modules/application/components/DesignSystem/ui/button";
+import { Badge } from "@/modules/application/components/DesignSystem/ui/badge";
+import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
+import { AchievementService } from "@/models/achievements/services/AchievementService";
+import { BadgeImageHelper } from "@/models/achievements/helpers/BadgeImageHelper";
+import { Formik, Form } from "formik";
+import {
+  FormikInputField,
+  FormikSelectField,
+  FormikTextareaField,
+} from "@/modules/common/components/Formik";
+import { SelectItem } from "@/modules/application/components/DesignSystem/ui/select";
+import { Upload, Image as ImageIcon, X } from "lucide-react";
+import { toast } from "sonner";
+import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
+import BadgeCriteriaBuilder from "@/modules/admin/components/badges/BadgeCriteriaBuilder";
+import AIBadgeGenerator from "@/modules/admin/components/badges/AIBadgeGenerator";
 import {
   type BadgeFormValues,
   badgeFormValidationSchema,
   buildBadgeCriteriaFromValues,
   getInitialBadgeFormValues,
   parseBadgeNumberField,
-} from '@/modules/admin/components/badges/badgeCriteriaHelpers';
+} from "@/modules/admin/components/badges/badgeCriteriaHelpers";
 
 interface BadgeCreateEditDialogProps {
   isOpen: boolean;
@@ -28,10 +38,17 @@ interface BadgeCreateEditDialogProps {
   badge: AchievementInterface | null;
 }
 
-const BadgeCreateEditDialog = ({ isOpen, onClose, onSuccess, badge }: BadgeCreateEditDialogProps) => {
+const BadgeCreateEditDialog = ({
+  isOpen,
+  onClose,
+  onSuccess,
+  badge,
+}: BadgeCreateEditDialogProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string>('');
+  const [previewUrl, setPreviewUrl] = useState<string>("");
+  const [aiStorageUrl, setAiStorageUrl] = useState<string | null>(null);
+  const [aiStoragePath, setAiStoragePath] = useState<string | null>(null);
 
   const achievementService = new AchievementService(createSupabaseClient());
   const isEditing = !!badge;
@@ -41,23 +58,23 @@ const BadgeCreateEditDialog = ({ isOpen, onClose, onSuccess, badge }: BadgeCreat
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"];
       const maxSize = 5 * 1024 * 1024; // 5MB
 
       if (!validTypes.includes(file.type)) {
-        toast.error('Please select a valid image file (JPEG, PNG, GIF, WebP)');
+        toast.error("Please select a valid image file (JPEG, PNG, GIF, WebP)");
         return;
       }
 
       if (file.size > maxSize) {
-        toast.error('Image file must be less than 5MB');
+        toast.error("Image file must be less than 5MB");
         return;
       }
 
       setSelectedFile(file);
 
       const reader = new FileReader();
-      reader.onload = e => {
+      reader.onload = (e) => {
         setPreviewUrl(e.target?.result as string);
       };
       reader.readAsDataURL(file);
@@ -66,7 +83,7 @@ const BadgeCreateEditDialog = ({ isOpen, onClose, onSuccess, badge }: BadgeCreat
 
   const handleRemoveFile = () => {
     setSelectedFile(null);
-    setPreviewUrl('');
+    setPreviewUrl("");
   };
 
   const handleSubmit = async (values: BadgeFormValues) => {
@@ -74,8 +91,8 @@ const BadgeCreateEditDialog = ({ isOpen, onClose, onSuccess, badge }: BadgeCreat
       setIsSubmitting(true);
 
       const pointsReward = parseBadgeNumberField(values.points_reward);
-      if (typeof pointsReward === 'undefined') {
-        toast.error('Points reward is invalid');
+      if (typeof pointsReward === "undefined") {
+        toast.error("Points reward is invalid");
         return;
       }
 
@@ -86,16 +103,23 @@ const BadgeCreateEditDialog = ({ isOpen, onClose, onSuccess, badge }: BadgeCreat
         description: values.description,
         icon_name: values.icon_name,
         points_reward: pointsReward,
-        is_active: values.is_active === 'true',
+        is_active: values.is_active === "true",
         criteria,
+        ...(aiStorageUrl ? { storage_url: aiStorageUrl } : {}),
+        ...(aiStoragePath ? { storage_path: aiStoragePath } : {}),
+        ...(aiStorageUrl ? { is_custom_upload: true } : {}),
       };
 
       if (isEditing) {
-        await achievementService.updateWithImage(badge.id, achievementData, selectedFile || undefined);
-        toast.success('Badge updated successfully!');
+        await achievementService.updateWithImage(
+          badge.id,
+          achievementData,
+          selectedFile || undefined,
+        );
+        toast.success("Badge updated successfully!");
       } else {
         await achievementService.createWithImage(achievementData, selectedFile || undefined);
-        toast.success('Badge created successfully!');
+        toast.success("Badge created successfully!");
       }
 
       onSuccess();
@@ -108,8 +132,17 @@ const BadgeCreateEditDialog = ({ isOpen, onClose, onSuccess, badge }: BadgeCreat
 
   const handleClose = () => {
     setSelectedFile(null);
-    setPreviewUrl('');
+    setPreviewUrl("");
+    setAiStorageUrl(null);
+    setAiStoragePath(null);
     onClose();
+  };
+
+  const handleAIGenerated = (storageUrl: string, storagePath: string) => {
+    setAiStorageUrl(storageUrl);
+    setAiStoragePath(storagePath);
+    setSelectedFile(null);
+    setPreviewUrl(storageUrl);
   };
 
   const getCurrentImageUrl = () => {
@@ -117,18 +150,16 @@ const BadgeCreateEditDialog = ({ isOpen, onClose, onSuccess, badge }: BadgeCreat
     if (badge && BadgeImageHelper.hasBadgeImage(badge)) {
       return BadgeImageHelper.getBadgeImageUrl(badge);
     }
-    return '';
+    return "";
   };
 
-  const hasCurrentImage = getCurrentImageUrl() !== '';
+  const hasCurrentImage = getCurrentImageUrl() !== "";
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>
-            {isEditing ? 'Edit Badge' : 'Create New Badge'}
-          </DialogTitle>
+          <DialogTitle>{isEditing ? "Edit Badge" : "Create New Badge"}</DialogTitle>
         </DialogHeader>
 
         <Formik<BadgeFormValues>
@@ -171,15 +202,28 @@ const BadgeCreateEditDialog = ({ isOpen, onClose, onSuccess, badge }: BadgeCreat
                     placeholder="10"
                   />
 
-                  <FormikSelectField
-                    name="is_active"
-                    label="Status"
-                    placeholder="Select status"
-                  >
+                  <FormikSelectField name="is_active" label="Status" placeholder="Select status">
                     <SelectItem value="true">Active</SelectItem>
                     <SelectItem value="false">Inactive</SelectItem>
                   </FormikSelectField>
                 </div>
+              </div>
+
+              <div className="space-y-4 border-t pt-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-medium">AI Generation (Optional)</h3>
+                </div>
+                <p className="text-sm text-gray-500">
+                  Generate a badge image using AI that matches the Karawhiua brand style.
+                </p>
+                <AIBadgeGenerator
+                  badgeName={values.name}
+                  badgeDescription={values.description}
+                  iconContext={values.icon_name}
+                  onGenerated={handleAIGenerated}
+                  hasExistingImage={!!(hasCurrentImage || aiStorageUrl)}
+                  disabled={!values.name?.trim()}
+                />
               </div>
 
               <div className="space-y-4">
@@ -210,19 +254,14 @@ const BadgeCreateEditDialog = ({ isOpen, onClose, onSuccess, badge }: BadgeCreat
                     </div>
                     <div className="flex-1">
                       <p className="text-sm font-medium">
-                        {selectedFile ? 'New Image Selected' : 'Current Badge Image'}
+                        {selectedFile ? "New Image Selected" : "Current Badge Image"}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {selectedFile ? selectedFile.name : 'Existing badge image'}
+                        {selectedFile ? selectedFile.name : "Existing badge image"}
                       </p>
                     </div>
                     {selectedFile && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={handleRemoveFile}
-                      >
+                      <Button type="button" variant="outline" size="sm" onClick={handleRemoveFile}>
                         <X size={14} />
                       </Button>
                     )}
@@ -234,7 +273,9 @@ const BadgeCreateEditDialog = ({ isOpen, onClose, onSuccess, badge }: BadgeCreat
                     <Upload className="mx-auto mb-4 h-12 w-12 text-gray-400" />
                     <div className="space-y-2">
                       <p className="text-sm text-gray-600">
-                        {hasCurrentImage ? 'Upload a new image to replace the current one' : 'Upload badge image'}
+                        {hasCurrentImage
+                          ? "Upload a new image to replace the current one"
+                          : "Upload badge image"}
                       </p>
                       <div className="flex justify-center">
                         <label className="cursor-pointer">
@@ -260,10 +301,7 @@ const BadgeCreateEditDialog = ({ isOpen, onClose, onSuccess, badge }: BadgeCreat
                   <h3 className="text-lg font-medium">Achievement Criteria</h3>
                 </div>
 
-                <BadgeCriteriaBuilder
-                  values={values}
-                  setFieldValue={setFieldValue}
-                />
+                <BadgeCriteriaBuilder values={values} setFieldValue={setFieldValue} />
               </div>
 
               <div className="flex justify-end space-x-3 border-t pt-4">
@@ -275,12 +313,8 @@ const BadgeCreateEditDialog = ({ isOpen, onClose, onSuccess, badge }: BadgeCreat
                 >
                   Cancel
                 </Button>
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="min-w-[100px]"
-                >
-                  {isSubmitting ? 'Saving...' : isEditing ? 'Update' : 'Create'}
+                <Button type="submit" disabled={isSubmitting} className="min-w-[100px]">
+                  {isSubmitting ? "Saving..." : isEditing ? "Update" : "Create"}
                 </Button>
               </div>
             </Form>

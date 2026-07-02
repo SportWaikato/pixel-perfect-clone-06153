@@ -1,9 +1,9 @@
-import { useState, useRef } from 'react';
-import { Button } from '@/modules/application/components/DesignSystem/ui/button';
-import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
-import { StorageService } from '@/models/storage/services/StorageService';
-import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-import { Upload, X, ImageIcon } from 'lucide-react';
+import { useState, useRef } from "react";
+import { Button } from "@/modules/application/components/DesignSystem/ui/button";
+import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
+import { StorageService } from "@/models/storage/services/StorageService";
+import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
+import { Upload, X, ImageIcon } from "lucide-react";
 
 export interface EventImageState {
   url: string;
@@ -40,25 +40,21 @@ const EventImageUpload = ({ currentImageUrl, onChange }: EventImageUploadProps) 
       setPreviewUrl(currentImageUrl || null);
     } finally {
       setIsUploading(false);
-      if (inputRef.current) inputRef.current.value = '';
+      if (inputRef.current) inputRef.current.value = "";
     }
   };
 
   const handleRemove = () => {
     setPreviewUrl(null);
     onChange(null);
-    if (inputRef.current) inputRef.current.value = '';
+    if (inputRef.current) inputRef.current.value = "";
   };
 
   return (
     <div className="space-y-3">
       {previewUrl ? (
         <div className="relative rounded-xl overflow-hidden border border-gray-200">
-          <img
-            src={previewUrl}
-            alt="Challenge image"
-            className="w-full"
-          />
+          <img src={previewUrl} alt="Challenge image" className="w-full" />
           <button
             type="button"
             onClick={handleRemove}
@@ -99,7 +95,7 @@ const EventImageUpload = ({ currentImageUrl, onChange }: EventImageUploadProps) 
           className="w-full"
         >
           <Upload size={14} className="mr-2" />
-          {isUploading ? 'Uploading...' : 'Change Image'}
+          {isUploading ? "Uploading..." : "Change Image"}
         </Button>
       )}
 

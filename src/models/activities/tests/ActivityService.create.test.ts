@@ -1,7 +1,11 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { ActivityService } from '../services/ActivityService';
-import { makeSupabaseMock } from '@/models/__tests__/utils/supabaseMock';
-import { MAX_ACTIVITY_DURATION_MINUTES, MAX_ACTIVITY_DAYS_AGO, MAX_ACTIVITIES_PER_DAY } from '../constants/activityValidationConstants';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { ActivityService } from "../services/ActivityService";
+import { makeSupabaseMock } from "@/models/__tests__/utils/supabaseMock";
+import {
+  MAX_ACTIVITY_DURATION_MINUTES,
+  MAX_ACTIVITY_DAYS_AGO,
+  MAX_ACTIVITIES_PER_DAY,
+} from "../constants/activityValidationConstants";
 
 const LIMIT_ERROR_FRAGMENT = "Something isn't right";
 
@@ -12,14 +16,14 @@ function daysAgo(n: number): string {
 }
 
 const baseActivity = {
-  user_id: 'user-1',
-  activity_type: 'walking',
+  user_id: "user-1",
+  activity_type: "walking",
   duration_minutes: 60,
-  feeling: 'happy' as const,
-  participation_type: 'solo' as const,
+  feeling: "happy" as const,
+  participation_type: "solo" as const,
 };
 
-describe('ActivityService.create — validation rules', () => {
+describe("ActivityService.create — validation rules", () => {
   let supabase: ReturnType<typeof makeSupabaseMock>;
   let service: ActivityService;
 
@@ -35,62 +39,73 @@ describe('ActivityService.create — validation rules', () => {
     service = new ActivityService(supabase as any);
   });
 
-  it('throws when duration exceeds MAX_ACTIVITY_DURATION_MINUTES', async () => {
+  it("throws when duration exceeds MAX_ACTIVITY_DURATION_MINUTES", async () => {
     await expect(
-      service.create({ ...baseActivity, duration_minutes: MAX_ACTIVITY_DURATION_MINUTES + 1 })
+      service.create({ ...baseActivity, duration_minutes: MAX_ACTIVITY_DURATION_MINUTES + 1 }),
     ).rejects.toThrow(LIMIT_ERROR_FRAGMENT);
   });
 
-  it('does not throw at exactly MAX_ACTIVITY_DURATION_MINUTES (boundary)', async () => {
+  it("does not throw at exactly MAX_ACTIVITY_DURATION_MINUTES (boundary)", async () => {
     // Mock the full create path returning a valid activity
-    supabase._chain.lte = vi.fn().mockReturnValue(Promise.resolve({ count: 0, data: null, error: null }));
+    supabase._chain.lte = vi
+      .fn()
+      .mockReturnValue(Promise.resolve({ count: 0, data: null, error: null }));
     supabase._chain.single.mockResolvedValue({
-      data: { ...baseActivity, duration_minutes: MAX_ACTIVITY_DURATION_MINUTES, id: '1', created_at: new Date().toISOString() },
+      data: {
+        ...baseActivity,
+        duration_minutes: MAX_ACTIVITY_DURATION_MINUTES,
+        id: "1",
+        created_at: new Date().toISOString(),
+      },
       error: null,
     });
     supabase.rpc.mockResolvedValue({ data: null, error: null });
 
     // Should not throw on duration validation (may fail later on insert mock — that's fine)
     await expect(
-      service.create({ ...baseActivity, duration_minutes: MAX_ACTIVITY_DURATION_MINUTES })
+      service.create({ ...baseActivity, duration_minutes: MAX_ACTIVITY_DURATION_MINUTES }),
     ).resolves.toBeDefined();
   });
 
-  it('throws when created_at is older than MAX_ACTIVITY_DAYS_AGO', async () => {
+  it("throws when created_at is older than MAX_ACTIVITY_DAYS_AGO", async () => {
     const tooOld = daysAgo(MAX_ACTIVITY_DAYS_AGO + 1);
-    await expect(
-      service.create({ ...baseActivity, created_at: tooOld })
-    ).rejects.toThrow(LIMIT_ERROR_FRAGMENT);
+    await expect(service.create({ ...baseActivity, created_at: tooOld })).rejects.toThrow(
+      LIMIT_ERROR_FRAGMENT,
+    );
   });
 
-  it('does not throw when created_at is exactly MAX_ACTIVITY_DAYS_AGO days ago (boundary)', async () => {
-    supabase._chain.lte = vi.fn().mockReturnValue(Promise.resolve({ count: 0, data: null, error: null }));
+  it("does not throw when created_at is exactly MAX_ACTIVITY_DAYS_AGO days ago (boundary)", async () => {
+    supabase._chain.lte = vi
+      .fn()
+      .mockReturnValue(Promise.resolve({ count: 0, data: null, error: null }));
     supabase._chain.single.mockResolvedValue({
-      data: { ...baseActivity, id: '1', created_at: daysAgo(MAX_ACTIVITY_DAYS_AGO) },
+      data: { ...baseActivity, id: "1", created_at: daysAgo(MAX_ACTIVITY_DAYS_AGO) },
       error: null,
     });
     supabase.rpc.mockResolvedValue({ data: null, error: null });
 
     await expect(
-      service.create({ ...baseActivity, created_at: daysAgo(MAX_ACTIVITY_DAYS_AGO) })
+      service.create({ ...baseActivity, created_at: daysAgo(MAX_ACTIVITY_DAYS_AGO) }),
     ).resolves.toBeDefined();
   });
 
   it(`throws when ${MAX_ACTIVITIES_PER_DAY} activities already logged today`, async () => {
-    supabase._chain.lte = vi.fn().mockReturnValue(
-      Promise.resolve({ count: MAX_ACTIVITIES_PER_DAY, data: null, error: null })
-    );
+    supabase._chain.lte = vi
+      .fn()
+      .mockReturnValue(Promise.resolve({ count: MAX_ACTIVITIES_PER_DAY, data: null, error: null }));
     service = new ActivityService(supabase as any);
 
     await expect(service.create(baseActivity)).rejects.toThrow(LIMIT_ERROR_FRAGMENT);
   });
 
   it(`does not throw when ${MAX_ACTIVITIES_PER_DAY - 1} activities logged today`, async () => {
-    supabase._chain.lte = vi.fn().mockReturnValue(
-      Promise.resolve({ count: MAX_ACTIVITIES_PER_DAY - 1, data: null, error: null })
-    );
+    supabase._chain.lte = vi
+      .fn()
+      .mockReturnValue(
+        Promise.resolve({ count: MAX_ACTIVITIES_PER_DAY - 1, data: null, error: null }),
+      );
     supabase._chain.single.mockResolvedValue({
-      data: { ...baseActivity, id: '1', created_at: new Date().toISOString() },
+      data: { ...baseActivity, id: "1", created_at: new Date().toISOString() },
       error: null,
     });
     supabase.rpc.mockResolvedValue({ data: null, error: null });
@@ -99,12 +114,14 @@ describe('ActivityService.create — validation rules', () => {
     await expect(service.create(baseActivity)).resolves.toBeDefined();
   });
 
-  it('throws when duration_minutes is missing', async () => {
-    supabase._chain.lte = vi.fn().mockReturnValue(Promise.resolve({ count: 0, data: null, error: null }));
+  it("throws when duration_minutes is missing", async () => {
+    supabase._chain.lte = vi
+      .fn()
+      .mockReturnValue(Promise.resolve({ count: 0, data: null, error: null }));
     service = new ActivityService(supabase as any);
 
-    await expect(
-      service.create({ ...baseActivity, duration_minutes: 0 })
-    ).rejects.toThrow('Duration in minutes is required');
+    await expect(service.create({ ...baseActivity, duration_minutes: 0 })).rejects.toThrow(
+      "Duration in minutes is required",
+    );
   });
 });

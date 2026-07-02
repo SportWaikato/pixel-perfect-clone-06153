@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback, useRef, Dispatch, SetStateAction } from 'react';
-import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
+import { useState, useEffect, useCallback, useRef, Dispatch, SetStateAction } from "react";
+import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
 
 interface UseAdminDataOptions<T> {
   fetchFn: () => Promise<T[]>;
@@ -34,7 +34,7 @@ function useAdminData<T>({
 }: UseAdminDataOptions<T>): UseAdminDataResult<T> {
   const [data, setData] = useState<T[]>(initialData ?? []);
   const [loading, setLoading] = useState(fetchOnMount && !initialData);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Keep a ref so refresh() always calls the latest fetchFn without being
   // recreated on every render (avoids stale closure / infinite effect loops).
@@ -63,9 +63,7 @@ function useAdminData<T>({
   }, []);
 
   const filteredData =
-    filterFn && searchTerm
-      ? data.filter(item => filterFn(item, searchTerm))
-      : data;
+    filterFn && searchTerm ? data.filter((item) => filterFn(item, searchTerm)) : data;
 
   return { data, filteredData, loading, searchTerm, setSearchTerm, refresh, setData };
 }

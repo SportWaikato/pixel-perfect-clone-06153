@@ -1,8 +1,8 @@
-import { SupabaseClient } from '@supabase/supabase-js';
-import { SchoolUpdateInterface } from '../interfaces/SchoolUpdateInterface';
+import { SupabaseClient } from "@supabase/supabase-js";
+import { SchoolUpdateInterface } from "../interfaces/SchoolUpdateInterface";
 
-const TABLE = 'school_updates';
-const READS_TABLE = 'school_update_reads';
+const TABLE = "school_updates";
+const READS_TABLE = "school_update_reads";
 
 export class SchoolUpdateService {
   private supabaseClient: SupabaseClient;
@@ -14,9 +14,9 @@ export class SchoolUpdateService {
   async getAll(limit = 50): Promise<SchoolUpdateInterface[]> {
     const { data, error } = await this.supabaseClient
       .from(TABLE)
-      .select('*, school:schools(name)')
-      .eq('is_active', true)
-      .order('created_at', { ascending: false })
+      .select("*, school:schools(name)")
+      .eq("is_active", true)
+      .order("created_at", { ascending: false })
       .limit(limit);
 
     if (error) throw new Error(error.message);
@@ -26,23 +26,27 @@ export class SchoolUpdateService {
   async getBySchoolId(schoolId: string, limit = 30): Promise<SchoolUpdateInterface[]> {
     const { data, error } = await this.supabaseClient
       .from(TABLE)
-      .select('*')
-      .eq('school_id', schoolId)
-      .eq('is_active', true)
-      .order('created_at', { ascending: false })
+      .select("*")
+      .eq("school_id", schoolId)
+      .eq("is_active", true)
+      .order("created_at", { ascending: false })
       .limit(limit);
 
     if (error) throw new Error(error.message);
     return data || [];
   }
 
-  async getWithReadStatus(schoolId: string, userId: string, limit = 20): Promise<SchoolUpdateInterface[]> {
+  async getWithReadStatus(
+    schoolId: string,
+    userId: string,
+    limit = 20,
+  ): Promise<SchoolUpdateInterface[]> {
     const { data, error } = await this.supabaseClient
       .from(TABLE)
       .select(`*, school_update_reads!left(user_id)`)
-      .eq('school_id', schoolId)
-      .eq('is_active', true)
-      .order('created_at', { ascending: false })
+      .eq("school_id", schoolId)
+      .eq("is_active", true)
+      .order("created_at", { ascending: false })
       .limit(limit);
 
     if (error) throw new Error(error.message);
@@ -60,8 +64,8 @@ export class SchoolUpdateService {
     const { data, error } = await this.supabaseClient
       .from(TABLE)
       .select(`id, school_update_reads!left(user_id)`)
-      .eq('school_id', schoolId)
-      .eq('is_active', true);
+      .eq("school_id", schoolId)
+      .eq("is_active", true);
 
     if (error) return 0;
 
@@ -100,7 +104,7 @@ export class SchoolUpdateService {
     const { error } = await this.supabaseClient
       .from(TABLE)
       .update({ is_active: false, updated_at: new Date().toISOString() })
-      .eq('id', id);
+      .eq("id", id);
 
     if (error) throw new Error(error.message);
   }
@@ -109,11 +113,11 @@ export class SchoolUpdateService {
     const updates = await this.getBySchoolId(schoolId);
     if (updates.length === 0) return;
 
-    const rows = updates.map(u => ({ update_id: u.id, user_id: userId }));
+    const rows = updates.map((u) => ({ update_id: u.id, user_id: userId }));
 
     const { error } = await this.supabaseClient
       .from(READS_TABLE)
-      .upsert(rows, { onConflict: 'update_id,user_id', ignoreDuplicates: true });
+      .upsert(rows, { onConflict: "update_id,user_id", ignoreDuplicates: true });
 
     if (error) throw new Error(error.message);
   }

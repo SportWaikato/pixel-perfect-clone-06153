@@ -1,34 +1,37 @@
-import { useState, useEffect } from 'react';
-import { useSearch } from '@tanstack/react-router';
-import { UserInterface } from '@/models/users/interfaces/UserInterface';
-import { EventInterface } from '@/models/events/interfaces/EventInterface';
-import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
-import { ActivityService } from '@/models/activities/services/ActivityService';
-import { EventService } from '@/models/events/services/EventService';
-import { calculateDistanceFromTime, ACTIVITY_CONVERSION_RATES } from '@/models/application/constants/applicationConstants';
-import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-import { Button } from '@/modules/application/components/DesignSystem/ui/button';
-import { ChevronLeft } from 'lucide-react';
-import { format as formatTz, toZonedTime } from 'date-fns-tz';
-import { useRouter } from '@tanstack/react-router';
-import { WizardState, EVENT_TYPE_TO_ACTIVITY_TYPE } from './types';
-import StepProgress from './StepProgress';
-import Step1Challenge from './Step1Challenge';
-import Step2ActivityType from './Step2ActivityType';
-import Step3DateDuration from './Step3DateDuration';
-import Step4Feedback from './Step4Feedback';
-import Step5Confirm from './Step5Confirm';
-import Step6Success from './Step6Success';
+import { useState, useEffect } from "react";
+import { useSearch } from "@tanstack/react-router";
+import { UserInterface } from "@/models/users/interfaces/UserInterface";
+import { EventInterface } from "@/models/events/interfaces/EventInterface";
+import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
+import { ActivityService } from "@/models/activities/services/ActivityService";
+import { EventService } from "@/models/events/services/EventService";
+import { StorageService } from "@/models/storage/services/StorageService";
+import {
+  calculateDistanceFromTime,
+  ACTIVITY_CONVERSION_RATES,
+} from "@/models/application/constants/applicationConstants";
+import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
+import { Button } from "@/modules/application/components/DesignSystem/ui/button";
+import { ChevronLeft } from "lucide-react";
+import { format as formatTz, toZonedTime } from "date-fns-tz";
+import { useRouter } from "@tanstack/react-router";
+import { WizardState, EVENT_TYPE_TO_ACTIVITY_TYPE } from "./types";
+import StepProgress from "./StepProgress";
+import Step1Challenge from "./Step1Challenge";
+import Step2ActivityType from "./Step2ActivityType";
+import Step3DateDuration from "./Step3DateDuration";
+import Step4Feedback from "./Step4Feedback";
+import Step5Confirm from "./Step5Confirm";
+import Step6Success from "./Step6Success";
 
-const NZ_TIMEZONE = 'Pacific/Auckland';
+const NZ_TIMEZONE = "Pacific/Auckland";
 
 const getNZDateString = () => {
   const nzDate = toZonedTime(new Date(), NZ_TIMEZONE);
-  return formatTz(nzDate, 'yyyy-MM-dd', { timeZone: NZ_TIMEZONE });
+  return formatTz(nzDate, "yyyy-MM-dd", { timeZone: NZ_TIMEZONE });
 };
 
-const createNZDate = (dateString: string) =>
-  new Date(`${dateString}T12:00:00+12:00`).toISOString();
+const createNZDate = (dateString: string) => new Date(`${dateString}T12:00:00+12:00`).toISOString();
 
 interface LogActivityWizardProps {
   user: UserInterface;
@@ -37,17 +40,23 @@ interface LogActivityWizardProps {
 }
 
 const defaultState = (): WizardState => ({
-  eventId: '',
-  activityType: 'run_jog',
-  customActivityName: '',
+  eventId: "",
+  activityType: "run_jog",
+  customActivityName: "",
   activityDate: getNZDateString(),
   durationMinutes: 0,
-  feeling: '',
-  participationType: 'solo',
-  notes: '',
+  feeling: "",
+  participationType: "solo",
+  notes: "",
+  proofImageFile: null,
+  shareToFeed: false,
 });
 
-const LogActivityWizard = ({ user, initialChallenges, onActivityAdded }: LogActivityWizardProps) => {
+const LogActivityWizard = ({
+  user,
+  initialChallenges,
+  onActivityAdded,
+}: LogActivityWizardProps) => {
   const router = useRouter();
   const searchParams = useSearch({ strict: false });
   const [step, setStep] = useState(1);
@@ -59,10 +68,10 @@ const LogActivityWizard = ({ user, initialChallenges, onActivityAdded }: LogActi
   const [challengePreselected, setChallengePreselected] = useState(false);
 
   useEffect(() => {
-    const challengeFromUrl = searchParams.get('challenge');
+    const challengeFromUrl = searchParams.get("challenge");
     if (challengeFromUrl && challenges.some((c) => c.id === challengeFromUrl)) {
       const found = challenges.find((c) => c.id === challengeFromUrl);
-      const locked = found ? EVENT_TYPE_TO_ACTIVITY_TYPE[found.event_type ?? ''] : null;
+      const locked = found ? EVENT_TYPE_TO_ACTIVITY_TYPE[found.event_type ?? ""] : null;
       setData((prev) => ({
         ...prev,
         eventId: challengeFromUrl,
@@ -73,12 +82,13 @@ const LogActivityWizard = ({ user, initialChallenges, onActivityAdded }: LogActi
     }
   }, [challenges, searchParams]);
 
-  const update = (updates: Partial<WizardState>) =>
-    setData((prev) => ({ ...prev, ...updates }));
+  const update = (updates: Partial<WizardState>) => setData((prev) => ({ ...prev, ...updates }));
 
   const getLockedActivityType = () => {
     const selectedChallenge = challenges.find((c) => c.id === data.eventId);
-    return selectedChallenge ? (EVENT_TYPE_TO_ACTIVITY_TYPE[selectedChallenge.event_type] ?? null) : null;
+    return selectedChallenge
+      ? (EVENT_TYPE_TO_ACTIVITY_TYPE[selectedChallenge.event_type] ?? null)
+      : null;
   };
 
   const canAdvance = () => {
@@ -107,7 +117,11 @@ const LogActivityWizard = ({ user, initialChallenges, onActivityAdded }: LogActi
       return;
     }
     if (step === 3 && getLockedActivityType()) {
-      challengePreselected ? window.history.back() : setStep(1);
+      if (challengePreselected) {
+        window.history.back();
+      } else {
+        setStep(1);
+      }
       return;
     }
     setStep((s) => Math.max(s - 1, 1));
@@ -131,7 +145,7 @@ const LogActivityWizard = ({ user, initialChallenges, onActivityAdded }: LogActi
 
       const distance = calculateDistanceFromTime(
         finalType as keyof typeof ACTIVITY_CONVERSION_RATES,
-        data.durationMinutes
+        data.durationMinutes,
       );
 
       const pts = (() => {
@@ -143,20 +157,35 @@ const LogActivityWizard = ({ user, initialChallenges, onActivityAdded }: LogActi
       })();
       setPointsEarned(pts);
 
+      let proofUrl: string | undefined;
+      let proofPath: string | undefined;
+      if (data.proofImageFile) {
+        const storageService = new StorageService(supabase);
+        const uploaded = await storageService.uploadActivityProofImage(data.proofImageFile);
+        proofUrl = uploaded.storage_url;
+        proofPath = uploaded.storage_path;
+      }
+
       await activityService.create({
         activity_type: finalType,
         duration_minutes: data.durationMinutes,
         distance_km: distance,
-        feeling: data.feeling as 'happy' | 'average' | 'sad',
+        feeling: data.feeling as "happy" | "average" | "sad",
         participation_type: data.participationType,
         description: data.notes,
-        input_type: 'time',
+        input_type: "time",
         user_id: user.id,
         event_id: data.eventId || undefined,
         custom_activity_name:
-          data.activityType === 'something_else' ? data.customActivityName.trim() || undefined : undefined,
+          data.activityType === "something_else"
+            ? data.customActivityName.trim() || undefined
+            : undefined,
         created_at:
           data.activityDate !== getNZDateString() ? createNZDate(data.activityDate) : undefined,
+        proof_image_url: proofUrl,
+        proof_image_storage_path: proofPath,
+        is_shared_to_feed: data.shareToFeed && !!proofUrl,
+        feed_approved: false,
       });
 
       setSucceeded(true);
@@ -176,7 +205,7 @@ const LogActivityWizard = ({ user, initialChallenges, onActivityAdded }: LogActi
   };
 
   return (
-    <div className="rounded-2xl shadow-sm p-6" style={{ backgroundColor: '#f8fefc' }}>
+    <div className="rounded-2xl shadow-sm p-6" style={{ backgroundColor: "#f8fefc" }}>
       {succeeded ? (
         <Step6Success user={user} pointsEarned={pointsEarned} onLogAnother={handleLogAnother} />
       ) : (
@@ -184,8 +213,12 @@ const LogActivityWizard = ({ user, initialChallenges, onActivityAdded }: LogActi
           <StepProgress currentStep={step} />
 
           {step === 1 && <Step1Challenge data={data} challenges={challenges} onChange={update} />}
-          {step === 2 && <Step2ActivityType data={data} challenges={challenges} onChange={update} />}
-          {step === 3 && <Step3DateDuration data={data} challenges={challenges} onChange={update} />}
+          {step === 2 && (
+            <Step2ActivityType data={data} challenges={challenges} onChange={update} />
+          )}
+          {step === 3 && (
+            <Step3DateDuration data={data} challenges={challenges} onChange={update} />
+          )}
           {step === 4 && <Step4Feedback data={data} onChange={update} />}
           {step === 5 && (
             <Step5Confirm
@@ -194,6 +227,7 @@ const LogActivityWizard = ({ user, initialChallenges, onActivityAdded }: LogActi
               user={user}
               isSubmitting={isSubmitting}
               onSubmit={handleSubmit}
+              onUpdate={update}
             />
           )}
 
@@ -205,7 +239,7 @@ const LogActivityWizard = ({ user, initialChallenges, onActivityAdded }: LogActi
                 onClick={handleNext}
                 disabled={!canAdvance()}
                 className="w-full rounded-xl py-3 font-bold"
-                style={{ backgroundColor: '#0B4B39', color: 'white' }}
+                style={{ backgroundColor: "#0B4B39", color: "white" }}
               >
                 Next
               </Button>

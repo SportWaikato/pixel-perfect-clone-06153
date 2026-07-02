@@ -11,5 +11,12 @@ function Page() {
   const { profile } = Route.useRouteContext();
   if (!profile) return null;
   const user = profile as UserInterface;
-  return <SchoolUpdatesContent user={user} schools={[]} initialSchoolId={user.school_id} backHref="/school" />;
+  return (
+    <SchoolUpdatesContent
+      user={user}
+      schools={[]}
+      initialSchoolId={user.school_id}
+      backHref="/school"
+    />
+  );
 }

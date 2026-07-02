@@ -1,10 +1,15 @@
-import { useState, useMemo } from 'react';
-import { UserInterface } from '@/models/users/interfaces/UserInterface';
-import { SchoolInterface } from '@/models/schools/interfaces/SchoolInterface';
-import { Card, CardContent, CardHeader, CardTitle } from '@/modules/application/components/DesignSystem/ui/card';
-import { Button } from '@/modules/application/components/DesignSystem/ui/button';
-import { Badge } from '@/modules/application/components/DesignSystem/ui/badge';
-import { Input } from '@/modules/application/components/DesignSystem/ui/input';
+import { useState, useMemo } from "react";
+import { UserInterface } from "@/models/users/interfaces/UserInterface";
+import { SchoolInterface } from "@/models/schools/interfaces/SchoolInterface";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/modules/application/components/DesignSystem/ui/card";
+import { Button } from "@/modules/application/components/DesignSystem/ui/button";
+import { Badge } from "@/modules/application/components/DesignSystem/ui/badge";
+import { Input } from "@/modules/application/components/DesignSystem/ui/input";
 import {
   Table,
   TableBody,
@@ -12,7 +17,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/modules/application/components/DesignSystem/ui/table';
+} from "@/modules/application/components/DesignSystem/ui/table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +25,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/modules/application/components/DesignSystem/ui/dropdown-menu';
+} from "@/modules/application/components/DesignSystem/ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,11 +35,11 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/modules/application/components/DesignSystem/ui/alert-dialog';
-import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
-import { SchoolService } from '@/models/schools/services/SchoolService';
-import useAdminData from '@/modules/common/hooks/useAdminData';
-import SchoolCreateEditDialog from './SchoolCreateEditDialog';
+} from "@/modules/application/components/DesignSystem/ui/alert-dialog";
+import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
+import { SchoolService } from "@/models/schools/services/SchoolService";
+import useAdminData from "@/modules/common/hooks/useAdminData";
+import SchoolCreateEditDialog from "./SchoolCreateEditDialog";
 import {
   School,
   Plus,
@@ -50,10 +55,10 @@ import {
   XCircle,
   Building2,
   LayoutDashboard,
-} from 'lucide-react';
-import { toast } from 'sonner';
-import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-import { useRouter, useNavigate } from '@tanstack/react-router';
+} from "lucide-react";
+import { toast } from "sonner";
+import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
+import { useRouter, useNavigate } from "@tanstack/react-router";
 interface SchoolManagementContentProps {
   user: UserInterface;
   initialSchools: SchoolInterface[];
@@ -67,7 +72,14 @@ const SchoolManagementContent = ({ user, initialSchools }: SchoolManagementConte
   const router = useRouter();
   const navigate = useNavigate();
 
-  const { data: schools, filteredData: filteredSchools, loading, searchTerm, setSearchTerm, refresh: refreshSchools } = useAdminData({
+  const {
+    data: schools,
+    filteredData: filteredSchools,
+    loading,
+    searchTerm,
+    setSearchTerm,
+    refresh: refreshSchools,
+  } = useAdminData({
     fetchFn: () => schoolService.getAllWithStats(true),
     filterFn: (school, term) =>
       school.name.toLowerCase().includes(term.toLowerCase()) ||
@@ -86,8 +98,8 @@ const SchoolManagementContent = ({ user, initialSchools }: SchoolManagementConte
       setDeletingSchool(null);
       await refreshSchools();
     } catch (error: any) {
-      if (error.message?.includes('existing students')) {
-        toast.error('Cannot delete school with existing students');
+      if (error.message?.includes("existing students")) {
+        toast.error("Cannot delete school with existing students");
       } else {
         notifyAboutError(error);
       }
@@ -98,9 +110,9 @@ const SchoolManagementContent = ({ user, initialSchools }: SchoolManagementConte
   const handleToggleActive = async (school: SchoolInterface) => {
     try {
       await schoolService.update(school.id, {
-        is_active: !school.is_active
+        is_active: !school.is_active,
       });
-      toast.success(`School ${!school.is_active ? 'activated' : 'deactivated'} successfully`);
+      toast.success(`School ${!school.is_active ? "activated" : "deactivated"} successfully`);
       await refreshSchools();
     } catch (error) {
       notifyAboutError(error);
@@ -109,7 +121,7 @@ const SchoolManagementContent = ({ user, initialSchools }: SchoolManagementConte
 
   // Calculate statistics
   const totalSchools = schools.length;
-  const activeSchools = schools.filter(s => s.is_active).length;
+  const activeSchools = schools.filter((s) => s.is_active).length;
   const totalStudents = schools.reduce((sum, s) => sum + s.total_students, 0);
   const totalPoints = schools.reduce((sum, s) => sum + s.total_points, 0);
 
@@ -121,10 +133,7 @@ const SchoolManagementContent = ({ user, initialSchools }: SchoolManagementConte
           <h1 className="text-3xl font-bold text-gray-900">School Management</h1>
           <p className="text-gray-600">Manage all schools in the platform</p>
         </div>
-        <Button
-          onClick={() => setIsCreateDialogOpen(true)}
-          className="gap-2"
-        >
+        <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2">
           <Plus size={18} />
           Add School
         </Button>
@@ -139,9 +148,7 @@ const SchoolManagementContent = ({ user, initialSchools }: SchoolManagementConte
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalSchools}</div>
-            <p className="text-xs text-muted-foreground">
-              {activeSchools} active
-            </p>
+            <p className="text-xs text-muted-foreground">{activeSchools} active</p>
           </CardContent>
         </Card>
 
@@ -152,9 +159,7 @@ const SchoolManagementContent = ({ user, initialSchools }: SchoolManagementConte
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalStudents.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
-              Across all schools
-            </p>
+            <p className="text-xs text-muted-foreground">Across all schools</p>
           </CardContent>
         </Card>
 
@@ -165,9 +170,7 @@ const SchoolManagementContent = ({ user, initialSchools }: SchoolManagementConte
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalPoints.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
-              Combined score
-            </p>
+            <p className="text-xs text-muted-foreground">Combined score</p>
           </CardContent>
         </Card>
 
@@ -180,9 +183,7 @@ const SchoolManagementContent = ({ user, initialSchools }: SchoolManagementConte
             <div className="text-2xl font-bold">
               {totalSchools > 0 ? Math.round(totalStudents / totalSchools) : 0}
             </div>
-            <p className="text-xs text-muted-foreground">
-              Average enrollment
-            </p>
+            <p className="text-xs text-muted-foreground">Average enrollment</p>
           </CardContent>
         </Card>
       </div>
@@ -192,7 +193,10 @@ const SchoolManagementContent = ({ user, initialSchools }: SchoolManagementConte
         <CardHeader>
           <div className="flex items-center gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+              <Search
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                size={18}
+              />
               <Input
                 placeholder="Search schools by name or code..."
                 value={searchTerm}
@@ -201,7 +205,7 @@ const SchoolManagementContent = ({ user, initialSchools }: SchoolManagementConte
               />
             </div>
             <Badge variant="secondary">
-              {filteredSchools.length} {filteredSchools.length === 1 ? 'school' : 'schools'}
+              {filteredSchools.length} {filteredSchools.length === 1 ? "school" : "schools"}
             </Badge>
           </div>
         </CardHeader>
@@ -273,24 +277,16 @@ const SchoolManagementContent = ({ user, initialSchools }: SchoolManagementConte
                       </TableCell>
                       <TableCell className="text-center">
                         {school.is_internal ? (
-                          <Badge className="bg-purple-100 text-purple-800">
-                            Internal
-                          </Badge>
+                          <Badge className="bg-purple-100 text-purple-800">Internal</Badge>
                         ) : (
-                          <Badge className="bg-blue-100 text-blue-800">
-                            Public
-                          </Badge>
+                          <Badge className="bg-blue-100 text-blue-800">Public</Badge>
                         )}
                       </TableCell>
                       <TableCell className="text-center">
-                        {school.registration_method === 'allowlist' ? (
-                          <Badge className="bg-amber-100 text-amber-800">
-                            Allow List
-                          </Badge>
+                        {school.registration_method === "allowlist" ? (
+                          <Badge className="bg-amber-100 text-amber-800">Allow List</Badge>
                         ) : (
-                          <Badge className="bg-cyan-100 text-cyan-800">
-                            Email Domain
-                          </Badge>
+                          <Badge className="bg-cyan-100 text-cyan-800">Email Domain</Badge>
                         )}
                       </TableCell>
                       <TableCell className="text-right">
@@ -304,7 +300,7 @@ const SchoolManagementContent = ({ user, initialSchools }: SchoolManagementConte
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
-                              onClick={() => navigate({ to: `/admin/dashboard?schoolId=${school.id}` })}
+                              onClick={() => navigate({ to: `/admin?schoolId=${school.id}` })}
                               className="cursor-pointer"
                             >
                               <LayoutDashboard className="h-4 w-4 mr-2" />
@@ -377,16 +373,13 @@ const SchoolManagementContent = ({ user, initialSchools }: SchoolManagementConte
               Delete School
             </AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{deletingSchool?.name}"?
-              This action cannot be undone. The school must have no students to be deleted.
+              Are you sure you want to delete "{deletingSchool?.name}"? This action cannot be
+              undone. The school must have no students to be deleted.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteSchool}
-              className="bg-red-600 hover:bg-red-700"
-            >
+            <AlertDialogAction onClick={handleDeleteSchool} className="bg-red-600 hover:bg-red-700">
               Delete School
             </AlertDialogAction>
           </AlertDialogFooter>

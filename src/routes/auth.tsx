@@ -9,7 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import { listHousesBySchool, listSchools } from "@/lib/schools.functions";
 
@@ -23,16 +29,31 @@ export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
       { title: "Sign in — Karawhiua" },
-      { name: "description", content: "Sign in or create an account for Karawhiua Virtual Sports Day." },
+      {
+        name: "description",
+        content: "Sign in or create an account for Karawhiua Virtual Sports Day.",
+      },
     ],
   }),
   component: AuthPage,
 });
 
 const YEAR_GROUPS = [
-  "Year 0", "Year 1", "Year 2", "Year 3", "Year 4", "Year 5",
-  "Year 6", "Year 7", "Year 8", "Year 9", "Year 10", "Year 11",
-  "Year 12", "Year 13", "Staff",
+  "Year 0",
+  "Year 1",
+  "Year 2",
+  "Year 3",
+  "Year 4",
+  "Year 5",
+  "Year 6",
+  "Year 7",
+  "Year 8",
+  "Year 9",
+  "Year 10",
+  "Year 11",
+  "Year 12",
+  "Year 13",
+  "Staff",
 ];
 
 function AuthPage() {
@@ -88,7 +109,9 @@ function AuthPage() {
             <GoogleButton />
 
             <p className="mt-4 text-center text-xs text-muted-foreground">
-              <Link to="/forgot-password" className="underline">Forgot your password?</Link>
+              <Link to="/forgot-password" className="underline">
+                Forgot your password?
+              </Link>
             </p>
           </CardContent>
         </Card>
@@ -155,7 +178,8 @@ function SignInForm({ redirectTo }: { redirectTo: string }) {
           <Button
             type="submit"
             disabled={isSubmitting}
-            style={{ backgroundColor: "#0A4B39", color: "#fff" }} className="w-full" 
+            style={{ backgroundColor: "#0A4B39", color: "#fff" }}
+            className="w-full"
           >
             {isSubmitting ? "Signing in…" : "Sign in"}
           </Button>
@@ -342,11 +366,15 @@ function SignUpForm({ redirectTo }: { redirectTo: string }) {
               disabled={schoolsLoading}
             >
               <SelectTrigger>
-                <SelectValue placeholder={schoolsLoading ? "Loading schools…" : "Choose your school"} />
+                <SelectValue
+                  placeholder={schoolsLoading ? "Loading schools…" : "Choose your school"}
+                />
               </SelectTrigger>
               <SelectContent>
                 {schools.map((s) => (
-                  <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                  <SelectItem key={s.id} value={s.id}>
+                    {s.name}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -363,11 +391,15 @@ function SignUpForm({ redirectTo }: { redirectTo: string }) {
               disabled={!values.schoolId || houses.length === 0}
             >
               <SelectTrigger>
-                <SelectValue placeholder={values.schoolId ? "Choose your house" : "Pick a school first"} />
+                <SelectValue
+                  placeholder={values.schoolId ? "Choose your house" : "Pick a school first"}
+                />
               </SelectTrigger>
               <SelectContent>
                 {houses.map((h) => (
-                  <SelectItem key={h.id} value={h.id}>{h.name}</SelectItem>
+                  <SelectItem key={h.id} value={h.id}>
+                    {h.name}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -384,7 +416,9 @@ function SignUpForm({ redirectTo }: { redirectTo: string }) {
               </SelectTrigger>
               <SelectContent>
                 {YEAR_GROUPS.map((y) => (
-                  <SelectItem key={y} value={y}>{y}</SelectItem>
+                  <SelectItem key={y} value={y}>
+                    {y}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -396,7 +430,8 @@ function SignUpForm({ redirectTo }: { redirectTo: string }) {
           <Button
             type="submit"
             disabled={isSubmitting}
-            style={{ backgroundColor: "#0A4B39", color: "#fff" }} className="w-full" 
+            style={{ backgroundColor: "#0A4B39", color: "#fff" }}
+            className="w-full"
           >
             {isSubmitting ? "Creating account…" : "Create account"}
           </Button>
@@ -420,7 +455,14 @@ function GoogleButton() {
     }
   }
   return (
-    <Button type="button" variant="outline" className="w-full" onClick={handleClick} disabled={loading} style={{ borderColor: "#0A4B39", color: "#0A4B39" }}>
+    <Button
+      type="button"
+      variant="outline"
+      className="w-full"
+      onClick={handleClick}
+      disabled={loading}
+      style={{ borderColor: "#0A4B39", color: "#0A4B39" }}
+    >
       {loading ? "Redirecting…" : "Continue with Google"}
     </Button>
   );

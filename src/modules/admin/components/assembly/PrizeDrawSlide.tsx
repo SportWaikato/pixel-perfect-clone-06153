@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { m, AnimatePresence } from 'framer-motion';
-import { ChevronLeft } from 'lucide-react';
-import { UserInterface } from '@/models/users/interfaces/UserInterface';
-import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
-import { AssemblyService } from '@/models/assembly/services/AssemblyService';
-import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { m, AnimatePresence } from "framer-motion";
+import { ChevronLeft } from "lucide-react";
+import { UserInterface } from "@/models/users/interfaces/UserInterface";
+import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
+import { AssemblyService } from "@/models/assembly/services/AssemblyService";
+import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
 
 interface PrizeDrawSlideProps {
   schoolId: string;
@@ -13,15 +13,15 @@ interface PrizeDrawSlideProps {
   onBack: () => void;
 }
 
-type DrawState = 'ready' | 'spinning' | 'winner';
+type DrawState = "ready" | "spinning" | "winner";
 
 const PrizeDrawSlide = ({ schoolId, drawnByUserId, students, onBack }: PrizeDrawSlideProps) => {
-  const [state, setState] = useState<DrawState>('ready');
-  const [displayName, setDisplayName] = useState('');
+  const [state, setState] = useState<DrawState>("ready");
+  const [displayName, setDisplayName] = useState("");
   const [winner, setWinner] = useState<UserInterface | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const eligibleStudents = students.filter(s => s.is_active !== false && s.role === 'student');
+  const eligibleStudents = students.filter((s) => s.is_active !== false && s.role === "student");
 
   const clearSpin = useCallback(() => {
     if (intervalRef.current) {
@@ -34,7 +34,7 @@ const PrizeDrawSlide = ({ schoolId, drawnByUserId, students, onBack }: PrizeDraw
 
   const handleDraw = useCallback(async () => {
     if (eligibleStudents.length === 0) return;
-    setState('spinning');
+    setState("spinning");
 
     const picked = eligibleStudents[Math.floor(Math.random() * eligibleStudents.length)];
     let tick = 0;
@@ -49,12 +49,17 @@ const PrizeDrawSlide = ({ schoolId, drawnByUserId, students, onBack }: PrizeDraw
         clearSpin();
         setWinner(picked);
         setDisplayName(`${picked.first_name} ${picked.last_name}`);
-        setState('winner');
+        setState("winner");
 
         (async () => {
           try {
-            const confetti = (await import('canvas-confetti')).default;
-            confetti({ particleCount: 250, spread: 180, origin: { y: 0.5 }, colors: ['#FFD700', '#F6C031', '#ffffff', '#00ACEF'] });
+            const confetti = (await import("canvas-confetti")).default;
+            confetti({
+              particleCount: 250,
+              spread: 180,
+              origin: { y: 0.5 },
+              colors: ["#FFD700", "#F6C031", "#ffffff", "#00ACEF"],
+            });
 
             const service = new AssemblyService(createSupabaseClient());
             await service.saveWinner({
@@ -77,8 +82,8 @@ const PrizeDrawSlide = ({ schoolId, drawnByUserId, students, onBack }: PrizeDraw
 
   const handleDrawAgain = () => {
     setWinner(null);
-    setDisplayName('');
-    setState('ready');
+    setDisplayName("");
+    setState("ready");
   };
 
   return (
@@ -86,20 +91,28 @@ const PrizeDrawSlide = ({ schoolId, drawnByUserId, students, onBack }: PrizeDraw
       <button
         onClick={onBack}
         className="absolute left-6 top-6 rounded-full p-2 transition-colors"
-        style={{ backgroundColor: '#d9d8d4', color: '#0f172a' }}
+        style={{ backgroundColor: "#d9d8d4", color: "#0f172a" }}
       >
         <ChevronLeft className="h-6 w-6" />
       </button>
 
       <div className="mb-8 text-center">
-        <img src="/assembly/spot-prize-draw-icon.svg" alt="" width={64} height={64} className="mx-auto mb-3" />
-        <h2 className="text-4xl font-extrabold uppercase tracking-widest text-white">Spot Prize Draw</h2>
+        <img
+          src="/assembly/spot-prize-draw-icon.svg"
+          alt=""
+          width={64}
+          height={64}
+          className="mx-auto mb-3"
+        />
+        <h2 className="text-4xl font-extrabold uppercase tracking-widest text-white">
+          Spot Prize Draw
+        </h2>
       </div>
 
       <div className="w-full max-w-lg">
         <div className="rounded-2xl border border-white/10 bg-white/5 px-10 py-12 text-center backdrop-blur-sm">
           <AnimatePresence mode="wait">
-            {state === 'ready' && (
+            {state === "ready" && (
               <m.div
                 key="ready"
                 initial={{ opacity: 0, y: 10 }}
@@ -107,25 +120,31 @@ const PrizeDrawSlide = ({ schoolId, drawnByUserId, students, onBack }: PrizeDraw
                 exit={{ opacity: 0, y: -10 }}
                 className="space-y-6"
               >
-                <img src="/assembly/read-to-draw.svg" alt="" width={80} height={80} className="mx-auto" />
+                <img
+                  src="/assembly/read-to-draw.svg"
+                  alt=""
+                  width={80}
+                  height={80}
+                  className="mx-auto"
+                />
                 <p className="text-xl font-semibold text-white">Ready to draw the winner?</p>
                 <p className="text-sm text-white/40">
                   {eligibleStudents.length === 0
-                    ? 'No eligible students found. Make sure students are registered to this school.'
-                    : `${eligibleStudents.length} eligible student${eligibleStudents.length === 1 ? '' : 's'} in the pool`}
+                    ? "No eligible students found. Make sure students are registered to this school."
+                    : `${eligibleStudents.length} eligible student${eligibleStudents.length === 1 ? "" : "s"} in the pool`}
                 </p>
                 <button
                   onClick={handleDraw}
                   disabled={eligibleStudents.length === 0}
                   className="rounded-xl bg-white px-8 py-3 font-bold transition-colors hover:bg-white/90 disabled:opacity-40"
-                  style={{ color: '#357565' }}
+                  style={{ color: "#357565" }}
                 >
                   Draw Winner Now
                 </button>
               </m.div>
             )}
 
-            {state === 'spinning' && (
+            {state === "spinning" && (
               <m.div
                 key="spinning"
                 initial={{ opacity: 0 }}
@@ -138,12 +157,12 @@ const PrizeDrawSlide = ({ schoolId, drawnByUserId, students, onBack }: PrizeDraw
               </m.div>
             )}
 
-            {state === 'winner' && winner && (
+            {state === "winner" && winner && (
               <m.div
                 key="winner"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ type: 'spring', stiffness: 200, damping: 18 }}
+                transition={{ type: "spring", stiffness: 200, damping: 18 }}
                 className="space-y-4"
               >
                 <m.div
@@ -160,7 +179,12 @@ const PrizeDrawSlide = ({ schoolId, drawnByUserId, students, onBack }: PrizeDraw
                       className="absolute inset-0 rounded-full border-2 border-amber-400/40"
                       initial={{ scale: 1, opacity: 0.6 }}
                       animate={{ scale: 2.5 + i * 0.6, opacity: 0 }}
-                      transition={{ duration: 1.2, delay: i * 0.2, repeat: Infinity, repeatDelay: 1 }}
+                      transition={{
+                        duration: 1.2,
+                        delay: i * 0.2,
+                        repeat: Infinity,
+                        repeatDelay: 1,
+                      }}
                     />
                   ))}
                 </m.div>
@@ -168,13 +192,12 @@ const PrizeDrawSlide = ({ schoolId, drawnByUserId, students, onBack }: PrizeDraw
                 <div>
                   <p className="text-3xl font-extrabold text-white">{displayName}</p>
                   <p className="mt-1 text-lg font-bold text-amber-400">Congratulations!</p>
-                  <p className="mt-2 text-sm text-white/60">Come see the office to collect your prize!</p>
                 </div>
 
                 <button
                   onClick={handleDrawAgain}
                   className="mt-4 rounded-xl bg-white px-8 py-3 font-bold transition-colors hover:bg-white/90"
-                  style={{ color: '#357565' }}
+                  style={{ color: "#357565" }}
                 >
                   Draw Again
                 </button>

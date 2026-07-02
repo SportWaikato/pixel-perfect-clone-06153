@@ -1,21 +1,31 @@
-import { useState, useMemo } from 'react';
-import { UserInterface } from '@/models/users/interfaces/UserInterface';
-import { 
-  SchoolLeaderboardEntry, 
-  HouseLeaderboardEntry, 
+import { useState, useMemo } from "react";
+import { UserInterface } from "@/models/users/interfaces/UserInterface";
+import {
+  SchoolLeaderboardEntry,
+  HouseLeaderboardEntry,
   UserRankingSummary,
-  IndividualLeaderboardEntry
-} from '@/models/leaderboards/interfaces/LeaderboardInterface';
-import { LeaderboardService } from '@/models/leaderboards/services/LeaderboardService';
-import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
-import { Card, CardContent, CardHeader, CardTitle } from '@/modules/application/components/DesignSystem/ui/card';
-import { Badge } from '@/modules/application/components/DesignSystem/ui/badge';
-import { Progress } from '@/modules/application/components/DesignSystem/ui/progress';
-import { Button } from '@/modules/application/components/DesignSystem/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/modules/application/components/DesignSystem/ui/tabs';
-import { Trophy, Crown, Award, Info, RefreshCw, Loader2 } from 'lucide-react';
-import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-import { formatTimeDisplay } from '@/models/application/constants/applicationConstants';
+  IndividualLeaderboardEntry,
+} from "@/models/leaderboards/interfaces/LeaderboardInterface";
+import { LeaderboardService } from "@/models/leaderboards/services/LeaderboardService";
+import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/modules/application/components/DesignSystem/ui/card";
+import { Badge } from "@/modules/application/components/DesignSystem/ui/badge";
+import { Progress } from "@/modules/application/components/DesignSystem/ui/progress";
+import { Button } from "@/modules/application/components/DesignSystem/ui/button";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/modules/application/components/DesignSystem/ui/tabs";
+import { Trophy, Crown, Award, Info, RefreshCw, Loader2 } from "lucide-react";
+import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
+import { formatTimeDisplay } from "@/models/application/constants/applicationConstants";
 
 interface LeaderboardContentProps {
   user: UserInterface;
@@ -37,7 +47,7 @@ const LeaderboardContent = ({
   const [houseLeaderboard, setHouseLeaderboard] = useState(initialHouseLeaderboard);
   const [overallLeaderboard, setOverallLeaderboard] = useState(initialOverallLeaderboard);
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState('personal');
+  const [activeTab, setActiveTab] = useState("personal");
 
   const leaderboardService = useMemo(() => new LeaderboardService(createSupabaseClient()), []);
 
@@ -47,8 +57,10 @@ const LeaderboardContent = ({
       const [rankings, schools, houses, overall] = await Promise.all([
         leaderboardService.getUserRankings(user.id),
         leaderboardService.getSchoolLeaderboard(user.school_id),
-        user.school_id ? leaderboardService.getHouseLeaderboard(user.school_id) : Promise.resolve([]),
-        leaderboardService.getOverallLeaderboard({ limit: 100 })
+        user.school_id
+          ? leaderboardService.getHouseLeaderboard(user.school_id)
+          : Promise.resolve([]),
+        leaderboardService.getOverallLeaderboard({ limit: 100 }),
       ]);
 
       setUserRankings(rankings);
@@ -63,14 +75,14 @@ const LeaderboardContent = ({
   };
 
   const getRankingEmoji = (rank: number) => {
-    if (rank === 1) return '🥇';
-    if (rank === 2) return '🥈';
-    if (rank === 3) return '🥉';
+    if (rank === 1) return "🥇";
+    if (rank === 2) return "🥈";
+    if (rank === 3) return "🥉";
     return `#${rank}`;
   };
 
   const getMotivationalMessage = (rank: number | null, total: number) => {
-    if (!rank) return 'Keep going! Log more activities to see your ranking.';
+    if (!rank) return "Keep going! Log more activities to see your ranking.";
     if (rank <= 3) return `Amazing! You're in the top 3! 🎉`;
     if (total > 10 && rank <= 10) return `Great job! You're in the top 10! 💪`;
     if (rank <= total * 0.25) return `You're in the top 25%! Keep it up! 🚀`;
@@ -83,7 +95,7 @@ const LeaderboardContent = ({
       {/* Personal Rankings Summary */}
       <Card
         className="shadow-sm rounded-2xl border border-gray-200"
-        style={{ backgroundColor: '#f9fefd' }}
+        style={{ backgroundColor: "#f9fefd" }}
       >
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-[#0B4B39]">
@@ -96,44 +108,41 @@ const LeaderboardContent = ({
             {/* School Ranking */}
             <div className="text-center p-5 sm:p-6 bg-[#0B4B39]/5 border border-gray-200 rounded-2xl">
               <div className="text-4xl sm:text-5xl font-bold text-[#0B4B39] mb-1">
-                {userRankings?.school_rank != null ? getRankingEmoji(userRankings.school_rank) : '?'}
+                {userRankings?.school_rank != null
+                  ? getRankingEmoji(userRankings.school_rank)
+                  : "?"}
               </div>
               <div className="text-sm text-gray-600">in your school</div>
-              <div className="text-xs text-gray-400 mt-1">
-                {user.school?.name}
-              </div>
+              <div className="text-xs text-gray-400 mt-1">{user.school?.name}</div>
             </div>
 
             {/* House Ranking */}
             <div className="text-center p-5 sm:p-6 bg-[#0B4B39]/5 border border-gray-200 rounded-2xl">
               <div className="text-4xl sm:text-5xl font-bold text-[#0B4B39] mb-1">
-                {userRankings?.house_rank != null ? getRankingEmoji(userRankings.house_rank) : '?'}
+                {userRankings?.house_rank != null ? getRankingEmoji(userRankings.house_rank) : "?"}
               </div>
               <div className="text-sm text-gray-600">in your house</div>
-              <div className="text-xs text-gray-400 mt-1">
-                {user.house?.name || '—'}
-              </div>
+              <div className="text-xs text-gray-400 mt-1">{user.house?.name || "—"}</div>
             </div>
 
             {/* Year Group Ranking */}
             <div className="text-center p-5 sm:p-6 bg-[#0B4B39]/5 border border-gray-200 rounded-2xl">
               <div className="text-4xl sm:text-5xl font-bold text-[#0B4B39] mb-1">
-                {userRankings?.year_group_rank != null ? getRankingEmoji(userRankings.year_group_rank) : '?'}
+                {userRankings?.year_group_rank != null
+                  ? getRankingEmoji(userRankings.year_group_rank)
+                  : "?"}
               </div>
               <div className="text-sm text-gray-600">in your year</div>
-              <div className="text-xs text-gray-400 mt-1">
-                {user.year_group ?? '—'}
-              </div>
+              <div className="text-xs text-gray-400 mt-1">{user.year_group ?? "—"}</div>
             </div>
 
             {/* Overall Ranking */}
             <div className="text-center p-5 sm:p-6 bg-[#0B4B39]/5 border border-gray-200 rounded-2xl">
               <div className="text-4xl sm:text-5xl font-bold text-[#0B4B39] mb-1">
-                {userRankings?.overall_rank != null ? `#${userRankings.overall_rank}` : '?'}
+                {userRankings?.overall_rank != null ? `#${userRankings.overall_rank}` : "?"}
               </div>
               <div className="text-sm text-gray-600">overall</div>
             </div>
-
           </div>
 
           {/* Current Progress */}
@@ -142,7 +151,10 @@ const LeaderboardContent = ({
               {formatTimeDisplay(user.total_minutes || 0)}
             </div>
             <p className="text-gray-600 mb-6">
-              {getMotivationalMessage(userRankings?.school_rank ?? null, userRankings?.school_total_users || 0)}
+              {getMotivationalMessage(
+                userRankings?.school_rank ?? null,
+                userRankings?.school_total_users || 0,
+              )}
             </p>
           </div>
         </CardContent>
@@ -154,7 +166,7 @@ const LeaderboardContent = ({
     <div className="space-y-8">
       <Card
         className="shadow-sm rounded-2xl border border-gray-200"
-        style={{ backgroundColor: '#f9fefd' }}
+        style={{ backgroundColor: "#f9fefd" }}
       >
         <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
@@ -166,7 +178,10 @@ const LeaderboardContent = ({
               Fair comparison based on points per student
             </p>
           </div>
-          <Badge variant="secondary" className="flex items-center gap-1 bg-[#0B4B39]/10 text-[#0B4B39] border-[#0B4B39]/20 self-start sm:self-auto">
+          <Badge
+            variant="secondary"
+            className="flex items-center gap-1 bg-[#0B4B39]/10 text-[#0B4B39] border-[#0B4B39]/20 self-start sm:self-auto"
+          >
             <Info className="w-3 h-3" />
             Pro-rata scoring
           </Badge>
@@ -180,8 +195,8 @@ const LeaderboardContent = ({
                   key={school.id}
                   className={`flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between p-4 sm:p-5 rounded-2xl transition-all ${
                     isUserSchool
-                      ? 'bg-[#0B4B39]/10 border-2 border-[#0B4B39]/30 shadow-md'
-                      : 'bg-[#0B4B39]/5 border border-gray-200 hover:bg-[#0B4B39]/10'
+                      ? "bg-[#0B4B39]/10 border-2 border-[#0B4B39]/30 shadow-md"
+                      : "bg-[#0B4B39]/5 border border-gray-200 hover:bg-[#0B4B39]/10"
                   }`}
                 >
                   <div className="flex items-center gap-4">
@@ -192,7 +207,10 @@ const LeaderboardContent = ({
                       <div className="font-semibold text-gray-800 text-sm sm:text-base">
                         {school.name}
                         {isUserSchool && (
-                          <Badge variant="secondary" className="ml-2 text-xs bg-[#0B4B39]/10 text-[#0B4B39] border-[#0B4B39]/20">
+                          <Badge
+                            variant="secondary"
+                            className="ml-2 text-xs bg-[#0B4B39]/10 text-[#0B4B39] border-[#0B4B39]/20"
+                          >
                             Your School
                           </Badge>
                         )}
@@ -218,9 +236,9 @@ const LeaderboardContent = ({
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-[#0B4B39] mt-0.5" />
               <div className="text-sm text-gray-600">
-                <strong className="text-[#0B4B39]">Fair Competition:</strong> Pro-rata scoring calculates
-                (total points ÷ student count) × 100 to ensure fair comparison
-                between schools of different sizes.
+                <strong className="text-[#0B4B39]">Fair Competition:</strong> Pro-rata scoring
+                calculates (total points ÷ student count) × 100 to ensure fair comparison between
+                schools of different sizes.
               </div>
             </div>
           </div>
@@ -233,7 +251,7 @@ const LeaderboardContent = ({
     <div className="space-y-8">
       <Card
         className="shadow-sm rounded-2xl border border-gray-200"
-        style={{ backgroundColor: '#f9fefd' }}
+        style={{ backgroundColor: "#f9fefd" }}
       >
         <CardHeader className="space-y-2">
           <CardTitle className="flex flex-wrap items-center gap-2 text-[#0B4B39] text-lg sm:text-xl">
@@ -252,7 +270,7 @@ const LeaderboardContent = ({
             <div className="space-y-5">
               {houseLeaderboard.map((house, index) => {
                 const isUserHouse = house.id === user.house_id;
-                const maxPoints = Math.max(...houseLeaderboard.map(h => h.total_points));
+                const maxPoints = Math.max(...houseLeaderboard.map((h) => h.total_points));
                 const progressPercent = maxPoints > 0 ? (house.total_points / maxPoints) * 100 : 0;
 
                 return (
@@ -260,8 +278,8 @@ const LeaderboardContent = ({
                     key={house.id}
                     className={`p-4 rounded-2xl space-y-3 ${
                       isUserHouse
-                        ? 'bg-[#0B4B39]/10 border-2 border-[#0B4B39]/30'
-                        : 'bg-[#0B4B39]/5 border border-gray-200'
+                        ? "bg-[#0B4B39]/10 border-2 border-[#0B4B39]/30"
+                        : "bg-[#0B4B39]/5 border border-gray-200"
                     }`}
                   >
                     {/* Mobile Layout: Stacked */}
@@ -295,9 +313,7 @@ const LeaderboardContent = ({
 
                       {/* Right side: Points */}
                       <div className="text-right flex-shrink-0">
-                        <div className="font-bold text-lg text-[#0B4B39]">
-                          {house.total_points}
-                        </div>
+                        <div className="font-bold text-lg text-[#0B4B39]">{house.total_points}</div>
                         <div className="text-xs text-gray-400">points</div>
                       </div>
                     </div>
@@ -307,10 +323,12 @@ const LeaderboardContent = ({
                       <Progress
                         value={progressPercent}
                         className="h-2.5"
-                        style={{
-                          '--progress-background': house.color,
-                          '--progress-foreground': house.color
-                        } as React.CSSProperties}
+                        style={
+                          {
+                            "--progress-background": house.color,
+                            "--progress-foreground": house.color,
+                          } as React.CSSProperties
+                        }
                       />
                       {isUserHouse && (
                         <div
@@ -344,23 +362,25 @@ const LeaderboardContent = ({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
           <h1 className="text-3xl sm:text-4xl font-black text-gray-800">Leaderboard</h1>
-          <p className="text-gray-700 text-sm sm:text-base">See how you and your school compare with others</p>
+          <p className="text-gray-700 text-sm sm:text-base">
+            See how you and your school compare with others
+          </p>
         </div>
-        <Button 
+        <Button
           onClick={loadLeaderboardData}
           variant="outline"
           className="gap-2 w-full sm:w-auto"
-          style={{ backgroundColor: '#0B4B39', color: 'white', borderColor: '#0B4B39' }}
+          style={{ backgroundColor: "#0B4B39", color: "white", borderColor: "#0B4B39" }}
         >
           <RefreshCw className="w-4 h-4" />
           Refresh
         </Button>
       </div>
-      
+
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
         <TabsList
           className="grid w-full grid-cols-3 items-center gap-2 shadow-sm rounded-2xl border border-gray-200 p-3 h-auto sm:p-4 sm:min-h-16"
-          style={{ backgroundColor: '#f9fefd' }}
+          style={{ backgroundColor: "#f9fefd" }}
         >
           <TabsTrigger
             value="personal"
@@ -388,7 +408,7 @@ const LeaderboardContent = ({
         <TabsContent value="personal">
           <PersonalDashboard />
         </TabsContent>
-        
+
         <TabsContent value="houses">
           <HouseBattle />
         </TabsContent>
@@ -401,4 +421,4 @@ const LeaderboardContent = ({
   );
 };
 
-export default LeaderboardContent; 
+export default LeaderboardContent;

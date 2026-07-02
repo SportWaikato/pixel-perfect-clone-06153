@@ -1,26 +1,41 @@
-import { useState, useEffect } from 'react';
-import { Link } from '@tanstack/react-router';
-import { MessageSquare, MessageCircle } from 'lucide-react';
-import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
-import { SchoolUpdateService } from '@/models/schoolUpdates/services/SchoolUpdateService';
-import { SchoolMessageService } from '@/models/schoolMessages/services/SchoolMessageService';
-import { SchoolUpdateInterface } from '@/models/schoolUpdates/interfaces/SchoolUpdateInterface';
-import { SchoolMessageInterface } from '@/models/schoolMessages/interfaces/SchoolMessageInterface';
-import { SchoolInterface } from '@/models/schools/interfaces/SchoolInterface';
-import { Card, CardContent, CardHeader, CardTitle } from '@/modules/application/components/DesignSystem/ui/card';
-import { Badge } from '@/modules/application/components/DesignSystem/ui/badge';
-import { Button } from '@/modules/application/components/DesignSystem/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/modules/application/components/DesignSystem/ui/select';
+import { useState, useEffect } from "react";
+import { Link } from "@tanstack/react-router";
+import { MessageSquare, MessageCircle } from "lucide-react";
+import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
+import { SchoolUpdateService } from "@/models/schoolUpdates/services/SchoolUpdateService";
+import { SchoolMessageService } from "@/models/schoolMessages/services/SchoolMessageService";
+import { SchoolUpdateInterface } from "@/models/schoolUpdates/interfaces/SchoolUpdateInterface";
+import { SchoolMessageInterface } from "@/models/schoolMessages/interfaces/SchoolMessageInterface";
+import { SchoolInterface } from "@/models/schools/interfaces/SchoolInterface";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/modules/application/components/DesignSystem/ui/card";
+import { Badge } from "@/modules/application/components/DesignSystem/ui/badge";
+import { Button } from "@/modules/application/components/DesignSystem/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/modules/application/components/DesignSystem/ui/select";
 
 const PREVIEW_COUNT = 3;
-const ALL_SCHOOLS = '__all__';
+const ALL_SCHOOLS = "__all__";
 
 interface SuperAdminMessagesSectionProps {
   schools: SchoolInterface[];
 }
 
 const formatDate = (dateStr: string) =>
-  new Date(dateStr).toLocaleDateString('en-NZ', { day: 'numeric', month: 'short', year: 'numeric' });
+  new Date(dateStr).toLocaleDateString("en-NZ", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 
 const SuperAdminMessagesSection = ({ schools }: SuperAdminMessagesSectionProps) => {
   const [selectedSchoolId, setSelectedSchoolId] = useState<string>(ALL_SCHOOLS);
@@ -55,7 +70,7 @@ const SuperAdminMessagesSection = ({ schools }: SuperAdminMessagesSectionProps) 
       .finally(() => setLoading(false));
   }, [selectedSchoolId]);
 
-  const schoolParam = !isAllSchools && selectedSchoolId ? `?schoolId=${selectedSchoolId}` : '';
+  const schoolParam = !isAllSchools && selectedSchoolId ? `?schoolId=${selectedSchoolId}` : "";
 
   return (
     <Card>
@@ -68,8 +83,10 @@ const SuperAdminMessagesSection = ({ schools }: SuperAdminMessagesSectionProps) 
             </SelectTrigger>
             <SelectContent>
               <SelectItem value={ALL_SCHOOLS}>All Schools</SelectItem>
-              {schools.map(school => (
-                <SelectItem key={school.id} value={school.id}>{school.name}</SelectItem>
+              {schools.map((school) => (
+                <SelectItem key={school.id} value={school.id}>
+                  {school.name}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -90,20 +107,26 @@ const SuperAdminMessagesSection = ({ schools }: SuperAdminMessagesSectionProps) 
                   <MessageSquare size={14} />
                 </div>
                 <span className="font-medium text-sm">Message from Staff</span>
-                <Badge variant="secondary" className="ml-auto">{updates.length}</Badge>
+                <Badge variant="secondary" className="ml-auto">
+                  {updates.length}
+                </Badge>
               </div>
               {loading ? (
                 <div className="space-y-2">
-                  {[1, 2].map(i => <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />)}
+                  {[1, 2].map((i) => (
+                    <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />
+                  ))}
                 </div>
               ) : updates.length === 0 ? (
                 <p className="text-sm text-gray-500">No updates posted yet.</p>
               ) : (
                 <div className="space-y-2">
-                  {updates.map(update => (
+                  {updates.map((update) => (
                     <div key={update.id} className="p-2.5 border rounded-lg">
                       {isAllSchools && update.school && (
-                        <p className="text-xs text-blue-600 font-medium mb-0.5">{update.school.name}</p>
+                        <p className="text-xs text-blue-600 font-medium mb-0.5">
+                          {update.school.name}
+                        </p>
                       )}
                       <p className="font-medium text-sm">{update.title}</p>
                       {update.body && (
@@ -123,17 +146,21 @@ const SuperAdminMessagesSection = ({ schools }: SuperAdminMessagesSectionProps) 
                   <MessageCircle size={14} />
                 </div>
                 <span className="font-medium text-sm">Message from Kids</span>
-                <Badge variant="secondary" className="ml-auto">{messages.length}</Badge>
+                <Badge variant="secondary" className="ml-auto">
+                  {messages.length}
+                </Badge>
               </div>
               {loading ? (
                 <div className="space-y-2">
-                  {[1, 2].map(i => <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />)}
+                  {[1, 2].map((i) => (
+                    <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />
+                  ))}
                 </div>
               ) : messages.length === 0 ? (
                 <p className="text-sm text-gray-500">No student messages yet.</p>
               ) : (
                 <div className="space-y-2">
-                  {messages.map(msg => (
+                  {messages.map((msg) => (
                     <div key={msg.id} className="p-2.5 border rounded-lg">
                       <div className="flex items-center gap-2 mb-1">
                         <p className="font-medium text-sm">
@@ -141,13 +168,19 @@ const SuperAdminMessagesSection = ({ schools }: SuperAdminMessagesSectionProps) 
                         </p>
                         {msg.user?.year_group && (
                           <Badge variant="secondary" className="text-xs">
-                            {['Staff', 'Kaiako'].includes(msg.user.year_group) ? msg.user.year_group : `Year ${msg.user.year_group}`}
+                            {["Staff", "Kaiako"].includes(msg.user.year_group)
+                              ? msg.user.year_group
+                              : `Year ${msg.user.year_group}`}
                           </Badge>
                         )}
-                        <p className="text-xs text-gray-400 ml-auto">{formatDate(msg.created_at)}</p>
+                        <p className="text-xs text-gray-400 ml-auto">
+                          {formatDate(msg.created_at)}
+                        </p>
                       </div>
                       {isAllSchools && msg.school && (
-                        <p className="text-xs text-emerald-600 font-medium mb-0.5">{msg.school.name}</p>
+                        <p className="text-xs text-emerald-600 font-medium mb-0.5">
+                          {msg.school.name}
+                        </p>
                       )}
                       <p className="text-sm text-gray-700 line-clamp-2">{msg.message}</p>
                     </div>

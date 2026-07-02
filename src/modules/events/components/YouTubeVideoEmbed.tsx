@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { getYouTubeEmbedUrl, getYouTubeThumbnailUrl } from '../utils/youtubeUtils';
-import { Play } from 'lucide-react';
+import { useState } from "react";
+import { getYouTubeEmbedUrl, getYouTubeThumbnailUrl } from "../utils/youtubeUtils";
+import { Play } from "lucide-react";
 
 interface YouTubeVideoEmbedProps {
   url: string;
@@ -8,10 +8,14 @@ interface YouTubeVideoEmbedProps {
   className?: string;
 }
 
-const YouTubeVideoEmbed = ({ url, title = 'Event Video', className = '' }: YouTubeVideoEmbedProps) => {
+const YouTubeVideoEmbed = ({
+  url,
+  title = "Event Video",
+  className = "",
+}: YouTubeVideoEmbedProps) => {
   const [showVideo, setShowVideo] = useState(false);
   const embedUrl = getYouTubeEmbedUrl(url);
-  const thumbnailUrl = getYouTubeThumbnailUrl(url, 'high');
+  const thumbnailUrl = getYouTubeThumbnailUrl(url, "high");
 
   if (!embedUrl) return null;
 
@@ -26,16 +30,12 @@ const YouTubeVideoEmbed = ({ url, title = 'Event Video', className = '' }: YouTu
           allowFullScreen
         />
       ) : (
-        <div 
+        <div
           className="relative w-full h-full cursor-pointer group"
           onClick={() => setShowVideo(true)}
         >
           {thumbnailUrl && (
-            <img
-              src={thumbnailUrl}
-              alt={title}
-              className="w-full h-full object-cover"
-            />
+            <img src={thumbnailUrl} alt={title} className="w-full h-full object-cover" />
           )}
           <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-200 flex items-center justify-center">
             <div className="bg-red-600 hover:bg-red-700 transition-colors duration-200 rounded-full p-4">
@@ -48,4 +48,4 @@ const YouTubeVideoEmbed = ({ url, title = 'Event Video', className = '' }: YouTu
   );
 };
 
-export default YouTubeVideoEmbed; 
+export default YouTubeVideoEmbed;

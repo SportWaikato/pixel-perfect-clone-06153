@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import { UserInterface } from '@/models/users/interfaces/UserInterface';
-import { ActivityInterface } from '@/models/activities/interfaces/ActivityInterface';
-import { EventInterface } from '@/models/events/interfaces/EventInterface';
-import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
-import { ActivityService } from '@/models/activities/services/ActivityService';
-import LogActivityForm from './LogActivityForm';
-import LogActivityWizard from './LogActivityWizard/LogActivityWizard';
-import ActivityHistory from './ActivityHistory';
-import { toast } from 'sonner';
-import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
+import { useState } from "react";
+import { UserInterface } from "@/models/users/interfaces/UserInterface";
+import { ActivityInterface } from "@/models/activities/interfaces/ActivityInterface";
+import { EventInterface } from "@/models/events/interfaces/EventInterface";
+import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
+import { ActivityService } from "@/models/activities/services/ActivityService";
+import LogActivityForm from "./LogActivityForm";
+import LogActivityWizard from "./LogActivityWizard/LogActivityWizard";
+import ActivityHistory from "./ActivityHistory";
+import { toast } from "sonner";
+import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
 
 interface ActivitiesContentProps {
   user: UserInterface;
@@ -16,7 +16,11 @@ interface ActivitiesContentProps {
   initialChallenges: EventInterface[];
 }
 
-const ActivitiesContent = ({ user, initialActivities, initialChallenges }: ActivitiesContentProps) => {
+const ActivitiesContent = ({
+  user,
+  initialActivities,
+  initialChallenges,
+}: ActivitiesContentProps) => {
   const [activities, setActivities] = useState<ActivityInterface[]>(initialActivities);
   const [loading, setLoading] = useState(false);
   const [editingActivity, setEditingActivity] = useState<ActivityInterface | undefined>(undefined);
@@ -29,7 +33,7 @@ const ActivitiesContent = ({ user, initialActivities, initialChallenges }: Activ
       const userActivities = await activityService.getByUserId(user.id, 20);
       setActivities(userActivities);
     } catch (error) {
-      console.error('Error fetching activities:', error);
+      console.error("Error fetching activities:", error);
     } finally {
       setLoading(false);
     }
@@ -55,7 +59,9 @@ const ActivitiesContent = ({ user, initialActivities, initialChallenges }: Activ
 
   const handleDeleteActivity = async (activity: ActivityInterface) => {
     try {
-      const confirmed = window.confirm('Are you sure you want to delete this activity? This action cannot be undone.');
+      const confirmed = window.confirm(
+        "Are you sure you want to delete this activity? This action cannot be undone.",
+      );
 
       if (!confirmed) {
         return;
@@ -65,7 +71,7 @@ const ActivitiesContent = ({ user, initialActivities, initialChallenges }: Activ
       const activityService = new ActivityService(supabase);
       await activityService.delete(activity.id, user.id);
 
-      toast.success('Activity deleted successfully');
+      toast.success("Activity deleted successfully");
 
       if (editingActivity?.id === activity.id) {
         setEditingActivity(undefined);
@@ -92,7 +98,11 @@ const ActivitiesContent = ({ user, initialActivities, initialChallenges }: Activ
             onCancelEdit={handleCancelEdit}
           />
         ) : (
-          <LogActivityWizard user={user} initialChallenges={initialChallenges} onActivityAdded={handleActivityAdded} />
+          <LogActivityWizard
+            user={user}
+            initialChallenges={initialChallenges}
+            onActivityAdded={handleActivityAdded}
+          />
         )}
         <ActivityHistory
           activities={activities}
@@ -105,4 +115,4 @@ const ActivitiesContent = ({ user, initialActivities, initialChallenges }: Activ
   );
 };
 
-export default ActivitiesContent; 
+export default ActivitiesContent;

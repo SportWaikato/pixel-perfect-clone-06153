@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import { m } from 'framer-motion';
-import { ChevronLeft } from 'lucide-react';
-import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
-import { AssemblyService } from '@/models/assembly/services/AssemblyService';
-import { HouseWeeklyPoints } from '@/models/assembly/interfaces/AssemblyWinnerInterface';
-import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-import PlaceIcon from './PlaceIcon';
+import { useEffect, useState } from "react";
+import { m } from "framer-motion";
+import { ChevronLeft } from "lucide-react";
+import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
+import { AssemblyService } from "@/models/assembly/services/AssemblyService";
+import { HouseWeeklyPoints } from "@/models/assembly/interfaces/AssemblyWinnerInterface";
+import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
+import PlaceIcon from "./PlaceIcon";
 
 interface HouseLeaderboardSlideProps {
   schoolId: string;
@@ -15,7 +15,13 @@ interface HouseLeaderboardSlideProps {
   periodLabel?: string;
 }
 
-const HouseLeaderboardSlide = ({ schoolId, onBack, startDate, endDate, periodLabel }: HouseLeaderboardSlideProps) => {
+const HouseLeaderboardSlide = ({
+  schoolId,
+  onBack,
+  startDate,
+  endDate,
+  periodLabel,
+}: HouseLeaderboardSlideProps) => {
   const [houses, setHouses] = useState<HouseWeeklyPoints[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -23,14 +29,20 @@ const HouseLeaderboardSlide = ({ schoolId, onBack, startDate, endDate, periodLab
     const load = async () => {
       try {
         const service = new AssemblyService(createSupabaseClient());
-        const data = startDate && endDate
-          ? await service.getHousePointsForDateRange(schoolId, startDate, endDate)
-          : await service.getHouseLeaderboardLastNDays(schoolId, 7);
+        const data =
+          startDate && endDate
+            ? await service.getHousePointsForDateRange(schoolId, startDate, endDate)
+            : await service.getHouseLeaderboardLastNDays(schoolId, 7);
         setHouses(data);
 
-        if (data.some(h => h.weekly_points > 0)) {
-          const confetti = (await import('canvas-confetti')).default;
-          confetti({ particleCount: 220, spread: 160, origin: { y: 0.4 }, colors: ['#FFD700', '#ffffff', '#19AA4B', '#00ACEF'] });
+        if (data.some((h) => h.weekly_points > 0)) {
+          const confetti = (await import("canvas-confetti")).default;
+          confetti({
+            particleCount: 220,
+            spread: 160,
+            origin: { y: 0.4 },
+            colors: ["#FFD700", "#ffffff", "#19AA4B", "#00ACEF"],
+          });
         }
       } catch (err) {
         notifyAboutError(err);
@@ -56,7 +68,7 @@ const HouseLeaderboardSlide = ({ schoolId, onBack, startDate, endDate, periodLab
   }: {
     house: HouseWeeklyPoints;
     place: number;
-    size: 'large' | 'normal' | 'small';
+    size: "large" | "normal" | "small";
     delay: number;
   }) => (
     <m.div
@@ -64,26 +76,39 @@ const HouseLeaderboardSlide = ({ schoolId, onBack, startDate, endDate, periodLab
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.4 }}
       className="flex flex-col items-center rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm text-center"
-      style={{ padding: size === 'large' ? '1.75rem' : size === 'normal' ? '1.25rem' : '1rem' }}
+      style={{ padding: size === "large" ? "1.75rem" : size === "normal" ? "1.25rem" : "1rem" }}
     >
       <div className="mb-3">
-        <PlaceIcon place={place} accentColor={house.house_color} size={size === 'large' ? 96 : size === 'normal' ? 72 : 48} />
+        <PlaceIcon
+          place={place}
+          accentColor={house.house_color}
+          size={size === "large" ? 96 : size === "normal" ? 72 : 48}
+        />
       </div>
       <div className="mb-3 flex items-center gap-2">
         <span
-          className={`inline-block flex-shrink-0 ${size === 'large' ? 'h-5 w-5' : size === 'normal' ? 'h-4 w-4' : 'h-3.5 w-3.5'}`}
+          className={`inline-block flex-shrink-0 ${size === "large" ? "h-5 w-5" : size === "normal" ? "h-4 w-4" : "h-3.5 w-3.5"}`}
           style={{ backgroundColor: house.house_color }}
         />
-        <span className={`font-bold text-white ${size === 'large' ? 'text-2xl' : size === 'normal' ? 'text-xl' : 'text-base'}`}>{house.house_name}</span>
+        <span
+          className={`font-bold text-white ${size === "large" ? "text-2xl" : size === "normal" ? "text-xl" : "text-base"}`}
+        >
+          {house.house_name}
+        </span>
       </div>
-      <p className={`font-extrabold text-white ${size === 'large' ? 'text-5xl' : size === 'normal' ? 'text-4xl' : 'text-2xl'}`}>
+      <p
+        className={`font-extrabold text-white ${size === "large" ? "text-5xl" : size === "normal" ? "text-4xl" : "text-2xl"}`}
+      >
         {house.weekly_points.toLocaleString()}
       </p>
       <p className="mt-1 text-xs uppercase tracking-wider text-white/40">Points Earned</p>
       <div className="mt-3 h-1.5 w-full rounded-full bg-white/10">
         <div
           className="h-full rounded-full"
-          style={{ width: `${(house.weekly_points / maxPoints) * 100}%`, backgroundColor: house.house_color }}
+          style={{
+            width: `${(house.weekly_points / maxPoints) * 100}%`,
+            backgroundColor: house.house_color,
+          }}
         />
       </div>
     </m.div>
@@ -94,16 +119,24 @@ const HouseLeaderboardSlide = ({ schoolId, onBack, startDate, endDate, periodLab
       <button
         onClick={onBack}
         className="absolute left-6 top-6 rounded-full p-2 transition-colors"
-        style={{ backgroundColor: '#d9d8d4', color: '#0f172a' }}
+        style={{ backgroundColor: "#d9d8d4", color: "#0f172a" }}
       >
         <ChevronLeft className="h-6 w-6" />
       </button>
 
       <div className="mb-8 text-center">
-        <img src="/assembly/house-leaderboard-icon.svg" alt="" width={64} height={64} className="mx-auto mb-3" />
-        <h2 className="text-4xl font-extrabold uppercase tracking-widest text-white">House Leaderboard</h2>
-        <p className="mt-1 text-sm uppercase tracking-wider" style={{ color: '#FF6B2B' }}>
-          {periodLabel ?? 'Points earned this week'}
+        <img
+          src="/assembly/house-leaderboard-icon.svg"
+          alt=""
+          width={64}
+          height={64}
+          className="mx-auto mb-3"
+        />
+        <h2 className="text-4xl font-extrabold uppercase tracking-widest text-white">
+          House Leaderboard
+        </h2>
+        <p className="mt-1 text-sm uppercase tracking-wider" style={{ color: "#FF6B2B" }}>
+          {periodLabel ?? "Points earned this week"}
         </p>
       </div>
 
@@ -132,9 +165,15 @@ const HouseLeaderboardSlide = ({ schoolId, onBack, startDate, endDate, periodLab
             </div>
           )}
           {rest.length > 1 && (
-            <div className={`mt-4 grid gap-4 ${rest.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
+            <div className={`mt-4 grid gap-4 ${rest.length === 2 ? "grid-cols-2" : "grid-cols-3"}`}>
               {rest.map((house, i) => (
-                <HouseCard key={house.house_id} house={house} place={i + 4} size="small" delay={0.35 + i * 0.1} />
+                <HouseCard
+                  key={house.house_id}
+                  house={house}
+                  place={i + 4}
+                  size="small"
+                  delay={0.35 + i * 0.1}
+                />
               ))}
             </div>
           )}

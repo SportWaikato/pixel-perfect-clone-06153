@@ -1,11 +1,16 @@
-import { ACTIVITY_TYPES } from '@/models/activities/interfaces/ActivityInterface';
-import { getActivityIcon, getActivityColor, getFeelingEmoji } from '@/modules/activities/utils/activityIcons';
-import { EventInterface } from '@/models/events/interfaces/EventInterface';
-import { UserInterface } from '@/models/users/interfaces/UserInterface';
-import { WizardState, EVENT_TYPE_TO_ACTIVITY_TYPE } from './types';
-import { Button } from '@/modules/application/components/DesignSystem/ui/button';
-import { Zap, Users, User } from 'lucide-react';
-import { format } from 'date-fns';
+import { useState, useRef } from "react";
+import { ACTIVITY_TYPES } from "@/models/activities/interfaces/ActivityInterface";
+import {
+  getActivityIcon,
+  getActivityColor,
+  getFeelingEmoji,
+} from "@/modules/activities/utils/activityIcons";
+import { EventInterface } from "@/models/events/interfaces/EventInterface";
+import { UserInterface } from "@/models/users/interfaces/UserInterface";
+import { WizardState, EVENT_TYPE_TO_ACTIVITY_TYPE } from "./types";
+import { Button } from "@/modules/application/components/DesignSystem/ui/button";
+import { Zap, Users, User, Camera, X } from "lucide-react";
+import { format } from "date-fns";
 
 interface Step5ConfirmProps {
   data: WizardState;
@@ -13,18 +18,29 @@ interface Step5ConfirmProps {
   user: UserInterface;
   isSubmitting: boolean;
   onSubmit: () => void;
+  onUpdate: (updates: Partial<WizardState>) => void;
 }
 
-const Step5Confirm = ({ data, challenges, user, isSubmitting, onSubmit }: Step5ConfirmProps) => {
+const Step5Confirm = ({
+  data,
+  challenges,
+  user,
+  isSubmitting,
+  onSubmit,
+  onUpdate,
+}: Step5ConfirmProps) => {
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const selectedChallenge = challenges.find((c) => c.id === data.eventId);
   const lockedType = selectedChallenge
     ? EVENT_TYPE_TO_ACTIVITY_TYPE[selectedChallenge.event_type]
     : null;
   const displayType = lockedType || data.activityType;
   const displayName =
-    data.activityType === 'something_else' && data.customActivityName
+    data.activityType === "something_else" && data.customActivityName
       ? data.customActivityName
-      : ACTIVITY_TYPES[displayType as keyof typeof ACTIVITY_TYPES] ?? displayType;
+      : (ACTIVITY_TYPES[displayType as keyof typeof ACTIVITY_TYPES] ?? displayType);
 
   const basePoints = data.durationMinutes;
   const pointsEarned = (() => {
@@ -37,11 +53,27 @@ const Step5Confirm = ({ data, challenges, user, isSubmitting, onSubmit }: Step5C
 
   const iconColor = getActivityColor(displayType);
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      onUpdate({ proofImageFile: file as unknown as WizardState["proofImageFile"] });
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  const handleRemoveFile = () => {
+    onUpdate({ proofImageFile: null });
+    setPreviewUrl(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-black text-[#0B4B39] mb-1">Confirm and log it</h2>
-        <p className="text-gray-500 text-sm">Everything look good? Hit &quot;Log it&quot; to record your activity.</p>
+        <p className="text-gray-500 text-sm">
+          Everything look good? Hit &quot;Log it&quot; to record your activity.
+        </p>
       </div>
 
       {/* Summary card */}
@@ -57,19 +89,22 @@ const Step5Confirm = ({ data, challenges, user, isSubmitting, onSubmit }: Step5C
             <p className="font-bold text-gray-800 truncate">{displayName}</p>
             <p className="text-sm text-gray-500">
               {data.durationMinutes} min
-              {data.activityDate && ` · ${format(new Date(`${data.activityDate}T12:00:00`), 'MMM d, yyyy')}`}
+              {data.activityDate &&
+                ` · ${format(new Date(`${data.activityDate}T12:00:00`), "MMM d, yyyy")}`}
             </p>
           </div>
-          {data.feeling && (
-            <span className="text-2xl">{getFeelingEmoji(data.feeling)}</span>
-          )}
+          {data.feeling && <span className="text-2xl">{getFeelingEmoji(data.feeling)}</span>}
         </div>
 
         <div className="flex items-center gap-2 text-sm text-gray-500">
-          {data.participationType === 'with_others' ? (
-            <><Users size={14} /> With others</>
+          {data.participationType === "with_others" ? (
+            <>
+              <Users size={14} /> With others
+            </>
           ) : (
-            <><User size={14} /> Solo</>
+            <>
+              <User size={14} /> Solo
+            </>
           )}
           {selectedChallenge && (
             <span className="ml-auto text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-medium">
@@ -81,7 +116,7 @@ const Step5Confirm = ({ data, challenges, user, isSubmitting, onSubmit }: Step5C
 
       {/* Points */}
       <div className="text-center py-2">
-        <div className="text-5xl font-black" style={{ color: '#19AA4B' }}>
+        <div className="text-5xl font-black" style={{ color: "#19AA4B" }}>
           +{pointsEarned}
         </div>
         <p className="text-gray-500 text-sm mt-1">points earned</p>
@@ -90,14 +125,64 @@ const Step5Confirm = ({ data, challenges, user, isSubmitting, onSubmit }: Step5C
         )}
       </div>
 
+      {/* Proof photo (optional) */}
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-gray-700">Proof (optional)</p>
+        <p className="text-xs text-gray-400">
+          Attach a screenshot or photo for context -- Strava, gym machine, team practice.
+        </p>
+        {previewUrl ? (
+          <div className="relative inline-block">
+            <img
+              src={previewUrl}
+              alt="Proof preview"
+              className="w-24 h-24 object-cover rounded-xl border border-gray-200"
+            />
+            <button
+              type="button"
+              onClick={handleRemoveFile}
+              className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600"
+            >
+              <X size={10} />
+            </button>
+          </div>
+        ) : (
+          <label className="flex items-center gap-2 cursor-pointer text-sm text-[#0B4B39] font-medium hover:underline">
+            <Camera size={16} />
+            Add proof photo
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/jpg,image/png,image/webp"
+              className="hidden"
+              onChange={handleFileSelect}
+            />
+          </label>
+        )}
+      </div>
+
+      {previewUrl && (
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={data.shareToFeed}
+            onChange={(e) => onUpdate({ shareToFeed: e.target.checked })}
+            className="w-4 h-4 rounded border-gray-300 text-[#D103D1] focus:ring-[#D103D1]"
+          />
+          <span className="text-sm text-gray-600">
+            Share to school feed (requires admin approval)
+          </span>
+        </label>
+      )}
+
       <Button
         onClick={onSubmit}
         disabled={isSubmitting}
         className="w-full py-4 text-base font-bold rounded-2xl gap-2"
-        style={{ backgroundColor: '#0B4B39', color: 'white' }}
+        style={{ backgroundColor: "#0B4B39", color: "white" }}
       >
         <Zap size={18} />
-        {isSubmitting ? 'Logging…' : 'Log it'}
+        {isSubmitting ? "Logging…" : "Log it"}
       </Button>
     </div>
   );

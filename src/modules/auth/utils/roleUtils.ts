@@ -1,12 +1,12 @@
-import { UserInterface } from '@/models/users/interfaces/UserInterface';
+import { UserInterface } from "@/models/users/interfaces/UserInterface";
 
 export const Role = {
-  STUDENT: 'student',
-  SCHOOL_ADMIN: 'school_admin',
-  SUPER_ADMIN: 'super_admin',
+  STUDENT: "student",
+  SCHOOL_ADMIN: "school_admin",
+  SUPER_ADMIN: "super_admin",
 } as const;
 
-export type UserRole = 'student' | 'school_admin' | 'super_admin';
+export type UserRole = "student" | "school_admin" | "super_admin";
 
 export const hasRole = (user: UserInterface | null, role: UserRole): boolean => {
   if (!user) return false;
@@ -41,23 +41,23 @@ export const isStudent = (user: UserInterface | null): boolean => {
 };
 
 export const isAdmin = (user: UserInterface | null): boolean =>
-  hasMinimumRole(user, 'school_admin');
+  hasMinimumRole(user, "school_admin");
 
 export const canAccessAdmin = (user: UserInterface | null): boolean => {
   return isSuperAdmin(user);
 };
 
 export const getHomePath = (role: UserRole | undefined): string => {
-  if (role === Role.SUPER_ADMIN) return '/admin';
-  if (role === Role.SCHOOL_ADMIN) return '/admin/dashboard';
-  return '/dashboard';
+  if (role === Role.SUPER_ADMIN) return "/admin";
+  if (role === Role.SCHOOL_ADMIN) return "/school";
+  return "/dashboard";
 };
 
 export const getRoleDisplayName = (role: UserRole): string => {
   const roleNames: Record<UserRole, string> = {
-    [Role.STUDENT]: 'Student',
-    [Role.SCHOOL_ADMIN]: 'School Admin',
-    [Role.SUPER_ADMIN]: 'Super Admin',
+    [Role.STUDENT]: "Student",
+    [Role.SCHOOL_ADMIN]: "School Admin",
+    [Role.SUPER_ADMIN]: "Super Admin",
   };
 
   return roleNames[role];

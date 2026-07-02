@@ -1,5 +1,5 @@
-import { Loader2 } from 'lucide-react';
-import { Button } from '@/modules/application/components/DesignSystem/ui/button';
+import { Loader2 } from "lucide-react";
+import { Button } from "@/modules/application/components/DesignSystem/ui/button";
 
 interface SubmitButtonProps {
   isSubmitting: boolean;
@@ -13,7 +13,7 @@ const SubmitButton = ({ isSubmitting, loadingText, children, className }: Submit
     type="submit"
     disabled={isSubmitting}
     className={className}
-    style={{ backgroundColor: '#0B4B39' }}
+    style={{ backgroundColor: "#0B4B39" }}
   >
     {isSubmitting ? (
       <span className="flex items-center justify-center gap-2">

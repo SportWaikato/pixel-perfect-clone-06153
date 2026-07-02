@@ -1,17 +1,17 @@
-import { useState, useEffect, useMemo, ReactNode } from 'react';
-import { AssetInterface } from '@/models/assets/interfaces/AssetInterface';
-import { SchoolInterface } from '@/models/schools/interfaces/SchoolInterface';
-import { Card, CardContent } from '@/modules/application/components/DesignSystem/ui/card';
-import { Button } from '@/modules/application/components/DesignSystem/ui/button';
-import { Badge } from '@/modules/application/components/DesignSystem/ui/badge';
-import { Input } from '@/modules/application/components/DesignSystem/ui/input';
+import { useState, useEffect, useMemo, ReactNode } from "react";
+import { AssetInterface } from "@/models/assets/interfaces/AssetInterface";
+import { SchoolInterface } from "@/models/schools/interfaces/SchoolInterface";
+import { Card, CardContent } from "@/modules/application/components/DesignSystem/ui/card";
+import { Button } from "@/modules/application/components/DesignSystem/ui/button";
+import { Badge } from "@/modules/application/components/DesignSystem/ui/badge";
+import { Input } from "@/modules/application/components/DesignSystem/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/modules/application/components/DesignSystem/ui/select';
+} from "@/modules/application/components/DesignSystem/ui/select";
 import {
   Table,
   TableBody,
@@ -19,7 +19,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/modules/application/components/DesignSystem/ui/table';
+} from "@/modules/application/components/DesignSystem/ui/table";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,17 +30,29 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/modules/application/components/DesignSystem/ui/alert-dialog';
-import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
-import { AssetService } from '@/models/assets/services/AssetService';
-import { SchoolService } from '@/models/schools/services/SchoolService';
-import useAdminData from '@/modules/common/hooks/useAdminData';
-import AssetCreateEditDialog from './AssetCreateEditDialog';
-import { Plus, Search, Edit, Trash2, FolderOpen, ArrowLeft, FileText, Image, Download, Loader2, Video } from 'lucide-react';
-import { toast } from 'sonner';
-import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-import { Link } from '@tanstack/react-router';
-type SortOption = 'newest' | 'oldest' | 'title_asc' | 'title_desc';
+} from "@/modules/application/components/DesignSystem/ui/alert-dialog";
+import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
+import { AssetService } from "@/models/assets/services/AssetService";
+import { SchoolService } from "@/models/schools/services/SchoolService";
+import useAdminData from "@/modules/common/hooks/useAdminData";
+import AssetCreateEditDialog from "./AssetCreateEditDialog";
+import {
+  Plus,
+  Search,
+  Edit,
+  Trash2,
+  FolderOpen,
+  ArrowLeft,
+  FileText,
+  Image,
+  Download,
+  Loader2,
+  Video,
+} from "lucide-react";
+import { toast } from "sonner";
+import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
+import { Link } from "@tanstack/react-router";
+type SortOption = "newest" | "oldest" | "title_asc" | "title_desc";
 
 const formatFileSize = (bytes: number): string => {
   if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
@@ -48,19 +60,27 @@ const formatFileSize = (bytes: number): string => {
 };
 
 const FileTypeBadge = ({ fileType }: { fileType: string }) => {
-  const isPdf = fileType === 'application/pdf';
-  const isVideo = fileType === 'video/mp4';
-  const isImage = fileType.startsWith('image/');
+  const isPdf = fileType === "application/pdf";
+  const isVideo = fileType === "video/mp4";
+  const isImage = fileType.startsWith("image/");
   return (
     <Badge variant="secondary" className="gap-1 text-xs">
-      {isPdf ? <FileText size={10} /> : isVideo ? <Video size={10} /> : isImage ? <img /> : <FileText size={10} />}
-      {isPdf ? 'PDF' : isVideo ? 'MP4' : isImage ? 'Image' : 'File'}
+      {isPdf ? (
+        <FileText size={10} />
+      ) : isVideo ? (
+        <Video size={10} />
+      ) : isImage ? (
+        <img />
+      ) : (
+        <FileText size={10} />
+      )}
+      {isPdf ? "PDF" : isVideo ? "MP4" : isImage ? "Image" : "File"}
     </Badge>
   );
 };
 
 const renderDescription = (text: string | null | undefined) => {
-  if (!text) return '—';
+  if (!text) return "—";
   const urlRegex = /https?:\/\/[^\s]+/g;
   const parts: ReactNode[] = [];
   let lastIndex = 0;
@@ -68,9 +88,15 @@ const renderDescription = (text: string | null | undefined) => {
   while ((match = urlRegex.exec(text)) !== null) {
     if (match.index > lastIndex) parts.push(text.slice(lastIndex, match.index));
     parts.push(
-      <a key={match.index} href={match[0]} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline break-all">
+      <a
+        key={match.index}
+        href={match[0]}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-500 underline break-all"
+      >
         {match[0]}
-      </a>
+      </a>,
     );
     lastIndex = match.index + match[0].length;
   }
@@ -79,15 +105,19 @@ const renderDescription = (text: string | null | undefined) => {
 };
 
 const AssetThumbnail = ({ asset }: { asset: AssetInterface }) => {
-  if (asset.file_type.startsWith('image/')) {
+  if (asset.file_type.startsWith("image/")) {
     return (
       <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded bg-gray-100">
-        <img src={asset.file_url} alt={asset.name} className="absolute inset-0 w-full h-full object-cover object-cover" />
+        <img
+          src={asset.file_url}
+          alt={asset.name}
+          className="absolute inset-0 w-full h-full object-cover object-cover"
+        />
       </div>
     );
   }
-  const isPdf = asset.file_type === 'application/pdf';
-  const isVideo = asset.file_type === 'video/mp4';
+  const isPdf = asset.file_type === "application/pdf";
+  const isVideo = asset.file_type === "video/mp4";
   if (isVideo) {
     return (
       <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded bg-purple-50">
@@ -96,8 +126,10 @@ const AssetThumbnail = ({ asset }: { asset: AssetInterface }) => {
     );
   }
   return (
-    <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded ${isPdf ? 'bg-red-50' : 'bg-blue-50'}`}>
-      <FileText size={20} className={isPdf ? 'text-red-400' : 'text-blue-400'} />
+    <div
+      className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded ${isPdf ? "bg-red-50" : "bg-blue-50"}`}
+    >
+      <FileText size={20} className={isPdf ? "text-red-400" : "text-blue-400"} />
     </div>
   );
 };
@@ -106,7 +138,7 @@ const downloadFile = async (url: string, filename: string) => {
   const res = await fetch(url);
   const blob = await res.blob();
   const objectUrl = URL.createObjectURL(blob);
-  const a = document.createElement('a');
+  const a = document.createElement("a");
   a.href = objectUrl;
   a.download = filename;
   a.click();
@@ -118,16 +150,26 @@ const AssetManagementContent = () => {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingAsset, setEditingAsset] = useState<AssetInterface | null>(null);
   const [schools, setSchools] = useState<SchoolInterface[]>([]);
-  const [sortBy, setSortBy] = useState<SortOption>('newest');
-  const [filterSchoolId, setFilterSchoolId] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<SortOption>("newest");
+  const [filterSchoolId, setFilterSchoolId] = useState<string>("all");
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
   useEffect(() => {
     const schoolService = new SchoolService(createSupabaseClient());
-    schoolService.getAll(true).then(setSchools).catch(() => {});
+    schoolService
+      .getAll(true)
+      .then(setSchools)
+      .catch(() => {});
   }, []);
 
-  const { filteredData: assets, data: allAssets, loading, searchTerm, setSearchTerm, refresh: fetchAssets } = useAdminData({
+  const {
+    filteredData: assets,
+    data: allAssets,
+    loading,
+    searchTerm,
+    setSearchTerm,
+    refresh: fetchAssets,
+  } = useAdminData({
     fetchFn: () => assetService.getAll(),
     filterFn: (asset, term) =>
       asset.name.toLowerCase().includes(term.toLowerCase()) ||
@@ -136,25 +178,31 @@ const AssetManagementContent = () => {
 
   const schoolMap = useMemo(() => {
     const map: Record<string, string> = {};
-    schools.forEach(s => { map[s.id] = s.name; });
+    schools.forEach((s) => {
+      map[s.id] = s.name;
+    });
     return map;
   }, [schools]);
 
   const displayedAssets = useMemo(() => {
     let result = [...assets];
 
-    if (filterSchoolId !== 'all') {
-      result = result.filter(a =>
-        a.school_ids.length === 0 || a.school_ids.includes(filterSchoolId)
+    if (filterSchoolId !== "all") {
+      result = result.filter(
+        (a) => a.school_ids.length === 0 || a.school_ids.includes(filterSchoolId),
       );
     }
 
     result.sort((a, b) => {
       switch (sortBy) {
-        case 'oldest': return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-        case 'title_asc': return a.name.localeCompare(b.name);
-        case 'title_desc': return b.name.localeCompare(a.name);
-        default: return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        case "oldest":
+          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        case "title_asc":
+          return a.name.localeCompare(b.name);
+        case "title_desc":
+          return b.name.localeCompare(a.name);
+        default:
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       }
     });
 
@@ -174,7 +222,7 @@ const AssetManagementContent = () => {
   const handleDeleteAsset = async (asset: AssetInterface) => {
     try {
       await assetService.deleteWithCleanup(asset.id);
-      toast.success('Asset deleted successfully!');
+      toast.success("Asset deleted successfully!");
       await fetchAssets();
     } catch (error) {
       notifyAboutError(error);
@@ -194,7 +242,7 @@ const AssetManagementContent = () => {
           <div className="h-8 bg-gray-200 rounded w-1/3 mb-2"></div>
           <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
           <div className="space-y-4">
-            {[1, 2, 3].map(i => (
+            {[1, 2, 3].map((i) => (
               <div key={i} className="h-16 bg-gray-200 rounded"></div>
             ))}
           </div>
@@ -208,7 +256,7 @@ const AssetManagementContent = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
-            <Link to="/admin/dashboard">
+            <Link to="/admin">
               <ArrowLeft size={20} />
             </Link>
           </Button>
@@ -217,7 +265,11 @@ const AssetManagementContent = () => {
             <p className="text-gray-600">Upload and manage promotional files for school admins</p>
           </div>
         </div>
-        <Button onClick={handleCreateAsset} className="gap-2" style={{ backgroundColor: '#00ACEF' }}>
+        <Button
+          onClick={handleCreateAsset}
+          className="gap-2"
+          style={{ backgroundColor: "#00ACEF" }}
+        >
           <Plus size={16} />
           Upload Asset
         </Button>
@@ -230,7 +282,7 @@ const AssetManagementContent = () => {
           <Input
             placeholder="Search assets..."
             value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
+            onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-9"
           />
         </div>
@@ -241,13 +293,15 @@ const AssetManagementContent = () => {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All schools</SelectItem>
-            {schools.map(s => (
-              <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+            {schools.map((s) => (
+              <SelectItem key={s.id} value={s.id}>
+                {s.name}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
 
-        <Select value={sortBy} onValueChange={v => setSortBy(v as SortOption)}>
+        <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
           <SelectTrigger className="w-44">
             <SelectValue />
           </SelectTrigger>
@@ -268,7 +322,7 @@ const AssetManagementContent = () => {
       {displayedAssets.length === 0 ? (
         <Card>
           <CardContent className="text-center py-12">
-            {searchTerm || filterSchoolId !== 'all' ? (
+            {searchTerm || filterSchoolId !== "all" ? (
               <>
                 <Search className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">No assets found</h3>
@@ -278,8 +332,14 @@ const AssetManagementContent = () => {
               <>
                 <FolderOpen className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">No Assets Yet</h3>
-                <p className="text-gray-600 mb-4">Upload promotional files for school admins to download.</p>
-                <Button onClick={handleCreateAsset} className="gap-2" style={{ backgroundColor: '#00ACEF' }}>
+                <p className="text-gray-600 mb-4">
+                  Upload promotional files for school admins to download.
+                </p>
+                <Button
+                  onClick={handleCreateAsset}
+                  className="gap-2"
+                  style={{ backgroundColor: "#00ACEF" }}
+                >
                   <Plus size={16} />
                   Upload Asset
                 </Button>
@@ -302,7 +362,7 @@ const AssetManagementContent = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {displayedAssets.map(asset => (
+              {displayedAssets.map((asset) => (
                 <TableRow key={asset.id}>
                   <TableCell>
                     <div className="flex items-center gap-3">
@@ -310,7 +370,7 @@ const AssetManagementContent = () => {
                       <span className="font-medium">{asset.name}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-gray-500 max-w-xs">
+                  <TableCell className="text-gray-500 max-w-xs break-words">
                     {renderDescription(asset.description)}
                   </TableCell>
                   <TableCell>
@@ -322,9 +382,9 @@ const AssetManagementContent = () => {
                       <span className="text-xs text-gray-400">All schools</span>
                     ) : (
                       <div className="flex flex-wrap gap-1">
-                        {asset.school_ids.slice(0, 2).map(id => (
+                        {asset.school_ids.slice(0, 2).map((id) => (
                           <Badge key={id} variant="outline" className="text-xs">
-                            {schoolMap[id] ?? '…'}
+                            {schoolMap[id] ?? "…"}
                           </Badge>
                         ))}
                         {asset.school_ids.length > 2 && (
@@ -337,10 +397,10 @@ const AssetManagementContent = () => {
                   </TableCell>
                   <TableCell>
                     <Badge
-                      variant={asset.is_active ? 'default' : 'secondary'}
-                      style={{ backgroundColor: asset.is_active ? '#19AA4B' : undefined }}
+                      variant={asset.is_active ? "default" : "secondary"}
+                      style={{ backgroundColor: asset.is_active ? "#19AA4B" : undefined }}
                     >
-                      {asset.is_active ? 'Active' : 'Inactive'}
+                      {asset.is_active ? "Active" : "Inactive"}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
@@ -389,7 +449,8 @@ const AssetManagementContent = () => {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Delete Asset</AlertDialogTitle>
                             <AlertDialogDescription>
-                              Are you sure you want to delete &quot;{asset.name}&quot;? This will permanently remove the file and cannot be undone.
+                              Are you sure you want to delete &quot;{asset.name}&quot;? This will
+                              permanently remove the file and cannot be undone.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>

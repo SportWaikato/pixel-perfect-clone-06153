@@ -5,10 +5,11 @@ export interface SchoolInterface {
   name: string;
   code: string;
   email_domain: string | null;
+  secondary_email_domain?: string | null;
   total_students: number;
   total_kilometers: number;
   total_points: number;
   is_active: boolean;
   is_internal: boolean;
-  registration_method: 'domain_blocklist' | 'allowlist';
-} 
+  registration_method: "domain_blocklist" | "allowlist";
+}

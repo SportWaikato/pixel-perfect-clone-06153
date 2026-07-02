@@ -67,12 +67,15 @@ function ForgotPasswordPage() {
                   <Button
                     type="submit"
                     disabled={isSubmitting}
-                    style={{ backgroundColor: "#0A4B39", color: "#fff" }} className="w-full" 
+                    style={{ backgroundColor: "#0A4B39", color: "#fff" }}
+                    className="w-full"
                   >
                     {isSubmitting ? "Sending…" : "Send reset link"}
                   </Button>
                   <p className="text-center text-xs text-muted-foreground">
-                    <Link to="/auth" className="underline">Back to sign in</Link>
+                    <Link to="/auth" className="underline">
+                      Back to sign in
+                    </Link>
                   </p>
                 </Form>
               )}

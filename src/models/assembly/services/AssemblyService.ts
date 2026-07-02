@@ -1,11 +1,11 @@
-import { SupabaseClient } from '@supabase/supabase-js';
+import { SupabaseClient } from "@supabase/supabase-js";
 import {
   AssemblyWinnerInterface,
   HouseTopScorer,
   HouseWeeklyPoints,
-} from '../interfaces/AssemblyWinnerInterface';
+} from "../interfaces/AssemblyWinnerInterface";
 
-const WINNERS_TABLE = 'assembly_draw_winners';
+const WINNERS_TABLE = "assembly_draw_winners";
 
 export class AssemblyService {
   private supabaseClient: SupabaseClient;
@@ -19,33 +19,39 @@ export class AssemblyService {
     cutoff.setDate(cutoff.getDate() - days);
 
     const { data: houses, error: housesError } = await this.supabaseClient
-      .from('houses')
-      .select('id, name, color')
-      .eq('school_id', schoolId);
+      .from("houses")
+      .select("id, name, color")
+      .eq("school_id", schoolId);
 
     if (housesError) throw new Error(housesError.message);
     if (!houses || houses.length === 0) return [];
 
     const { data: users, error: usersError } = await this.supabaseClient
-      .from('users')
-      .select('id, house_id')
-      .eq('school_id', schoolId)
-      .not('house_id', 'is', null);
+      .from("users")
+      .select("id, house_id")
+      .eq("school_id", schoolId)
+      .eq("is_deleted", false)
+      .not("house_id", "is", null);
 
     if (usersError) throw new Error(usersError.message);
     if (!users || users.length === 0) {
-      return houses.map(h => ({ house_id: h.id, house_name: h.name, house_color: h.color, weekly_points: 0 }));
+      return houses.map((h) => ({
+        house_id: h.id,
+        house_name: h.name,
+        house_color: h.color,
+        weekly_points: 0,
+      }));
     }
 
-    const userIds = users.map(u => u.id);
-    const userHouseMap = new Map(users.map(u => [u.id, u.house_id as string]));
+    const userIds = users.map((u) => u.id);
+    const userHouseMap = new Map(users.map((u) => [u.id, u.house_id as string]));
 
     const { data: activities, error: activitiesError } = await this.supabaseClient
-      .from('activities')
-      .select('user_id, house_points_awarded')
-      .in('user_id', userIds)
-      .gte('created_at', cutoff.toISOString())
-      .eq('is_rejected', false);
+      .from("activities")
+      .select("user_id, house_points_awarded")
+      .in("user_id", userIds)
+      .gte("created_at", cutoff.toISOString())
+      .eq("is_rejected", false);
 
     if (activitiesError) throw new Error(activitiesError.message);
 
@@ -53,12 +59,15 @@ export class AssemblyService {
     for (const act of activities || []) {
       const houseId = userHouseMap.get(act.user_id);
       if (houseId) {
-        pointsByHouse.set(houseId, (pointsByHouse.get(houseId) || 0) + (act.house_points_awarded || 0));
+        pointsByHouse.set(
+          houseId,
+          (pointsByHouse.get(houseId) || 0) + (act.house_points_awarded || 0),
+        );
       }
     }
 
     return houses
-      .map(h => ({
+      .map((h) => ({
         house_id: h.id,
         house_name: h.name,
         house_color: h.color,
@@ -69,25 +78,26 @@ export class AssemblyService {
 
   async getTopScorersByHouse(schoolId: string, limitPerHouse: number): Promise<HouseTopScorer[]> {
     const { data: houses, error: housesError } = await this.supabaseClient
-      .from('houses')
-      .select('id, name, color')
-      .eq('school_id', schoolId);
+      .from("houses")
+      .select("id, name, color")
+      .eq("school_id", schoolId);
 
     if (housesError) throw new Error(housesError.message);
     if (!houses || houses.length === 0) return [];
 
     const { data: users, error: usersError } = await this.supabaseClient
-      .from('users')
-      .select('id, first_name, last_name, total_points, house_id')
-      .eq('school_id', schoolId)
-      .not('house_id', 'is', null)
-      .eq('is_active', true)
-      .eq('role', 'student')
-      .order('total_points', { ascending: false });
+      .from("users")
+      .select("id, first_name, last_name, total_points, house_id")
+      .eq("school_id", schoolId)
+      .eq("is_deleted", false)
+      .not("house_id", "is", null)
+      .eq("is_active", true)
+      .neq("role", "super_admin")
+      .order("total_points", { ascending: false });
 
     if (usersError) throw new Error(usersError.message);
 
-    const houseMap = new Map(houses.map(h => [h.id, h]));
+    const houseMap = new Map(houses.map((h) => [h.id, h]));
     const countByHouse = new Map<string, number>();
     const result: HouseTopScorer[] = [];
 
@@ -115,37 +125,41 @@ export class AssemblyService {
     return result;
   }
 
-  async getTopScorersByHouseThisWeek(schoolId: string, limitPerHouse: number): Promise<HouseTopScorer[]> {
+  async getTopScorersByHouseThisWeek(
+    schoolId: string,
+    limitPerHouse: number,
+  ): Promise<HouseTopScorer[]> {
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - 7);
 
     const { data: houses, error: housesError } = await this.supabaseClient
-      .from('houses')
-      .select('id, name, color')
-      .eq('school_id', schoolId);
+      .from("houses")
+      .select("id, name, color")
+      .eq("school_id", schoolId);
 
     if (housesError) throw new Error(housesError.message);
     if (!houses || houses.length === 0) return [];
 
     const { data: users, error: usersError } = await this.supabaseClient
-      .from('users')
-      .select('id, first_name, last_name, house_id')
-      .eq('school_id', schoolId)
-      .not('house_id', 'is', null)
-      .eq('is_active', true)
-      .neq('role', 'super_admin');
+      .from("users")
+      .select("id, first_name, last_name, house_id")
+      .eq("school_id", schoolId)
+      .eq("is_deleted", false)
+      .not("house_id", "is", null)
+      .eq("is_active", true)
+      .neq("role", "super_admin");
 
     if (usersError) throw new Error(usersError.message);
     if (!users || users.length === 0) return [];
 
-    const userIds = users.map(u => u.id);
+    const userIds = users.map((u) => u.id);
 
     const { data: activities, error: activitiesError } = await this.supabaseClient
-      .from('activities')
-      .select('user_id, final_points')
-      .in('user_id', userIds)
-      .gte('created_at', cutoff.toISOString())
-      .eq('is_rejected', false);
+      .from("activities")
+      .select("user_id, final_points")
+      .in("user_id", userIds)
+      .gte("created_at", cutoff.toISOString())
+      .eq("is_rejected", false);
 
     if (activitiesError) throw new Error(activitiesError.message);
 
@@ -154,7 +168,7 @@ export class AssemblyService {
       pointsByUser.set(act.user_id, (pointsByUser.get(act.user_id) || 0) + (act.final_points || 0));
     }
 
-    const houseMap = new Map(houses.map(h => [h.id, h]));
+    const houseMap = new Map(houses.map((h) => [h.id, h]));
     const countByHouse = new Map<string, number>();
     const result: HouseTopScorer[] = [];
 
@@ -189,39 +203,49 @@ export class AssemblyService {
     return result;
   }
 
-  async getHousePointsForDateRange(schoolId: string, startDate: string, endDate: string): Promise<HouseWeeklyPoints[]> {
+  async getHousePointsForDateRange(
+    schoolId: string,
+    startDate: string,
+    endDate: string,
+  ): Promise<HouseWeeklyPoints[]> {
     const startISO = new Date(`${startDate}T00:00:00+12:00`).toISOString();
     const endISO = new Date(`${endDate}T23:59:59+12:00`).toISOString();
 
     const { data: houses, error: housesError } = await this.supabaseClient
-      .from('houses')
-      .select('id, name, color')
-      .eq('school_id', schoolId);
+      .from("houses")
+      .select("id, name, color")
+      .eq("school_id", schoolId);
 
     if (housesError) throw new Error(housesError.message);
     if (!houses || houses.length === 0) return [];
 
     const { data: users, error: usersError } = await this.supabaseClient
-      .from('users')
-      .select('id, house_id')
-      .eq('school_id', schoolId)
-      .not('house_id', 'is', null);
+      .from("users")
+      .select("id, house_id")
+      .eq("school_id", schoolId)
+      .eq("is_deleted", false)
+      .not("house_id", "is", null);
 
     if (usersError) throw new Error(usersError.message);
     if (!users || users.length === 0) {
-      return houses.map(h => ({ house_id: h.id, house_name: h.name, house_color: h.color, weekly_points: 0 }));
+      return houses.map((h) => ({
+        house_id: h.id,
+        house_name: h.name,
+        house_color: h.color,
+        weekly_points: 0,
+      }));
     }
 
-    const userIds = users.map(u => u.id);
-    const userHouseMap = new Map(users.map(u => [u.id, u.house_id as string]));
+    const userIds = users.map((u) => u.id);
+    const userHouseMap = new Map(users.map((u) => [u.id, u.house_id as string]));
 
     const { data: activities, error: activitiesError } = await this.supabaseClient
-      .from('activities')
-      .select('user_id, house_points_awarded')
-      .in('user_id', userIds)
-      .gte('created_at', startISO)
-      .lte('created_at', endISO)
-      .eq('is_rejected', false);
+      .from("activities")
+      .select("user_id, house_points_awarded")
+      .in("user_id", userIds)
+      .gte("created_at", startISO)
+      .lte("created_at", endISO)
+      .eq("is_rejected", false);
 
     if (activitiesError) throw new Error(activitiesError.message);
 
@@ -229,12 +253,15 @@ export class AssemblyService {
     for (const act of activities || []) {
       const houseId = userHouseMap.get(act.user_id);
       if (houseId) {
-        pointsByHouse.set(houseId, (pointsByHouse.get(houseId) || 0) + (act.house_points_awarded || 0));
+        pointsByHouse.set(
+          houseId,
+          (pointsByHouse.get(houseId) || 0) + (act.house_points_awarded || 0),
+        );
       }
     }
 
     return houses
-      .map(h => ({
+      .map((h) => ({
         house_id: h.id,
         house_name: h.name,
         house_color: h.color,
@@ -243,38 +270,44 @@ export class AssemblyService {
       .sort((a, b) => b.weekly_points - a.weekly_points);
   }
 
-  async getTopScorersByHouseForDateRange(schoolId: string, startDate: string, endDate: string, limitPerHouse: number): Promise<HouseTopScorer[]> {
+  async getTopScorersByHouseForDateRange(
+    schoolId: string,
+    startDate: string,
+    endDate: string,
+    limitPerHouse: number,
+  ): Promise<HouseTopScorer[]> {
     const startISO = new Date(`${startDate}T00:00:00+12:00`).toISOString();
     const endISO = new Date(`${endDate}T23:59:59+12:00`).toISOString();
 
     const { data: houses, error: housesError } = await this.supabaseClient
-      .from('houses')
-      .select('id, name, color')
-      .eq('school_id', schoolId);
+      .from("houses")
+      .select("id, name, color")
+      .eq("school_id", schoolId);
 
     if (housesError) throw new Error(housesError.message);
     if (!houses || houses.length === 0) return [];
 
     const { data: users, error: usersError } = await this.supabaseClient
-      .from('users')
-      .select('id, first_name, last_name, house_id')
-      .eq('school_id', schoolId)
-      .not('house_id', 'is', null)
-      .eq('is_active', true)
-      .neq('role', 'super_admin');
+      .from("users")
+      .select("id, first_name, last_name, house_id")
+      .eq("school_id", schoolId)
+      .eq("is_deleted", false)
+      .not("house_id", "is", null)
+      .eq("is_active", true)
+      .neq("role", "super_admin");
 
     if (usersError) throw new Error(usersError.message);
     if (!users || users.length === 0) return [];
 
-    const userIds = users.map(u => u.id);
+    const userIds = users.map((u) => u.id);
 
     const { data: activities, error: activitiesError } = await this.supabaseClient
-      .from('activities')
-      .select('user_id, final_points')
-      .in('user_id', userIds)
-      .gte('created_at', startISO)
-      .lte('created_at', endISO)
-      .eq('is_rejected', false);
+      .from("activities")
+      .select("user_id, final_points")
+      .in("user_id", userIds)
+      .gte("created_at", startISO)
+      .lte("created_at", endISO)
+      .eq("is_rejected", false);
 
     if (activitiesError) throw new Error(activitiesError.message);
 
@@ -283,7 +316,7 @@ export class AssemblyService {
       pointsByUser.set(act.user_id, (pointsByUser.get(act.user_id) || 0) + (act.final_points || 0));
     }
 
-    const houseMap = new Map(houses.map(h => [h.id, h]));
+    const houseMap = new Map(houses.map((h) => [h.id, h]));
     const countByHouse = new Map<string, number>();
     const result: HouseTopScorer[] = [];
 
@@ -318,11 +351,13 @@ export class AssemblyService {
     return result;
   }
 
-  async saveWinner(winner: Omit<AssemblyWinnerInterface, 'id' | 'created_at'>): Promise<AssemblyWinnerInterface> {
+  async saveWinner(
+    winner: Omit<AssemblyWinnerInterface, "id" | "created_at">,
+  ): Promise<AssemblyWinnerInterface> {
     const { data, error } = await this.supabaseClient
       .from(WINNERS_TABLE)
       .insert(winner)
-      .select('*')
+      .select("*")
       .single();
 
     if (error) throw new Error(error.message);
@@ -332,9 +367,9 @@ export class AssemblyService {
   async getWinnersLog(schoolId: string, limit = 50): Promise<AssemblyWinnerInterface[]> {
     const { data, error } = await this.supabaseClient
       .from(WINNERS_TABLE)
-      .select('*')
-      .eq('school_id', schoolId)
-      .order('created_at', { ascending: false })
+      .select("*")
+      .eq("school_id", schoolId)
+      .order("created_at", { ascending: false })
       .limit(limit);
 
     if (error) throw new Error(error.message);

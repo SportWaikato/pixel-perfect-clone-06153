@@ -10,5 +10,12 @@ export const Route = createFileRoute("/_authenticated/events")({
 function Page() {
   const { profile } = Route.useRouteContext();
   if (!profile) return null;
-  return <EventsContent user={profile as UserInterface} initialEvents={[]} initialParticipation={[]} initialEventProgress={{}} />;
+  return (
+    <EventsContent
+      user={profile as UserInterface}
+      initialEvents={[]}
+      initialParticipation={[]}
+      initialEventProgress={{}}
+    />
+  );
 }

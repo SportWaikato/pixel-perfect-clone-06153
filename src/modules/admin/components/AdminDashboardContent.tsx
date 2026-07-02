@@ -1,17 +1,22 @@
-import * as React from 'react';
-import { useState } from 'react';
-import { Link } from '@tanstack/react-router';
-import { UserInterface } from '@/models/users/interfaces/UserInterface';
-import { ActivityInterface } from '@/models/activities/interfaces/ActivityInterface';
-import { SchoolInterface } from '@/models/schools/interfaces/SchoolInterface';
-import { EventInterface } from '@/models/events/interfaces/EventInterface';
-import { Card, CardContent, CardHeader, CardTitle } from '@/modules/application/components/DesignSystem/ui/card';
-import { Badge } from '@/modules/application/components/DesignSystem/ui/badge';
-import { Button } from '@/modules/application/components/DesignSystem/ui/button';
-import ActivityExportDialog from './ActivityExportDialog';
+import * as React from "react";
+import { useState } from "react";
+import { Link } from "@tanstack/react-router";
+import { UserInterface } from "@/models/users/interfaces/UserInterface";
+import { ActivityInterface } from "@/models/activities/interfaces/ActivityInterface";
+import { SchoolInterface } from "@/models/schools/interfaces/SchoolInterface";
+import { EventInterface } from "@/models/events/interfaces/EventInterface";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/modules/application/components/DesignSystem/ui/card";
+import { Badge } from "@/modules/application/components/DesignSystem/ui/badge";
+import { Button } from "@/modules/application/components/DesignSystem/ui/button";
+import ActivityExportDialog from "./ActivityExportDialog";
 
-const SchoolPerformanceChart = React.lazy(() => import('./SchoolPerformanceChart'));
-import SuperAdminMessagesSection from './SuperAdminMessagesSection';
+const SchoolPerformanceChart = React.lazy(() => import("./SchoolPerformanceChart"));
+import SuperAdminMessagesSection from "./SuperAdminMessagesSection";
 import {
   Users,
   School,
@@ -19,10 +24,10 @@ import {
   TrendingUp,
   AlertCircle,
   Download,
-  ShieldAlert
-} from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
-import { getActivityIcon, getActivityColor } from '@/modules/activities/utils/activityIcons';
+  ShieldAlert,
+} from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { getActivityIcon, getActivityColor } from "@/modules/activities/utils/activityIcons";
 
 interface PlatformStats {
   totalSchools: number;
@@ -49,7 +54,7 @@ const AdminDashboardContent = ({
   platformStats,
   recentActivities,
   schools,
-  events
+  events,
 }: AdminDashboardContentProps) => {
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
 
@@ -75,9 +80,7 @@ const AdminDashboardContent = ({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{platformStats.totalSchools}</div>
-            <p className="text-xs text-muted-foreground">
-              Active participating schools
-            </p>
+            <p className="text-xs text-muted-foreground">Active participating schools</p>
           </CardContent>
         </Card>
 
@@ -100,10 +103,10 @@ const AdminDashboardContent = ({
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{platformStats.totalActivities.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
-              Logged by all students
-            </p>
+            <div className="text-2xl font-bold">
+              {platformStats.totalActivities.toLocaleString()}
+            </div>
+            <p className="text-xs text-muted-foreground">Logged by all students</p>
           </CardContent>
         </Card>
 
@@ -113,7 +116,9 @@ const AdminDashboardContent = ({
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{platformStats.totalHours.toLocaleString()} hrs</div>
+            <div className="text-2xl font-bold">
+              {platformStats.totalHours.toLocaleString()} hrs
+            </div>
             <p className="text-xs text-muted-foreground">
               {Math.round(platformStats.totalHours / 24).toLocaleString()} days of activity
             </p>
@@ -127,7 +132,7 @@ const AdminDashboardContent = ({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold capitalize">
-              {platformStats.topActivityType.replace(/_/g, ' ')}
+              {platformStats.topActivityType.replace(/_/g, " ")}
             </div>
             <p className="text-xs text-muted-foreground">
               {platformStats.topActivityCount.toLocaleString()} activities
@@ -150,7 +155,9 @@ const AdminDashboardContent = ({
               </p>
             </CardHeader>
             <CardContent>
-              <React.Suspense fallback={<div>Loading...</div>}><SchoolPerformanceChart schools={schools} /></React.Suspense>
+              <React.Suspense fallback={<div>Loading...</div>}>
+                <SchoolPerformanceChart schools={schools} />
+              </React.Suspense>
             </CardContent>
           </Card>
         </div>
@@ -181,8 +188,8 @@ const AdminDashboardContent = ({
                 <Badge variant="secondary">
                   {platformStats.totalUsers > 0
                     ? Math.round(platformStats.totalMinutes / platformStats.totalUsers)
-                    : '0'
-                  } min
+                    : "0"}{" "}
+                  min
                 </Badge>
               </div>
             </CardContent>
@@ -208,7 +215,7 @@ const AdminDashboardContent = ({
               <div className="flex items-center justify-between">
                 <span className="text-sm">Active Challenges</span>
                 <Badge className="bg-blue-100 text-blue-800">
-                  {events.filter(e => e.is_active).length} Running
+                  {events.filter((e) => e.is_active).length} Running
                 </Badge>
               </div>
             </CardContent>
@@ -240,14 +247,15 @@ const AdminDashboardContent = ({
         <CardContent>
           <div className="space-y-4 max-h-96 overflow-y-auto">
             {recentActivities.length === 0 ? (
-              <p className="text-center text-muted-foreground py-8">
-                No recent activities found
-              </p>
+              <p className="text-center text-muted-foreground py-8">No recent activities found</p>
             ) : (
               recentActivities.slice(0, 15).map((activity) => (
-                <div key={activity.id} className="flex items-center gap-4 p-3 border rounded-lg hover:bg-gray-50 transition-colors">
-                  <div 
-                    className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" 
+                <div
+                  key={activity.id}
+                  className="flex items-center gap-4 p-3 border rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  <div
+                    className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
                     style={{ backgroundColor: getActivityColor(activity.activity_type) }}
                   >
                     {getActivityIcon(activity.activity_type, 18)}
@@ -262,7 +270,7 @@ const AdminDashboardContent = ({
                       </Badge>
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      {activity.activity_type.replace('_', ' ')}
+                      {activity.activity_type.replace("_", " ")}
                       {activity.duration_minutes && ` • ${activity.duration_minutes} min`}
                     </div>
                   </div>
@@ -288,7 +296,9 @@ const AdminDashboardContent = ({
             </div>
             <div>
               <CardTitle>Allow Lists</CardTitle>
-              <p className="text-sm text-muted-foreground mt-0.5">Manage permitted student emails per school</p>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                Manage permitted student emails per school
+              </p>
             </div>
           </div>
           <Button asChild variant="outline">
@@ -306,4 +316,4 @@ const AdminDashboardContent = ({
   );
 };
 
-export default AdminDashboardContent; 
+export default AdminDashboardContent;

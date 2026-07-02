@@ -1,7 +1,7 @@
-import { SupabaseClient } from '@supabase/supabase-js';
-import { KooreroVoteInterface } from '../interfaces/KooreroVoteInterface';
+import { SupabaseClient } from "@supabase/supabase-js";
+import { KooreroVoteInterface } from "../interfaces/KooreroVoteInterface";
 
-const TABLE_NAME = 'korero_votes';
+const TABLE_NAME = "korero_votes";
 
 export class KooreroVoteService {
   private supabaseClient: SupabaseClient;
@@ -13,8 +13,8 @@ export class KooreroVoteService {
   async getUserVote(userId: string): Promise<KooreroVoteInterface | null> {
     const { data, error } = await this.supabaseClient
       .from(TABLE_NAME)
-      .select('*')
-      .eq('user_id', userId)
+      .select("*")
+      .eq("user_id", userId)
       .single();
 
     if (error || !data) return null;
@@ -32,14 +32,17 @@ export class KooreroVoteService {
     return data;
   }
 
-  async updateVote(userId: string, voteData: Partial<KooreroVoteInterface>): Promise<KooreroVoteInterface> {
+  async updateVote(
+    userId: string,
+    voteData: Partial<KooreroVoteInterface>,
+  ): Promise<KooreroVoteInterface> {
     const { data, error } = await this.supabaseClient
       .from(TABLE_NAME)
       .update({
         ...voteData,
         updated_at: new Date().toISOString(),
       })
-      .eq('user_id', userId)
+      .eq("user_id", userId)
       .select()
       .single();
 
@@ -52,9 +55,7 @@ export class KooreroVoteService {
     average_interest: number;
     interest_distribution: Record<number, number>;
   }> {
-    const { data, error } = await this.supabaseClient
-      .from(TABLE_NAME)
-      .select('interest_level');
+    const { data, error } = await this.supabaseClient.from(TABLE_NAME).select("interest_level");
 
     if (error || !data) {
       return { total_votes: 0, average_interest: 0, interest_distribution: {} };
@@ -65,14 +66,14 @@ export class KooreroVoteService {
     const average = totalVotes > 0 ? sum / totalVotes : 0;
 
     const distribution: Record<number, number> = {};
-    data.forEach(vote => {
+    data.forEach((vote) => {
       distribution[vote.interest_level] = (distribution[vote.interest_level] || 0) + 1;
     });
 
     return {
       total_votes: totalVotes,
       average_interest: Number(average.toFixed(2)),
-      interest_distribution: distribution
+      interest_distribution: distribution,
     };
   }
-} 
+}

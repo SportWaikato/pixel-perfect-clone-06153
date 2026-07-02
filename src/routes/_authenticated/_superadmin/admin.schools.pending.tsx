@@ -4,7 +4,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
@@ -38,10 +44,12 @@ function PendingSchoolsPage() {
     setLoading(true);
     const { data, error } = await supabase
       .from("schools")
-      .select(`
+      .select(
+        `
         id, name, region, school_type, email_domain, secondary_email_domain, created_at,
         houses (name, color)
-      `)
+      `,
+      )
       .or("status.eq.pending,is_active.eq.false")
       .eq("self_registered", true)
       .order("created_at", { ascending: false });
@@ -55,7 +63,9 @@ function PendingSchoolsPage() {
     setLoading(false);
   };
 
-  useEffect(() => { fetchPending(); }, []);
+  useEffect(() => {
+    fetchPending();
+  }, []);
 
   const handleApprove = async (schoolId: string) => {
     setApproving(schoolId);
@@ -103,7 +113,9 @@ function PendingSchoolsPage() {
 
       {loading ? (
         <Card>
-          <CardContent className="p-8 text-center text-muted-foreground">Loading pending schools…</CardContent>
+          <CardContent className="p-8 text-center text-muted-foreground">
+            Loading pending schools…
+          </CardContent>
         </Card>
       ) : schools.length === 0 ? (
         <Card>
@@ -143,17 +155,17 @@ function PendingSchoolsPage() {
                   <div>
                     <p className="text-muted-foreground">Houses</p>
                     <div className="flex flex-wrap gap-1 mt-1">
-                      {((school as any).houses as { name: string; color: string }[] | undefined)?.map(
-                        (house: { name: string; color: string }) => (
-                          <div
-                            key={house.name}
-                            className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs text-white"
-                            style={{ background: house.color }}
-                          >
-                            {house.name}
-                          </div>
-                        ),
-                      )}
+                      {(
+                        (school as any).houses as { name: string; color: string }[] | undefined
+                      )?.map((house: { name: string; color: string }) => (
+                        <div
+                          key={house.name}
+                          className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs text-white"
+                          style={{ background: house.color }}
+                        >
+                          {house.name}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -184,7 +196,12 @@ function PendingSchoolsPage() {
       {/* Reject modal */}
       <Dialog
         open={!!rejectModal}
-        onOpenChange={(open) => { if (!open) { setRejectModal(null); setRejectReason(""); } }}
+        onOpenChange={(open) => {
+          if (!open) {
+            setRejectModal(null);
+            setRejectReason("");
+          }
+        }}
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -203,7 +220,13 @@ function PendingSchoolsPage() {
             />
           </div>
           <div className="flex gap-2 justify-end">
-            <Button variant="outline" onClick={() => { setRejectModal(null); setRejectReason(""); }}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setRejectModal(null);
+                setRejectReason("");
+              }}
+            >
               Cancel
             </Button>
             <Button

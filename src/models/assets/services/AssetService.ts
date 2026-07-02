@@ -1,8 +1,8 @@
-import { SupabaseClient } from '@supabase/supabase-js';
-import { AssetInterface } from '../interfaces/AssetInterface';
-import { StorageService } from '@/models/storage/services/StorageService';
+import { SupabaseClient } from "@supabase/supabase-js";
+import { AssetInterface } from "../interfaces/AssetInterface";
+import { StorageService } from "@/models/storage/services/StorageService";
 
-const ASSETS_TABLE = 'promotional_assets';
+const ASSETS_TABLE = "promotional_assets";
 
 export class AssetService {
   private supabaseClient: SupabaseClient;
@@ -14,24 +14,21 @@ export class AssetService {
   async getAll(): Promise<AssetInterface[]> {
     const { data, error } = await this.supabaseClient
       .from(ASSETS_TABLE)
-      .select('*')
-      .order('created_at', { ascending: false });
+      .select("*")
+      .order("created_at", { ascending: false });
 
     if (error) throw new Error(error.message);
     return data || [];
   }
 
   async getActive(schoolId?: string): Promise<AssetInterface[]> {
-    let query = this.supabaseClient
-      .from(ASSETS_TABLE)
-      .select('*')
-      .eq('is_active', true);
+    let query = this.supabaseClient.from(ASSETS_TABLE).select("*").eq("is_active", true);
 
     if (schoolId) {
       query = query.or(`school_ids.eq.{},school_ids.cs.{"${schoolId}"}`);
     }
 
-    const { data, error } = await query.order('created_at', { ascending: false });
+    const { data, error } = await query.order("created_at", { ascending: false });
 
     if (error) throw new Error(error.message);
     return data || [];
@@ -40,12 +37,12 @@ export class AssetService {
   async getById(id: string): Promise<AssetInterface | null> {
     const { data, error } = await this.supabaseClient
       .from(ASSETS_TABLE)
-      .select('*')
-      .eq('id', id)
+      .select("*")
+      .eq("id", id)
       .single();
 
     if (error) {
-      if (error.code === 'PGRST116') return null;
+      if (error.code === "PGRST116") return null;
       throw new Error(error.message);
     }
     return data;
@@ -55,7 +52,7 @@ export class AssetService {
     const { data, error } = await this.supabaseClient
       .from(ASSETS_TABLE)
       .insert({ ...assetData })
-      .select('*')
+      .select("*")
       .single();
 
     if (error) throw new Error(error.message);
@@ -66,8 +63,8 @@ export class AssetService {
     const { data, error } = await this.supabaseClient
       .from(ASSETS_TABLE)
       .update({ ...assetData, updated_at: new Date().toISOString() })
-      .eq('id', id)
-      .select('*')
+      .eq("id", id)
+      .select("*")
       .single();
 
     if (error) throw new Error(error.message);
@@ -75,10 +72,7 @@ export class AssetService {
   }
 
   async delete(id: string): Promise<void> {
-    const { error } = await this.supabaseClient
-      .from(ASSETS_TABLE)
-      .delete()
-      .eq('id', id);
+    const { error } = await this.supabaseClient.from(ASSETS_TABLE).delete().eq("id", id);
 
     if (error) throw new Error(error.message);
   }
@@ -99,7 +93,7 @@ export class AssetService {
   async updateWithFile(
     id: string,
     assetData: Partial<AssetInterface>,
-    file?: File
+    file?: File,
   ): Promise<AssetInterface> {
     let finalData = { ...assetData };
 
@@ -108,7 +102,7 @@ export class AssetService {
       const storageService = new StorageService(this.supabaseClient);
       const { storage_url, storage_path } = await storageService.updateAssetFile(
         current?.file_path || null,
-        file
+        file,
       );
       finalData = {
         ...finalData,
@@ -130,7 +124,7 @@ export class AssetService {
         const storageService = new StorageService(this.supabaseClient);
         await storageService.deleteAssetFile(asset.file_path);
       } catch (error) {
-        console.warn('Failed to delete asset file from storage:', error);
+        console.warn("Failed to delete asset file from storage:", error);
       }
     }
 

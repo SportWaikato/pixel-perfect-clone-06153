@@ -10,5 +10,12 @@ export const Route = createFileRoute("/_authenticated/_superadmin/admin/users")(
 function Page() {
   const { profile } = Route.useRouteContext();
   if (!profile) return null;
-  return <UserManagementContent user={profile as UserInterface} backHref="/admin" schools={[]} initialInvites={[]} />;
+  return (
+    <UserManagementContent
+      user={profile as UserInterface}
+      backHref="/admin"
+      schools={[]}
+      initialInvites={[]}
+    />
+  );
 }

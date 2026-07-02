@@ -1,15 +1,20 @@
-import { useState, useEffect, useMemo } from 'react';
-import { useRouter, useNavigate } from '@tanstack/react-router';
-import { UserInterface } from '@/models/users/interfaces/UserInterface';
-import { EventInterface } from '@/models/events/interfaces/EventInterface';
-import { ActivityInterface } from '@/models/activities/interfaces/ActivityInterface';
-import { Card, CardContent, CardHeader, CardTitle } from '@/modules/application/components/DesignSystem/ui/card';
-import { Badge } from '@/modules/application/components/DesignSystem/ui/badge';
-import { Button } from '@/modules/application/components/DesignSystem/ui/button';
-import { Progress } from '@/modules/application/components/DesignSystem/ui/progress';
-import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
-import { EventService } from '@/models/events/services/EventService';
-import { ActivityService } from '@/models/activities/services/ActivityService';
+import { useState, useEffect, useMemo } from "react";
+import { useRouter, useNavigate } from "@tanstack/react-router";
+import { UserInterface } from "@/models/users/interfaces/UserInterface";
+import { EventInterface } from "@/models/events/interfaces/EventInterface";
+import { ActivityInterface } from "@/models/activities/interfaces/ActivityInterface";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/modules/application/components/DesignSystem/ui/card";
+import { Badge } from "@/modules/application/components/DesignSystem/ui/badge";
+import { Button } from "@/modules/application/components/DesignSystem/ui/button";
+import { Progress } from "@/modules/application/components/DesignSystem/ui/progress";
+import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
+import { EventService } from "@/models/events/services/EventService";
+import { ActivityService } from "@/models/activities/services/ActivityService";
 import {
   ArrowLeft,
   Calendar,
@@ -21,14 +26,14 @@ import {
   Zap,
   Share2,
   ImageDown,
-} from 'lucide-react';
-import { format } from 'date-fns';
-import { formatEventDate } from '@/modules/common/utils/dateUtils';
-import { toast } from 'sonner';
-import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-import YouTubeVideoEmbed from './YouTubeVideoEmbed';
-import { getActivityIcon, getActivityColor } from '@/modules/activities/utils/activityIcons';
-import { ACTIVITY_TYPES } from '@/models/activities/interfaces/ActivityInterface';
+} from "lucide-react";
+import { format } from "date-fns";
+import { formatEventDate } from "@/modules/common/utils/dateUtils";
+import { toast } from "sonner";
+import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
+import YouTubeVideoEmbed from "./YouTubeVideoEmbed";
+import { getActivityIcon, getActivityColor } from "@/modules/activities/utils/activityIcons";
+import { ACTIVITY_TYPES } from "@/models/activities/interfaces/ActivityInterface";
 
 interface IndividualEventContentProps {
   user: UserInterface;
@@ -60,12 +65,14 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
       const [eventData, participation, activities] = await Promise.all([
         eventService.getEventWithBadge(eventId),
         eventService.getUserEventParticipation(user.id),
-        activityService.getActivitiesByEventId(eventId, user.id).catch(() => [] as ActivityInterface[]),
+        activityService
+          .getActivitiesByEventId(eventId, user.id)
+          .catch(() => [] as ActivityInterface[]),
       ]);
 
       if (!eventData) {
-        toast.error('Event not found');
-        navigate({ to: '/challenges' });
+        toast.error("Event not found");
+        navigate({ to: "/challenges" });
         return;
       }
 
@@ -73,13 +80,18 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
       setIsParticipating(participation.includes(eventId));
       setUserActivities(activities);
 
-      const totalMinutes = activities.reduce((sum, activity) => sum + (activity.duration_minutes || 0), 0);
-      const totalPoints = activities.reduce((sum, activity) => sum + (activity.final_points || 0), 0);
+      const totalMinutes = activities.reduce(
+        (sum, activity) => sum + (activity.duration_minutes || 0),
+        0,
+      );
+      const totalPoints = activities.reduce(
+        (sum, activity) => sum + (activity.final_points || 0),
+        0,
+      );
       setUserProgress({ totalMinutes, totalPoints });
-
     } catch (error) {
       notifyAboutError(error);
-      navigate({ to: '/challenges' });
+      navigate({ to: "/challenges" });
     } finally {
       setLoading(false);
     }
@@ -90,7 +102,7 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
       setActionLoading(true);
       await eventService.joinEvent(eventId, user.id);
       setIsParticipating(true);
-      toast.success('Successfully joined the challenge!');
+      toast.success("Successfully joined the challenge!");
     } catch (error) {
       notifyAboutError(error);
     } finally {
@@ -103,7 +115,7 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
       setActionLoading(true);
       await eventService.leaveEvent(eventId, user.id);
       setIsParticipating(false);
-      toast.success('You have left the challenge.');
+      toast.success("You have left the challenge.");
     } catch (error) {
       notifyAboutError(error);
     } finally {
@@ -116,20 +128,21 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
     setImageGenerating(true);
     try {
       // Strip HTML tags and truncate description before adding to URL
-      const plainDescription = (event.description || '')
-        .replace(/<[^>]*>/g, '');
+      const plainDescription = (event.description || "").replace(/<[^>]*>/g, "");
 
       const params = new URLSearchParams({
         name: event.name,
         type: event.event_type,
-        dates: `${formatEventDate(event.start_date, 'MMM d')} - ${formatEventDate(event.end_date, 'MMM d')}`,
+        dates: `${formatEventDate(event.start_date, "MMM d")} - ${formatEventDate(event.end_date, "MMM d")}`,
         participants: String(event.participant_count),
         description: plainDescription,
       });
-      if (event.challenge_points) params.set('points', String(event.challenge_points));
-      if (event.points_multiplier && event.points_multiplier > 1) params.set('multiplier', String(event.points_multiplier));
-      if (event.event_image_url) params.set('imageUrl', event.event_image_url);
-      if (event.target_minutes) params.set('targetHours', String(Math.round(event.target_minutes / 60)));
+      if (event.challenge_points) params.set("points", String(event.challenge_points));
+      if (event.points_multiplier && event.points_multiplier > 1)
+        params.set("multiplier", String(event.points_multiplier));
+      if (event.event_image_url) params.set("imageUrl", event.event_image_url);
+      if (event.target_minutes)
+        params.set("targetHours", String(Math.round(event.target_minutes / 60)));
 
       const url = `/api/challenges/share-image?${params.toString()}`;
       const response = await fetch(url);
@@ -139,9 +152,9 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
       }
       const blob = await response.blob();
       const objectUrl = URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = objectUrl;
-      a.download = `${event.name.replace(/\s+/g, '-')}-challenge.png`;
+      a.download = `${event.name.replace(/\s+/g, "-")}-challenge.png`;
       a.click();
       URL.revokeObjectURL(objectUrl);
     } catch (error) {
@@ -155,7 +168,7 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
     const url = window.location.href;
     const shareText = event
       ? `Check out this challenge: ${event.name}`
-      : 'Check out this challenge on Karawhiua!';
+      : "Check out this challenge on Karawhiua!";
 
     if (navigator.share) {
       try {
@@ -165,7 +178,7 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
       }
     } else {
       await navigator.clipboard.writeText(url);
-      toast.success('Link copied to clipboard!');
+      toast.success("Link copied to clipboard!");
     }
   };
 
@@ -205,18 +218,28 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 min-h-screen">
       {/* Back button */}
-      <Button variant="ghost" onClick={() => navigate({ to: '/challenges' })} className="gap-2 -ml-2 text-gray-600">
+      <Button
+        variant="ghost"
+        onClick={() => navigate({ to: "/challenges" })}
+        className="gap-2 -ml-2 text-gray-600"
+      >
         <ArrowLeft size={16} />
         Back to Challenges
       </Button>
 
       {/* Main Challenge Card */}
-      <Card className="shadow-sm rounded-2xl border border-gray-200" style={{ backgroundColor: '#f9fefd' }}>
+      <Card
+        className="shadow-sm rounded-2xl border border-gray-200"
+        style={{ backgroundColor: "#f9fefd" }}
+      >
         <CardContent className="p-6 sm:p-8">
           {/* Header row */}
           <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
             <div className="flex flex-wrap gap-2">
-              <Badge variant="secondary" className="capitalize bg-[#0B4B39]/10 text-[#0B4B39] border-[#0B4B39]/20">
+              <Badge
+                variant="secondary"
+                className="capitalize bg-[#0B4B39]/10 text-[#0B4B39] border-[#0B4B39]/20"
+              >
                 {event.event_type}
               </Badge>
               {event.is_student_suggested && (
@@ -240,7 +263,8 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
           <div className="flex items-center gap-4 text-gray-500 text-sm mb-4">
             <span className="flex items-center gap-1.5">
               <Calendar size={14} />
-              {formatEventDate(event.start_date, 'MMM d')} – {formatEventDate(event.end_date, 'MMM d')}
+              {formatEventDate(event.start_date, "MMM d")} –{" "}
+              {formatEventDate(event.end_date, "MMM d")}
             </span>
             <span className="flex items-center gap-1.5">
               <Users size={14} />
@@ -257,11 +281,7 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
           {/* Challenge image */}
           {event.event_image_url && (
             <div className="mb-6">
-              <img
-                src={event.event_image_url}
-                alt={event.name}
-                className="w-full rounded-xl"
-              />
+              <img src={event.event_image_url} alt={event.name} className="w-full rounded-xl" />
             </div>
           )}
 
@@ -270,7 +290,11 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
           {/* Video */}
           {event.youtube_video_url && (
             <div className="mb-6">
-              <YouTubeVideoEmbed url={event.youtube_video_url} title={event.name} className="rounded-xl" />
+              <YouTubeVideoEmbed
+                url={event.youtube_video_url}
+                title={event.name}
+                className="rounded-xl"
+              />
             </div>
           )}
 
@@ -280,7 +304,7 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
               onClick={handleLogActivity}
               disabled={actionLoading}
               className="gap-2 font-bold"
-              style={{ backgroundColor: '#D103D1', color: 'white' }}
+              style={{ backgroundColor: "#D103D1", color: "white" }}
             >
               <Activity size={16} />
               Log Activity
@@ -290,7 +314,7 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
                 onClick={handleJoinEvent}
                 disabled={actionLoading}
                 className="gap-2 font-bold"
-                style={{ backgroundColor: '#0B4B39', color: 'white' }}
+                style={{ backgroundColor: "#0B4B39", color: "white" }}
               >
                 <Users size={16} />
                 Join Challenge
@@ -312,7 +336,7 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
               className="gap-2 font-bold text-gray-600"
             >
               <ImageDown size={16} />
-              {imageGenerating ? 'Creating…' : 'Create image'}
+              {imageGenerating ? "Creating…" : "Create image"}
             </Button>
             <Button
               onClick={handleShare}
@@ -338,7 +362,9 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
               />
             </div>
             <div>
-              <p className="text-xs font-semibold tracking-wide text-[#0B4B39] uppercase mb-0.5">Challenge Badge</p>
+              <p className="text-xs font-semibold tracking-wide text-[#0B4B39] uppercase mb-0.5">
+                Challenge Badge
+              </p>
               <p className="font-bold text-gray-800">{event.badge.name}</p>
               <p className="text-sm text-gray-500 mt-0.5">{event.badge.description}</p>
             </div>
@@ -366,7 +392,9 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
                 <p className="text-xs text-gray-500">activities</p>
               </div>
               <div className="text-center p-3 bg-[#0B4B39]/5 rounded-xl">
-                <p className="text-2xl font-black" style={{ color: '#19AA4B' }}>{userProgress.totalPoints}</p>
+                <p className="text-2xl font-black" style={{ color: "#19AA4B" }}>
+                  {userProgress.totalPoints}
+                </p>
                 <p className="text-xs text-gray-500">points</p>
               </div>
             </div>
@@ -374,8 +402,12 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
             {event.target_minutes && (
               <div>
                 <div className="flex justify-between text-sm mb-1.5">
-                  <span className="text-gray-600">{userProgress.totalMinutes} of {event.target_minutes} mins</span>
-                  <span className="font-semibold text-[#0B4B39]">{Math.round(progressPercentage)}% complete</span>
+                  <span className="text-gray-600">
+                    {userProgress.totalMinutes} of {event.target_minutes} mins
+                  </span>
+                  <span className="font-semibold text-[#0B4B39]">
+                    {Math.round(progressPercentage)}% complete
+                  </span>
                 </div>
                 <Progress value={progressPercentage} className="h-2.5" />
               </div>
@@ -395,11 +427,15 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
               {userActivities.slice(0, 5).map((activity) => {
                 const color = getActivityColor(activity.activity_type);
                 const displayName =
-                  activity.activity_type === 'something_else' && activity.custom_activity_name
+                  activity.activity_type === "something_else" && activity.custom_activity_name
                     ? activity.custom_activity_name
-                    : ACTIVITY_TYPES[activity.activity_type as keyof typeof ACTIVITY_TYPES] ?? activity.activity_type.replace(/_/g, ' ');
+                    : (ACTIVITY_TYPES[activity.activity_type as keyof typeof ACTIVITY_TYPES] ??
+                      activity.activity_type.replace(/_/g, " "));
                 return (
-                  <div key={activity.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                  <div
+                    key={activity.id}
+                    className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl"
+                  >
                     <div
                       className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                       style={{ backgroundColor: `${color}18`, color }}
@@ -408,9 +444,12 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-gray-800 truncate">{displayName}</p>
-                      <p className="text-xs text-gray-500">{activity.duration_minutes || 0} min · {format(new Date(activity.created_at), 'MMM d')}</p>
+                      <p className="text-xs text-gray-500">
+                        {activity.duration_minutes || 0} min ·{" "}
+                        {format(new Date(activity.created_at), "MMM d")}
+                      </p>
                     </div>
-                    <div className="text-sm font-bold shrink-0" style={{ color: '#19AA4B' }}>
+                    <div className="text-sm font-bold shrink-0" style={{ color: "#19AA4B" }}>
                       +{activity.final_points} pts
                     </div>
                   </div>
@@ -424,4 +463,4 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
   );
 };
 
-export default IndividualEventContent; 
+export default IndividualEventContent;

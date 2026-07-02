@@ -1,6 +1,6 @@
-import { UserInterface } from '@/models/users/interfaces/UserInterface';
-import { SchoolInterface } from '@/models/schools/interfaces/SchoolInterface';
-import { HouseInterface } from '@/models/houses/interfaces/HouseInterface';
+import { UserInterface } from "@/models/users/interfaces/UserInterface";
+import { SchoolInterface } from "@/models/schools/interfaces/SchoolInterface";
+import { HouseInterface } from "@/models/houses/interfaces/HouseInterface";
 
 export interface UserRankingInterface {
   user_id: string;
@@ -48,7 +48,7 @@ export interface RankingTrend {
   current_rank: number;
   previous_rank: number | null;
   change: number;
-  trend: 'up' | 'down' | 'same' | 'new';
+  trend: "up" | "down" | "same" | "new";
 }
 
 export interface LeaderboardFilters {

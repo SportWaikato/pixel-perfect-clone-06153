@@ -1,26 +1,37 @@
-import { useState, useEffect } from 'react';
-import { Formik, Form } from 'formik';
-import { object, number, string } from 'yup';
-import { UserInterface } from '@/models/users/interfaces/UserInterface';
-import { KoreroVoteInterface, INTEREST_LEVELS } from '@/models/korero/interfaces/KoreroVoteInterface';
-import { Card, CardContent, CardHeader, CardTitle } from '@/modules/application/components/DesignSystem/ui/card';
-import { Button } from '@/modules/application/components/DesignSystem/ui/button';
-import { RadioGroup, RadioGroupItem } from '@/modules/application/components/DesignSystem/ui/radio-group';
-import { Label } from '@/modules/application/components/DesignSystem/ui/label';
-import { FormikTextareaField } from '@/modules/common/components/Formik';
-import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
-import { KoreroVoteService } from '@/models/korero/services/KoreroVoteService';
-import { Star } from 'lucide-react';
-import { toast } from 'sonner';
-import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
+import { useState, useEffect } from "react";
+import { Formik, Form } from "formik";
+import { object, number, string } from "yup";
+import { UserInterface } from "@/models/users/interfaces/UserInterface";
+import {
+  KoreroVoteInterface,
+  INTEREST_LEVELS,
+} from "@/models/korero/interfaces/KoreroVoteInterface";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/modules/application/components/DesignSystem/ui/card";
+import { Button } from "@/modules/application/components/DesignSystem/ui/button";
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from "@/modules/application/components/DesignSystem/ui/radio-group";
+import { Label } from "@/modules/application/components/DesignSystem/ui/label";
+import { FormikTextareaField } from "@/modules/common/components/Formik";
+import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
+import { KoreroVoteService } from "@/models/korero/services/KoreroVoteService";
+import { Star } from "lucide-react";
+import { toast } from "sonner";
+import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
 
 interface KoreroVotingFormProps {
   user: UserInterface;
 }
 
 const validationSchema = object().shape({
-  interest_level: number().min(1).max(5).required('Please select your interest level'),
-  feedback: string().max(500, 'Feedback must be 500 characters or less'),
+  interest_level: number().min(1).max(5).required("Please select your interest level"),
+  feedback: string().max(500, "Feedback must be 500 characters or less"),
 });
 
 const KoreroVotingForm = ({ user }: KoreroVotingFormProps) => {
@@ -37,7 +48,7 @@ const KoreroVotingForm = ({ user }: KoreroVotingFormProps) => {
         setExistingVote(vote);
         setHasVoted(!!vote);
       } catch (error) {
-        console.error('Error fetching existing vote:', error);
+        console.error("Error fetching existing vote:", error);
       } finally {
         setLoading(false);
       }
@@ -56,10 +67,10 @@ const KoreroVotingForm = ({ user }: KoreroVotingFormProps) => {
 
       if (existingVote) {
         await koreroVoteService.updateVote(user.id, voteData);
-        toast.success('Vote updated successfully!');
+        toast.success("Vote updated successfully!");
       } else {
         await koreroVoteService.createVote(voteData);
-        toast.success('Thank you for your vote!');
+        toast.success("Thank you for your vote!");
         setHasVoted(true);
       }
 
@@ -75,7 +86,10 @@ const KoreroVotingForm = ({ user }: KoreroVotingFormProps) => {
 
   if (loading) {
     return (
-      <Card className="shadow-sm rounded-2xl border border-gray-200" style={{ backgroundColor: '#f9fefd' }}>
+      <Card
+        className="shadow-sm rounded-2xl border border-gray-200"
+        style={{ backgroundColor: "#f9fefd" }}
+      >
         <CardContent className="p-8 text-center">
           <div className="animate-pulse space-y-4">
             <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto"></div>
@@ -88,21 +102,26 @@ const KoreroVotingForm = ({ user }: KoreroVotingFormProps) => {
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-      <Card className="h-fit shadow-sm rounded-2xl border border-gray-200" style={{ backgroundColor: '#f9fefd' }}>
+      <Card
+        className="h-fit shadow-sm rounded-2xl border border-gray-200"
+        style={{ backgroundColor: "#f9fefd" }}
+      >
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-[#0B4B39]">
             <Star className="w-5 h-5 text-yellow-500" />
             Tell us your interest level
           </CardTitle>
           <p className="text-sm text-gray-600">
-            {hasVoted ? 'You can update your vote anytime' : 'Your feedback helps us build what you want'}
+            {hasVoted
+              ? "You can update your vote anytime"
+              : "Your feedback helps us build what you want"}
           </p>
         </CardHeader>
         <CardContent>
           <Formik
             initialValues={{
-              interest_level: existingVote?.interest_level || '',
-              feedback: existingVote?.feedback || '',
+              interest_level: existingVote?.interest_level || "",
+              feedback: existingVote?.feedback || "",
             }}
             validationSchema={validationSchema}
             onSubmit={handleSubmit}
@@ -111,16 +130,28 @@ const KoreroVotingForm = ({ user }: KoreroVotingFormProps) => {
             {({ isSubmitting, values, setFieldValue }) => (
               <Form className="space-y-6">
                 <div className="space-y-4">
-                  <Label className="text-base font-medium text-[#0B4B39]">How interested are you in this feature?</Label>
+                  <Label className="text-base font-medium text-[#0B4B39]">
+                    How interested are you in this feature?
+                  </Label>
                   <RadioGroup
                     value={values.interest_level.toString()}
-                    onValueChange={(value) => setFieldValue('interest_level', Number(value))}
+                    onValueChange={(value) => setFieldValue("interest_level", Number(value))}
                     className="space-y-3"
                   >
                     {Object.entries(INTEREST_LEVELS).map(([level, description]) => (
-                      <div key={level} className="flex items-center space-x-3 p-3 rounded-2xl border border-gray-200 bg-[#0B4B39]/5 hover:bg-[#0B4B39]/10 transition-colors">
-                        <RadioGroupItem value={level} id={`level-${level}`} className="border-[#0B4B39]/40 text-[#0B4B39]" />
-                        <Label htmlFor={`level-${level}`} className="flex-1 cursor-pointer text-gray-800">
+                      <div
+                        key={level}
+                        className="flex items-center space-x-3 p-3 rounded-2xl border border-gray-200 bg-[#0B4B39]/5 hover:bg-[#0B4B39]/10 transition-colors"
+                      >
+                        <RadioGroupItem
+                          value={level}
+                          id={`level-${level}`}
+                          className="border-[#0B4B39]/40 text-[#0B4B39]"
+                        />
+                        <Label
+                          htmlFor={`level-${level}`}
+                          className="flex-1 cursor-pointer text-gray-800"
+                        >
                           <span>{description}</span>
                         </Label>
                       </div>
@@ -129,14 +160,16 @@ const KoreroVotingForm = ({ user }: KoreroVotingFormProps) => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-base font-medium text-[#0B4B39]">Additional feedback (optional)</Label>
+                  <Label className="text-base font-medium text-[#0B4B39]">
+                    Additional feedback (optional)
+                  </Label>
                   <textarea
                     name="feedback"
                     placeholder="What specific features would you like to see? Any concerns or suggestions?"
                     rows={4}
                     className="w-full p-3 bg-white rounded-2xl border border-gray-200 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-[#0B4B39]/30 focus:border-[#0B4B39]/40 focus:outline-none"
-                    value={values.feedback || ''}
-                    onChange={(e) => setFieldValue('feedback', e.target.value)}
+                    value={values.feedback || ""}
+                    onChange={(e) => setFieldValue("feedback", e.target.value)}
                   />
                 </div>
 
@@ -145,12 +178,15 @@ const KoreroVotingForm = ({ user }: KoreroVotingFormProps) => {
                     type="submit"
                     disabled={isSubmitting || !values.interest_level}
                     className="flex-1 text-white font-semibold rounded-2xl"
-                    style={{ backgroundColor: '#0B4B39' }}
+                    style={{ backgroundColor: "#0B4B39" }}
                   >
                     {isSubmitting
-                      ? (existingVote ? 'Updating...' : 'Submitting...')
-                      : (existingVote ? 'Update Vote' : 'Submit Vote')
-                    }
+                      ? existingVote
+                        ? "Updating..."
+                        : "Submitting..."
+                      : existingVote
+                        ? "Update Vote"
+                        : "Submit Vote"}
                   </Button>
                 </div>
 
@@ -172,7 +208,10 @@ const KoreroVotingForm = ({ user }: KoreroVotingFormProps) => {
       </Card>
 
       {/* Feature Preview */}
-      <Card className="h-fit shadow-sm rounded-2xl border border-gray-200" style={{ backgroundColor: '#f9fefd' }}>
+      <Card
+        className="h-fit shadow-sm rounded-2xl border border-gray-200"
+        style={{ backgroundColor: "#f9fefd" }}
+      >
         <CardHeader>
           <CardTitle className="text-lg text-[#0B4B39]">What to expect from Kōrero:</CardTitle>
         </CardHeader>
@@ -180,19 +219,27 @@ const KoreroVotingForm = ({ user }: KoreroVotingFormProps) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="p-4 bg-[#0B4B39]/5 border border-gray-200 rounded-2xl">
               <h4 className="font-medium text-[#0B4B39] mb-2">🎯 Goal Groups</h4>
-              <p className="text-sm text-gray-600">Join groups with similar fitness goals and motivate each other</p>
+              <p className="text-sm text-gray-600">
+                Join groups with similar fitness goals and motivate each other
+              </p>
             </div>
             <div className="p-4 bg-[#0B4B39]/5 border border-gray-200 rounded-2xl">
               <h4 className="font-medium text-[#0B4B39] mb-2">🏆 Achievement Sharing</h4>
-              <p className="text-sm text-gray-600">Celebrate milestones and inspire others with your progress</p>
+              <p className="text-sm text-gray-600">
+                Celebrate milestones and inspire others with your progress
+              </p>
             </div>
             <div className="p-4 bg-[#0B4B39]/5 border border-gray-200 rounded-2xl">
               <h4 className="font-medium text-[#0B4B39] mb-2">💬 School Chat</h4>
-              <p className="text-sm text-gray-600">Connect with students from your school and other schools</p>
+              <p className="text-sm text-gray-600">
+                Connect with students from your school and other schools
+              </p>
             </div>
             <div className="p-4 bg-[#0B4B39]/5 border border-gray-200 rounded-2xl">
               <h4 className="font-medium text-[#0B4B39] mb-2">🔥 Challenge Updates</h4>
-              <p className="text-sm text-gray-600">Get real-time updates on competitions and events</p>
+              <p className="text-sm text-gray-600">
+                Get real-time updates on competitions and events
+              </p>
             </div>
           </div>
         </CardContent>
@@ -201,4 +248,4 @@ const KoreroVotingForm = ({ user }: KoreroVotingFormProps) => {
   );
 };
 
-export default KoreroVotingForm; 
+export default KoreroVotingForm;

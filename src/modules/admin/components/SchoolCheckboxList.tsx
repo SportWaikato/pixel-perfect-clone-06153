@@ -1,5 +1,5 @@
-import { Loader2 } from 'lucide-react';
-import { SchoolInterface } from '@/models/schools/interfaces/SchoolInterface';
+import { Loader2 } from "lucide-react";
+import { SchoolInterface } from "@/models/schools/interfaces/SchoolInterface";
 
 interface SchoolCheckboxListProps {
   schools: SchoolInterface[];
@@ -16,7 +16,7 @@ const SchoolCheckboxList = ({
   isLoading,
   onToggle,
   emptyMessage,
-  className = 'space-y-3 rounded-md border border-gray-200 bg-gray-50 p-4 max-h-64 overflow-y-auto',
+  className = "space-y-3 rounded-md border border-gray-200 bg-gray-50 p-4 max-h-64 overflow-y-auto",
 }: SchoolCheckboxListProps) => (
   <div className={className}>
     {isLoading ? (
@@ -26,7 +26,7 @@ const SchoolCheckboxList = ({
       </div>
     ) : (
       <>
-        {schools.map(school => {
+        {schools.map((school) => {
           const isSelected = selectedIds.includes(school.id);
           return (
             <label

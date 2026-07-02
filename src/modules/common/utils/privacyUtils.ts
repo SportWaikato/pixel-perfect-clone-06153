@@ -1,22 +1,22 @@
-import { UserInterface } from '@/models/users/interfaces/UserInterface';
+import { UserInterface } from "@/models/users/interfaces/UserInterface";
 
 /**
  * Returns a display name for a user, respecting their privacy settings
  */
 export const getUserDisplayName = (user: UserInterface): string => {
   if (!user.is_public) {
-    return 'Anonymous User';
+    return "Anonymous User";
   }
-  
+
   if (user.first_name && user.last_name) {
     return `${user.first_name} ${user.last_name}`;
   }
-  
+
   if (user.username) {
     return user.username;
   }
-  
-  return 'Unknown User';
+
+  return "Unknown User";
 };
 
 /**
@@ -29,9 +29,9 @@ export const getDisplayUser = (user: UserInterface): UserInterface => {
 
   return {
     ...user,
-    username: 'Anonymous',
-    first_name: 'Anonymous',
-    last_name: 'User',
+    username: "Anonymous",
+    first_name: "Anonymous",
+    last_name: "User",
     social_handle: undefined,
     profile_icon_url: undefined,
   };

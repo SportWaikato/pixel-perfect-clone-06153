@@ -9,5 +9,12 @@ export const Route = createFileRoute("/_authenticated/_superadmin/admin/assembly
 function Page() {
   const { profile } = Route.useRouteContext();
   if (!profile) return null;
-  return <AssemblyManagementContent winners={[]} schoolId={profile.school_id ?? ''} terms={[]} schools={[]} />;
+  return (
+    <AssemblyManagementContent
+      winners={[]}
+      schoolId={profile.school_id ?? ""}
+      terms={[]}
+      schools={[]}
+    />
+  );
 }

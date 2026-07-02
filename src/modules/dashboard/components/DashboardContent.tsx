@@ -1,27 +1,50 @@
-import { UserInterface } from '@/models/users/interfaces/UserInterface';
-import { UserAchievementInterface, AchievementInterface } from '@/models/achievements/interfaces/AchievementInterface';
-import { AchievementService } from '@/models/achievements/services/AchievementService';
-import { UserService } from '@/models/users/services/UserService';
-import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
-import { Card, CardContent, CardHeader, CardTitle } from '@/modules/application/components/DesignSystem/ui/card';
-import { Badge } from '@/modules/application/components/DesignSystem/ui/badge';
-import { Button } from '@/modules/application/components/DesignSystem/ui/button';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/modules/application/components/DesignSystem/ui/tooltip';
-import { RefreshCw, Award, Zap } from 'lucide-react';
-import { ActivityInterface } from '@/models/activities/interfaces/ActivityInterface';
-import { getActivityIcon, getActivityColor, getFeelingEmoji } from '@/modules/activities/utils/activityIcons';
-import { format as formatTz, toZonedTime } from 'date-fns-tz';
+import { UserInterface } from "@/models/users/interfaces/UserInterface";
+import {
+  UserAchievementInterface,
+  AchievementInterface,
+} from "@/models/achievements/interfaces/AchievementInterface";
+import {
+  SurveyInterface,
+  UserSurveyStatusInterface,
+} from "@/models/surveys/interfaces/SurveyInterface";
+import { AchievementService } from "@/models/achievements/services/AchievementService";
+import { UserService } from "@/models/users/services/UserService";
+import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/modules/application/components/DesignSystem/ui/card";
+import { Badge } from "@/modules/application/components/DesignSystem/ui/badge";
+import { Button } from "@/modules/application/components/DesignSystem/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/modules/application/components/DesignSystem/ui/tooltip";
+import { RefreshCw, Award, Zap } from "lucide-react";
+import StudentProgressionCard from "@/modules/dashboard/components/StudentProgressionCard";
+import SurveyPromptCard from "@/modules/surveys/components/SurveyPromptCard";
+import { ActivityInterface } from "@/models/activities/interfaces/ActivityInterface";
+import {
+  getActivityIcon,
+  getActivityColor,
+  getFeelingEmoji,
+} from "@/modules/activities/utils/activityIcons";
+import { format as formatTz, toZonedTime } from "date-fns-tz";
 
-const NZ_TIMEZONE = 'Pacific/Auckland';
-import { recalculateUserTotals } from '@/modules/activities/actions/recalculateTotals';
-import { checkHistoricalAchievements } from '@/modules/achievements/actions/checkHistoricalAchievements';
-import { recalculateUserStreaks } from '@/modules/activities/actions/recalculateStreaks';
-import { formatTimeDisplay, TIME_GOALS } from '@/models/application/constants/applicationConstants';
-import { toast } from 'sonner';
-import { useRouter } from '@tanstack/react-router';
-import { useState, useEffect, useMemo } from 'react';
-import { Link } from '@tanstack/react-router';
-import { BadgeImageHelper } from '@/models/achievements/helpers/BadgeImageHelper';
+const NZ_TIMEZONE = "Pacific/Auckland";
+import { recalculateUserTotals } from "@/modules/activities/actions/recalculateTotals";
+import { checkHistoricalAchievements } from "@/modules/achievements/actions/checkHistoricalAchievements";
+import { recalculateUserStreaks } from "@/modules/activities/actions/recalculateStreaks";
+import { formatTimeDisplay, TIME_GOALS } from "@/models/application/constants/applicationConstants";
+import { toast } from "sonner";
+import { useRouter } from "@tanstack/react-router";
+import { useState, useEffect, useMemo } from "react";
+import { Link } from "@tanstack/react-router";
+import { BadgeImageHelper } from "@/models/achievements/helpers/BadgeImageHelper";
 
 interface DashboardContentProps {
   user: UserInterface;
@@ -30,6 +53,7 @@ interface DashboardContentProps {
   initialTotalPoints: number;
   initialCurrentMonthMinutes: number;
   recentActivities: ActivityInterface[];
+  pendingSurvey: { survey: SurveyInterface; status: UserSurveyStatusInterface } | null;
 }
 
 const DashboardContent = ({
@@ -39,9 +63,10 @@ const DashboardContent = ({
   initialTotalPoints,
   initialCurrentMonthMinutes,
   recentActivities,
+  pendingSurvey,
 }: DashboardContentProps) => {
   const router = useRouter();
-  const firstName = user.first_name || 'there';
+  const firstName = user.first_name || "there";
 
   // State for greeting to avoid hydration issues
   const [greeting, setGreeting] = useState(`Kia ora, ${firstName}!`);
@@ -71,8 +96,8 @@ const DashboardContent = ({
 
   // Create a map of earned achievement IDs for quick lookup
   const earnedAchievementIds = useMemo(
-    () => new Set(userAchievements.map(ua => ua.achievement_id)),
-    [userAchievements]
+    () => new Set(userAchievements.map((ua) => ua.achievement_id)),
+    [userAchievements],
   );
 
   const handleRecalculateTotals = async () => {
@@ -80,19 +105,19 @@ const DashboardContent = ({
       const result = await recalculateUserTotals();
       if (result.success) {
         toast.success(result.message);
-        
+
         // Also refresh points data
         const supabase = createSupabaseClient();
         const userService = new UserService(supabase);
         const userPointsData = await userService.getUserPointsBreakdown(user.id);
         setTotalPoints(userPointsData.totalFinalPoints);
-        
+
         router.invalidate();
       } else {
         toast.error(result.message);
       }
     } catch (error) {
-      toast.error('Failed to recalculate totals');
+      toast.error("Failed to recalculate totals");
     }
   };
 
@@ -107,7 +132,7 @@ const DashboardContent = ({
         const userService = new UserService(supabase);
         const [userAchievementsData, userPointsData] = await Promise.all([
           achievementService.getUserAchievements(user.id),
-          userService.getUserPointsBreakdown(user.id)
+          userService.getUserPointsBreakdown(user.id),
         ]);
         setUserAchievements(userAchievementsData);
         setTotalPoints(userPointsData.totalFinalPoints);
@@ -115,7 +140,7 @@ const DashboardContent = ({
         toast.error(result.message);
       }
     } catch (error) {
-      toast.error('Failed to check achievements');
+      toast.error("Failed to check achievements");
     }
   };
 
@@ -129,7 +154,7 @@ const DashboardContent = ({
         toast.error(result.message);
       }
     } catch (error) {
-      toast.error('Failed to recalculate streaks');
+      toast.error("Failed to recalculate streaks");
     }
   };
 
@@ -141,20 +166,47 @@ const DashboardContent = ({
           <h1 className="text-4xl font-black text-gray-800">{greeting}</h1>
           <p className="text-gray-700">Track your progress and achievements</p>
         </div>
-        <Link to="/activities" className="flex flex-col items-center justify-center w-20 h-20 rounded-full transition-opacity hover:opacity-80" style={{ backgroundColor: '#D103D1' }}>
+        <Link
+          to="/activities"
+          className="flex flex-col items-center justify-center w-20 h-20 rounded-full transition-opacity hover:opacity-80"
+          style={{ backgroundColor: "#D103D1" }}
+        >
           <Zap size={24} className="text-white" />
-          <span className="text-white text-xs font-semibold leading-tight text-center">Log<br />Activity</span>
+          <span className="text-white text-xs font-semibold leading-tight text-center">
+            Log
+            <br />
+            Activity
+          </span>
         </Link>
       </div>
 
+      {pendingSurvey && (
+        <SurveyPromptCard
+          surveyType={pendingSurvey.status.survey_type}
+          surveyName={pendingSurvey.survey.name}
+        />
+      )}
+
+      {user.school_id && (
+        <StudentProgressionCard
+          userId={user.id}
+          schoolId={user.school_id}
+          lifetimePoints={totalPoints}
+          variant="compact"
+        />
+      )}
+
       {/* Monthly Progress - Full Width */}
-      <Card className="shadow-sm rounded-2xl border border-gray-200" style={{ backgroundColor: '#f9fefd' }}>
+      <Card
+        className="shadow-sm rounded-2xl border border-gray-200"
+        style={{ backgroundColor: "#f9fefd" }}
+      >
         <CardHeader className="flex flex-row items-center justify-between px-8">
           <div>
             <CardTitle className="flex items-center gap-2 text-[#0B4B39] text-2xl font-black">
               Monthly Progress
               <span className="text-sm font-normal text-gray-500">
-                {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                {new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })}
               </span>
               <Button
                 variant="ghost"
@@ -169,10 +221,12 @@ const DashboardContent = ({
             <div className="text-6xl font-black mt-2 text-[#0B4B39]">
               {formatTimeDisplay(currentMonthMinutes)}
             </div>
-            <p className="text-lg font-semibold text-gray-600">of {formatTimeDisplay(monthlyGoalMinutes)} goal</p>
+            <p className="text-lg font-semibold text-gray-600">
+              of {formatTimeDisplay(monthlyGoalMinutes)} goal
+            </p>
           </div>
           <div className="text-right">
-            <div className="text-4xl font-black" style={{ color: '#D103D1' }}>
+            <div className="text-4xl font-black" style={{ color: "#D103D1" }}>
               {Math.round(progressPercentage)}%
             </div>
             <p className="text-sm text-gray-500">completed</p>
@@ -185,7 +239,7 @@ const DashboardContent = ({
                 className="h-4 rounded-full transition-all duration-300"
                 style={{
                   width: `${Math.min(progressPercentage, 100)}%`,
-                  background: 'linear-gradient(90deg, #D103D1, #FF1493)'
+                  background: "linear-gradient(90deg, #D103D1, #FF1493)",
                 }}
               />
             </div>
@@ -209,12 +263,14 @@ const DashboardContent = ({
         </CardContent>
       </Card>
 
-
       {/* Achievements and Streak Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Streak Card - 1/3 width */}
         <div>
-          <Card className="h-full shadow-sm rounded-2xl border border-gray-200" style={{ backgroundColor: '#f9fefd' }}>
+          <Card
+            className="h-full shadow-sm rounded-2xl border border-gray-200"
+            style={{ backgroundColor: "#f9fefd" }}
+          >
             <CardContent className="pt-8 pb-6 px-6 text-center relative">
               <Button
                 variant="ghost"
@@ -230,7 +286,10 @@ const DashboardContent = ({
               <div className="flex justify-center mb-4">
                 <div
                   className="w-28 h-28 rounded-full flex items-center justify-center"
-                  style={{ background: 'radial-gradient(circle, rgba(251,176,64,0.25) 0%, rgba(251,176,64,0.08) 60%, transparent 80%)' }}
+                  style={{
+                    background:
+                      "radial-gradient(circle, rgba(251,176,64,0.25) 0%, rgba(251,176,64,0.08) 60%, transparent 80%)",
+                  }}
                 >
                   <img src="/fire.png" alt="Streak fire" width={64} height={64} />
                 </div>
@@ -241,7 +300,9 @@ const DashboardContent = ({
                 {currentStreak}
               </div>
               <p className="text-lg font-bold text-[#0B4B39] mb-1">Day Streak</p>
-              <p className="text-sm text-gray-400 mb-6">Best Streak: {longestStreak} days in a row</p>
+              <p className="text-sm text-gray-400 mb-6">
+                Best Streak: {longestStreak} days in a row
+              </p>
 
               {/* Next Milestone box */}
               <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4">
@@ -250,8 +311,8 @@ const DashboardContent = ({
                   <div
                     className="h-2 rounded-full transition-all duration-300"
                     style={{
-                      width: `${(currentStreak % 7) / 7 * 100}%`,
-                      backgroundColor: '#F6A623',
+                      width: `${((currentStreak % 7) / 7) * 100}%`,
+                      backgroundColor: "#F6A623",
                     }}
                   />
                 </div>
@@ -265,12 +326,20 @@ const DashboardContent = ({
 
         {/* Achievements - 2/3 width */}
         <div className="lg:col-span-2">
-          <Card className="h-full shadow-sm rounded-2xl border border-gray-200" style={{ backgroundColor: '#f9fefd' }}>
+          <Card
+            className="h-full shadow-sm rounded-2xl border border-gray-200"
+            style={{ backgroundColor: "#f9fefd" }}
+          >
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-2xl font-black text-[#0B4B39]">
                 <Award className="w-5 h-5 text-yellow-500" />
                 Achievements
-                <Badge variant="secondary" className="bg-[#0B4B39]/10 text-[#0B4B39] border-[#0B4B39]/20">{earnedCount}/{allAchievements.length}</Badge>
+                <Badge
+                  variant="secondary"
+                  className="bg-[#0B4B39]/10 text-[#0B4B39] border-[#0B4B39]/20"
+                >
+                  {earnedCount}/{allAchievements.length}
+                </Badge>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -301,65 +370,81 @@ const DashboardContent = ({
                       <div className="max-h-[22rem] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 sm:gap-3 pr-2">
                           {allAchievements.map((achievement: AchievementInterface) => {
-                          const isEarned = earnedAchievementIds.has(achievement.id);
-                          const userAchievement = userAchievements.find(ua => ua.achievement_id === achievement.id);
+                            const isEarned = earnedAchievementIds.has(achievement.id);
+                            const userAchievement = userAchievements.find(
+                              (ua) => ua.achievement_id === achievement.id,
+                            );
 
-                          return (
-                            <Tooltip key={achievement.id}>
-                              <TooltipTrigger asChild>
-                                <div
-                                  className={`p-2 rounded-2xl border transition-all duration-150 cursor-pointer ${
-                                    isEarned
-                                      ? 'bg-white border-gray-200 shadow-sm hover:scale-105 hover:shadow-md'
-                                      : 'bg-gray-100 border-gray-200 opacity-60 hover:scale-105'
-                                  }`}
-                                >
+                            return (
+                              <Tooltip key={achievement.id}>
+                                <TooltipTrigger asChild>
+                                  <div
+                                    className={`p-2 rounded-2xl border transition-all duration-150 cursor-pointer ${
+                                      isEarned
+                                        ? "bg-white border-gray-200 shadow-sm hover:scale-105 hover:shadow-md"
+                                        : "bg-gray-100 border-gray-200 opacity-60 hover:scale-105"
+                                    }`}
+                                  >
+                                    <div className="text-center">
+                                      {BadgeImageHelper.hasBadgeImage(achievement) ? (
+                                        <div className="w-32 h-32 mx-auto mb-2 relative overflow-hidden rounded-xl">
+                                          <img
+                                            src={BadgeImageHelper.getBadgeImageUrl(achievement)}
+                                            alt={achievement.name}
+                                            sizes="128px"
+                                            className={`object-contain ${isEarned ? "" : "grayscale opacity-60"}`}
+                                          />
+                                        </div>
+                                      ) : (
+                                        <div
+                                          className={`w-32 h-32 mx-auto mb-2 rounded-xl flex items-center justify-center ${
+                                            isEarned
+                                              ? "bg-gradient-to-br from-purple-600 to-pink-600 text-white"
+                                              : "bg-gray-200 text-gray-400"
+                                          }`}
+                                        >
+                                          <Award className="w-16 h-16" />
+                                        </div>
+                                      )}
+                                      <div
+                                        className={`text-xs sm:text-sm font-medium ${isEarned ? "text-gray-800" : "text-gray-500"}`}
+                                      >
+                                        {achievement.name}
+                                      </div>
+                                      {isEarned && userAchievement && (
+                                        <Badge
+                                          variant="secondary"
+                                          className="mt-2 text-xs bg-green-100 text-green-700 border-green-200"
+                                        >
+                                          Earned
+                                        </Badge>
+                                      )}
+                                    </div>
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" className="max-w-xs">
                                   <div className="text-center">
-                                    {BadgeImageHelper.hasBadgeImage(achievement) ? (
-                                      <div className="w-32 h-32 mx-auto mb-2 relative overflow-hidden rounded-xl">
-                                        <img
-                                          src={BadgeImageHelper.getBadgeImageUrl(achievement)}
-                                          alt={achievement.name}
-                                          sizes="128px"
-                                          className={`object-contain ${isEarned ? '' : 'grayscale opacity-60'}`}
-                                        />
-                                      </div>
-                                    ) : (
-                                      <div className={`w-32 h-32 mx-auto mb-2 rounded-xl flex items-center justify-center ${
-                                        isEarned
-                                          ? 'bg-gradient-to-br from-purple-600 to-pink-600 text-white'
-                                          : 'bg-gray-200 text-gray-400'
-                                      }`}>
-                                        <Award className="w-16 h-16" />
-                                      </div>
-                                    )}
-                                    <div className={`text-xs sm:text-sm font-medium ${isEarned ? 'text-gray-800' : 'text-gray-500'}`}>
+                                    <div className="font-semibold text-sm mb-1">
                                       {achievement.name}
                                     </div>
+                                    <div className="text-xs text-gray-300">
+                                      {achievement.description}
+                                    </div>
                                     {isEarned && userAchievement && (
-                                      <Badge variant="secondary" className="mt-2 text-xs bg-green-100 text-green-700 border-green-200">
-                                        Earned
-                                      </Badge>
+                                      <div className="text-xs text-green-400 mt-1 font-medium">
+                                        ✓ Earned{" "}
+                                        {new Date(userAchievement.earned_at).toLocaleDateString()}
+                                      </div>
+                                    )}
+                                    {!isEarned && (
+                                      <div className="text-xs text-gray-300 mt-1">
+                                        Not yet earned
+                                      </div>
                                     )}
                                   </div>
-                                </div>
-                              </TooltipTrigger>
-                              <TooltipContent side="top" className="max-w-xs">
-                                <div className="text-center">
-                                  <div className="font-semibold text-sm mb-1">{achievement.name}</div>
-                                  <div className="text-xs text-gray-300">{achievement.description}</div>
-                                  {isEarned && userAchievement && (
-                                    <div className="text-xs text-green-400 mt-1 font-medium">
-                                      ✓ Earned {new Date(userAchievement.earned_at).toLocaleDateString()}
-                                    </div>
-                                  )}
-                                  {!isEarned && (
-                                    <div className="text-xs text-gray-300 mt-1">Not yet earned</div>
-                                  )}
-                                </div>
-                              </TooltipContent>
-                            </Tooltip>
-                          );
+                                </TooltipContent>
+                              </Tooltip>
+                            );
                           })}
                         </div>
                       </div>
@@ -367,7 +452,9 @@ const DashboardContent = ({
                   ) : (
                     <div className="text-center py-8">
                       <div className="text-gray-500">No achievements available yet.</div>
-                      <div className="text-gray-400 text-sm mt-2">New achievement challenges coming soon!</div>
+                      <div className="text-gray-400 text-sm mt-2">
+                        New achievement challenges coming soon!
+                      </div>
                     </div>
                   )}
                 </>
@@ -375,7 +462,6 @@ const DashboardContent = ({
             </CardContent>
           </Card>
         </div>
-
       </div>
 
       {/* Recent Activities */}
@@ -392,11 +478,14 @@ const DashboardContent = ({
               const actType = activity.activity_type;
               const color = getActivityColor(actType);
               const displayName =
-                actType === 'something_else' && activity.custom_activity_name
+                actType === "something_else" && activity.custom_activity_name
                   ? activity.custom_activity_name
-                  : (activity.activity_type as string).replace(/_/g, ' ');
+                  : (activity.activity_type as string).replace(/_/g, " ");
               return (
-                <div key={activity.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                <div
+                  key={activity.id}
+                  className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl"
+                >
                   <div
                     className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                     style={{ backgroundColor: `${color}18`, color }}
@@ -406,10 +495,13 @@ const DashboardContent = ({
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-gray-800 capitalize truncate">{displayName}</p>
                     <p className="text-xs text-gray-500">
-                      {activity.duration_minutes} min · {getFeelingEmoji(activity.feeling)} · {formatTz(toZonedTime(new Date(activity.created_at), NZ_TIMEZONE), 'MMM d', { timeZone: NZ_TIMEZONE })}
+                      {activity.duration_minutes} min · {getFeelingEmoji(activity.feeling)} ·{" "}
+                      {formatTz(toZonedTime(new Date(activity.created_at), NZ_TIMEZONE), "MMM d", {
+                        timeZone: NZ_TIMEZONE,
+                      })}
                     </p>
                   </div>
-                  <div className="text-sm font-bold shrink-0" style={{ color: '#19AA4B' }}>
+                  <div className="text-sm font-bold shrink-0" style={{ color: "#19AA4B" }}>
                     +{activity.final_points || activity.house_points_awarded}
                   </div>
                 </div>

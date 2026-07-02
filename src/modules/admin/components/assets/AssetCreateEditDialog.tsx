@@ -1,19 +1,28 @@
-import { useState, useEffect } from 'react';
-import { AssetInterface } from '@/models/assets/interfaces/AssetInterface';
-import { SchoolInterface } from '@/models/schools/interfaces/SchoolInterface';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/modules/application/components/DesignSystem/ui/dialog';
-import { Button } from '@/modules/application/components/DesignSystem/ui/button';
-import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
-import { AssetService } from '@/models/assets/services/AssetService';
-import { SchoolService } from '@/models/schools/services/SchoolService';
-import { Formik, Form } from 'formik';
-import * as yup from 'yup';
-import { FormikInputField, FormikSelectField, FormikTextareaField } from '@/modules/common/components/Formik';
-import { SelectItem } from '@/modules/application/components/DesignSystem/ui/select';
-import { Upload, FileText, X, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
-import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-import SchoolCheckboxList from '@/modules/admin/components/SchoolCheckboxList';
+import { useState, useEffect } from "react";
+import { AssetInterface } from "@/models/assets/interfaces/AssetInterface";
+import { SchoolInterface } from "@/models/schools/interfaces/SchoolInterface";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/modules/application/components/DesignSystem/ui/dialog";
+import { Button } from "@/modules/application/components/DesignSystem/ui/button";
+import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
+import { AssetService } from "@/models/assets/services/AssetService";
+import { SchoolService } from "@/models/schools/services/SchoolService";
+import { Formik, Form } from "formik";
+import * as yup from "yup";
+import {
+  FormikInputField,
+  FormikSelectField,
+  FormikTextareaField,
+} from "@/modules/common/components/Formik";
+import { SelectItem } from "@/modules/application/components/DesignSystem/ui/select";
+import { Upload, FileText, X, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
+import SchoolCheckboxList from "@/modules/admin/components/SchoolCheckboxList";
 
 interface AssetCreateEditDialogProps {
   isOpen: boolean;
@@ -25,32 +34,42 @@ interface AssetCreateEditDialogProps {
 interface AssetFormValues {
   name: string;
   description: string;
-  is_active: 'true' | 'false';
+  is_active: "true" | "false";
 }
 
 const validationSchema = yup.object().shape({
-  name: yup.string().required('Name is required'),
+  name: yup.string().required("Name is required"),
   description: yup.string(),
-  is_active: yup.string().oneOf(['true', 'false']).required(),
+  is_active: yup.string().oneOf(["true", "false"]).required(),
 });
 
 const ACCEPTED_TYPES = [
-  'application/pdf',
-  'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
-  'video/mp4',
-  'application/msword',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  'application/vnd.ms-powerpoint',
-  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-  'text/plain',
-  'application/rtf', 'text/rtf',
+  "application/pdf",
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+  "video/mp4",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.ms-powerpoint",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  "text/plain",
+  "application/rtf",
+  "text/rtf",
 ];
 const MAX_SIZE = 200 * 1024 * 1024;
 
-const AssetCreateEditDialog = ({ isOpen, onClose, onSuccess, asset }: AssetCreateEditDialogProps) => {
+const AssetCreateEditDialog = ({
+  isOpen,
+  onClose,
+  onSuccess,
+  asset,
+}: AssetCreateEditDialogProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string>('');
+  const [previewUrl, setPreviewUrl] = useState<string>("");
   const [schools, setSchools] = useState<SchoolInterface[]>([]);
   const [loadingSchools, setLoadingSchools] = useState(false);
   const [selectedSchoolIds, setSelectedSchoolIds] = useState<string[]>(asset?.school_ids || []);
@@ -64,42 +83,43 @@ const AssetCreateEditDialog = ({ isOpen, onClose, onSuccess, asset }: AssetCreat
     setSelectedSchoolIds(asset?.school_ids || []);
     const schoolService = new SchoolService(createSupabaseClient());
     setLoadingSchools(true);
-    schoolService.getAll(true)
+    schoolService
+      .getAll(true)
       .then(setSchools)
-      .catch(() => toast.error('Failed to load schools'))
+      .catch(() => toast.error("Failed to load schools"))
       .finally(() => setLoadingSchools(false));
   }, [isOpen, asset?.id]);
 
   const initialValues: AssetFormValues = {
-    name: asset?.name || '',
-    description: asset?.description || '',
-    is_active: asset ? (asset.is_active ? 'true' : 'false') : 'true',
+    name: asset?.name || "",
+    description: asset?.description || "",
+    is_active: asset ? (asset.is_active ? "true" : "false") : "true",
   };
 
   const toggleSchool = (schoolId: string) => {
-    setSelectedSchoolIds(prev =>
-      prev.includes(schoolId) ? prev.filter(id => id !== schoolId) : [...prev, schoolId]
+    setSelectedSchoolIds((prev) =>
+      prev.includes(schoolId) ? prev.filter((id) => id !== schoolId) : [...prev, schoolId],
     );
   };
 
   const processFile = (file: File) => {
     if (!ACCEPTED_TYPES.includes(file.type)) {
-      toast.error('File type not supported');
+      toast.error("File type not supported");
       return;
     }
-    const isVideo = file.type === 'video/mp4';
+    const isVideo = file.type === "video/mp4";
     const sizeLimit = isVideo ? MAX_SIZE : 20 * 1024 * 1024;
     if (file.size > sizeLimit) {
-      toast.error(isVideo ? 'Video must be less than 200MB' : 'File must be less than 20MB');
+      toast.error(isVideo ? "Video must be less than 200MB" : "File must be less than 20MB");
       return;
     }
     setSelectedFile(file);
-    if (file.type.startsWith('image/')) {
+    if (file.type.startsWith("image/")) {
       const reader = new FileReader();
-      reader.onload = e => setPreviewUrl(e.target?.result as string);
+      reader.onload = (e) => setPreviewUrl(e.target?.result as string);
       reader.readAsDataURL(file);
     } else {
-      setPreviewUrl('');
+      setPreviewUrl("");
     }
   };
 
@@ -127,12 +147,12 @@ const AssetCreateEditDialog = ({ isOpen, onClose, onSuccess, asset }: AssetCreat
 
   const handleRemoveFile = () => {
     setSelectedFile(null);
-    setPreviewUrl('');
+    setPreviewUrl("");
   };
 
   const handleSubmit = async (values: AssetFormValues) => {
     if (!isEditing && !selectedFile) {
-      toast.error('Please select a file to upload');
+      toast.error("Please select a file to upload");
       return;
     }
 
@@ -142,16 +162,16 @@ const AssetCreateEditDialog = ({ isOpen, onClose, onSuccess, asset }: AssetCreat
       const assetData: Partial<AssetInterface> = {
         name: values.name,
         description: values.description || null,
-        is_active: values.is_active === 'true',
+        is_active: values.is_active === "true",
         school_ids: selectedSchoolIds,
       };
 
       if (isEditing) {
         await assetService.updateWithFile(asset.id, assetData, selectedFile || undefined);
-        toast.success('Asset updated successfully!');
+        toast.success("Asset updated successfully!");
       } else {
         await assetService.createWithFile(assetData, selectedFile!);
-        toast.success('Asset uploaded successfully!');
+        toast.success("Asset uploaded successfully!");
       }
 
       onSuccess();
@@ -164,21 +184,21 @@ const AssetCreateEditDialog = ({ isOpen, onClose, onSuccess, asset }: AssetCreat
 
   const handleClose = () => {
     setSelectedFile(null);
-    setPreviewUrl('');
+    setPreviewUrl("");
     onClose();
   };
 
   const hasPreview = !!previewUrl;
-  const isPdfSelected = selectedFile?.type === 'application/pdf';
-  const isVideoSelected = selectedFile?.type === 'video/mp4';
-  const existingIsPdf = asset?.file_type === 'application/pdf';
-  const existingIsVideo = asset?.file_type === 'video/mp4';
+  const isPdfSelected = selectedFile?.type === "application/pdf";
+  const isVideoSelected = selectedFile?.type === "video/mp4";
+  const existingIsPdf = asset?.file_type === "application/pdf";
+  const existingIsVideo = asset?.file_type === "video/mp4";
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{isEditing ? 'Edit Asset' : 'Upload New Asset'}</DialogTitle>
+          <DialogTitle>{isEditing ? "Edit Asset" : "Upload New Asset"}</DialogTitle>
         </DialogHeader>
 
         <Formik<AssetFormValues>
@@ -208,7 +228,9 @@ const AssetCreateEditDialog = ({ isOpen, onClose, onSuccess, asset }: AssetCreat
               <div className="space-y-2">
                 <div>
                   <p className="text-sm font-medium text-gray-700">Restrict to Schools</p>
-                  <p className="text-xs text-gray-500">Leave all unchecked to show to every school</p>
+                  <p className="text-xs text-gray-500">
+                    Leave all unchecked to show to every school
+                  </p>
                 </div>
                 <SchoolCheckboxList
                   schools={schools}
@@ -219,7 +241,8 @@ const AssetCreateEditDialog = ({ isOpen, onClose, onSuccess, asset }: AssetCreat
                 />
                 {selectedSchoolIds.length > 0 && (
                   <p className="text-xs text-blue-600">
-                    Restricted to {selectedSchoolIds.length} {selectedSchoolIds.length === 1 ? 'school' : 'schools'}
+                    Restricted to {selectedSchoolIds.length}{" "}
+                    {selectedSchoolIds.length === 1 ? "school" : "schools"}
                   </p>
                 )}
               </div>
@@ -227,14 +250,18 @@ const AssetCreateEditDialog = ({ isOpen, onClose, onSuccess, asset }: AssetCreat
               {/* File upload */}
               <div className="space-y-3">
                 <p className="text-sm font-medium text-gray-700">
-                  {isEditing ? 'Replace File (optional)' : 'File'}
+                  {isEditing ? "Replace File (optional)" : "File"}
                 </p>
 
                 {(selectedFile || (isEditing && !selectedFile)) && (
                   <div className="flex items-center gap-3 rounded-lg border p-3">
                     {hasPreview ? (
                       <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded bg-gray-100">
-                        <img src={previewUrl} alt="Preview" className="absolute inset-0 w-full h-full object-cover object-contain" />
+                        <img
+                          src={previewUrl}
+                          alt="Preview"
+                          className="absolute inset-0 w-full h-full object-cover object-contain"
+                        />
                       </div>
                     ) : (
                       <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded bg-gray-100">
@@ -247,8 +274,16 @@ const AssetCreateEditDialog = ({ isOpen, onClose, onSuccess, asset }: AssetCreat
                       </p>
                       <p className="text-xs text-gray-500">
                         {selectedFile
-                          ? isPdfSelected ? 'PDF' : isVideoSelected ? 'MP4 Video' : 'File'
-                          : existingIsPdf ? 'PDF — current file' : existingIsVideo ? 'MP4 Video — current file' : 'Current file'}
+                          ? isPdfSelected
+                            ? "PDF"
+                            : isVideoSelected
+                              ? "MP4 Video"
+                              : "File"
+                          : existingIsPdf
+                            ? "PDF — current file"
+                            : existingIsVideo
+                              ? "MP4 Video — current file"
+                              : "Current file"}
                       </p>
                     </div>
                     {selectedFile && (
@@ -260,17 +295,21 @@ const AssetCreateEditDialog = ({ isOpen, onClose, onSuccess, asset }: AssetCreat
                 )}
 
                 <div
-                  className={`rounded-lg border-2 border-dashed p-6 transition-colors ${isDragging ? 'border-blue-400 bg-blue-50' : 'border-gray-300'}`}
+                  className={`rounded-lg border-2 border-dashed p-6 transition-colors ${isDragging ? "border-blue-400 bg-blue-50" : "border-gray-300"}`}
                   onDragOver={handleDragOver}
                   onDragEnter={handleDragOver}
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
                 >
                   <div className="text-center">
-                    <Upload className={`mx-auto mb-3 h-10 w-10 ${isDragging ? 'text-blue-400' : 'text-gray-400'}`} />
+                    <Upload
+                      className={`mx-auto mb-3 h-10 w-10 ${isDragging ? "text-blue-400" : "text-gray-400"}`}
+                    />
                     <div className="space-y-2">
                       <p className="text-sm text-gray-600">
-                        {isEditing ? 'Drag & drop or choose a file to replace the current one' : 'Drag & drop or choose a file to upload'}
+                        {isEditing
+                          ? "Drag & drop or choose a file to replace the current one"
+                          : "Drag & drop or choose a file to upload"}
                       </p>
                       <div className="flex justify-center">
                         <label className="cursor-pointer">
@@ -285,18 +324,26 @@ const AssetCreateEditDialog = ({ isOpen, onClose, onSuccess, asset }: AssetCreat
                           />
                         </label>
                       </div>
-                      <p className="text-xs text-gray-500">PDF, images, MP4, Word, PowerPoint, TXT, or RTF — images/docs up to 20MB, videos up to 200MB</p>
+                      <p className="text-xs text-gray-500">
+                        PDF, images, MP4, Word, PowerPoint, TXT, or RTF — images/docs up to 20MB,
+                        videos up to 200MB
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
 
               <div className="flex justify-end gap-3 border-t pt-4">
-                <Button type="button" variant="outline" onClick={handleClose} disabled={isSubmitting}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleClose}
+                  disabled={isSubmitting}
+                >
                   Cancel
                 </Button>
                 <Button type="submit" disabled={isSubmitting} className="min-w-[100px]">
-                  {isSubmitting ? 'Saving...' : isEditing ? 'Update' : 'Upload'}
+                  {isSubmitting ? "Saving..." : isEditing ? "Update" : "Upload"}
                 </Button>
               </div>
             </Form>

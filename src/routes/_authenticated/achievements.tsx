@@ -1,16 +1,45 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import AchievementsGrid from "@/modules/achievements/components/AchievementsGrid";
+import { UserInterface } from "@/models/users/interfaces/UserInterface";
+import {
+  AchievementInterface,
+  UserAchievementInterface,
+} from "@/models/achievements/interfaces/AchievementInterface";
+import { AchievementService } from "@/models/achievements/services/AchievementService";
+import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
 
 export const Route = createFileRoute("/_authenticated/achievements")({
   head: () => ({ meta: [{ title: "Achievements — Karawhiua" }] }),
-  component: () => (
-    <div className="p-6 max-w-4xl mx-auto">
-      <Card>
-        <CardHeader><CardTitle>Achievements</CardTitle></CardHeader>
-        <CardContent className="text-sm text-muted-foreground">
-          Achievements grid will be wired in the next pass.
-        </CardContent>
-      </Card>
-    </div>
-  ),
+  beforeLoad: async ({ context }) => {
+    const profile = context.profile as UserInterface | null;
+
+    if (!profile) {
+      return {
+        userAchievements: [] as UserAchievementInterface[],
+        allAchievements: [] as AchievementInterface[],
+      };
+    }
+
+    const supabase = createSupabaseClient();
+    const achievementService = new AchievementService(supabase);
+
+    const [userAchievements, allAchievements] = await Promise.all([
+      achievementService.getUserAchievements(profile.id),
+      achievementService.getAllAchievements(),
+    ]);
+
+    return { userAchievements, allAchievements };
+  },
+  component: AchievementsPage,
 });
+
+function AchievementsPage() {
+  const { userAchievements, allAchievements } = Route.useRouteContext();
+
+  return (
+    <AchievementsGrid
+      userAchievements={userAchievements as UserAchievementInterface[]}
+      allAchievements={allAchievements as AchievementInterface[]}
+    />
+  );
+}

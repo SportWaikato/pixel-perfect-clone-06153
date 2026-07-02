@@ -1,22 +1,28 @@
-import { Formik, Form, Field, ErrorMessage, FormikHelpers } from 'formik';
-import { useRouter, useNavigate } from '@tanstack/react-router';
-import { createSchoolSpecificSignUpSchema } from '@/models/forms/schemas/authSchemas';
-import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
-import { UserService } from '@/models/users/services/UserService';
-import { SchoolInterface } from '@/models/schools/interfaces/SchoolInterface';
-import { HouseInterface } from '@/models/houses/interfaces/HouseInterface';
-import { Button } from '@/modules/application/components/DesignSystem/ui/button';
-import { SelectItem, Select, SelectContent, SelectTrigger, SelectValue } from '@/modules/application/components/DesignSystem/ui/select';
-import { Label } from '@/modules/application/components/DesignSystem/ui/label';
-import { FormikInputField, FormikSelectField } from '@/modules/common/components/Formik';
-import { YEAR_GROUPS } from '@/models/application/constants/applicationConstants';
-import { toast } from 'sonner';
-import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-import { isEmailAllowedResult } from '@/models/allowed-emails/utils/isEmailAllowed';
-import { useState, useEffect, useMemo } from 'react';
-import { cn } from '@/modules/common/utils';
-import { Link } from '@tanstack/react-router';
-import { getHousesBySchool } from '@/modules/auth/actions/getHousesBySchool';
+import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
+import { useRouter, useNavigate } from "@tanstack/react-router";
+import { createSchoolSpecificSignUpSchema } from "@/models/forms/schemas/authSchemas";
+import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
+import { UserService } from "@/models/users/services/UserService";
+import { SchoolInterface } from "@/models/schools/interfaces/SchoolInterface";
+import { HouseInterface } from "@/models/houses/interfaces/HouseInterface";
+import { Button } from "@/modules/application/components/DesignSystem/ui/button";
+import {
+  SelectItem,
+  Select,
+  SelectContent,
+  SelectTrigger,
+  SelectValue,
+} from "@/modules/application/components/DesignSystem/ui/select";
+import { Label } from "@/modules/application/components/DesignSystem/ui/label";
+import { FormikInputField, FormikSelectField } from "@/modules/common/components/Formik";
+import { YEAR_GROUPS } from "@/models/application/constants/applicationConstants";
+import { toast } from "sonner";
+import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
+import { isEmailAllowedResult } from "@/models/allowed-emails/utils/isEmailAllowed";
+import { useState, useEffect, useMemo } from "react";
+import { cn } from "@/modules/common/utils";
+import { Link } from "@tanstack/react-router";
+import { getHousesBySchool } from "@/modules/auth/actions/getHousesBySchool";
 
 interface SchoolSpecificSignUpFormProps {
   school: SchoolInterface;
@@ -49,7 +55,7 @@ const SchoolSpecificSignUpForm = ({ school }: SchoolSpecificSignUpFormProps) => 
         setHouses(houseList);
       } catch (error) {
         notifyAboutError(error);
-        toast.error('Failed to load houses for this school');
+        toast.error("Failed to load houses for this school");
       } finally {
         setLoadingHouses(false);
       }
@@ -58,22 +64,27 @@ const SchoolSpecificSignUpForm = ({ school }: SchoolSpecificSignUpFormProps) => 
     fetchHouses();
   }, [school.id]);
 
-  const handleSubmit = async (values: SchoolSignUpValues, { setSubmitting, setFieldError }: FormikHelpers<SchoolSignUpValues>) => {
+  const handleSubmit = async (
+    values: SchoolSignUpValues,
+    { setSubmitting, setFieldError }: FormikHelpers<SchoolSignUpValues>,
+  ) => {
     try {
       const supabase = createSupabaseClient();
 
       const userService = new UserService(supabase);
       if (await userService.isUsernameTaken(values.username)) {
-        setFieldError('username', 'Username is already taken');
+        setFieldError("username", "Username is already taken");
         return;
       }
 
-      const { data: isAllowed } = await supabase.rpc('is_email_allowed', {
+      const { data: isAllowed } = await supabase.rpc("is_email_allowed", {
         p_school_id: school.id,
         p_email: values.email,
       });
       if (!isEmailAllowedResult(isAllowed)) {
-        throw new Error('This email address is not on the approved list for this school. Please contact your school administrator.');
+        throw new Error(
+          "This email address is not on the approved list for this school. Please contact your school administrator.",
+        );
       }
 
       const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -82,7 +93,7 @@ const SchoolSpecificSignUpForm = ({ school }: SchoolSpecificSignUpFormProps) => 
       });
 
       if (authError) throw authError;
-      if (!authData.user) throw new Error('Failed to create user account');
+      if (!authData.user) throw new Error("Failed to create user account");
 
       await userService.create({
         id: authData.user.id,
@@ -96,11 +107,11 @@ const SchoolSpecificSignUpForm = ({ school }: SchoolSpecificSignUpFormProps) => 
         is_admin: false,
         is_public: true,
         total_kilometers: 0,
-        role: 'student',
+        role: "student",
       });
 
       toast.success(`Welcome to ${school.name}!`);
-      navigate({ to: '/auth/login' });
+      navigate({ to: "/auth/login" });
     } catch (error) {
       notifyAboutError(error);
     } finally {
@@ -111,15 +122,15 @@ const SchoolSpecificSignUpForm = ({ school }: SchoolSpecificSignUpFormProps) => 
   return (
     <Formik
       initialValues={{
-        firstName: '',
-        lastName: '',
-        username: '',
-        email: '',
-        house: '',
-        yearGroup: '',
-        class: '',
-        password: '',
-        confirmPassword: '',
+        firstName: "",
+        lastName: "",
+        username: "",
+        email: "",
+        house: "",
+        yearGroup: "",
+        class: "",
+        password: "",
+        confirmPassword: "",
       }}
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
@@ -145,7 +156,11 @@ const SchoolSpecificSignUpForm = ({ school }: SchoolSpecificSignUpFormProps) => 
             />
             {school.email_domain && (
               <p className="text-xs text-muted-foreground">
-                Must use your school email: {school.email_domain.split(',').map(d => '@' + d.trim()).join(' or ')}
+                Must use your school email:{" "}
+                {school.email_domain
+                  .split(",")
+                  .map((d) => "@" + d.trim())
+                  .join(" or ")}
               </p>
             )}
           </div>
@@ -157,18 +172,18 @@ const SchoolSpecificSignUpForm = ({ school }: SchoolSpecificSignUpFormProps) => 
                 <>
                   <Select
                     value={field.value}
-                    onValueChange={(value) => form.setFieldValue('house', value)}
+                    onValueChange={(value) => form.setFieldValue("house", value)}
                     disabled={loadingHouses}
                   >
                     <SelectTrigger
                       className={cn(
-                        'w-full',
-                        meta.touched && meta.error ? 'border-red-500' : '',
-                        loadingHouses && 'cursor-not-allowed opacity-60'
+                        "w-full",
+                        meta.touched && meta.error ? "border-red-500" : "",
+                        loadingHouses && "cursor-not-allowed opacity-60",
                       )}
                     >
                       <SelectValue
-                        placeholder={loadingHouses ? 'Loading houses...' : 'Select your house'}
+                        placeholder={loadingHouses ? "Loading houses..." : "Select your house"}
                       />
                     </SelectTrigger>
                     <SelectContent>
@@ -188,7 +203,8 @@ const SchoolSpecificSignUpForm = ({ school }: SchoolSpecificSignUpFormProps) => 
                   <ErrorMessage name="house" component="div" className="text-red-500 text-sm" />
                   {!loadingHouses && houses.length === 0 && (
                     <p className="text-red-500 text-sm">
-                      This school hasn&apos;t set up their houses yet. Please contact your school administrator.
+                      This school hasn&apos;t set up their houses yet. Please contact your school
+                      administrator.
                     </p>
                   )}
                 </>
@@ -196,32 +212,26 @@ const SchoolSpecificSignUpForm = ({ school }: SchoolSpecificSignUpFormProps) => 
             </Field>
           </div>
 
-          <FormikSelectField name="yearGroup" label="Year Group" placeholder="Select your year group">
+          <FormikSelectField
+            name="yearGroup"
+            label="Year Group"
+            placeholder="Select your year group"
+          >
             {YEAR_GROUPS.map((yg) => (
-              <SelectItem key={yg} value={yg}>{yg}</SelectItem>
+              <SelectItem key={yg} value={yg}>
+                {yg}
+              </SelectItem>
             ))}
           </FormikSelectField>
 
           <FormikInputField name="class" label="Class (optional)" placeholder="e.g. 10B" />
 
           <div className="grid grid-cols-2 gap-4">
-            <FormikInputField
-              name="firstName"
-              label="First Name"
-              placeholder="John"
-            />
-            <FormikInputField
-              name="lastName"
-              label="Last Name"
-              placeholder="Doe"
-            />
+            <FormikInputField name="firstName" label="First Name" placeholder="John" />
+            <FormikInputField name="lastName" label="Last Name" placeholder="Doe" />
           </div>
 
-          <FormikInputField
-            name="username"
-            label="Username"
-            placeholder="john.doe"
-          />
+          <FormikInputField name="username" label="Username" placeholder="john.doe" />
 
           <FormikInputField
             name="password"
@@ -237,17 +247,13 @@ const SchoolSpecificSignUpForm = ({ school }: SchoolSpecificSignUpFormProps) => 
             placeholder="Confirm password"
           />
 
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full"
-            >
-            {isSubmitting ? 'Creating Account...' : `Join ${school.name}`}
+          <Button type="submit" disabled={isSubmitting} className="w-full">
+            {isSubmitting ? "Creating Account..." : `Join ${school.name}`}
           </Button>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              Already have an account?{' '}
+              Already have an account?{" "}
               <Link to="/auth/login" className="text-primary hover:underline">
                 Log in
               </Link>

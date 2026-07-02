@@ -1,6 +1,6 @@
-import { Field, ErrorMessage } from 'formik';
-import { Input } from '@/modules/application/components/DesignSystem/ui/input';
-import { Label } from '@/modules/application/components/DesignSystem/ui/label';
+import { Field, ErrorMessage } from "formik";
+import { Input } from "@/modules/application/components/DesignSystem/ui/input";
+import { Label } from "@/modules/application/components/DesignSystem/ui/label";
 
 interface FormikInputFieldProps {
   name: string;
@@ -22,10 +22,10 @@ const FormikInputField = ({ name, label, disabled, ...props }: FormikInputFieldP
             <Input
               {...field}
               {...props}
-              value={field.value ?? ''}
+              value={field.value ?? ""}
               id={name}
               disabled={disabled}
-              className={meta.touched && meta.error ? 'border-red-500' : ''}
+              className={meta.touched && meta.error ? "border-red-500" : ""}
             />
             <ErrorMessage name={name} component="div" className="text-red-500 text-sm" />
           </>
@@ -35,4 +35,4 @@ const FormikInputField = ({ name, label, disabled, ...props }: FormikInputFieldP
   );
 };
 
-export default FormikInputField; 
+export default FormikInputField;

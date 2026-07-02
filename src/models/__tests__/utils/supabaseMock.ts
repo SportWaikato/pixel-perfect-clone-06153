@@ -1,4 +1,4 @@
-import { vi } from 'vitest';
+import { vi } from "vitest";
 
 type ChainOverrides = Record<string, ReturnType<typeof vi.fn>>;
 

@@ -28,12 +28,24 @@ function JoinByCode() {
         .eq("join_link_active", true)
         .maybeSingle();
 
-      if (err) { setError("Something went wrong. Please try again."); setLoading(false); return; }
-      if (!data) { setError("This join link is invalid or has expired. Contact your school admin for a new link."); setLoading(false); return; }
+      if (err) {
+        setError("Something went wrong. Please try again.");
+        setLoading(false);
+        return;
+      }
+      if (!data) {
+        setError(
+          "This join link is invalid or has expired. Contact your school admin for a new link.",
+        );
+        setLoading(false);
+        return;
+      }
 
       setSchool(data);
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       setAuthed(!!user);
       setLoading(false);
     })();
@@ -77,8 +89,12 @@ function JoinByCode() {
             <CardTitle className="text-xl text-destructive">Join link invalid</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-muted-foreground">{error || "This join link is invalid or has expired."}</p>
-            <p className="text-sm text-muted-foreground">Contact your school admin for a new link.</p>
+            <p className="text-muted-foreground">
+              {error || "This join link is invalid or has expired."}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Contact your school admin for a new link.
+            </p>
             <Button asChild variant="outline">
               <Link to="/auth">Go to sign in</Link>
             </Button>
@@ -95,12 +111,9 @@ function JoinByCode() {
         <CardHeader>
           <div className="text-5xl mb-2">👋</div>
           <CardTitle className="text-2xl">
-            Join{" "}
-            <span style={{ color: "#0A4B39" }}>{school.name}</span>
+            Join <span style={{ color: "#0A4B39" }}>{school.name}</span>
           </CardTitle>
-          <p className="text-sm text-muted-foreground mt-2">
-            on Karawhiua Virtual Sports Day
-          </p>
+          <p className="text-sm text-muted-foreground mt-2">on Karawhiua Virtual Sports Day</p>
         </CardHeader>
         <CardContent className="space-y-3">
           {authed ? (

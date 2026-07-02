@@ -218,7 +218,12 @@ export function schoolRegistrationPending(
 
 // ─── EMAIL 2: schoolApproved ────────────────────────────────────────────────
 
-export function schoolApproved(firstName: string, schoolName: string, joinCode: string, domain: string) {
+export function schoolApproved(
+  firstName: string,
+  schoolName: string,
+  joinCode: string,
+  domain: string,
+) {
   const subject = `${schoolName} is approved on Karawhiua`;
   let html = `<!DOCTYPE html>
 <html>
@@ -564,7 +569,12 @@ export function schoolRejected(firstName: string, schoolName: string, reason: st
 
 // ─── EMAIL 4: studentWelcome ────────────────────────────────────────────────
 
-export function studentWelcome(firstName: string, schoolName: string, houseName: string, houseColour: string) {
+export function studentWelcome(
+  firstName: string,
+  schoolName: string,
+  houseName: string,
+  houseColour: string,
+) {
   const subject = `Welcome to Karawhiua, ${firstName}`;
   let html = `<!DOCTYPE html>
 <html>

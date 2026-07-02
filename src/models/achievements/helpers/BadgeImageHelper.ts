@@ -1,4 +1,4 @@
-import { AchievementInterface } from '../interfaces/AchievementInterface';
+import { AchievementInterface } from "../interfaces/AchievementInterface";
 
 export class BadgeImageHelper {
   /**
@@ -9,14 +9,14 @@ export class BadgeImageHelper {
     if (achievement.storage_url) {
       return achievement.storage_url;
     }
-    
+
     // Priority 2: Legacy public folder (backward compatibility)
     if (achievement.image_filename) {
       return `/badges/${achievement.image_filename}`;
     }
-    
+
     // Fallback: no image
-    return '';
+    return "";
   }
 
   /**

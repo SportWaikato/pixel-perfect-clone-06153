@@ -1,8 +1,8 @@
-import { SupabaseClient } from '@supabase/supabase-js';
-import { UserInterface } from '../interfaces/UserInterface';
-import { LeaderboardService } from '@/models/leaderboards/services/LeaderboardService';
+import { SupabaseClient } from "@supabase/supabase-js";
+import { UserInterface } from "../interfaces/UserInterface";
+import { LeaderboardService } from "@/models/leaderboards/services/LeaderboardService";
 
-const TABLE_NAME = 'users';
+const TABLE_NAME = "users";
 
 export class UserService {
   private supabaseClient: SupabaseClient;
@@ -14,17 +14,22 @@ export class UserService {
   }
 
   async getCurrentUser(): Promise<UserInterface | null> {
-    const { data: { user }, error } = await this.supabaseClient.auth.getUser();
+    const {
+      data: { user },
+      error,
+    } = await this.supabaseClient.auth.getUser();
     if (!user || error) return null;
 
     const { data, error: userError } = await this.supabaseClient
       .from(TABLE_NAME)
-      .select(`
+      .select(
+        `
         *,
         school:schools(*),
         house:houses(*)
-      `)
-      .eq('id', user.id)
+      `,
+      )
+      .eq("id", user.id)
       .single();
 
     if (userError || !data) return null;
@@ -32,33 +37,35 @@ export class UserService {
     return {
       ...data,
       email: user.email,
-      role: data.role || 'student', // Ensure role is always set
+      role: data.role || "student", // Ensure role is always set
     };
   }
 
   async getById(id: string): Promise<UserInterface | null> {
     const { data, error } = await this.supabaseClient
       .from(TABLE_NAME)
-      .select(`
+      .select(
+        `
         *,
         school:schools(*),
         house:houses(*)
-      `)
-      .eq('id', id)
+      `,
+      )
+      .eq("id", id)
       .single();
 
     if (error || !data) return null;
     return {
       ...data,
-      role: data.role || 'student', // Ensure role is always set
+      role: data.role || "student", // Ensure role is always set
     };
   }
 
   async isUsernameTaken(username: string): Promise<boolean> {
     const { count } = await this.supabaseClient
       .from(TABLE_NAME)
-      .select('id', { count: 'exact', head: true })
-      .eq('username', username);
+      .select("id", { count: "exact", head: true })
+      .eq("username", username);
     return (count ?? 0) > 0;
   }
 
@@ -66,11 +73,13 @@ export class UserService {
     const { data, error } = await this.supabaseClient
       .from(TABLE_NAME)
       .insert(userData)
-      .select(`
+      .select(
+        `
         *,
         school:schools(*),
         house:houses(*)
-      `)
+      `,
+      )
       .single();
 
     if (error) throw error;
@@ -84,12 +93,14 @@ export class UserService {
         ...userData,
         updated_at: new Date().toISOString(),
       })
-      .eq('id', id)
-      .select(`
+      .eq("id", id)
+      .select(
+        `
         *,
         school:schools(*),
         house:houses(*)
-      `)
+      `,
+      )
       .maybeSingle();
 
     if (error) throw new Error(error.message);
@@ -99,7 +110,7 @@ export class UserService {
   async updateUserRankings(userId: string): Promise<UserInterface | null> {
     try {
       const userRankings = await this.leaderboardService.getUserRankings(userId);
-      
+
       if (!userRankings) return null;
 
       const { data, error } = await this.supabaseClient
@@ -111,23 +122,28 @@ export class UserService {
           overall_rank: userRankings.overall_rank,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', userId)
-        .select(`
+        .eq("id", userId)
+        .select(
+          `
           *,
           school:schools(*),
           house:houses(*)
-        `)
+        `,
+        )
         .single();
 
       if (error) throw new Error(error.message);
       return data;
     } catch (error) {
-      console.error('Error updating user rankings:', error);
+      console.error("Error updating user rankings:", error);
       return null;
     }
   }
 
-  async updateUserTotalKilometers(userId: string, totalKilometers: number): Promise<UserInterface | null> {
+  async updateUserTotalKilometers(
+    userId: string,
+    totalKilometers: number,
+  ): Promise<UserInterface | null> {
     const updatedUser = await this.update(userId, { total_kilometers: totalKilometers });
 
     // Update rankings after kilometers change
@@ -136,32 +152,34 @@ export class UserService {
     return updatedUser;
   }
 
-  async getUsersWithRankings(filters?: { 
-    school_id?: string; 
-    house_id?: string; 
+  async getUsersWithRankings(filters?: {
+    school_id?: string;
+    house_id?: string;
     year_group?: string;
-    limit?: number; 
+    limit?: number;
   }): Promise<UserInterface[]> {
     let query = this.supabaseClient
       .from(TABLE_NAME)
-      .select(`
+      .select(
+        `
         *,
         school:schools(*),
         house:houses(*)
-      `)
-      .eq('is_deleted', false)
-      .order('total_kilometers', { ascending: false });
+      `,
+      )
+      .eq("is_deleted", false)
+      .order("total_kilometers", { ascending: false });
 
     if (filters?.school_id) {
-      query = query.eq('school_id', filters.school_id);
+      query = query.eq("school_id", filters.school_id);
     }
 
     if (filters?.house_id) {
-      query = query.eq('house_id', filters.house_id);
+      query = query.eq("house_id", filters.house_id);
     }
 
     if (filters?.year_group) {
-      query = query.eq('year_group', filters.year_group);
+      query = query.eq("year_group", filters.year_group);
     }
 
     if (filters?.limit) {
@@ -171,9 +189,9 @@ export class UserService {
     const { data, error } = await query;
 
     if (error) throw new Error(error.message);
-    
+
     // Apply privacy anonymization
-    return (data || []).map(user => this.anonymizeUserIfPrivate(user));
+    return (data || []).map((user) => this.anonymizeUserIfPrivate(user));
   }
 
   private anonymizeUserIfPrivate(user: UserInterface): UserInterface {
@@ -184,16 +202,16 @@ export class UserService {
     // Return anonymized version of private users
     return {
       ...user,
-      username: 'Anonymous',
-      first_name: 'Anonymous',
-      last_name: 'User',
+      username: "Anonymous",
+      first_name: "Anonymous",
+      last_name: "User",
       social_handle: undefined,
       profile_icon_url: undefined,
     };
   }
 
   async recalculateAllRankings(): Promise<void> {
-    const { error } = await this.supabaseClient.rpc('recalculate_all_rankings');
+    const { error } = await this.supabaseClient.rpc("recalculate_all_rankings");
     if (error) throw new Error(error.message);
   }
 
@@ -201,11 +219,11 @@ export class UserService {
     try {
       // Call the database function to calculate streaks
       const { data: streakData, error: streakError } = await this.supabaseClient
-        .rpc('calculate_user_streak', { user_id_param: userId })
+        .rpc("calculate_user_streak", { user_id_param: userId })
         .single();
 
       if (streakError) {
-        console.error('Error calculating streak:', streakError);
+        console.error("Error calculating streak:", streakError);
         return null;
       }
 
@@ -225,40 +243,42 @@ export class UserService {
           last_activity_date: typedStreakData.last_activity_date_calc,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', userId)
-        .select(`
+        .eq("id", userId)
+        .select(
+          `
           *,
           school:schools(*),
           house:houses(*)
-        `)
+        `,
+        )
         .single();
 
       if (updateError) {
-        console.error('Error updating user streak:', updateError);
+        console.error("Error updating user streak:", updateError);
         return null;
       }
 
       return updatedUser;
     } catch (error) {
-      console.error('Error recalculating user streak:', error);
+      console.error("Error recalculating user streak:", error);
       return null;
     }
   }
 
   async getCurrentMonthProgress(userId: string) {
     const { data, error } = await this.supabaseClient
-      .rpc('get_user_current_month_progress', { p_user_id: userId })
+      .rpc("get_user_current_month_progress", { p_user_id: userId })
       .single();
 
     if (error) {
-      console.error('Error fetching current month progress:', error);
+      console.error("Error fetching current month progress:", error);
       return {
         current_month_minutes: 0,
         current_month_points: 0,
         current_month_activities: 0,
         month_start: new Date().toISOString(),
         days_in_month: 30,
-        days_remaining: 30
+        days_remaining: 30,
       };
     }
 
@@ -266,14 +286,13 @@ export class UserService {
   }
 
   async getMonthlyHistory(userId: string, monthsBack: number = 6) {
-    const { data, error } = await this.supabaseClient
-      .rpc('get_user_monthly_history', { 
-        p_user_id: userId,
-        p_months_back: monthsBack 
-      });
+    const { data, error } = await this.supabaseClient.rpc("get_user_monthly_history", {
+      p_user_id: userId,
+      p_months_back: monthsBack,
+    });
 
     if (error) {
-      console.error('Error fetching monthly history:', error);
+      console.error("Error fetching monthly history:", error);
       return [];
     }
 
@@ -283,15 +302,14 @@ export class UserService {
   async recalculateAllUserStreaks(): Promise<void> {
     try {
       // Call the database function to recalculate all user streaks
-      const { error } = await this.supabaseClient
-        .rpc('recalculate_all_user_streaks');
+      const { error } = await this.supabaseClient.rpc("recalculate_all_user_streaks");
 
       if (error) {
-        console.error('Error recalculating all user streaks:', error);
+        console.error("Error recalculating all user streaks:", error);
         throw new Error(error.message);
       }
     } catch (error) {
-      console.error('Error in recalculateAllUserStreaks:', error);
+      console.error("Error in recalculateAllUserStreaks:", error);
       throw error;
     }
   }
@@ -308,49 +326,52 @@ export class UserService {
       // Limit is a safeguard — at realistic activity rates (2/day) this covers ~7 years.
       // Long-term: replace with a DB-level aggregate query to avoid fetching rows at all.
       const { data: activities, error } = await this.supabaseClient
-        .from('activities')
-        .select(`
+        .from("activities")
+        .select(
+          `
           base_points,
           final_points,
           challenge_points_multiplier,
           event_id
-        `)
-        .eq('user_id', userId)
+        `,
+        )
+        .eq("user_id", userId)
         .limit(5000);
 
       if (error) {
-        console.error('Error fetching user points breakdown:', error);
+        console.error("Error fetching user points breakdown:", error);
         return {
           totalBasePoints: 0,
           totalFinalPoints: 0,
           totalBonusPoints: 0,
           challengeActivitiesCount: 0,
-          totalActivitiesCount: 0
+          totalActivitiesCount: 0,
         };
       }
 
-      const totalBasePoints = activities?.reduce((sum, activity) => sum + (activity.base_points || 0), 0) || 0;
-      const totalFinalPoints = activities?.reduce((sum, activity) => sum + (activity.final_points || 0), 0) || 0;
+      const totalBasePoints =
+        activities?.reduce((sum, activity) => sum + (activity.base_points || 0), 0) || 0;
+      const totalFinalPoints =
+        activities?.reduce((sum, activity) => sum + (activity.final_points || 0), 0) || 0;
       const totalBonusPoints = totalFinalPoints - totalBasePoints;
-      const challengeActivitiesCount = activities?.filter(activity => 
-        activity.event_id && activity.challenge_points_multiplier && activity.challenge_points_multiplier > 1
-      ).length || 0;
+      const challengeActivitiesCount =
+        activities?.filter((activity) => activity.event_id != null).length || 0;
 
       return {
         totalBasePoints,
         totalFinalPoints,
         totalBonusPoints,
         challengeActivitiesCount,
-        totalActivitiesCount: activities?.length || 0
+        totalActivitiesCount: activities?.length || 0,
       };
     } catch (error) {
-      console.error('Error in getUserPointsBreakdown:', error);
+      console.error("Error in getUserPointsBreakdown:", error);
       return {
         totalBasePoints: 0,
         totalFinalPoints: 0,
         totalBonusPoints: 0,
         challengeActivitiesCount: 0,
-        totalActivitiesCount: 0
+        totalActivitiesCount: 0,
       };
     }
   }
@@ -358,8 +379,8 @@ export class UserService {
   async getUserRoleById(userId: string): Promise<string | null> {
     const { data, error } = await this.supabaseClient
       .from(TABLE_NAME)
-      .select('role')
-      .eq('id', userId)
+      .select("role")
+      .eq("id", userId)
       .single();
 
     if (error || !data) return null;
@@ -370,7 +391,14 @@ export class UserService {
     const { error } = await this.supabaseClient
       .from(TABLE_NAME)
       .update({ is_deleted: true, updated_at: new Date().toISOString() })
-      .eq('id', id);
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+  }
+
+  async hardDeleteUser(id: string): Promise<void> {
+    const { error } = await this.supabaseClient.rpc("hard_delete_user", {
+      p_user_id: id,
+    });
     if (error) throw new Error(error.message);
   }
 
@@ -378,23 +406,25 @@ export class UserService {
     const { error } = await this.supabaseClient
       .from(TABLE_NAME)
       .update({ is_deleted: false, updated_at: new Date().toISOString() })
-      .eq('id', id);
+      .eq("id", id);
     if (error) throw new Error(error.message);
   }
 
   async getDeletedUsers(schoolId?: string): Promise<UserInterface[]> {
     let query = this.supabaseClient
       .from(TABLE_NAME)
-      .select(`
+      .select(
+        `
         *,
         school:schools(*),
         house:houses(*)
-      `)
-      .eq('is_deleted', true)
-      .order('updated_at', { ascending: false });
+      `,
+      )
+      .eq("is_deleted", true)
+      .order("updated_at", { ascending: false });
 
     if (schoolId) {
-      query = query.eq('school_id', schoolId);
+      query = query.eq("school_id", schoolId);
     }
 
     const { data, error } = await query;
@@ -402,18 +432,20 @@ export class UserService {
     return data || [];
   }
 
-  async getSchoolUserStats(schoolId: string): Promise<{ total: number; active: number; totalMinutes: number }> {
+  async getSchoolUserStats(
+    schoolId: string,
+  ): Promise<{ total: number; active: number; totalMinutes: number }> {
     const { data, error } = await this.supabaseClient
       .from(TABLE_NAME)
-      .select('id, is_active, is_deleted, total_minutes')
-      .eq('school_id', schoolId)
-      .eq('is_deleted', false);
+      .select("id, is_active, is_deleted, total_minutes")
+      .eq("school_id", schoolId)
+      .eq("is_deleted", false);
 
     if (error || !data) return { total: 0, active: 0, totalMinutes: 0 };
 
     return {
       total: data.length,
-      active: data.filter(u => u.is_active !== false).length,
+      active: data.filter((u) => u.is_active !== false).length,
       totalMinutes: data.reduce((sum, u) => sum + (u.total_minutes || 0), 0),
     };
   }
@@ -421,8 +453,8 @@ export class UserService {
   async getTotalCount(): Promise<number> {
     const { count, error } = await this.supabaseClient
       .from(TABLE_NAME)
-      .select('*', { count: 'exact', head: true })
-      .eq('is_deleted', false);
+      .select("*", { count: "exact", head: true })
+      .eq("is_deleted", false);
 
     if (error) throw new Error(error.message);
     return count || 0;
@@ -431,10 +463,10 @@ export class UserService {
   async getNewSignupsCount(since: Date): Promise<number> {
     const { count, error } = await this.supabaseClient
       .from(TABLE_NAME)
-      .select('*', { count: 'exact', head: true })
-      .gte('created_at', since.toISOString());
+      .select("*", { count: "exact", head: true })
+      .gte("created_at", since.toISOString());
 
     if (error) throw new Error(error.message);
     return count || 0;
   }
-} 
+}

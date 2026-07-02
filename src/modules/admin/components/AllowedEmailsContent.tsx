@@ -1,23 +1,34 @@
-import { useState, useEffect, useMemo } from 'react';
-import { UserInterface } from '@/models/users/interfaces/UserInterface';
-import { SchoolInterface } from '@/models/schools/interfaces/SchoolInterface';
-import { AllowedEmailInterface } from '@/models/allowed-emails/interfaces/AllowedEmailInterface';
-import { BlockedEmailInterface } from '@/models/blocked-emails/interfaces/BlockedEmailInterface';
-import { AllowedEmailService } from '@/models/allowed-emails/services/AllowedEmailService';
-import { BlockedEmailService } from '@/models/blocked-emails/services/BlockedEmailService';
-import { Card, CardContent, CardHeader, CardTitle } from '@/modules/application/components/DesignSystem/ui/card';
-import { Button } from '@/modules/application/components/DesignSystem/ui/button';
-import { Input } from '@/modules/application/components/DesignSystem/ui/input';
-import { Badge } from '@/modules/application/components/DesignSystem/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/modules/application/components/DesignSystem/ui/select';
-import { Textarea } from '@/modules/application/components/DesignSystem/ui/textarea';
-import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
-import { isSuperAdmin as checkIsSuperAdmin } from '@/modules/auth/utils/roleUtils';
-import useAdminData from '@/modules/common/hooks/useAdminData';
-import { ArrowLeft, Globe, ShieldCheck, Trash2 } from 'lucide-react';
-import { toast } from 'sonner';
-import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-import { Link } from '@tanstack/react-router';
+import { useState, useEffect, useMemo } from "react";
+import { UserInterface } from "@/models/users/interfaces/UserInterface";
+import { SchoolInterface } from "@/models/schools/interfaces/SchoolInterface";
+import { AllowedEmailInterface } from "@/models/allowed-emails/interfaces/AllowedEmailInterface";
+import { BlockedEmailInterface } from "@/models/blocked-emails/interfaces/BlockedEmailInterface";
+import { AllowedEmailService } from "@/models/allowed-emails/services/AllowedEmailService";
+import { BlockedEmailService } from "@/models/blocked-emails/services/BlockedEmailService";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/modules/application/components/DesignSystem/ui/card";
+import { Button } from "@/modules/application/components/DesignSystem/ui/button";
+import { Input } from "@/modules/application/components/DesignSystem/ui/input";
+import { Badge } from "@/modules/application/components/DesignSystem/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/modules/application/components/DesignSystem/ui/select";
+import { Textarea } from "@/modules/application/components/DesignSystem/ui/textarea";
+import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
+import { isSuperAdmin as checkIsSuperAdmin } from "@/modules/auth/utils/roleUtils";
+import useAdminData from "@/modules/common/hooks/useAdminData";
+import { ArrowLeft, Globe, ShieldCheck, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
+import { Link } from "@tanstack/react-router";
 interface AllowedEmailsContentProps {
   user: UserInterface;
   schools?: SchoolInterface[];
@@ -26,42 +37,52 @@ interface AllowedEmailsContentProps {
 }
 
 function parseEmailsFromText(raw: string): string[] {
-  return [...new Set(
-    raw
-      .split(/[\s,;]+/)
-      .map(s => s.trim().toLowerCase())
-      .filter(s => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s))
-  )];
+  return [
+    ...new Set(
+      raw
+        .split(/[\s,;]+/)
+        .map((s) => s.trim().toLowerCase())
+        .filter((s) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s)),
+    ),
+  ];
 }
 
 function countInvalidEmails(raw: string): number {
-  const tokens = raw.split(/[\s,;]+/).map(s => s.trim()).filter(s => s.length > 0);
-  return tokens.filter(s => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s)).length;
+  const tokens = raw
+    .split(/[\s,;]+/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+  return tokens.filter((s) => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s)).length;
 }
 
-const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSchoolId }: AllowedEmailsContentProps) => {
+const AllowedEmailsContent = ({
+  user,
+  schools,
+  backHref: backHrefProp,
+  defaultSchoolId,
+}: AllowedEmailsContentProps) => {
   const isSuperAdmin = checkIsSuperAdmin(user);
 
-  const initialSchoolId = defaultSchoolId || user.school_id || '';
+  const initialSchoolId = defaultSchoolId || user.school_id || "";
   const initialSchool = defaultSchoolId
-    ? schools?.find(s => s.id === defaultSchoolId)
+    ? schools?.find((s) => s.id === defaultSchoolId)
     : (user.school as SchoolInterface | undefined);
 
   const [selectedSchoolId, setSelectedSchoolId] = useState<string>(initialSchoolId);
   const [selectedSchool, setSelectedSchool] = useState<SchoolInterface | undefined>(initialSchool);
-  const [registrationMethod, setRegistrationMethod] = useState<'domain_blocklist' | 'allowlist'>(
-    initialSchool?.registration_method ?? 'domain_blocklist'
+  const [registrationMethod, setRegistrationMethod] = useState<"domain_blocklist" | "allowlist">(
+    initialSchool?.registration_method ?? "domain_blocklist",
   );
 
   // Allow list state
-  const [bulkAllowInput, setBulkAllowInput] = useState('');
-  const [noteAllowInput, setNoteAllowInput] = useState('');
+  const [bulkAllowInput, setBulkAllowInput] = useState("");
+  const [noteAllowInput, setNoteAllowInput] = useState("");
   const [isAddingAllowed, setIsAddingAllowed] = useState(false);
-  const [sortBy, setSortBy] = useState<'email' | 'date_added' | 'registered' | 'pending'>('email');
+  const [sortBy, setSortBy] = useState<"email" | "date_added" | "registered" | "pending">("email");
 
   // Block list state
-  const [bulkBlockInput, setBulkBlockInput] = useState('');
-  const [noteBlockInput, setNoteBlockInput] = useState('');
+  const [bulkBlockInput, setBulkBlockInput] = useState("");
+  const [noteBlockInput, setNoteBlockInput] = useState("");
   const [isAddingBlocked, setIsAddingBlocked] = useState(false);
   const [blockedEmails, setBlockedEmails] = useState<BlockedEmailInterface[]>([]);
   const [blockedLoading, setBlockedLoading] = useState(false);
@@ -69,9 +90,17 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
   const allowedService = useMemo(() => new AllowedEmailService(createSupabaseClient()), []);
   const blockedService = useMemo(() => new BlockedEmailService(createSupabaseClient()), []);
 
-  const { data: allowedEmails, filteredData, loading: allowedLoading, refresh, setData: setAllowedEmails, searchTerm, setSearchTerm } = useAdminData<AllowedEmailInterface>({
+  const {
+    data: allowedEmails,
+    filteredData,
+    loading: allowedLoading,
+    refresh,
+    setData: setAllowedEmails,
+    searchTerm,
+    setSearchTerm,
+  } = useAdminData<AllowedEmailInterface>({
     fetchFn: () =>
-      selectedSchoolId === '__all__'
+      selectedSchoolId === "__all__"
         ? allowedService.getAll()
         : allowedService.getBySchoolId(selectedSchoolId),
     filterFn: (item, term) => item.email.includes(term.toLowerCase()),
@@ -79,7 +108,7 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
   });
 
   const fetchBlockedEmails = async (schoolId: string) => {
-    if (!schoolId || schoolId === '__all__') return;
+    if (!schoolId || schoolId === "__all__") return;
     setBlockedLoading(true);
     try {
       const data = await blockedService.getBySchoolId(schoolId);
@@ -92,15 +121,15 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
   };
 
   useEffect(() => {
-    if (!selectedSchoolId || selectedSchoolId === '__all__') return;
-    if (registrationMethod === 'allowlist') {
+    if (!selectedSchoolId || selectedSchoolId === "__all__") return;
+    if (registrationMethod === "allowlist") {
       refresh();
     } else {
       fetchBlockedEmails(selectedSchoolId);
     }
   }, [selectedSchoolId, registrationMethod]);
 
-  const ALL_SCHOOLS_VALUE = '__all__';
+  const ALL_SCHOOLS_VALUE = "__all__";
 
   const handleSchoolChange = (schoolId: string) => {
     if (schoolId === ALL_SCHOOLS_VALUE) {
@@ -108,22 +137,22 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
       setSelectedSchool(undefined);
       setAllowedEmails([]);
       setBlockedEmails([]);
-      setBulkAllowInput('');
-      setBulkBlockInput('');
+      setBulkAllowInput("");
+      setBulkBlockInput("");
       return;
     }
-    const school = schools?.find(s => s.id === schoolId);
+    const school = schools?.find((s) => s.id === schoolId);
     setSelectedSchoolId(schoolId);
     setSelectedSchool(school);
-    setRegistrationMethod(school?.registration_method ?? 'domain_blocklist');
+    setRegistrationMethod(school?.registration_method ?? "domain_blocklist");
     setAllowedEmails([]);
     setBlockedEmails([]);
-    setBulkAllowInput('');
-    setBulkBlockInput('');
+    setBulkAllowInput("");
+    setBulkBlockInput("");
   };
 
   const getSchoolName = (schoolId: string) =>
-    schools?.find(s => s.id === schoolId)?.name || schoolId;
+    schools?.find((s) => s.id === schoolId)?.name || schoolId;
 
   // Allow list handlers
   const parsedAllowEmails = parseEmailsFromText(bulkAllowInput);
@@ -131,7 +160,7 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
 
   const handleBulkAllow = async () => {
     if (parsedAllowEmails.length === 0) {
-      toast.error('No valid email addresses found');
+      toast.error("No valid email addresses found");
       return;
     }
     setIsAddingAllowed(true);
@@ -140,12 +169,14 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
         selectedSchoolId,
         parsedAllowEmails,
         user.id,
-        noteAllowInput.trim() || undefined
+        noteAllowInput.trim() || undefined,
       );
-      setAllowedEmails(prev => [...added, ...prev]);
-      setBulkAllowInput('');
+      setAllowedEmails((prev) => [...added, ...prev]);
+      setBulkAllowInput("");
       if (skipped.length === 0) {
-        toast.success(`${added.length} email${added.length === 1 ? '' : 's'} added to the allow list`);
+        toast.success(
+          `${added.length} email${added.length === 1 ? "" : "s"} added to the allow list`,
+        );
       } else {
         toast.success(`${added.length} added, ${skipped.length} already existed and were skipped`);
       }
@@ -157,12 +188,12 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
   };
 
   const handleRemoveAllowed = async (entry: AllowedEmailInterface) => {
-    setAllowedEmails(prev => prev.filter(e => e.id !== entry.id));
+    setAllowedEmails((prev) => prev.filter((e) => e.id !== entry.id));
     try {
       await allowedService.remove(entry.id);
       toast.success(`${entry.email} removed from allow list`);
     } catch (error) {
-      setAllowedEmails(prev => [entry, ...prev]);
+      setAllowedEmails((prev) => [entry, ...prev]);
       notifyAboutError(error);
     }
   };
@@ -173,7 +204,7 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
 
   const handleBulkBlock = async () => {
     if (parsedBlockEmails.length === 0) {
-      toast.error('No valid email addresses found');
+      toast.error("No valid email addresses found");
       return;
     }
     setIsAddingBlocked(true);
@@ -182,12 +213,14 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
         selectedSchoolId,
         parsedBlockEmails,
         user.id,
-        noteBlockInput.trim() || undefined
+        noteBlockInput.trim() || undefined,
       );
-      setBlockedEmails(prev => [...added, ...prev]);
-      setBulkBlockInput('');
+      setBlockedEmails((prev) => [...added, ...prev]);
+      setBulkBlockInput("");
       if (skipped.length === 0) {
-        toast.success(`${added.length} email${added.length === 1 ? '' : 's'} added to the block list`);
+        toast.success(
+          `${added.length} email${added.length === 1 ? "" : "s"} added to the block list`,
+        );
       } else {
         toast.success(`${added.length} added, ${skipped.length} already existed and were skipped`);
       }
@@ -199,29 +232,29 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
   };
 
   const handleRemoveBlocked = async (entry: BlockedEmailInterface) => {
-    setBlockedEmails(prev => prev.filter(e => e.id !== entry.id));
+    setBlockedEmails((prev) => prev.filter((e) => e.id !== entry.id));
     try {
       await blockedService.remove(entry.id);
       toast.success(`${entry.email} removed from block list`);
     } catch (error) {
-      setBlockedEmails(prev => [entry, ...prev]);
+      setBlockedEmails((prev) => [entry, ...prev]);
       notifyAboutError(error);
     }
   };
 
   // Allow list sort
-  const registered = allowedEmails.filter(e => e.user_id !== null).length;
-  const pending = allowedEmails.filter(e => e.user_id === null).length;
+  const registered = allowedEmails.filter((e) => e.user_id !== null).length;
+  const pending = allowedEmails.filter((e) => e.user_id === null).length;
 
   const sortedAllowedData = [...filteredData].sort((a, b) => {
     switch (sortBy) {
-      case 'date_added':
+      case "date_added":
         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-      case 'registered':
+      case "registered":
         if (a.user_id && !b.user_id) return -1;
         if (!a.user_id && b.user_id) return 1;
         return a.email.localeCompare(b.email);
-      case 'pending':
+      case "pending":
         if (!a.user_id && b.user_id) return -1;
         if (a.user_id && !b.user_id) return 1;
         return a.email.localeCompare(b.email);
@@ -230,14 +263,16 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
     }
   });
 
-  const backHref = backHrefProp || (isSuperAdmin ? '/admin' : '/admin/dashboard');
+  const backHref = backHrefProp || (isSuperAdmin ? "/admin" : "/school");
 
   if (isSuperAdmin && !selectedSchoolId) {
     return (
       <div className="p-6 space-y-6 min-h-screen">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
-            <Link to={backHref}><ArrowLeft size={20} /></Link>
+            <Link to={backHref}>
+              <ArrowLeft size={20} />
+            </Link>
           </Button>
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Registration Access</h1>
@@ -256,7 +291,7 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="__all__">All Schools</SelectItem>
-                {schools?.map(school => (
+                {schools?.map((school) => (
                   <SelectItem key={school.id} value={school.id}>
                     {school.name}
                   </SelectItem>
@@ -269,7 +304,7 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
     );
   }
 
-  const loading = registrationMethod === 'allowlist' ? allowedLoading : blockedLoading;
+  const loading = registrationMethod === "allowlist" ? allowedLoading : blockedLoading;
 
   if (loading) {
     return (
@@ -278,7 +313,7 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
           <div className="h-8 bg-gray-200 rounded w-1/3 mb-2"></div>
           <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
           <div className="space-y-4">
-            {[1, 2, 3].map(i => (
+            {[1, 2, 3].map((i) => (
               <div key={i} className="h-14 bg-gray-200 rounded"></div>
             ))}
           </div>
@@ -292,7 +327,9 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
-          <Link to={backHref}><ArrowLeft size={20} /></Link>
+          <Link to={backHref}>
+            <ArrowLeft size={20} />
+          </Link>
         </Button>
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Registration Access</h1>
@@ -302,20 +339,30 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
 
       {/* Registration method info card */}
       {selectedSchoolId !== ALL_SCHOOLS_VALUE && (
-        <Card className={registrationMethod === 'domain_blocklist' ? 'border-green-200 bg-green-50' : 'border-amber-200 bg-amber-50'}>
+        <Card
+          className={
+            registrationMethod === "domain_blocklist"
+              ? "border-green-200 bg-green-50"
+              : "border-amber-200 bg-amber-50"
+          }
+        >
           <CardContent className="pt-4 pb-4">
             <div className="flex items-center gap-3">
-              {registrationMethod === 'domain_blocklist' ? (
+              {registrationMethod === "domain_blocklist" ? (
                 <Globe className="text-green-600 shrink-0" size={18} />
               ) : (
                 <ShieldCheck className="text-amber-600 shrink-0" size={18} />
               )}
               <div>
-                {registrationMethod === 'domain_blocklist' ? (
+                {registrationMethod === "domain_blocklist" ? (
                   <>
-                    <p className="font-medium text-sm text-green-900">Domain-based registration active</p>
+                    <p className="font-medium text-sm text-green-900">
+                      Domain-based registration active
+                    </p>
                     <p className="text-sm text-green-700">
-                      Students with a valid{selectedSchool?.email_domain ? ` @${selectedSchool.email_domain}` : ''} school email can register, unless blocked below.
+                      Students with a valid
+                      {selectedSchool?.email_domain ? ` @${selectedSchool.email_domain}` : ""}{" "}
+                      school email can register, unless blocked below.
                     </p>
                   </>
                 ) : (
@@ -348,7 +395,7 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="__all__">All Schools</SelectItem>
-            {schools.map(school => (
+            {schools.map((school) => (
               <SelectItem key={school.id} value={school.id}>
                 {school.name}
               </SelectItem>
@@ -358,14 +405,16 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
       )}
 
       {/* ── Domain + Block List ── */}
-      {registrationMethod === 'domain_blocklist' && selectedSchoolId !== ALL_SCHOOLS_VALUE && (
+      {registrationMethod === "domain_blocklist" && selectedSchoolId !== ALL_SCHOOLS_VALUE && (
         <>
           <Card>
             <CardHeader>
               <CardTitle>
                 Block Emails
                 {blockedEmails.length > 0 && (
-                  <Badge variant="secondary" className="ml-2">{blockedEmails.length}</Badge>
+                  <Badge variant="secondary" className="ml-2">
+                    {blockedEmails.length}
+                  </Badge>
                 )}
               </CardTitle>
             </CardHeader>
@@ -379,9 +428,12 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
               />
               {bulkBlockInput.trim() && (
                 <p className="text-xs text-gray-500">
-                  {parsedBlockEmails.length} valid email{parsedBlockEmails.length !== 1 ? 's' : ''}
+                  {parsedBlockEmails.length} valid email{parsedBlockEmails.length !== 1 ? "s" : ""}
                   {invalidBlockCount > 0 && (
-                    <span className="text-amber-600"> · {invalidBlockCount} invalid (will be skipped)</span>
+                    <span className="text-amber-600">
+                      {" "}
+                      · {invalidBlockCount} invalid (will be skipped)
+                    </span>
                   )}
                 </p>
               )}
@@ -397,7 +449,9 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
                   disabled={isAddingBlocked || parsedBlockEmails.length === 0}
                   variant="destructive"
                 >
-                  {isAddingBlocked ? 'Blocking...' : `Block ${parsedBlockEmails.length > 0 ? parsedBlockEmails.length : ''} Email${parsedBlockEmails.length !== 1 ? 's' : ''}`}
+                  {isAddingBlocked
+                    ? "Blocking..."
+                    : `Block ${parsedBlockEmails.length > 0 ? parsedBlockEmails.length : ""} Email${parsedBlockEmails.length !== 1 ? "s" : ""}`}
                 </Button>
               </div>
             </CardContent>
@@ -421,12 +475,13 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
                     >
                       <div className="flex-1 min-w-0">
                         <span className="font-medium">{entry.email}</span>
-                        {entry.note && (
-                          <p className="text-xs text-gray-500 mt-0.5">{entry.note}</p>
-                        )}
+                        {entry.note && <p className="text-xs text-gray-500 mt-0.5">{entry.note}</p>}
                         <p className="text-xs text-gray-400 mt-0.5">
-                          Blocked {new Date(entry.created_at).toLocaleDateString('en-NZ', {
-                            day: 'numeric', month: 'short', year: 'numeric',
+                          Blocked{" "}
+                          {new Date(entry.created_at).toLocaleDateString("en-NZ", {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
                           })}
                         </p>
                       </div>
@@ -449,7 +504,7 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
       )}
 
       {/* ── Allow List ── */}
-      {registrationMethod === 'allowlist' && selectedSchoolId !== ALL_SCHOOLS_VALUE && (
+      {registrationMethod === "allowlist" && selectedSchoolId !== ALL_SCHOOLS_VALUE && (
         <>
           {allowedEmails.length > 0 && (
             <div className="flex gap-4 text-sm text-gray-600">
@@ -475,9 +530,12 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
               />
               {bulkAllowInput.trim() && (
                 <p className="text-xs text-gray-500">
-                  {parsedAllowEmails.length} valid email{parsedAllowEmails.length !== 1 ? 's' : ''}
+                  {parsedAllowEmails.length} valid email{parsedAllowEmails.length !== 1 ? "s" : ""}
                   {invalidAllowCount > 0 && (
-                    <span className="text-amber-600"> · {invalidAllowCount} invalid (will be skipped)</span>
+                    <span className="text-amber-600">
+                      {" "}
+                      · {invalidAllowCount} invalid (will be skipped)
+                    </span>
                   )}
                 </p>
               )}
@@ -492,7 +550,9 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
                   onClick={handleBulkAllow}
                   disabled={isAddingAllowed || parsedAllowEmails.length === 0}
                 >
-                  {isAddingAllowed ? 'Adding...' : `Add ${parsedAllowEmails.length > 0 ? parsedAllowEmails.length : ''} Email${parsedAllowEmails.length !== 1 ? 's' : ''}`}
+                  {isAddingAllowed
+                    ? "Adding..."
+                    : `Add ${parsedAllowEmails.length > 0 ? parsedAllowEmails.length : ""} Email${parsedAllowEmails.length !== 1 ? "s" : ""}`}
                 </Button>
               </div>
             </CardContent>
@@ -504,7 +564,9 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
                 <CardTitle>
                   Allowed Emails
                   {allowedEmails.length > 0 && (
-                    <Badge variant="secondary" className="ml-2">{allowedEmails.length}</Badge>
+                    <Badge variant="secondary" className="ml-2">
+                      {allowedEmails.length}
+                    </Badge>
                   )}
                 </CardTitle>
                 {allowedEmails.length > 0 && (
@@ -537,9 +599,7 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
                   <p className="text-sm mt-1">Add emails above to grant access.</p>
                 </div>
               ) : sortedAllowedData.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  No emails match your search.
-                </div>
+                <div className="text-center py-8 text-gray-500">No emails match your search.</div>
               ) : (
                 <div className="space-y-2">
                   {sortedAllowedData.map((entry) => (
@@ -549,20 +609,25 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
                     >
                       <div className="flex-1 min-w-0">
                         <span className="font-medium">{entry.email}</span>
-                        {entry.note && (
-                          <p className="text-xs text-gray-500 mt-0.5">{entry.note}</p>
-                        )}
+                        {entry.note && <p className="text-xs text-gray-500 mt-0.5">{entry.note}</p>}
                         <p className="text-xs text-gray-400 mt-0.5">
-                          Added {new Date(entry.created_at).toLocaleDateString('en-NZ', {
-                            day: 'numeric', month: 'short', year: 'numeric',
+                          Added{" "}
+                          {new Date(entry.created_at).toLocaleDateString("en-NZ", {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
                           })}
                         </p>
                       </div>
                       <div className="flex items-center gap-3 ml-4 shrink-0">
                         {entry.user_id ? (
-                          <Badge className="bg-green-100 text-green-800 border-green-200 border">Registered</Badge>
+                          <Badge className="bg-green-100 text-green-800 border-green-200 border">
+                            Registered
+                          </Badge>
                         ) : (
-                          <Badge variant="outline" className="text-gray-500">Pending</Badge>
+                          <Badge variant="outline" className="text-gray-500">
+                            Pending
+                          </Badge>
                         )}
                         <Button
                           variant="ghost"
@@ -590,7 +655,9 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
             <CardTitle>
               All Allowed Emails
               {allowedEmails.length > 0 && (
-                <Badge variant="secondary" className="ml-2">{allowedEmails.length}</Badge>
+                <Badge variant="secondary" className="ml-2">
+                  {allowedEmails.length}
+                </Badge>
               )}
             </CardTitle>
           </CardHeader>
@@ -608,16 +675,20 @@ const AllowedEmailsContent = ({ user, schools, backHref: backHrefProp, defaultSc
                   >
                     <div className="flex-1 min-w-0">
                       <span className="font-medium">{entry.email}</span>
-                      <p className="text-xs text-blue-600 mt-0.5">{getSchoolName(entry.school_id)}</p>
-                      {entry.note && (
-                        <p className="text-xs text-gray-500 mt-0.5">{entry.note}</p>
-                      )}
+                      <p className="text-xs text-blue-600 mt-0.5">
+                        {getSchoolName(entry.school_id)}
+                      </p>
+                      {entry.note && <p className="text-xs text-gray-500 mt-0.5">{entry.note}</p>}
                     </div>
                     <div className="flex items-center gap-3 ml-4 shrink-0">
                       {entry.user_id ? (
-                        <Badge className="bg-green-100 text-green-800 border-green-200 border">Registered</Badge>
+                        <Badge className="bg-green-100 text-green-800 border-green-200 border">
+                          Registered
+                        </Badge>
                       ) : (
-                        <Badge variant="outline" className="text-gray-500">Pending</Badge>
+                        <Badge variant="outline" className="text-gray-500">
+                          Pending
+                        </Badge>
                       )}
                     </div>
                   </div>

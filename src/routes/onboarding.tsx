@@ -6,7 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import { LOGOS } from "@/lib/logos";
 
@@ -20,12 +26,29 @@ export const Route = createFileRoute("/onboarding")({
   component: OnboardingPage,
 });
 
-type School = { id: string; name: string; email_domain: string | null; secondary_email_domain: string | null };
+type School = {
+  id: string;
+  name: string;
+  email_domain: string | null;
+  secondary_email_domain: string | null;
+};
 type House = { id: string; name: string; color: string };
 
 const YEAR_GROUPS = [
-  "Year 1", "Year 2", "Year 3", "Year 4", "Year 5", "Year 6",
-  "Year 7", "Year 8", "Year 9", "Year 10", "Year 11", "Year 12", "Year 13", "Staff",
+  "Year 1",
+  "Year 2",
+  "Year 3",
+  "Year 4",
+  "Year 5",
+  "Year 6",
+  "Year 7",
+  "Year 8",
+  "Year 9",
+  "Year 10",
+  "Year 11",
+  "Year 12",
+  "Year 13",
+  "Staff",
 ];
 
 function OnboardingPage() {
@@ -108,8 +131,14 @@ function OnboardingPage() {
 
   // Live search
   useEffect(() => {
-    if (matchedSchool) { setSearchResults([]); return; }
-    if (searchQuery.length < 2) { setSearchResults([]); return; }
+    if (matchedSchool) {
+      setSearchResults([]);
+      return;
+    }
+    if (searchQuery.length < 2) {
+      setSearchResults([]);
+      return;
+    }
     const q = searchQuery.toLowerCase();
     setSearchResults(
       (schools as School[]).filter((s: School) => s.name.toLowerCase().includes(q)).slice(0, 6),
@@ -118,7 +147,10 @@ function OnboardingPage() {
 
   // Load houses when school changes
   useEffect(() => {
-    if (!selectedSchool) { setHouses([]); return; }
+    if (!selectedSchool) {
+      setHouses([]);
+      return;
+    }
     (async () => {
       const { data } = await supabase
         .from("houses")
@@ -130,19 +162,34 @@ function OnboardingPage() {
   }, [selectedSchool]);
 
   const validateStep1 = () => {
-    if (!selectedSchool) { toast.error("Please select your school"); return false; }
+    if (!selectedSchool) {
+      toast.error("Please select your school");
+      return false;
+    }
     return true;
   };
 
   const validateStep2 = () => {
-    if (!selectedHouse) { toast.error("Please select your house"); return false; }
+    if (!selectedHouse) {
+      toast.error("Please select your house");
+      return false;
+    }
     return true;
   };
 
   const validateStep3 = () => {
-    if (!firstName.trim()) { toast.error("Please enter your first name"); return false; }
-    if (!lastName.trim()) { toast.error("Please enter your last name"); return false; }
-    if (!yearGroup) { toast.error("Please select your year group"); return false; }
+    if (!firstName.trim()) {
+      toast.error("Please enter your first name");
+      return false;
+    }
+    if (!lastName.trim()) {
+      toast.error("Please enter your last name");
+      return false;
+    }
+    if (!yearGroup) {
+      toast.error("Please select your year group");
+      return false;
+    }
     return true;
   };
 
@@ -198,12 +245,23 @@ function OnboardingPage() {
         <Card className="w-full max-w-md text-center">
           <CardHeader>
             <div className="text-5xl mb-2">🎉</div>
-            <CardTitle className="text-2xl" style={{ color: "#0A4B39" }}>You're all set!</CardTitle>
+            <CardTitle className="text-2xl" style={{ color: "#0A4B39" }}>
+              You're all set!
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p>
               Welcome to <strong>{selectedSchool?.name}</strong>
-              {selectedHouse ? <> in <strong>{(houses as House[]).find((h) => h.id === selectedHouse)?.name}</strong></> : ""}!
+              {selectedHouse ? (
+                <>
+                  {" "}
+                  in{" "}
+                  <strong>{(houses as House[]).find((h) => h.id === selectedHouse)?.name}</strong>
+                </>
+              ) : (
+                ""
+              )}
+              !
             </p>
             <Button
               style={{ backgroundColor: "#0A4B39" }}
@@ -228,12 +286,16 @@ function OnboardingPage() {
             className="mx-auto mb-2"
             style={{ width: "140px", height: "auto" }}
           />
-          <h1 className="text-2xl font-bold" style={{ color: "#0A4B39" }}>Set up your profile</h1>
+          <h1 className="text-2xl font-bold" style={{ color: "#0A4B39" }}>
+            Set up your profile
+          </h1>
           <p className="text-sm text-muted-foreground mt-1">Let's get you started</p>
         </div>
 
         <div className="space-y-2">
-          <p className="text-sm text-muted-foreground text-center">Step {step} of {totalSteps}</p>
+          <p className="text-sm text-muted-foreground text-center">
+            Step {step} of {totalSteps}
+          </p>
           <Progress value={(step / totalSteps) * 100} className="h-2" />
         </div>
 
@@ -269,7 +331,10 @@ function OnboardingPage() {
                       variant="outline"
                       size="sm"
                       className="mt-3"
-                      onClick={() => { setMatchedSchool(null); setSelectedSchool(null); }}
+                      onClick={() => {
+                        setMatchedSchool(null);
+                        setSelectedSchool(null);
+                      }}
                     >
                       Choose a different school
                     </Button>
@@ -279,7 +344,8 @@ function OnboardingPage() {
                     {schools.length === 0 ? (
                       <div className="text-center py-4">
                         <p className="text-muted-foreground mb-3">
-                          No active schools found. If your school isn't registered yet, ask them to sign up first.
+                          No active schools found. If your school isn't registered yet, ask them to
+                          sign up first.
                         </p>
                         <Button asChild variant="outline">
                           <Link to="/register-school">Register your school</Link>
@@ -300,7 +366,9 @@ function OnboardingPage() {
                               <button
                                 key={s.id}
                                 type="button"
-                                onClick={() => { setSelectedSchool(s); }}
+                                onClick={() => {
+                                  setSelectedSchool(s);
+                                }}
                                 className={`w-full text-left p-3 rounded-lg border-2 transition-all ${
                                   selectedSchool?.id === s.id
                                     ? "border-[#0A4B39] bg-green-50"
@@ -315,7 +383,11 @@ function OnboardingPage() {
                         {searchQuery.length >= 2 && searchResults.length === 0 && (
                           <p className="text-sm text-muted-foreground mt-2">
                             No schools found.{" "}
-                            <Link to="/register-school" className="underline" style={{ color: "#0A4B39" }}>
+                            <Link
+                              to="/register-school"
+                              className="underline"
+                              style={{ color: "#0A4B39" }}
+                            >
                               Register your school
                             </Link>
                           </p>
@@ -362,19 +434,33 @@ function OnboardingPage() {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label htmlFor="firstName">First name *</Label>
-                    <Input id="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                    <Input
+                      id="firstName"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                    />
                   </div>
                   <div>
                     <Label htmlFor="lastName">Last name *</Label>
-                    <Input id="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                    <Input
+                      id="lastName"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                    />
                   </div>
                 </div>
                 <div>
                   <Label>Year group *</Label>
                   <Select value={yearGroup} onValueChange={setYearGroup}>
-                    <SelectTrigger><SelectValue placeholder="Select year group" /></SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select year group" />
+                    </SelectTrigger>
                     <SelectContent>
-                      {YEAR_GROUPS.map((y) => <SelectItem key={y} value={y}>{y}</SelectItem>)}
+                      {YEAR_GROUPS.map((y) => (
+                        <SelectItem key={y} value={y}>
+                          {y}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -396,7 +482,9 @@ function OnboardingPage() {
                 <div className="bg-muted/50 rounded-lg p-4 space-y-3">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Name</span>
-                    <span className="font-medium">{firstName} {lastName}</span>
+                    <span className="font-medium">
+                      {firstName} {lastName}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">School</span>
@@ -406,7 +494,13 @@ function OnboardingPage() {
                     <div className="flex justify-between items-center">
                       <span className="text-muted-foreground">House</span>
                       <span className="font-medium flex items-center gap-2">
-                        <span className="w-3 h-3 rounded-full inline-block" style={{ background: (houses as House[]).find((h) => h.id === selectedHouse)?.color }} />
+                        <span
+                          className="w-3 h-3 rounded-full inline-block"
+                          style={{
+                            background: (houses as House[]).find((h) => h.id === selectedHouse)
+                              ?.color,
+                          }}
+                        />
                         {(houses as House[]).find((h) => h.id === selectedHouse)?.name}
                       </span>
                     </div>
@@ -430,7 +524,9 @@ function OnboardingPage() {
         {/* Navigation */}
         <div className="flex justify-between">
           {step > 1 ? (
-            <Button variant="outline" onClick={() => setStep(step - 1)}>Back</Button>
+            <Button variant="outline" onClick={() => setStep(step - 1)}>
+              Back
+            </Button>
           ) : (
             <div />
           )}

@@ -9,11 +9,29 @@ export interface EventInterface {
   end_date: string;
   target_minutes?: number | null;
   target_distance?: number | null;
+  target_sessions?: number | null;
+  target_days?: number | null;
+  required_tag?: string | null;
+  completion_type?:
+    | "minutes_total"
+    | "minutes_daily"
+    | "session_count"
+    | "active_days"
+    | "tagged_minutes"
+    | "unique_activity_types"
+    | "collective_minutes_total"
+    | "collective_minutes_daily"
+    | "participation_rate"
+    | null;
+  scope?: "individual" | "house" | "school" | null;
   is_active: boolean;
   participant_count: number;
   created_by?: string;
-  approval_status: 'pending' | 'approved' | 'rejected' | 'cancelled';
-  target_schools?: string[] | null; // UUID array, null means visible to all schools
+  suggested_by_user_id?: string | null;
+  approved_by_user_id?: string | null;
+  approved_at?: string | null;
+  approval_status: "draft" | "pending" | "approved" | "rejected" | "published";
+  target_schools?: string[] | null;
   badge_achievement_id?: string;
   points_multiplier?: number;
   challenge_points?: number | null;
@@ -26,7 +44,6 @@ export interface EventInterface {
   last_interaction_at?: string | null;
   is_assembly?: boolean;
 
-  // Relationships
   creator?: {
     username: string;
     first_name: string;
@@ -40,4 +57,27 @@ export interface EventInterface {
     image_filename: string;
     points_reward: number;
   };
-} 
+}
+
+export interface ChallengeProgress {
+  challenge_id: string;
+  user_id: string;
+  house_id?: string;
+  school_id: string;
+  progress_value: number;
+  target_value: number;
+  completed: boolean;
+  completed_at?: string;
+}
+
+export const COMPLETION_TYPE_LABELS: Record<string, string> = {
+  minutes_total: "Log a total number of minutes",
+  minutes_daily: "Log minutes each day",
+  session_count: "Complete one session",
+  active_days: "Be active on a number of days",
+  tagged_minutes: "Complete minutes with a tag (e.g. with others)",
+  unique_activity_types: "Try different activity types",
+  collective_minutes_total: "House reaches a shared total",
+  collective_minutes_daily: "House reaches daily shared target",
+  participation_rate: "House gets highest participation rate",
+};

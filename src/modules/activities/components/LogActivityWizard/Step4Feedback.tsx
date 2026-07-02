@@ -1,7 +1,7 @@
-import { User, Users } from 'lucide-react';
-import { FEELING_MAPPINGS } from '@/modules/activities/utils/activityIcons';
-import { WizardState } from './types';
-import { cn } from '@/modules/common/utils';
+import { User, Users } from "lucide-react";
+import { FEELING_MAPPINGS } from "@/modules/activities/utils/activityIcons";
+import { WizardState } from "./types";
+import { cn } from "@/modules/common/utils";
 
 interface Step4FeedbackProps {
   data: WizardState;
@@ -24,7 +24,9 @@ const Step4Feedback = ({ data, onChange }: Step4FeedbackProps) => {
 
       {/* Mood */}
       <div className="space-y-2">
-        <label className="text-sm font-semibold text-gray-700">How did it feel? <span className="text-red-500">*</span></label>
+        <label className="text-sm font-semibold text-gray-700">
+          How did it feel? <span className="text-red-500">*</span>
+        </label>
         <div className="flex gap-2">
           {feelings.map((f) => (
             <button
@@ -33,10 +35,10 @@ const Step4Feedback = ({ data, onChange }: Step4FeedbackProps) => {
               onClick={() => onChange({ feeling: f.value })}
               title={f.label}
               className={cn(
-                'flex-1 py-2.5 rounded-xl border text-2xl transition-all duration-150 hover:scale-110',
+                "flex-1 py-2.5 rounded-xl border text-2xl transition-all duration-150 hover:scale-110",
                 data.feeling === f.value
-                  ? 'border-[#cf04d2] bg-[#0B4B39]/5 scale-110'
-                  : 'border-gray-200 bg-white hover:border-gray-300'
+                  ? "border-[#cf04d2] bg-[#0B4B39]/5 scale-110"
+                  : "border-gray-200 bg-white hover:border-gray-300",
               )}
             >
               {f.emoji}
@@ -49,10 +51,12 @@ const Step4Feedback = ({ data, onChange }: Step4FeedbackProps) => {
       <div className="space-y-2">
         <label className="text-sm font-semibold text-gray-700">Who were you with?</label>
         <div className="flex gap-3">
-          {([
-            { value: 'solo', label: 'Solo', icon: User },
-            { value: 'with_others', label: 'With others', icon: Users },
-          ] as const).map((opt) => {
+          {(
+            [
+              { value: "solo", label: "Solo", icon: User },
+              { value: "with_others", label: "With others", icon: Users },
+            ] as const
+          ).map((opt) => {
             const IconComponent = opt.icon;
             return (
               <button
@@ -60,10 +64,10 @@ const Step4Feedback = ({ data, onChange }: Step4FeedbackProps) => {
                 type="button"
                 onClick={() => onChange({ participationType: opt.value })}
                 className={cn(
-                  'flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border text-sm font-medium transition-all duration-150',
+                  "flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border text-sm font-medium transition-all duration-150",
                   data.participationType === opt.value
-                    ? 'border-[#cf04d2] bg-[#0B4B39]/5 text-[#0B4B39]'
-                    : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+                    ? "border-[#cf04d2] bg-[#0B4B39]/5 text-[#0B4B39]"
+                    : "border-gray-200 bg-white text-gray-600 hover:border-gray-300",
                 )}
               >
                 <IconComponent size={16} />
@@ -76,7 +80,9 @@ const Step4Feedback = ({ data, onChange }: Step4FeedbackProps) => {
 
       {/* Notes */}
       <div className="space-y-2">
-        <label className="text-sm font-semibold text-gray-700">Notes <span className="font-normal text-gray-400">(optional)</span></label>
+        <label className="text-sm font-semibold text-gray-700">
+          Notes <span className="font-normal text-gray-400">(optional)</span>
+        </label>
         <textarea
           value={data.notes}
           onChange={(e) => onChange({ notes: e.target.value })}

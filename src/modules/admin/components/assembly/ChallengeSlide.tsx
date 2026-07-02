@@ -1,7 +1,7 @@
-import { m } from 'framer-motion';
-import { ChevronLeft } from 'lucide-react';
-import { EventInterface } from '@/models/events/interfaces/EventInterface';
-import { resolveEventIconType, getActivityIcon } from '@/modules/activities/utils/activityIcons';
+import { m } from "framer-motion";
+import { ChevronLeft } from "lucide-react";
+import { EventInterface } from "@/models/events/interfaces/EventInterface";
+import { resolveEventIconType, getActivityIcon } from "@/modules/activities/utils/activityIcons";
 
 interface ChallengeSlideProps {
   assemblyEvent: EventInterface | null;
@@ -20,14 +20,22 @@ const ChallengeSlide = ({ assemblyEvent, onBack }: ChallengeSlideProps) => {
       <button
         onClick={onBack}
         className="absolute left-6 top-6 rounded-full p-2 transition-colors"
-        style={{ backgroundColor: '#d9d8d4', color: '#0f172a' }}
+        style={{ backgroundColor: "#d9d8d4", color: "#0f172a" }}
       >
         <ChevronLeft className="h-6 w-6" />
       </button>
 
       <div className="mb-8 text-center">
-        <img src="/assembly/this-week-challenge-Icon.svg" alt="" width={64} height={64} className="mx-auto mb-3" />
-        <h2 className="text-4xl font-extrabold uppercase tracking-widest text-white">Your Next Challenge</h2>
+        <img
+          src="/assembly/this-week-challenge-Icon.svg"
+          alt=""
+          width={64}
+          height={64}
+          className="mx-auto mb-3"
+        />
+        <h2 className="text-4xl font-extrabold uppercase tracking-widest text-white">
+          Your Next Challenge
+        </h2>
       </div>
 
       <div className="w-full max-w-2xl">
@@ -58,7 +66,9 @@ const ChallengeSlide = ({ assemblyEvent, onBack }: ChallengeSlideProps) => {
               )}
               {assemblyEvent.challenge_points && (
                 <div className="rounded-xl border border-gray-200 px-5 py-3">
-                  <p className="text-xl font-extrabold text-gray-900">+{assemblyEvent.challenge_points}</p>
+                  <p className="text-xl font-extrabold text-gray-900">
+                    +{assemblyEvent.challenge_points}
+                  </p>
                   <p className="text-xs text-gray-500">Bonus points</p>
                 </div>
               )}
@@ -76,7 +86,8 @@ const ChallengeSlide = ({ assemblyEvent, onBack }: ChallengeSlideProps) => {
           >
             <p className="text-white/50">No assembly challenge has been set yet.</p>
             <p className="mt-2 text-sm text-white/30">
-              Mark a challenge as &ldquo;Feature in Assembly Mode&rdquo; in the Challenges admin to display it here.
+              Mark a challenge as &ldquo;Feature in Assembly Mode&rdquo; in the Challenges admin to
+              display it here.
             </p>
           </m.div>
         )}

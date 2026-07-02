@@ -1,16 +1,25 @@
-import { useEffect, useState, useTransition, useMemo } from 'react';
-import { Link } from '@tanstack/react-router';
-import { AlertTriangle } from 'lucide-react';
-import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
-import { ActivityService } from '@/models/activities/services/ActivityService';
-import { ActivityInterface } from '@/models/activities/interfaces/ActivityInterface';
-import { Card, CardContent, CardHeader, CardTitle } from '@/modules/application/components/DesignSystem/ui/card';
-import { Button } from '@/modules/application/components/DesignSystem/ui/button';
-import { Badge } from '@/modules/application/components/DesignSystem/ui/badge';
-import { rejectActivity, undoRejectActivity, rejectActivitiesBulk } from '@/modules/admin/actions/rejectActivity';
-import { toast } from 'sonner';
-import { computeGroupRejectableIds } from '@/modules/admin/utils/activityUtils';
-import ActivityRow from '@/modules/admin/components/ActivityRow';
+import { useEffect, useState, useTransition, useMemo } from "react";
+import { Link } from "@tanstack/react-router";
+import { AlertTriangle } from "lucide-react";
+import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
+import { ActivityService } from "@/models/activities/services/ActivityService";
+import { ActivityInterface } from "@/models/activities/interfaces/ActivityInterface";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/modules/application/components/DesignSystem/ui/card";
+import { Button } from "@/modules/application/components/DesignSystem/ui/button";
+import { Badge } from "@/modules/application/components/DesignSystem/ui/badge";
+import {
+  rejectActivity,
+  undoRejectActivity,
+  rejectActivitiesBulk,
+} from "@/modules/admin/actions/rejectActivity";
+import { toast } from "sonner";
+import { computeGroupRejectableIds } from "@/modules/admin/utils/activityUtils";
+import ActivityRow from "@/modules/admin/components/ActivityRow";
 
 const PREVIEW_COUNT = 5;
 
@@ -31,7 +40,7 @@ const ActivityLogPreview = ({ schoolId, schoolParam }: ActivityLogPreviewProps) 
       const data = await activityService.getActivitiesForSchool(schoolId, 30);
       setAllFetched(data);
     } catch (error) {
-      console.error('Error fetching activities:', error);
+      console.error("Error fetching activities:", error);
     } finally {
       setLoading(false);
     }
@@ -50,11 +59,11 @@ const ActivityLogPreview = ({ schoolId, schoolParam }: ActivityLogPreviewProps) 
     startTransition(async () => {
       try {
         await rejectActivity(activityId);
-        toast.success('Activity rejected');
+        toast.success("Activity rejected");
         setLoading(true);
         await fetchActivities();
       } catch (error) {
-        toast.error(error instanceof Error ? error.message : 'Failed to reject activity');
+        toast.error(error instanceof Error ? error.message : "Failed to reject activity");
       }
     });
   };
@@ -63,11 +72,11 @@ const ActivityLogPreview = ({ schoolId, schoolParam }: ActivityLogPreviewProps) 
     startTransition(async () => {
       try {
         await undoRejectActivity(activityId);
-        toast.success('Rejection undone');
+        toast.success("Rejection undone");
         setLoading(true);
         await fetchActivities();
       } catch (error) {
-        toast.error(error instanceof Error ? error.message : 'Failed to undo rejection');
+        toast.error(error instanceof Error ? error.message : "Failed to undo rejection");
       }
     });
   };
@@ -76,16 +85,18 @@ const ActivityLogPreview = ({ schoolId, schoolParam }: ActivityLogPreviewProps) 
     startTransition(async () => {
       try {
         await rejectActivitiesBulk(activityIds);
-        toast.success(`${activityIds.length} ${activityIds.length === 1 ? 'activity' : 'activities'} rejected`);
+        toast.success(
+          `${activityIds.length} ${activityIds.length === 1 ? "activity" : "activities"} rejected`,
+        );
         setLoading(true);
         await fetchActivities();
       } catch (error) {
-        toast.error(error instanceof Error ? error.message : 'Failed to reject group');
+        toast.error(error instanceof Error ? error.message : "Failed to reject group");
       }
     });
   };
 
-  const flaggedCount = activities.filter(a => a.is_flagged).length;
+  const flaggedCount = activities.filter((a) => a.is_flagged).length;
 
   return (
     <Card>
@@ -109,7 +120,7 @@ const ActivityLogPreview = ({ schoolId, schoolParam }: ActivityLogPreviewProps) 
       <CardContent>
         {loading ? (
           <div className="space-y-2">
-            {[1, 2, 3].map(i => (
+            {[1, 2, 3].map((i) => (
               <div key={i} className="h-14 bg-gray-100 rounded-lg animate-pulse" />
             ))}
           </div>
@@ -117,7 +128,7 @@ const ActivityLogPreview = ({ schoolId, schoolParam }: ActivityLogPreviewProps) 
           <p className="text-sm text-gray-500 text-center py-4">No activities logged yet.</p>
         ) : (
           <div className="space-y-2">
-            {activities.map(activity => (
+            {activities.map((activity) => (
               <ActivityRow
                 key={activity.id}
                 activity={activity}

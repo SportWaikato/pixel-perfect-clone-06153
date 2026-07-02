@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useRouterState } from '@tanstack/react-router';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouterState } from "@tanstack/react-router";
 const NavigationProgress = () => {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [width, setWidth] = useState(0);
@@ -27,10 +27,10 @@ const NavigationProgress = () => {
   // Listen for internal link clicks
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
-      const anchor = (e.target as HTMLElement).closest('a');
+      const anchor = (e.target as HTMLElement).closest("a");
       if (!anchor) return;
 
-      const href = anchor.getAttribute('href') ?? '';
+      const href = anchor.getAttribute("href") ?? "";
       if (!href || /^(https?:|mailto:|tel:|#)/.test(href)) return;
       if (href === window.location.pathname) return;
 
@@ -49,9 +49,9 @@ const NavigationProgress = () => {
       ];
     };
 
-    document.addEventListener('click', onClick);
+    document.addEventListener("click", onClick);
     return () => {
-      document.removeEventListener('click', onClick);
+      document.removeEventListener("click", onClick);
       clear();
     };
   }, []);
@@ -64,8 +64,8 @@ const NavigationProgress = () => {
       style={{
         width: `${width}%`,
         opacity: visible ? 1 : 0,
-        transition: 'width 400ms ease-out, opacity 200ms ease-out',
-        background: 'linear-gradient(90deg, #00ACEF, #0F8061)',
+        transition: "width 400ms ease-out, opacity 200ms ease-out",
+        background: "linear-gradient(90deg, #00ACEF, #0F8061)",
       }}
     />
   );

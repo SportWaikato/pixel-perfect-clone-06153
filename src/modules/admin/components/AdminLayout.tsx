@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { UserInterface } from '@/models/users/interfaces/UserInterface';
-import { Button } from '@/modules/application/components/DesignSystem/ui/button';
-import UserAvatar from '@/modules/application/components/DesignSystem/ui/user-avatar';
+import { useState, useEffect } from "react";
+import { UserInterface } from "@/models/users/interfaces/UserInterface";
+import { Button } from "@/modules/application/components/DesignSystem/ui/button";
+import UserAvatar from "@/modules/application/components/DesignSystem/ui/user-avatar";
 import {
   LayoutDashboard,
   Users,
@@ -19,12 +19,12 @@ import {
   Download,
   UserX,
   Monitor,
-} from 'lucide-react';
-import { Link, useNavigate } from '@tanstack/react-router';
-import { useRouter } from '@tanstack/react-router';
-import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
-import { EventService } from '@/models/events/services/EventService';
-import { toast } from 'sonner';
+} from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
+import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
+import { EventService } from "@/models/events/services/EventService";
+import { toast } from "sonner";
 
 interface AdminLayoutProps {
   user: UserInterface;
@@ -40,40 +40,70 @@ const AdminLayout = ({ user, children }: AdminLayoutProps) => {
   useEffect(() => {
     const supabase = createSupabaseClient();
     const service = new EventService(supabase);
-    service.getAllPendingCount().then(setPendingEventsCount).catch(() => {});
+    service
+      .getAllPendingCount()
+      .then(setPendingEventsCount)
+      .catch(() => {});
   }, [user.id]);
 
   const adminNavItems = [
-    { name: 'Dashboard', href: '/admin', icon: LayoutDashboard, current: true },
-    { name: 'User Management', href: '/admin/users', icon: Users, current: false },
-    { name: 'Deleted Users', href: '/admin/deleted-users', icon: UserX, current: false, roles: ['super_admin', 'school_admin'] },
-    { name: 'School Management', href: '/admin/schools', icon: School, current: false },
-    { name: 'Challenge Management', href: '/admin/challenges', icon: Calendar, current: false },
-    { name: 'Badge Management', href: '/admin/badges', icon: Award, current: false },
-    { name: 'Manage Media', href: '/admin/media', icon: FolderOpen, current: false, roles: ['super_admin', 'school_admin'] },
-    { name: 'Assembly Mode', href: '/admin/assembly', icon: Monitor, current: false, roles: ['super_admin', 'school_admin'] },
-    { name: 'Analytics', href: '/admin/analytics', icon: BarChart3, current: false },
-    { name: 'Reports', href: '/admin/reports', icon: FileText, current: false },
-    { name: 'Settings', href: '/admin/settings', icon: Settings, current: false, roles: ['super_admin', 'school_admin'] },
-  ].filter(item => !item.roles || item.roles.includes(user.role));
+    { name: "Dashboard", href: "/admin", icon: LayoutDashboard, current: true },
+    { name: "User Management", href: "/admin/users", icon: Users, current: false },
+    {
+      name: "Deleted Users",
+      href: "/admin/deleted-users",
+      icon: UserX,
+      current: false,
+      roles: ["super_admin", "school_admin"],
+    },
+    { name: "School Management", href: "/admin/schools", icon: School, current: false },
+    { name: "Challenge Management", href: "/admin/events", icon: Calendar, current: false },
+    { name: "Badge Management", href: "/admin/badges", icon: Award, current: false },
+    {
+      name: "Manage Media",
+      href: "/admin/media",
+      icon: FolderOpen,
+      current: false,
+      roles: ["super_admin", "school_admin"],
+    },
+    {
+      name: "Assembly Mode",
+      href: "/admin/assembly",
+      icon: Monitor,
+      current: false,
+      roles: ["super_admin", "school_admin"],
+    },
+    { name: "Analytics", href: "/admin/analytics", icon: BarChart3, current: false },
+    { name: "Reports", href: "/admin/reports", icon: FileText, current: false },
+    {
+      name: "Settings",
+      href: "/admin/settings",
+      icon: Settings,
+      current: false,
+      roles: ["super_admin", "school_admin"],
+    },
+  ].filter((item) => !item.roles || item.roles.includes(user.role));
 
   const handleLogout = async () => {
     try {
       const supabase = createSupabaseClient();
       await supabase.auth.signOut();
-      toast.success('Logged out successfully');
-      navigate({ to: '/' });
+      toast.success("Logged out successfully");
+      navigate({ to: "/" });
     } catch (error) {
-      console.error('Error logging out:', error);
-      toast.error('Error logging out');
+      console.error("Error logging out:", error);
+      toast.error("Error logging out");
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Mobile sidebar */}
-      <div className={`fixed inset-0 z-50 lg:hidden ${sidebarOpen ? 'block' : 'hidden'}`}>
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={() => setSidebarOpen(false)} />
+      <div className={`fixed inset-0 z-50 lg:hidden ${sidebarOpen ? "block" : "hidden"}`}>
+        <div
+          className="fixed inset-0 bg-gray-600 bg-opacity-75"
+          onClick={() => setSidebarOpen(false)}
+        />
         <div className="fixed inset-y-0 left-0 flex w-64 flex-col bg-white">
           <div className="flex h-16 flex-shrink-0 items-center justify-between px-4 border-b">
             <div className="flex items-center">
@@ -95,13 +125,13 @@ const AdminLayout = ({ user, children }: AdminLayoutProps) => {
                 to={item.href}
                 className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md mb-1 ${
                   item.current
-                    ? 'bg-[#0B4B39]/10 text-[#0B4B39] font-semibold'
-                    : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                    ? "bg-[#0B4B39]/10 text-[#0B4B39] font-semibold"
+                    : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                 }`}
               >
                 <item.icon className="mr-3 h-5 w-5 flex-shrink-0" />
                 {item.name}
-                {item.href === '/admin/challenges' && pendingEventsCount > 0 && (
+                {item.href === "/admin/events" && pendingEventsCount > 0 && (
                   <span className="ml-2 w-2 h-2 bg-red-500 rounded-full shrink-0" />
                 )}
               </Link>
@@ -123,13 +153,13 @@ const AdminLayout = ({ user, children }: AdminLayoutProps) => {
                 to={item.href}
                 className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md mb-1 ${
                   item.current
-                    ? 'bg-[#0B4B39]/10 text-[#0B4B39] font-semibold'
-                    : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                    ? "bg-[#0B4B39]/10 text-[#0B4B39] font-semibold"
+                    : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                 }`}
               >
                 <item.icon className="mr-3 h-5 w-5 flex-shrink-0" />
                 {item.name}
-                {item.href === '/admin/challenges' && pendingEventsCount > 0 && (
+                {item.href === "/admin/events" && pendingEventsCount > 0 && (
                   <span className="ml-2 w-2 h-2 bg-red-500 rounded-full shrink-0" />
                 )}
               </Link>
@@ -152,18 +182,11 @@ const AdminLayout = ({ user, children }: AdminLayoutProps) => {
 
           <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
             <div className="relative flex flex-1 items-center">
-              <h1 className="text-lg font-semibold text-gray-900">
-                Super Admin Dashboard
-              </h1>
+              <h1 className="text-lg font-semibold text-gray-900">Super Admin Dashboard</h1>
             </div>
             <div className="flex items-center gap-x-4 lg:gap-x-6">
               {/* Back to main app button */}
-              <Button
-                variant="outline"
-                size="sm"
-                asChild
-                className="hidden sm:flex"
-              >
+              <Button variant="outline" size="sm" asChild className="hidden sm:flex">
                 <Link to="/dashboard">
                   <Home className="h-4 w-4 mr-2" />
                   Back to App
@@ -202,13 +225,11 @@ const AdminLayout = ({ user, children }: AdminLayoutProps) => {
 
         {/* Page content */}
         <main className="py-6">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            {children}
-          </div>
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">{children}</div>
         </main>
       </div>
     </div>
   );
 };
 
-export default AdminLayout; 
+export default AdminLayout;

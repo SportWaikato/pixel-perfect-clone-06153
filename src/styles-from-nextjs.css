@@ -51,25 +51,25 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: #0B4B39; /* Karawhiua green */
+  --primary: #0b4b39; /* Karawhiua green */
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: #D103D1; /* Karawhiua magenta */
-  --accent-foreground: #FFFFFF; /* White text on magenta */
-  --destructive: #EF4250; /* Keep existing red */
+  --accent: #d103d1; /* Karawhiua magenta */
+  --accent-foreground: #ffffff; /* White text on magenta */
+  --destructive: #ef4250; /* Keep existing red */
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: #0F8061; /* Supporting green */
+  --ring: #0f8061; /* Supporting green */
   /* Add Karawhiua brand color variables */
-  --brand-primary-green: #0B4B39;
-  --brand-magenta: #D103D1;
-  --brand-white: #FFFFFF;
-  --brand-grey: #F0EFEB;
-  --brand-supporting-green: #0F8061;
-  --brand-pink: #DB4FDB;
+  --brand-primary-green: #0b4b39;
+  --brand-magenta: #d103d1;
+  --brand-white: #ffffff;
+  --brand-grey: #f0efeb;
+  --brand-supporting-green: #0f8061;
+  --brand-pink: #db4fdb;
   --brand-dark-grey: #333333;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
@@ -126,33 +126,33 @@
   }
   body {
     @apply bg-background text-foreground;
-    background-color: #F0EFEB !important;
+    background-color: #f0efeb !important;
   }
-  
+
   /* Fix text color for magenta hover states */
   .hover\\:bg-accent:hover,
   [data-slot="button"]:hover.hover\\:bg-accent,
   button:hover:has([class*="hover:bg-accent"]) {
     color: white !important;
   }
-  
+
   /* Additional specific fixes for navigation buttons */
   nav button:hover,
   nav .hover\\:bg-accent:hover {
     color: white !important;
   }
-  
+
   /* Primary green buttons hover to supporting green */
   button[style*="background-color: rgb(11, 75, 57)"],
   button[style*="background-color:#0B4B39"],
   button[style*="backgroundColor: '#0B4B39'"] {
     transition: background-color 0.2s ease-in-out;
   }
-  
+
   button[style*="background-color: rgb(11, 75, 57)"]:hover,
   button[style*="background-color:#0B4B39"]:hover,
   button[style*="backgroundColor: '#0B4B39'"]:hover {
-    background-color: #0F8061 !important;
+    background-color: #0f8061 !important;
   }
 }
 

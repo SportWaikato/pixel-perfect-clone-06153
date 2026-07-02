@@ -1,28 +1,53 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
-import { useServerFn } from '@tanstack/react-start';
-import { UserInterface } from '@/models/users/interfaces/UserInterface';
-import { SchoolInterface } from '@/models/schools/interfaces/SchoolInterface';
-import { Card, CardContent, CardHeader, CardTitle } from '@/modules/application/components/DesignSystem/ui/card';
-import { Button } from '@/modules/application/components/DesignSystem/ui/button';
-import { Badge } from '@/modules/application/components/DesignSystem/ui/badge';
-import { Input } from '@/modules/application/components/DesignSystem/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/modules/application/components/DesignSystem/ui/select';
-import UserAvatar from '@/modules/application/components/DesignSystem/ui/user-avatar';
-import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
-import { UserService } from '@/models/users/services/UserService';
-import { isSuperAdmin as checkIsSuperAdmin, isAdmin } from '@/modules/auth/utils/roleUtils';
-import useAdminData from '@/modules/common/hooks/useAdminData';
-import { Search, MoreHorizontal, UserCheck, UserX, ArrowLeft, ShieldCheck, Loader2, Building2, ArrowUpDown, ArrowUp, ArrowDown, Trash2, Pencil } from 'lucide-react';
-import { HouseService } from '@/models/houses/services/HouseService';
-import { HouseInterface } from '@/models/houses/interfaces/HouseInterface';
-import { YEAR_GROUPS } from '@/models/application/constants/applicationConstants';
-import { SuperAdminInviteInterface } from '@/models/invites/interfaces/SuperAdminInviteInterface';
-import SuperAdminInviteSection from './SuperAdminInviteSection';
-import { fetchUserEmails } from '@/modules/admin/actions/fetchUserEmails';
-import { toast } from 'sonner';
-import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-import { Link, useNavigate } from '@tanstack/react-router';
-import { useRouter } from '@tanstack/react-router';
+import { useState, useEffect, useMemo, useRef } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { UserInterface } from "@/models/users/interfaces/UserInterface";
+import { SchoolInterface } from "@/models/schools/interfaces/SchoolInterface";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/modules/application/components/DesignSystem/ui/card";
+import { Button } from "@/modules/application/components/DesignSystem/ui/button";
+import { Badge } from "@/modules/application/components/DesignSystem/ui/badge";
+import { Input } from "@/modules/application/components/DesignSystem/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/modules/application/components/DesignSystem/ui/select";
+import UserAvatar from "@/modules/application/components/DesignSystem/ui/user-avatar";
+import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
+import { UserService } from "@/models/users/services/UserService";
+import { isSuperAdmin as checkIsSuperAdmin, isAdmin } from "@/modules/auth/utils/roleUtils";
+import useAdminData from "@/modules/common/hooks/useAdminData";
+import {
+  Search,
+  MoreHorizontal,
+  UserCheck,
+  UserX,
+  ArrowLeft,
+  ShieldCheck,
+  Loader2,
+  Building2,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  Trash2,
+  Pencil,
+} from "lucide-react";
+import { HouseService } from "@/models/houses/services/HouseService";
+import { HouseInterface } from "@/models/houses/interfaces/HouseInterface";
+import { YEAR_GROUPS } from "@/models/application/constants/applicationConstants";
+import { SuperAdminInviteInterface } from "@/models/invites/interfaces/SuperAdminInviteInterface";
+import SuperAdminInviteSection from "./SuperAdminInviteSection";
+import { fetchUserEmails } from "@/modules/admin/actions/fetchUserEmails";
+import { toast } from "sonner";
+import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,14 +55,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/modules/application/components/DesignSystem/ui/dropdown-menu';
+} from "@/modules/application/components/DesignSystem/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '@/modules/application/components/DesignSystem/ui/dialog';
+} from "@/modules/application/components/DesignSystem/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -48,7 +73,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/modules/application/components/DesignSystem/ui/alert-dialog';
+} from "@/modules/application/components/DesignSystem/ui/alert-dialog";
 
 interface UserManagementContentProps {
   user: UserInterface;
@@ -58,18 +83,27 @@ interface UserManagementContentProps {
   initialInvites?: SuperAdminInviteInterface[];
 }
 
-const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools = [], initialInvites = [] }: UserManagementContentProps) => {
+const UserManagementContent = ({
+  user: currentUser,
+  backHref,
+  schoolId,
+  schools = [],
+  initialInvites = [],
+}: UserManagementContentProps) => {
   const router = useRouter();
   const navigate = useNavigate();
   const fetchEmails = useServerFn(fetchUserEmails);
   const isSuperAdmin = checkIsSuperAdmin(currentUser);
-  const [houseFilter, setHouseFilter] = useState('all');
-  const [yearGroupFilter, setYearGroupFilter] = useState('all');
-  const [classFilter, setClassFilter] = useState('');
+  const [houseFilter, setHouseFilter] = useState("all");
+  const [yearGroupFilter, setYearGroupFilter] = useState("all");
+  const [classFilter, setClassFilter] = useState("");
   const [selectedSchoolId, setSelectedSchoolId] = useState<string>(
-    schoolId || (isSuperAdmin ? 'all' : currentUser.school_id || '')
+    schoolId || (isSuperAdmin ? "all" : currentUser.school_id || ""),
   );
-  const [promoteUser, setPromoteUser] = useState<{ user: UserInterface; targetRole: UserInterface['role'] } | null>(null);
+  const [promoteUser, setPromoteUser] = useState<{
+    user: UserInterface;
+    targetRole: UserInterface["role"];
+  } | null>(null);
   const [editUser, setEditUser] = useState<UserInterface | null>(null);
   const [editForm, setEditForm] = useState<{
     first_name: string;
@@ -82,23 +116,41 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
     house_id: string;
     monthly_goal_minutes: number;
     is_public: boolean;
-  }>({ first_name: '', last_name: '', username: '', social_handle: '', year_group: '', class: '', school_id: '', house_id: '', monthly_goal_minutes: 0, is_public: false });
+  }>({
+    first_name: "",
+    last_name: "",
+    username: "",
+    social_handle: "",
+    year_group: "",
+    class: "",
+    school_id: "",
+    house_id: "",
+    monthly_goal_minutes: 0,
+    is_public: false,
+  });
   const [housesForEdit, setHousesForEdit] = useState<HouseInterface[]>([]);
   const [housesForFilter, setHousesForFilter] = useState<HouseInterface[]>([]);
   const [userToDelete, setUserToDelete] = useState<UserInterface | null>(null);
   const [expandedRoles, setExpandedRoles] = useState<Set<string>>(new Set());
-  const [sortField, setSortField] = useState<'first_name' | 'last_name'>('first_name');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [sortField, setSortField] = useState<"first_name" | "last_name">("first_name");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [emailMap, setEmailMap] = useState<Record<string, string>>({});
   const allSchoolsDataLoadedRef = useRef(false);
 
   const userService = useMemo(() => new UserService(createSupabaseClient()), []);
   const houseService = useMemo(() => new HouseService(createSupabaseClient()), []);
 
-  const { data: users, loading, searchTerm, setSearchTerm, refresh, setData: setUsers } = useAdminData({
+  const {
+    data: users,
+    loading,
+    searchTerm,
+    setSearchTerm,
+    refresh,
+    setData: setUsers,
+  } = useAdminData({
     fetchFn: () => {
       const options: { school_id?: string; limit: number } = { limit: 2000 };
-      if (selectedSchoolId && selectedSchoolId !== 'all') {
+      if (selectedSchoolId && selectedSchoolId !== "all") {
         options.school_id = selectedSchoolId;
       }
       return userService.getUsersWithRankings(options);
@@ -107,7 +159,7 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
   });
 
   useEffect(() => {
-    if (isSuperAdmin && selectedSchoolId === 'all') {
+    if (isSuperAdmin && selectedSchoolId === "all") {
       allSchoolsDataLoadedRef.current = false;
       setUsers([]);
       return;
@@ -118,7 +170,7 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
   }, [selectedSchoolId, refresh]);
 
   useEffect(() => {
-    if (!isSuperAdmin || selectedSchoolId !== 'all') return;
+    if (!isSuperAdmin || selectedSchoolId !== "all") return;
     if (searchTerm) {
       if (!allSchoolsDataLoadedRef.current) {
         allSchoolsDataLoadedRef.current = true;
@@ -131,56 +183,71 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
   }, [searchTerm, selectedSchoolId, isSuperAdmin, refresh]);
 
   useEffect(() => {
-    if (selectedSchoolId && selectedSchoolId !== 'all') {
+    if (selectedSchoolId && selectedSchoolId !== "all") {
       houseService.getBySchoolId(selectedSchoolId).then(setHousesForFilter);
     } else {
       setHousesForFilter([]);
-      setHouseFilter('all');
+      setHouseFilter("all");
     }
   }, [selectedSchoolId, houseService]);
 
   useEffect(() => {
-    if (users.length === 0) { setEmailMap({}); return; }
-    fetchEmails({ data: { userIds: users.map(u => u.id) } }).then(setEmailMap).catch(console.error);
+    if (users.length === 0) {
+      setEmailMap({});
+      return;
+    }
+    fetchEmails({ data: { userIds: users.map((u) => u.id) } })
+      .then(setEmailMap)
+      .catch(console.error);
   }, [users, fetchEmails]);
 
   const filteredUsers = useMemo(() => {
-    let filtered = users.map(u => ({ ...u, email: emailMap[u.id] ?? u.email }));
+    let filtered = users.map((u) => ({ ...u, email: emailMap[u.id] ?? u.email }));
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(user =>
-        user.first_name.toLowerCase().includes(term) ||
-        user.last_name.toLowerCase().includes(term) ||
-        user.username.toLowerCase().includes(term) ||
-        (user.email && user.email.toLowerCase().includes(term))
+      filtered = filtered.filter(
+        (user) =>
+          user.first_name.toLowerCase().includes(term) ||
+          user.last_name.toLowerCase().includes(term) ||
+          user.username.toLowerCase().includes(term) ||
+          (user.email && user.email.toLowerCase().includes(term)),
       );
     }
-    if (houseFilter !== 'all') {
-      filtered = filtered.filter(user => user.house_id === houseFilter);
+    if (houseFilter !== "all") {
+      filtered = filtered.filter((user) => user.house_id === houseFilter);
     }
-    if (yearGroupFilter !== 'all') {
-      filtered = filtered.filter(user => user.year_group === yearGroupFilter);
+    if (yearGroupFilter !== "all") {
+      filtered = filtered.filter((user) => user.year_group === yearGroupFilter);
     }
     if (classFilter) {
       const classTerm = classFilter.toLowerCase();
-      filtered = filtered.filter(user => user.class?.toLowerCase().includes(classTerm));
+      filtered = filtered.filter((user) => user.class?.toLowerCase().includes(classTerm));
     }
     filtered.sort((a, b) => {
-      const aVal = (a[sortField] || '').toLowerCase();
-      const bVal = (b[sortField] || '').toLowerCase();
-      return sortDirection === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+      const aVal = (a[sortField] || "").toLowerCase();
+      const bVal = (b[sortField] || "").toLowerCase();
+      return sortDirection === "asc" ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
     });
     return filtered;
-  }, [users, emailMap, searchTerm, houseFilter, yearGroupFilter, classFilter, sortField, sortDirection]);
+  }, [
+    users,
+    emailMap,
+    searchTerm,
+    houseFilter,
+    yearGroupFilter,
+    classFilter,
+    sortField,
+    sortDirection,
+  ]);
 
   const handleSchoolChange = (value: string) => {
     setSelectedSchoolId(value);
-    setHouseFilter('all');
-    setYearGroupFilter('all');
-    setClassFilter('');
-    setSearchTerm('');
-    if (value === 'all') {
-      navigate({ replace: true, to: '/admin/users' });
+    setHouseFilter("all");
+    setYearGroupFilter("all");
+    setClassFilter("");
+    setSearchTerm("");
+    if (value === "all") {
+      navigate({ replace: true, to: "/admin/users" });
     } else {
       navigate({ replace: true, to: `/admin/users?schoolId=${value}` });
     }
@@ -189,19 +256,21 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
   const handleToggleActiveStatus = async (userId: string, isCurrentlyActive: boolean) => {
     try {
       await userService.update(userId, { is_active: !isCurrentlyActive });
-      
+
       // Update local state
-      setUsers(prev => prev.map(user => 
-        user.id === userId ? { ...user, is_active: !isCurrentlyActive } : user
-      ));
-      
-      toast.success(`User ${!isCurrentlyActive ? 'activated' : 'suspended'} successfully`);
+      setUsers((prev) =>
+        prev.map((user) =>
+          user.id === userId ? { ...user, is_active: !isCurrentlyActive } : user,
+        ),
+      );
+
+      toast.success(`User ${!isCurrentlyActive ? "activated" : "suspended"} successfully`);
     } catch (error) {
       notifyAboutError(error);
     }
   };
 
-  const openPromoteDialog = (user: UserInterface, targetRole: UserInterface['role']) => {
+  const openPromoteDialog = (user: UserInterface, targetRole: UserInterface["role"]) => {
     setPromoteUser({ user, targetRole });
   };
 
@@ -210,14 +279,12 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
     const { user: target, targetRole } = promoteUser;
     try {
       const updates: Partial<UserInterface> = { role: targetRole };
-      if (targetRole === 'school_admin') {
-        updates.year_group = 'Staff';
+      if (targetRole === "school_admin") {
+        updates.year_group = "Staff";
       }
       await userService.update(target.id, updates);
-      setUsers(prev => prev.map(u =>
-        u.id === target.id ? { ...u, ...updates } : u
-      ));
-      const roleLabel = targetRole === 'super_admin' ? 'Super Admin' : 'School Admin';
+      setUsers((prev) => prev.map((u) => (u.id === target.id ? { ...u, ...updates } : u)));
+      const roleLabel = targetRole === "super_admin" ? "Super Admin" : "School Admin";
       toast.success(`${target.first_name} ${target.last_name} promoted to ${roleLabel}`);
       setPromoteUser(null);
     } catch (error) {
@@ -227,8 +294,8 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
 
   const canEditUser = (targetUser: UserInterface): boolean => {
     if (targetUser.id === currentUser.id) return false;
-    if (currentUser.role === 'super_admin') return targetUser.role !== 'super_admin';
-    if (currentUser.role === 'school_admin') return targetUser.role === 'student';
+    if (currentUser.role === "super_admin") return targetUser.role !== "super_admin";
+    if (currentUser.role === "school_admin") return targetUser.role === "student";
     return false;
   };
 
@@ -238,11 +305,11 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
       first_name: targetUser.first_name,
       last_name: targetUser.last_name,
       username: targetUser.username,
-      social_handle: targetUser.social_handle || '',
-      year_group: targetUser.year_group || '',
-      class: targetUser.class || '',
+      social_handle: targetUser.social_handle || "",
+      year_group: targetUser.year_group || "",
+      class: targetUser.class || "",
       school_id: targetUser.school_id,
-      house_id: targetUser.house_id || '',
+      house_id: targetUser.house_id || "",
       monthly_goal_minutes: targetUser.monthly_goal_minutes,
       is_public: targetUser.is_public,
     });
@@ -253,7 +320,7 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
   };
 
   const handleEditSchoolChange = async (schoolId: string) => {
-    setEditForm(prev => ({ ...prev, school_id: schoolId, house_id: '' }));
+    setEditForm((prev) => ({ ...prev, school_id: schoolId, house_id: "" }));
     const houses = await houseService.getBySchoolId(schoolId);
     setHousesForEdit(houses);
   };
@@ -283,23 +350,25 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
   };
 
   const canToggleActiveStatus = (targetUser: UserInterface) => {
-    if (currentUser.role !== 'school_admin') return true;
-    return targetUser.id !== currentUser.id &&
-      targetUser.role !== 'school_admin' &&
-      targetUser.role !== 'super_admin';
+    if (currentUser.role !== "school_admin") return true;
+    return (
+      targetUser.id !== currentUser.id &&
+      targetUser.role !== "school_admin" &&
+      targetUser.role !== "super_admin"
+    );
   };
 
   const canDeleteUser = (targetUser: UserInterface) => {
     if (targetUser.id === currentUser.id) return false;
-    if (currentUser.role === 'super_admin') return true;
-    return currentUser.role === 'school_admin' && targetUser.role === 'student';
+    if (currentUser.role === "super_admin") return true;
+    return currentUser.role === "school_admin" && targetUser.role === "student";
   };
 
   const handleDeleteUser = async (userId: string) => {
     try {
       await userService.deleteUser(userId);
-      setUsers(prev => prev.filter(u => u.id !== userId));
-      toast.success('User deleted successfully');
+      setUsers((prev) => prev.filter((u) => u.id !== userId));
+      toast.success("User deleted successfully");
     } catch (error) {
       notifyAboutError(error);
     }
@@ -307,17 +376,16 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
 
   const getUniqueHouses = () => {
     const houses = users
-      .filter(user => user.house)
-      .map(user => user.house!)
-      .filter((house, index, array) => 
-        array.findIndex(h => h.id === house.id) === index
-      );
+      .filter((user) => user.house)
+      .map((user) => user.house!)
+      .filter((house, index, array) => array.findIndex((h) => h.id === house.id) === index);
     return houses;
   };
 
-  const selectedSchoolName = selectedSchoolId === 'all'
-    ? 'All Schools'
-    : schools.find(s => s.id === selectedSchoolId)?.name || currentUser.school?.name;
+  const selectedSchoolName =
+    selectedSchoolId === "all"
+      ? "All Schools"
+      : schools.find((s) => s.id === selectedSchoolId)?.name || currentUser.school?.name;
 
   return (
     <div className="p-6 space-y-6 min-h-screen">
@@ -325,7 +393,7 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
-            <Link to={backHref || '/admin/dashboard'}>
+            <Link to={backHref || "/admin"}>
               <ArrowLeft size={20} />
             </Link>
           </Button>
@@ -364,7 +432,7 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Schools</SelectItem>
-                  {schools.map(school => (
+                  {schools.map((school) => (
                     <SelectItem key={school.id} value={school.id}>
                       {school.name}
                     </SelectItem>
@@ -375,14 +443,16 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
             <Select
               value={houseFilter}
               onValueChange={setHouseFilter}
-              disabled={selectedSchoolId === 'all'}
+              disabled={selectedSchoolId === "all"}
             >
               <SelectTrigger className="w-40">
-                <SelectValue placeholder={selectedSchoolId === 'all' ? 'Select school first' : 'All Houses'} />
+                <SelectValue
+                  placeholder={selectedSchoolId === "all" ? "Select school first" : "All Houses"}
+                />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Houses</SelectItem>
-                {housesForFilter.map(house => (
+                {housesForFilter.map((house) => (
                   <SelectItem key={house.id} value={house.id}>
                     <div className="flex items-center gap-2">
                       <div
@@ -401,7 +471,7 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Year Groups</SelectItem>
-                {YEAR_GROUPS.map(year => (
+                {YEAR_GROUPS.map((year) => (
                   <SelectItem key={year} value={year}>
                     {year}
                   </SelectItem>
@@ -416,39 +486,43 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
                 className="w-40"
               />
             </div>
-            {(searchTerm || houseFilter !== 'all' || yearGroupFilter !== 'all' || classFilter) && (
-              <Button variant="ghost" size="sm" onClick={() => {
-                setSearchTerm('');
-                setHouseFilter('all');
-                setYearGroupFilter('all');
-                setClassFilter('');
-              }}>
+            {(searchTerm || houseFilter !== "all" || yearGroupFilter !== "all" || classFilter) && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setSearchTerm("");
+                  setHouseFilter("all");
+                  setYearGroupFilter("all");
+                  setClassFilter("");
+                }}
+              >
                 Clear
               </Button>
             )}
           </div>
           <div className="flex items-center gap-2 text-sm text-gray-500">
             <span>Sort by:</span>
-            {(['first_name', 'last_name'] as const).map(field => {
+            {(["first_name", "last_name"] as const).map((field) => {
               const active = sortField === field;
-              const Icon = active ? (sortDirection === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown;
+              const Icon = active ? (sortDirection === "asc" ? ArrowUp : ArrowDown) : ArrowUpDown;
               return (
                 <Button
                   key={field}
-                  variant={active ? 'secondary' : 'ghost'}
+                  variant={active ? "secondary" : "ghost"}
                   size="sm"
                   className="h-7 px-2 gap-1"
                   onClick={() => {
                     if (sortField === field) {
-                      setSortDirection(d => d === 'asc' ? 'desc' : 'asc');
+                      setSortDirection((d) => (d === "asc" ? "desc" : "asc"));
                     } else {
                       setSortField(field);
-                      setSortDirection('asc');
+                      setSortDirection("asc");
                     }
                   }}
                 >
                   <Icon size={12} />
-                  {field === 'first_name' ? 'First name' : 'Surname'}
+                  {field === "first_name" ? "First name" : "Surname"}
                 </Button>
               );
             })}
@@ -465,18 +539,27 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
           {promoteUser && (
             <div className="space-y-2 py-2">
               <p className="text-sm text-gray-600">
-                Promote <span className="font-medium">{promoteUser.user.first_name} {promoteUser.user.last_name}</span> to{' '}
+                Promote{" "}
                 <span className="font-medium">
-                  {promoteUser.targetRole === 'super_admin' ? 'Super Admin' : 'School Admin'}
-                </span>?
+                  {promoteUser.user.first_name} {promoteUser.user.last_name}
+                </span>{" "}
+                to{" "}
+                <span className="font-medium">
+                  {promoteUser.targetRole === "super_admin" ? "Super Admin" : "School Admin"}
+                </span>
+                ?
               </p>
               <p className="text-sm text-gray-500">
-                This will give them {promoteUser.targetRole === 'super_admin' ? 'full platform' : 'school-level'} admin access.
+                This will give them{" "}
+                {promoteUser.targetRole === "super_admin" ? "full platform" : "school-level"} admin
+                access.
               </p>
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setPromoteUser(null)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setPromoteUser(null)}>
+              Cancel
+            </Button>
             <Button onClick={handlePromote}>Promote</Button>
           </DialogFooter>
         </DialogContent>
@@ -486,7 +569,9 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
       <Dialog open={!!editUser} onOpenChange={(open) => !open && setEditUser(null)}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Edit {editUser?.first_name} {editUser?.last_name}</DialogTitle>
+            <DialogTitle>
+              Edit {editUser?.first_name} {editUser?.last_name}
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="grid grid-cols-2 gap-3">
@@ -495,7 +580,7 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
                 <input
                   className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                   value={editForm.first_name}
-                  onChange={(e) => setEditForm(prev => ({ ...prev, first_name: e.target.value }))}
+                  onChange={(e) => setEditForm((prev) => ({ ...prev, first_name: e.target.value }))}
                   placeholder="First name"
                 />
               </div>
@@ -504,7 +589,7 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
                 <input
                   className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                   value={editForm.last_name}
-                  onChange={(e) => setEditForm(prev => ({ ...prev, last_name: e.target.value }))}
+                  onChange={(e) => setEditForm((prev) => ({ ...prev, last_name: e.target.value }))}
                   placeholder="Last name"
                 />
               </div>
@@ -514,7 +599,7 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
                 <p className="text-sm font-medium text-gray-700">Username</p>
                 <Input
                   value={editForm.username}
-                  onChange={(e) => setEditForm(prev => ({ ...prev, username: e.target.value }))}
+                  onChange={(e) => setEditForm((prev) => ({ ...prev, username: e.target.value }))}
                   placeholder="Username"
                 />
               </div>
@@ -522,7 +607,9 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
                 <p className="text-sm font-medium text-gray-700">Social Handle</p>
                 <Input
                   value={editForm.social_handle}
-                  onChange={(e) => setEditForm(prev => ({ ...prev, social_handle: e.target.value }))}
+                  onChange={(e) =>
+                    setEditForm((prev) => ({ ...prev, social_handle: e.target.value }))
+                  }
                   placeholder="Optional"
                 />
               </div>
@@ -530,14 +617,21 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
                 <p className="text-sm font-medium text-gray-700">Year Group</p>
-                <Select value={editForm.year_group || 'none'} onValueChange={(v) => setEditForm(prev => ({ ...prev, year_group: v === 'none' ? '' : v }))}>
+                <Select
+                  value={editForm.year_group || "none"}
+                  onValueChange={(v) =>
+                    setEditForm((prev) => ({ ...prev, year_group: v === "none" ? "" : v }))
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select year group" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">No year group</SelectItem>
-                    {YEAR_GROUPS.map(year => (
-                      <SelectItem key={year} value={year}>{year}</SelectItem>
+                    {YEAR_GROUPS.map((year) => (
+                      <SelectItem key={year} value={year}>
+                        {year}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -549,7 +643,12 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
                   min={0}
                   step={30}
                   value={editForm.monthly_goal_minutes}
-                  onChange={(e) => setEditForm(prev => ({ ...prev, monthly_goal_minutes: parseInt(e.target.value) || 0 }))}
+                  onChange={(e) =>
+                    setEditForm((prev) => ({
+                      ...prev,
+                      monthly_goal_minutes: parseInt(e.target.value) || 0,
+                    }))
+                  }
                 />
               </div>
             </div>
@@ -557,7 +656,7 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
               <p className="text-sm font-medium text-gray-700">Class</p>
               <Input
                 value={editForm.class}
-                onChange={(e) => setEditForm(prev => ({ ...prev, class: e.target.value }))}
+                onChange={(e) => setEditForm((prev) => ({ ...prev, class: e.target.value }))}
                 placeholder="e.g. 10B (optional)"
               />
             </div>
@@ -569,8 +668,10 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
                     <SelectValue placeholder="Select a school" />
                   </SelectTrigger>
                   <SelectContent>
-                    {schools.map(school => (
-                      <SelectItem key={school.id} value={school.id}>{school.name}</SelectItem>
+                    {schools.map((school) => (
+                      <SelectItem key={school.id} value={school.id}>
+                        {school.name}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -578,21 +679,31 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
             ) : (
               <div className="space-y-1">
                 <p className="text-sm font-medium text-gray-700">School</p>
-                <p className="text-sm text-gray-600 px-3 py-2 bg-gray-50 rounded-md border">{editUser?.school?.name || 'Unknown'}</p>
+                <p className="text-sm text-gray-600 px-3 py-2 bg-gray-50 rounded-md border">
+                  {editUser?.school?.name || "Unknown"}
+                </p>
               </div>
             )}
             <div className="space-y-1">
               <p className="text-sm font-medium text-gray-700">House</p>
-              <Select value={editForm.house_id || 'none'} onValueChange={(v) => setEditForm(prev => ({ ...prev, house_id: v === 'none' ? '' : v }))}>
+              <Select
+                value={editForm.house_id || "none"}
+                onValueChange={(v) =>
+                  setEditForm((prev) => ({ ...prev, house_id: v === "none" ? "" : v }))
+                }
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a house" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">No house</SelectItem>
-                  {housesForEdit.map(house => (
+                  {housesForEdit.map((house) => (
                     <SelectItem key={house.id} value={house.id}>
                       <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: house.color }} />
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: house.color }}
+                        />
                         {house.name}
                       </div>
                     </SelectItem>
@@ -602,7 +713,10 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
             </div>
             <div className="space-y-1">
               <p className="text-sm font-medium text-gray-700">Public Profile</p>
-              <Select value={editForm.is_public ? 'true' : 'false'} onValueChange={(v) => setEditForm(prev => ({ ...prev, is_public: v === 'true' }))}>
+              <Select
+                value={editForm.is_public ? "true" : "false"}
+                onValueChange={(v) => setEditForm((prev) => ({ ...prev, is_public: v === "true" }))}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -614,8 +728,17 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setEditUser(null)}>Cancel</Button>
-            <Button onClick={handleEditSave} disabled={!editForm.first_name.trim() || !editForm.last_name.trim() || !editForm.username.trim()}>
+            <Button variant="outline" onClick={() => setEditUser(null)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleEditSave}
+              disabled={
+                !editForm.first_name.trim() ||
+                !editForm.last_name.trim() ||
+                !editForm.username.trim()
+              }
+            >
               Save
             </Button>
           </DialogFooter>
@@ -628,9 +751,12 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
           <AlertDialogHeader>
             <AlertDialogTitle>Delete User</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete{' '}
-              <span className="font-medium">{userToDelete?.first_name} {userToDelete?.last_name}</span>?
-              They will be hidden from all lists. A Super Admin can restore them from the Deleted Users page.
+              Are you sure you want to delete{" "}
+              <span className="font-medium">
+                {userToDelete?.first_name} {userToDelete?.last_name}
+              </span>
+              ? They will be hidden from all lists. A Super Admin can restore them from the Deleted
+              Users page.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -649,12 +775,14 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
       </AlertDialog>
 
       {/* Users Table */}
-      {isSuperAdmin && selectedSchoolId === 'all' && !searchTerm ? (
+      {isSuperAdmin && selectedSchoolId === "all" && !searchTerm ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16 text-center gap-3">
             <Building2 size={40} className="text-gray-300" />
             <p className="font-medium text-gray-700">Search to find users across all schools</p>
-            <p className="text-sm text-gray-500">Enter a name or username above, or select a specific school.</p>
+            <p className="text-sm text-gray-500">
+              Enter a name or username above, or select a specific school.
+            </p>
           </CardContent>
         </Card>
       ) : loading ? (
@@ -672,18 +800,26 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
         </Card>
       ) : (
         <>
-          {(['student', 'school_admin', 'super_admin'] as UserInterface['role'][]).map((role) => {
-            const group = filteredUsers.filter(u => u.role === role);
+          {(["student", "school_admin", "super_admin"] as UserInterface["role"][]).map((role) => {
+            const group = filteredUsers.filter((u) => u.role === role);
             if (group.length === 0) return null;
-            const label = role === 'student' ? 'Students' : role === 'school_admin' ? 'School Admins' : 'Super Admins';
+            const label =
+              role === "student"
+                ? "Students"
+                : role === "school_admin"
+                  ? "School Admins"
+                  : "Super Admins";
             const PAGE_SIZE = 25;
             const isExpanded = expandedRoles.has(role);
-            const visibleGroup = role === 'student' && !isExpanded ? group.slice(0, PAGE_SIZE) : group;
-            const hasMore = role === 'student' && group.length > PAGE_SIZE;
+            const visibleGroup =
+              role === "student" && !isExpanded ? group.slice(0, PAGE_SIZE) : group;
+            const hasMore = role === "student" && group.length > PAGE_SIZE;
             return (
               <Card key={role}>
                 <CardHeader>
-                  <CardTitle>{label} ({group.length})</CardTitle>
+                  <CardTitle>
+                    {label} ({group.length})
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
@@ -705,20 +841,33 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
                               {user.is_active === false && (
                                 <Badge variant="destructive">Suspended</Badge>
                               )}
-                              {user.role === 'super_admin' && (
-                                <Badge className="bg-purple-100 text-purple-800 border-purple-200">Super Admin</Badge>
+                              {user.role === "super_admin" && (
+                                <Badge className="bg-purple-100 text-purple-800 border-purple-200">
+                                  Super Admin
+                                </Badge>
                               )}
-                              {user.role === 'school_admin' && (
-                                <Badge className="bg-blue-100 text-blue-800 border-blue-200">School Admin</Badge>
+                              {user.role === "school_admin" && (
+                                <Badge className="bg-blue-100 text-blue-800 border-blue-200">
+                                  School Admin
+                                </Badge>
                               )}
                             </div>
                             <div className="text-sm text-gray-600">
                               @{user.username}
-                              {user.role === 'student' && <span> • {user.year_group || 'No year group'}{user.class ? ` • ${user.class}` : ''}</span>}
-                              {user.role === 'student' && isSuperAdmin && selectedSchoolId === 'all' && user.school && (
-                                <span className="ml-1 text-gray-400">• {user.school.name}</span>
+                              {user.role === "student" && (
+                                <span>
+                                  {" "}
+                                  • {user.year_group || "No year group"}
+                                  {user.class ? ` • ${user.class}` : ""}
+                                </span>
                               )}
-                              {user.role === 'school_admin' && user.school && (
+                              {user.role === "student" &&
+                                isSuperAdmin &&
+                                selectedSchoolId === "all" &&
+                                user.school && (
+                                  <span className="ml-1 text-gray-400">• {user.school.name}</span>
+                                )}
+                              {user.role === "school_admin" && user.school && (
                                 <span> • {user.school.name}</span>
                               )}
                               {user.email && <span className="text-gray-400"> • {user.email}</span>}
@@ -727,7 +876,7 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
                         </div>
 
                         <div className="flex items-center gap-4">
-                          {user.role === 'student' && user.house && (
+                          {user.role === "student" && user.house && (
                             <div className="flex items-center gap-2">
                               <div
                                 className="w-3 h-3 rounded-full"
@@ -738,7 +887,9 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
                           )}
 
                           <div className="text-right">
-                            <div className="font-medium">{Math.round(user.total_minutes)} minutes</div>
+                            <div className="font-medium">
+                              {Math.round(user.total_minutes)} minutes
+                            </div>
                             <div className="text-sm text-gray-500">Total activity</div>
                           </div>
 
@@ -759,8 +910,12 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
                               )}
                               {canToggleActiveStatus(user) && (
                                 <DropdownMenuItem
-                                  onClick={() => handleToggleActiveStatus(user.id, user.is_active !== false)}
-                                  className={user.is_active === false ? "text-green-600" : "text-red-600"}
+                                  onClick={() =>
+                                    handleToggleActiveStatus(user.id, user.is_active !== false)
+                                  }
+                                  className={
+                                    user.is_active === false ? "text-green-600" : "text-red-600"
+                                  }
                                 >
                                   {user.is_active === false ? (
                                     <>
@@ -787,23 +942,30 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
                                   </DropdownMenuItem>
                                 </>
                               )}
-                              {((user.role === 'student' && isAdmin(currentUser)) ||
-                                (user.role === 'school_admin' && isSuperAdmin)) && (
+                              {((user.role === "student" && isAdmin(currentUser)) ||
+                                (user.role === "school_admin" && isSuperAdmin)) && (
                                 <>
                                   <DropdownMenuSeparator />
-                                  <DropdownMenuLabel className="text-xs font-normal text-gray-400 px-2 py-1">Promote to</DropdownMenuLabel>
-                                  {user.role === 'student' && isAdmin(currentUser) && (
-                                    <DropdownMenuItem onClick={() => openPromoteDialog(user, 'school_admin')}>
+                                  <DropdownMenuLabel className="text-xs font-normal text-gray-400 px-2 py-1">
+                                    Promote to
+                                  </DropdownMenuLabel>
+                                  {user.role === "student" && isAdmin(currentUser) && (
+                                    <DropdownMenuItem
+                                      onClick={() => openPromoteDialog(user, "school_admin")}
+                                    >
                                       <ShieldCheck size={16} className="mr-2" />
                                       School Admin
                                     </DropdownMenuItem>
                                   )}
-                                  {isSuperAdmin && (user.role === 'student' || user.role === 'school_admin') && (
-                                    <DropdownMenuItem onClick={() => openPromoteDialog(user, 'super_admin')}>
-                                      <ShieldCheck size={16} className="mr-2" />
-                                      Super Admin
-                                    </DropdownMenuItem>
-                                  )}
+                                  {isSuperAdmin &&
+                                    (user.role === "student" || user.role === "school_admin") && (
+                                      <DropdownMenuItem
+                                        onClick={() => openPromoteDialog(user, "super_admin")}
+                                      >
+                                        <ShieldCheck size={16} className="mr-2" />
+                                        Super Admin
+                                      </DropdownMenuItem>
+                                    )}
                                 </>
                               )}
                             </DropdownMenuContent>
@@ -817,13 +979,18 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setExpandedRoles(prev => {
-                          const next = new Set(prev);
-                          if (isExpanded) next.delete(role); else next.add(role);
-                          return next;
-                        })}
+                        onClick={() =>
+                          setExpandedRoles((prev) => {
+                            const next = new Set(prev);
+                            if (isExpanded) next.delete(role);
+                            else next.add(role);
+                            return next;
+                          })
+                        }
                       >
-                        {isExpanded ? `Show first ${PAGE_SIZE}` : `Show all ${group.length} students`}
+                        {isExpanded
+                          ? `Show first ${PAGE_SIZE}`
+                          : `Show all ${group.length} students`}
                       </Button>
                     </div>
                   )}
@@ -835,11 +1002,9 @@ const UserManagementContent = ({ user: currentUser, backHref, schoolId, schools 
       )}
 
       {/* Super admin invite section — only visible to super admins */}
-      {isSuperAdmin && (
-        <SuperAdminInviteSection initialInvites={initialInvites} />
-      )}
+      {isSuperAdmin && <SuperAdminInviteSection initialInvites={initialInvites} />}
     </div>
   );
 };
 
-export default UserManagementContent; 
+export default UserManagementContent;

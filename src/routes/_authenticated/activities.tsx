@@ -10,5 +10,11 @@ export const Route = createFileRoute("/_authenticated/activities")({
 function Page() {
   const { profile } = Route.useRouteContext();
   if (!profile) return null;
-  return <ActivitiesContent user={profile as UserInterface} initialActivities={[]} initialChallenges={[]} />;
+  return (
+    <ActivitiesContent
+      user={profile as UserInterface}
+      initialActivities={[]}
+      initialChallenges={[]}
+    />
+  );
 }

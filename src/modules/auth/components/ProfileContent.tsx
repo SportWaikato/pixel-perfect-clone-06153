@@ -1,23 +1,29 @@
-import { Formik, Form, Field, ErrorMessage, FormikHelpers } from 'formik';
-import { object, string, number, boolean } from 'yup';
-import { useState, useEffect } from 'react';
-import { useRouter } from '@tanstack/react-router';
-import { UserInterface } from '@/models/users/interfaces/UserInterface';
-import { SchoolInterface } from '@/models/schools/interfaces/SchoolInterface';
-import { HouseInterface } from '@/models/houses/interfaces/HouseInterface';
-import { Card, CardContent } from '@/modules/application/components/DesignSystem/ui/card';
-import { Button } from '@/modules/application/components/DesignSystem/ui/button';
-import { SelectItem, Select, SelectContent, SelectTrigger, SelectValue } from '@/modules/application/components/DesignSystem/ui/select';
-import { Label } from '@/modules/application/components/DesignSystem/ui/label';
-import { FormikInputField, FormikSwitchField } from '@/modules/common/components/Formik';
-import UserAvatar from '@/modules/application/components/DesignSystem/ui/user-avatar';
-import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
-import { UserService } from '@/models/users/services/UserService';
-import { HouseService } from '@/models/houses/services/HouseService';
-import { TIME_GOALS } from '@/models/application/constants/applicationConstants';
-import { toast } from 'sonner';
-import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-import { cn } from '@/modules/common/utils';
+import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
+import { object, string, number, boolean } from "yup";
+import { useState, useEffect } from "react";
+import { useRouter } from "@tanstack/react-router";
+import { UserInterface } from "@/models/users/interfaces/UserInterface";
+import { SchoolInterface } from "@/models/schools/interfaces/SchoolInterface";
+import { HouseInterface } from "@/models/houses/interfaces/HouseInterface";
+import { Card, CardContent } from "@/modules/application/components/DesignSystem/ui/card";
+import { Button } from "@/modules/application/components/DesignSystem/ui/button";
+import {
+  SelectItem,
+  Select,
+  SelectContent,
+  SelectTrigger,
+  SelectValue,
+} from "@/modules/application/components/DesignSystem/ui/select";
+import { Label } from "@/modules/application/components/DesignSystem/ui/label";
+import { FormikInputField, FormikSwitchField } from "@/modules/common/components/Formik";
+import UserAvatar from "@/modules/application/components/DesignSystem/ui/user-avatar";
+import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
+import { UserService } from "@/models/users/services/UserService";
+import { HouseService } from "@/models/houses/services/HouseService";
+import { TIME_GOALS } from "@/models/application/constants/applicationConstants";
+import { toast } from "sonner";
+import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
+import { cn } from "@/modules/common/utils";
 
 interface ProfileContentProps {
   user: UserInterface;
@@ -38,23 +44,23 @@ type ProfileValues = {
 };
 
 const validationSchema = object().shape({
-  username: string().required('Username is required'),
-  first_name: string().required('First name is required'),
-  last_name: string().required('Last name is required'),
-  school_id: string().required('School is required'),
-  house_id: string().required('House is required'),
+  username: string().required("Username is required"),
+  first_name: string().required("First name is required"),
+  last_name: string().required("Last name is required"),
+  school_id: string().required("School is required"),
+  house_id: string().required("House is required"),
   monthly_goal_hours: number()
-    .positive('Monthly time goal must be greater than 0')
-    .required('Monthly time goal is required'),
+    .positive("Monthly time goal must be greater than 0")
+    .required("Monthly time goal is required"),
   is_public: boolean().required(),
 });
 
 const ProfileContent = ({ user, initialSchools, initialHouses }: ProfileContentProps) => {
   const [schools] = useState<SchoolInterface[]>(initialSchools);
   const [houses, setHouses] = useState<HouseInterface[]>(initialHouses);
-  const [selectedSchool, setSelectedSchool] = useState<string>(user.school_id || '');
+  const [selectedSchool, setSelectedSchool] = useState<string>(user.school_id || "");
   const router = useRouter();
-  const isStudent = user.role === 'student';
+  const isStudent = user.role === "student";
 
   useEffect(() => {
     const fetchHouses = async () => {
@@ -76,16 +82,23 @@ const ProfileContent = ({ user, initialSchools, initialHouses }: ProfileContentP
     fetchHouses();
   }, [selectedSchool]);
 
-  const handleSubmit = async (values: ProfileValues, { setSubmitting }: FormikHelpers<ProfileValues>) => {
+  const handleSubmit = async (
+    values: ProfileValues,
+    { setSubmitting }: FormikHelpers<ProfileValues>,
+  ) => {
     try {
       const supabase = createSupabaseClient();
       const userService = new UserService(supabase);
-      
+
       // Convert hours to minutes for storage
       const monthlyGoalMinutes = values.monthly_goal_hours * 60;
-      
+
       const updatePayload = isStudent
-        ? { monthly_goal_minutes: monthlyGoalMinutes, is_public: values.is_public, class: values.class || undefined }
+        ? {
+            monthly_goal_minutes: monthlyGoalMinutes,
+            is_public: values.is_public,
+            class: values.class || undefined,
+          }
         : {
             username: values.username,
             first_name: values.first_name,
@@ -99,7 +112,7 @@ const ProfileContent = ({ user, initialSchools, initialHouses }: ProfileContentP
 
       await userService.update(user.id, updatePayload);
 
-      toast.success('Profile updated successfully!');
+      toast.success("Profile updated successfully!");
       router.invalidate();
     } catch (error) {
       notifyAboutError(error);
@@ -118,7 +131,9 @@ const ProfileContent = ({ user, initialSchools, initialHouses }: ProfileContentP
 
         {isStudent && (
           <div className="text-sm text-gray-500 bg-gray-50 border rounded p-3">
-            Your profile details are managed by your school. Contact your administrator to update your name, username, school, or house. You can still update your Monthly Time Goal and Privacy Settings below.
+            Your profile details are managed by your school. Contact your administrator to update
+            your name, username, school, or house. You can still update your Monthly Time Goal and
+            Privacy Settings below.
           </div>
         )}
 
@@ -126,14 +141,16 @@ const ProfileContent = ({ user, initialSchools, initialHouses }: ProfileContentP
           <CardContent>
             <Formik
               initialValues={{
-                username: user.username || '',
-                first_name: user.first_name || '',
-                last_name: user.last_name || '',
-                email: user.email || '',
-                school_id: user.school_id || '',
-                house_id: user.house_id || '',
-                class: user.class || '',
-                monthly_goal_hours: Math.round((user.monthly_goal_minutes || TIME_GOALS.MONTHLY_MINUTES) / 60),
+                username: user.username || "",
+                first_name: user.first_name || "",
+                last_name: user.last_name || "",
+                email: user.email || "",
+                school_id: user.school_id || "",
+                house_id: user.house_id || "",
+                class: user.class || "",
+                monthly_goal_hours: Math.round(
+                  (user.monthly_goal_minutes || TIME_GOALS.MONTHLY_MINUTES) / 60,
+                ),
                 is_public: user.is_public ?? true,
               }}
               validationSchema={validationSchema}
@@ -194,16 +211,16 @@ const ProfileContent = ({ user, initialSchools, initialHouses }: ProfileContentP
                             <Select
                               value={field.value}
                               onValueChange={(value) => {
-                                form.setFieldValue('school_id', value);
-                                form.setFieldValue('house_id', ''); // Reset house when school changes
+                                form.setFieldValue("school_id", value);
+                                form.setFieldValue("house_id", ""); // Reset house when school changes
                                 setSelectedSchool(value);
                               }}
                               disabled={isStudent}
                             >
-                              <SelectTrigger 
+                              <SelectTrigger
                                 className={cn(
-                                  'w-full',
-                                  meta.touched && meta.error ? 'border-red-500' : ''
+                                  "w-full",
+                                  meta.touched && meta.error ? "border-red-500" : "",
                                 )}
                               >
                                 <SelectValue placeholder="Select your school" />
@@ -216,7 +233,11 @@ const ProfileContent = ({ user, initialSchools, initialHouses }: ProfileContentP
                                 ))}
                               </SelectContent>
                             </Select>
-                            <ErrorMessage name="school_id" component="div" className="text-red-500 text-sm" />
+                            <ErrorMessage
+                              name="school_id"
+                              component="div"
+                              className="text-red-500 text-sm"
+                            />
                           </>
                         )}
                       </Field>
@@ -229,24 +250,28 @@ const ProfileContent = ({ user, initialSchools, initialHouses }: ProfileContentP
                           <>
                             <Select
                               value={field.value}
-                              onValueChange={(value) => form.setFieldValue('house_id', value)}
+                              onValueChange={(value) => form.setFieldValue("house_id", value)}
                               disabled={!selectedSchool || isStudent}
                             >
-                              <SelectTrigger 
+                              <SelectTrigger
                                 className={cn(
-                                  'w-full',
-                                  meta.touched && meta.error ? 'border-red-500' : '',
-                                  !selectedSchool && 'cursor-not-allowed'
+                                  "w-full",
+                                  meta.touched && meta.error ? "border-red-500" : "",
+                                  !selectedSchool && "cursor-not-allowed",
                                 )}
                               >
-                                <SelectValue placeholder={selectedSchool ? "Select your house" : "Select a school first"} />
+                                <SelectValue
+                                  placeholder={
+                                    selectedSchool ? "Select your house" : "Select a school first"
+                                  }
+                                />
                               </SelectTrigger>
                               <SelectContent>
                                 {houses.map((house) => (
                                   <SelectItem key={house.id} value={house.id}>
                                     <div className="flex items-center gap-2">
-                                      <div 
-                                        className="w-4 h-4 rounded-full" 
+                                      <div
+                                        className="w-4 h-4 rounded-full"
                                         style={{ backgroundColor: house.color }}
                                       ></div>
                                       {house.name}
@@ -255,18 +280,18 @@ const ProfileContent = ({ user, initialSchools, initialHouses }: ProfileContentP
                                 ))}
                               </SelectContent>
                             </Select>
-                            <ErrorMessage name="house_id" component="div" className="text-red-500 text-sm" />
+                            <ErrorMessage
+                              name="house_id"
+                              component="div"
+                              className="text-red-500 text-sm"
+                            />
                           </>
                         )}
                       </Field>
                     </div>
                   </div>
 
-                  <FormikInputField
-                    name="class"
-                    label="Class"
-                    placeholder="e.g. 10B"
-                  />
+                  <FormikInputField name="class" label="Class" placeholder="e.g. 10B" />
 
                   <div className="space-y-2">
                     <FormikInputField
@@ -287,37 +312,35 @@ const ProfileContent = ({ user, initialSchools, initialHouses }: ProfileContentP
                     <div>
                       <h3 className="text-lg font-medium text-gray-900 mb-2">Privacy Settings</h3>
                       <p className="text-sm text-gray-600 mb-4">
-                        Control how your information appears to other users in leaderboards and rankings.
+                        Control how your information appears to other users in leaderboards and
+                        rankings.
                       </p>
                     </div>
-                    
+
                     <FormikSwitchField
                       name="is_public"
                       label="Public Profile"
                       description={
-                        values.is_public 
+                        values.is_public
                           ? "Your name and details are visible to other users in leaderboards and rankings."
                           : "Your identity is hidden from other users, but your activities still count toward your school and house totals."
                       }
                     />
-                    
+
                     <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
                       <div className="flex items-start gap-2">
                         <div className="w-4 h-4 rounded-full bg-blue-500 mt-0.5 flex-shrink-0"></div>
                         <div className="text-sm text-blue-700">
-                          <strong>Important:</strong> Your activities always count toward your school's total time and house points, 
-                          regardless of your privacy setting. Only your individual identity is affected by this setting.
+                          <strong>Important:</strong> Your activities always count toward your
+                          school's total time and house points, regardless of your privacy setting.
+                          Only your individual identity is affected by this setting.
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full"
-                    >
-                    {isSubmitting ? 'Saving Changes...' : 'Save Changes'}
+                  <Button type="submit" disabled={isSubmitting} className="w-full">
+                    {isSubmitting ? "Saving Changes..." : "Save Changes"}
                   </Button>
                 </Form>
               )}
@@ -329,4 +352,4 @@ const ProfileContent = ({ user, initialSchools, initialHouses }: ProfileContentP
   );
 };
 
-export default ProfileContent; 
+export default ProfileContent;

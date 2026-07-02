@@ -1,12 +1,21 @@
-import { SupabaseClient } from '@supabase/supabase-js';
-import { ActivityInterface } from '../interfaces/ActivityInterface';
-import { AchievementService } from '@/models/achievements/services/AchievementService';
-import { calculateBasePoints, calculatePointsWithMultiplier, calculateFixedChallengePoints } from '../utils/calculatePoints';
-import { MAX_ACTIVITY_DURATION_MINUTES, MAX_ACTIVITY_DAYS_AGO, MAX_ACTIVITIES_PER_DAY } from '../constants/activityValidationConstants';
+import { SupabaseClient } from "@supabase/supabase-js";
+import { ActivityInterface } from "../interfaces/ActivityInterface";
+import { AchievementService } from "@/models/achievements/services/AchievementService";
+import {
+  calculateBasePoints,
+  calculatePointsWithMultiplier,
+  calculateFixedChallengePoints,
+} from "../utils/calculatePoints";
+import {
+  MAX_ACTIVITY_DURATION_MINUTES,
+  MAX_ACTIVITY_DAYS_AGO,
+  MAX_ACTIVITIES_PER_DAY,
+  MAX_ACTIVITY_MINUTES_PER_DAY,
+} from "../constants/activityValidationConstants";
 
-const TABLE_NAME = 'activities';
-const USERS_TABLE = 'users';
-const ACTIVITY_LIMIT_ERROR = `Something isn't right. Please ensure your activity is less than ${MAX_ACTIVITY_DURATION_MINUTES} minutes, within the last ${MAX_ACTIVITY_DAYS_AGO} days, and that you haven't exceeded ${MAX_ACTIVITIES_PER_DAY} logs for the day.`;
+const TABLE_NAME = "activities";
+const USERS_TABLE = "users";
+const ACTIVITY_LIMIT_ERROR = `Something isn't right. Please ensure your activity is less than ${MAX_ACTIVITY_DURATION_MINUTES} minutes, within the last ${MAX_ACTIVITY_DAYS_AGO} days, and that you haven't exceeded ${MAX_ACTIVITIES_PER_DAY} logs or ${MAX_ACTIVITY_MINUTES_PER_DAY} total minutes for the day.`;
 
 export class ActivityService {
   private supabaseClient: SupabaseClient;
@@ -17,7 +26,10 @@ export class ActivityService {
 
   async create(activityData: Partial<ActivityInterface>): Promise<ActivityInterface> {
     // Rule 1: Max duration per activity
-    if (activityData.duration_minutes && activityData.duration_minutes > MAX_ACTIVITY_DURATION_MINUTES) {
+    if (
+      activityData.duration_minutes &&
+      activityData.duration_minutes > MAX_ACTIVITY_DURATION_MINUTES
+    ) {
       throw new Error(ACTIVITY_LIMIT_ERROR);
     }
 
@@ -38,25 +50,41 @@ export class ActivityService {
     // Derive the NZ date string using the same fixed +12 offset used throughout the codebase
     const activityDateNZ = activityData.created_at
       ? (activityData.created_at as string).substring(0, 10)
-      : new Intl.DateTimeFormat('en-CA', { timeZone: 'Pacific/Auckland' }).format(new Date());
+      : new Intl.DateTimeFormat("en-CA", { timeZone: "Pacific/Auckland" }).format(new Date());
 
     const dayStart = new Date(`${activityDateNZ}T00:00:00+12:00`).toISOString();
     const dayEnd = new Date(`${activityDateNZ}T23:59:59+12:00`).toISOString();
 
     const { count } = await this.supabaseClient
       .from(TABLE_NAME)
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', activityData.user_id)
-      .gte('created_at', dayStart)
-      .lte('created_at', dayEnd);
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", activityData.user_id)
+      .gte("created_at", dayStart)
+      .lte("created_at", dayEnd);
 
     if ((count ?? 0) >= MAX_ACTIVITIES_PER_DAY) {
       throw new Error(ACTIVITY_LIMIT_ERROR);
     }
 
+    // Rule 4: Max total minutes per day
+    const { data: todayActivities } = await this.supabaseClient
+      .from(TABLE_NAME)
+      .select("duration_minutes")
+      .eq("user_id", activityData.user_id)
+      .gte("created_at", dayStart)
+      .lte("created_at", dayEnd);
+
+    const todayMinutes =
+      (todayActivities || []).reduce((sum, a) => sum + (a.duration_minutes || 0), 0) +
+      (activityData.duration_minutes || 0);
+
+    if (todayMinutes > MAX_ACTIVITY_MINUTES_PER_DAY) {
+      throw new Error(ACTIVITY_LIMIT_ERROR);
+    }
+
     // Ensure duration_minutes is provided
     if (!activityData.duration_minutes) {
-      throw new Error('Duration in minutes is required');
+      throw new Error("Duration in minutes is required");
     }
 
     // Calculate base points
@@ -68,9 +96,9 @@ export class ActivityService {
 
     if (activityData.event_id) {
       const { data: event } = await this.supabaseClient
-        .from('events')
-        .select('name, points_multiplier, challenge_points')
-        .eq('id', activityData.event_id)
+        .from("events")
+        .select("name, points_multiplier, challenge_points")
+        .eq("id", activityData.event_id)
         .single();
 
       if (event?.challenge_points) {
@@ -89,13 +117,15 @@ export class ActivityService {
         ...activityData,
         custom_activity_name: activityData.custom_activity_name || null,
         house_points_awarded: housePoints,
-        ...pointsCalculation
+        ...pointsCalculation,
       })
-      .select(`
+      .select(
+        `
         *,
         user:users(username, first_name, last_name, house:houses(*)),
         event:events(id, name, points_multiplier)
-      `)
+      `,
+      )
       .single();
 
     if (activityError) throw new Error(activityError.message);
@@ -106,10 +136,12 @@ export class ActivityService {
     // Run streak recalculation and achievement checks in parallel
     if (activity?.user_id) {
       await Promise.all([
-        Promise.resolve(this.supabaseClient.rpc('update_user_streak_for_date', {
-          p_user_id: activity.user_id,
-          p_activity_date: new Date(activity.created_at).toISOString().split('T')[0]
-        })).catch((err: unknown) => console.error('Error updating user streak:', err)),
+        Promise.resolve(
+          this.supabaseClient.rpc("update_user_streak_for_date", {
+            p_user_id: activity.user_id,
+            p_activity_date: new Date(activity.created_at).toISOString().split("T")[0],
+          }),
+        ).catch((err: unknown) => console.error("Error updating user streak:", err)),
 
         (async () => {
           try {
@@ -125,13 +157,26 @@ export class ActivityService {
               achievementService.checkHistoricalAchievements(activity.user_id),
             ]);
             if (newAchievements.length > 0) {
-              console.log(`User ${activity.user_id} earned ${newAchievements.length} new real-time achievements!`);
+              console.log(
+                `User ${activity.user_id} earned ${newAchievements.length} new real-time achievements!`,
+              );
             }
             if (historicalAchievements.length > 0) {
-              console.log(`User ${activity.user_id} earned ${historicalAchievements.length} new historical achievements!`);
+              console.log(
+                `User ${activity.user_id} earned ${historicalAchievements.length} new historical achievements!`,
+              );
+            }
+
+            const schoolId = (activity.user as Record<string, unknown>)?.house as
+              | Record<string, unknown>
+              | undefined;
+            if (schoolId?.school_id) {
+              achievementService
+                .evaluateHouseChallenges(schoolId.school_id as string)
+                .catch((err: unknown) => console.error("Error evaluating house challenges:", err));
             }
           } catch (error) {
-            console.error('Error checking achievements:', error);
+            console.error("Error checking achievements:", error);
           }
         })(),
       ]);
@@ -143,16 +188,18 @@ export class ActivityService {
   async getById(id: string): Promise<ActivityInterface | null> {
     const { data, error } = await this.supabaseClient
       .from(TABLE_NAME)
-      .select(`
+      .select(
+        `
         *,
         user:users(username, first_name, last_name, house:houses(*)),
         event:events(id, name, points_multiplier)
-      `)
-      .eq('id', id)
+      `,
+      )
+      .eq("id", id)
       .single();
 
     if (error) {
-      if (error.code === 'PGRST116') return null; // Not found
+      if (error.code === "PGRST116") return null; // Not found
       throw new Error(error.message);
     }
     return data;
@@ -161,12 +208,14 @@ export class ActivityService {
   async getByUserId(userId: string, limit = 10): Promise<ActivityInterface[]> {
     const { data, error } = await this.supabaseClient
       .from(TABLE_NAME)
-      .select(`
+      .select(
+        `
         *,
         user:users(username, first_name, last_name, house:houses(*))
-      `)
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
+      `,
+      )
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
       .limit(limit);
 
     if (error) throw new Error(error.message);
@@ -176,31 +225,66 @@ export class ActivityService {
   async getRecentActivities(limit = 20): Promise<ActivityInterface[]> {
     const { data, error } = await this.supabaseClient
       .from(TABLE_NAME)
-      .select(`
+      .select(
+        `
         *,
         user:users!inner(username, first_name, last_name, house:houses(*))
-      `)
-      .eq('users.is_deleted', false)
-      .order('created_at', { ascending: false })
+      `,
+      )
+      .eq("users.is_deleted", false)
+      .order("created_at", { ascending: false })
       .limit(limit);
 
     if (error) throw new Error(error.message);
     return data || [];
   }
 
-  async update(id: string, userId: string, activityData: Partial<ActivityInterface>): Promise<ActivityInterface> {
+  async update(
+    id: string,
+    userId: string,
+    activityData: Partial<ActivityInterface>,
+  ): Promise<ActivityInterface> {
     // First verify the activity belongs to the user
     const existingActivity = await this.getById(id);
     if (!existingActivity) {
-      throw new Error('Activity not found');
+      throw new Error("Activity not found");
     }
     if (existingActivity.user_id !== userId) {
-      throw new Error('You can only edit your own activities');
+      throw new Error("You can only edit your own activities");
     }
 
     // Rule: Max duration per activity
-    if (activityData.duration_minutes !== undefined && activityData.duration_minutes > MAX_ACTIVITY_DURATION_MINUTES) {
+    if (
+      activityData.duration_minutes !== undefined &&
+      activityData.duration_minutes > MAX_ACTIVITY_DURATION_MINUTES
+    ) {
       throw new Error(ACTIVITY_LIMIT_ERROR);
+    }
+
+    // Rule: Max total minutes per day (exclude the activity being edited)
+    if (activityData.duration_minutes !== undefined) {
+      const activityDateNZ = activityData.created_at
+        ? (activityData.created_at as string).substring(0, 10)
+        : existingActivity.created_at.substring(0, 10);
+
+      const dayStart = new Date(`${activityDateNZ}T00:00:00+12:00`).toISOString();
+      const dayEnd = new Date(`${activityDateNZ}T23:59:59+12:00`).toISOString();
+
+      const { data: todayActivities } = await this.supabaseClient
+        .from(TABLE_NAME)
+        .select("duration_minutes")
+        .eq("user_id", userId)
+        .neq("id", id)
+        .gte("created_at", dayStart)
+        .lte("created_at", dayEnd);
+
+      const todayMinutes =
+        (todayActivities || []).reduce((sum, a) => sum + (a.duration_minutes || 0), 0) +
+        activityData.duration_minutes;
+
+      if (todayMinutes > MAX_ACTIVITY_MINUTES_PER_DAY) {
+        throw new Error(ACTIVITY_LIMIT_ERROR);
+      }
     }
 
     // Rule: Activity date must be within the allowed window
@@ -216,7 +300,7 @@ export class ActivityService {
 
     // Ensure duration_minutes is provided if being updated
     if (activityData.duration_minutes !== undefined && !activityData.duration_minutes) {
-      throw new Error('Duration in minutes is required');
+      throw new Error("Duration in minutes is required");
     }
 
     // Calculate new points if duration or event changed
@@ -225,13 +309,14 @@ export class ActivityService {
     if (activityData.duration_minutes !== undefined || activityData.event_id !== undefined) {
       const duration = activityData.duration_minutes || existingActivity.duration_minutes || 0;
       const basePoints = calculateBasePoints(duration);
-      const eventId = activityData.event_id !== undefined ? activityData.event_id : existingActivity.event_id;
+      const eventId =
+        activityData.event_id !== undefined ? activityData.event_id : existingActivity.event_id;
 
       if (eventId) {
         const { data: event } = await this.supabaseClient
-          .from('events')
-          .select('name, points_multiplier, challenge_points')
-          .eq('id', eventId)
+          .from("events")
+          .select("name, points_multiplier, challenge_points")
+          .eq("id", eventId)
           .single();
 
         if (event?.challenge_points) {
@@ -254,19 +339,21 @@ export class ActivityService {
       custom_activity_name: activityData.custom_activity_name || null,
       ...(pointsCalculation && {
         house_points_awarded: housePoints,
-        ...pointsCalculation
-      })
+        ...pointsCalculation,
+      }),
     };
 
     const { data: activity, error } = await this.supabaseClient
       .from(TABLE_NAME)
       .update(updateData)
-      .eq('id', id)
-      .select(`
+      .eq("id", id)
+      .select(
+        `
         *,
         user:users(username, first_name, last_name, house:houses(*)),
         event:events(id, name, points_multiplier)
-      `)
+      `,
+      )
       .single();
 
     if (error) throw new Error(error.message);
@@ -278,7 +365,7 @@ export class ActivityService {
         const achievementService = new AchievementService(this.supabaseClient);
         await achievementService.checkHistoricalAchievements(activity.user_id);
       } catch (error) {
-        console.error('Error checking achievements after update:', error);
+        console.error("Error checking achievements after update:", error);
       }
     }
 
@@ -289,17 +376,14 @@ export class ActivityService {
     const existingActivity = await this.getById(id);
 
     if (!existingActivity) {
-      throw new Error('Activity not found');
+      throw new Error("Activity not found");
     }
 
     if (existingActivity.user_id !== userId) {
-      throw new Error('You can only delete your own activities');
+      throw new Error("You can only delete your own activities");
     }
 
-    const { error } = await this.supabaseClient
-      .from(TABLE_NAME)
-      .delete()
-      .eq('id', id);
+    const { error } = await this.supabaseClient.from(TABLE_NAME).delete().eq("id", id);
 
     if (error) {
       throw new Error(error.message);
@@ -308,31 +392,37 @@ export class ActivityService {
     try {
       await this.recalculateUserTotals(existingActivity.user_id);
     } catch (recalculateError) {
-      console.error('Error recalculating user totals after delete:', recalculateError);
+      console.error("Error recalculating user totals after delete:", recalculateError);
     }
 
     try {
-      await this.supabaseClient.rpc('update_user_streak_for_date', {
+      await this.supabaseClient.rpc("update_user_streak_for_date", {
         p_user_id: existingActivity.user_id,
-        p_activity_date: new Date(existingActivity.created_at).toISOString().split('T')[0],
+        p_activity_date: new Date(existingActivity.created_at).toISOString().split("T")[0],
       });
     } catch (streakError) {
-      console.error('Error updating user streak after delete:', streakError);
+      console.error("Error updating user streak after delete:", streakError);
     }
   }
 
-  async getActivitiesForSchool(schoolId: string | null, limit = 50, offset = 0): Promise<ActivityInterface[]> {
+  async getActivitiesForSchool(
+    schoolId: string | null,
+    limit = 50,
+    offset = 0,
+  ): Promise<ActivityInterface[]> {
     const getNZDate = (isoString: string) =>
-      new Intl.DateTimeFormat('en-CA', { timeZone: 'Pacific/Auckland' }).format(new Date(isoString));
+      new Intl.DateTimeFormat("en-CA", { timeZone: "Pacific/Auckland" }).format(
+        new Date(isoString),
+      );
 
     // Resolve user IDs for the given school (null = all schools, no filter)
     let userIds: string[] | null = null;
     if (schoolId) {
       const { data: schoolUsers } = await this.supabaseClient
-        .from('users')
-        .select('id')
-        .eq('school_id', schoolId)
-        .eq('is_deleted', false);
+        .from("users")
+        .select("id")
+        .eq("school_id", schoolId)
+        .eq("is_deleted", false);
       userIds = (schoolUsers || []).map((u: { id: string }) => u.id);
       if (userIds.length === 0) return [];
     }
@@ -344,11 +434,11 @@ export class ActivityService {
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     const dailyBaseQuery = this.supabaseClient
       .from(TABLE_NAME)
-      .select('user_id, created_at, duration_minutes')
-      .gte('created_at', thirtyDaysAgo.toISOString());
-    const { data: allActivities } = await (
-      userIds ? dailyBaseQuery.in('user_id', userIds) : dailyBaseQuery
-    );
+      .select("user_id, created_at, duration_minutes")
+      .gte("created_at", thirtyDaysAgo.toISOString());
+    const { data: allActivities } = await (userIds
+      ? dailyBaseQuery.in("user_id", userIds)
+      : dailyBaseQuery);
 
     // Step 2: Compute daily totals per user (NZ date) — flag days with ≥540 min
     const flaggedDays = new Set<string>();
@@ -364,22 +454,24 @@ export class ActivityService {
     // Step 3: Fetch paginated activities with full user info
     const pageBaseQuery = this.supabaseClient
       .from(TABLE_NAME)
-      .select(`
+      .select(
+        `
         *,
         user:users!inner(id, username, first_name, last_name, school_id, house:houses(*))
-      `)
-      .order('created_at', { ascending: false })
+      `,
+      )
+      .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);
-    const { data, error } = await (
-      userIds ? pageBaseQuery.in('user_id', userIds) : pageBaseQuery
-    );
+    const { data, error } = await (userIds ? pageBaseQuery.in("user_id", userIds) : pageBaseQuery);
 
     if (error) throw new Error(error.message);
 
     // Step 4: Annotate with is_flagged
-    return (data || []).map(activity => ({
+    return (data || []).map((activity) => ({
       ...activity,
-      is_flagged: flaggedDays.has(`${activity.user_id}|${getNZDate(activity.created_at)}`) && !activity.is_rejected,
+      is_flagged:
+        flaggedDays.has(`${activity.user_id}|${getNZDate(activity.created_at)}`) &&
+        !activity.is_rejected,
     }));
   }
 
@@ -387,7 +479,7 @@ export class ActivityService {
     const { error } = await this.supabaseClient
       .from(TABLE_NAME)
       .update({ is_rejected: true })
-      .eq('id', activityId);
+      .eq("id", activityId);
 
     if (error) throw new Error(error.message);
   }
@@ -397,7 +489,7 @@ export class ActivityService {
     const { error } = await this.supabaseClient
       .from(TABLE_NAME)
       .update({ is_rejected: true })
-      .in('id', activityIds);
+      .in("id", activityIds);
 
     if (error) throw new Error(error.message);
   }
@@ -406,7 +498,7 @@ export class ActivityService {
     const { error } = await this.supabaseClient
       .from(TABLE_NAME)
       .update({ is_rejected: false })
-      .eq('id', activityId);
+      .eq("id", activityId);
 
     if (error) throw new Error(error.message);
   }
@@ -415,19 +507,20 @@ export class ActivityService {
     // Get sum of all activity minutes for the user (excluding rejected)
     const { data: activities, error: activitiesError } = await this.supabaseClient
       .from(TABLE_NAME)
-      .select('duration_minutes')
-      .eq('user_id', userId)
-      .eq('is_rejected', false);
+      .select("duration_minutes")
+      .eq("user_id", userId)
+      .eq("is_rejected", false);
 
     if (activitiesError) throw new Error(activitiesError.message);
 
-    const totalMinutes = activities?.reduce((sum, activity) => sum + (activity.duration_minutes || 0), 0) || 0;
+    const totalMinutes =
+      activities?.reduce((sum, activity) => sum + (activity.duration_minutes || 0), 0) || 0;
 
     // Update user's total
     const { error: updateError } = await this.supabaseClient
       .from(USERS_TABLE)
       .update({ total_minutes: totalMinutes })
-      .eq('id', userId);
+      .eq("id", userId);
 
     if (updateError) throw new Error(updateError.message);
   }
@@ -435,37 +528,32 @@ export class ActivityService {
   async recalculateSchoolAndHouseTotals(): Promise<void> {
     try {
       // Recalculate all school totals
-      const { error: schoolError } = await this.supabaseClient
-        .rpc('recalculate_school_totals');
-      
+      const { error: schoolError } = await this.supabaseClient.rpc("recalculate_school_totals");
+
       if (schoolError) {
-        console.error('Error recalculating school totals:', schoolError);
+        console.error("Error recalculating school totals:", schoolError);
       }
 
-      // Recalculate all house totals  
-      const { error: houseError } = await this.supabaseClient
-        .rpc('recalculate_house_totals');
-        
+      // Recalculate all house totals
+      const { error: houseError } = await this.supabaseClient.rpc("recalculate_house_totals");
+
       if (houseError) {
-        console.error('Error recalculating house totals:', houseError);
+        console.error("Error recalculating house totals:", houseError);
       }
     } catch (error) {
-      console.error('Error in recalculateSchoolAndHouseTotals:', error);
+      console.error("Error in recalculateSchoolAndHouseTotals:", error);
     }
   }
 
   async getTotalMinutes(): Promise<number> {
-    const { data, error } = await this.supabaseClient
-      .from('users')
-      .select('total_minutes');
+    const { data, error } = await this.supabaseClient.from("users").select("total_minutes");
 
     if (error) throw new Error(error.message);
     return data?.reduce((sum, u) => sum + (u.total_minutes || 0), 0) || 0;
   }
 
   async getActivityTypeCounts(): Promise<{ activity_type: string; count: number }[]> {
-    const { data, error } = await this.supabaseClient
-      .rpc('get_activity_type_counts');
+    const { data, error } = await this.supabaseClient.rpc("get_activity_type_counts");
 
     if (error) throw new Error(error.message);
     return data || [];
@@ -474,16 +562,18 @@ export class ActivityService {
   async getActivitiesByEventId(eventId: string, userId: string): Promise<ActivityInterface[]> {
     const { data, error } = await this.supabaseClient
       .from(TABLE_NAME)
-      .select(`
+      .select(
+        `
         *,
         user:users(*)
-      `)
-      .eq('event_id', eventId)
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
+      `,
+      )
+      .eq("event_id", eventId)
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
 
     if (error) {
-      console.error('Error fetching activities by event ID:', error);
+      console.error("Error fetching activities by event ID:", error);
       return [];
     }
 
@@ -493,9 +583,9 @@ export class ActivityService {
   async getActivityMinutesByEvent(userId: string): Promise<Record<string, number>> {
     const { data, error } = await this.supabaseClient
       .from(TABLE_NAME)
-      .select('event_id, duration_minutes')
-      .eq('user_id', userId)
-      .not('event_id', 'is', null);
+      .select("event_id, duration_minutes")
+      .eq("user_id", userId)
+      .not("event_id", "is", null);
 
     if (error) return {};
 
@@ -509,7 +599,8 @@ export class ActivityService {
   async getActivitiesByDateRange(startDate: Date, endDate: Date): Promise<ActivityInterface[]> {
     const { data, error } = await this.supabaseClient
       .from(TABLE_NAME)
-      .select(`
+      .select(
+        `
         *,
         user:users(
           id,
@@ -524,10 +615,11 @@ export class ActivityService {
           house:houses(id, name, color)
         ),
         event:events(id, name, points_multiplier)
-      `)
-      .gte('created_at', startDate.toISOString())
-      .lte('created_at', endDate.toISOString())
-      .order('created_at', { ascending: false })
+      `,
+      )
+      .gte("created_at", startDate.toISOString())
+      .lte("created_at", endDate.toISOString())
+      .order("created_at", { ascending: false })
       .limit(10000);
 
     if (error) throw new Error(error.message);
@@ -537,9 +629,109 @@ export class ActivityService {
   async getTotalCount(): Promise<number> {
     const { count, error } = await this.supabaseClient
       .from(TABLE_NAME)
-      .select('*', { count: 'exact', head: true });
+      .select("*", { count: "exact", head: true });
 
     if (error) throw new Error(error.message);
     return count || 0;
+  }
+
+  async getFeedActivities(schoolId: string, limit = 50): Promise<ActivityInterface[]> {
+    const { data, error } = await this.supabaseClient
+      .from(TABLE_NAME)
+      .select(`*, user:users(first_name, last_name, username, house:houses(name, color))`)
+      .eq("is_shared_to_feed", true)
+      .eq("feed_approved", true)
+      .not("proof_image_url", "is", null)
+      .order("created_at", { ascending: false })
+      .limit(limit);
+
+    if (error) throw new Error(error.message);
+
+    return ((data || []) as ActivityInterface[]).filter((a) => {
+      const user = a.user as Record<string, unknown> | undefined;
+      const house = user?.house as Record<string, unknown> | undefined;
+      return house?.school_id === schoolId;
+    });
+  }
+
+  async getTopFeedPhotos(schoolId: string, days = 7, limit = 3): Promise<ActivityInterface[]> {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - days);
+
+    const { data, error } = await this.supabaseClient
+      .from(TABLE_NAME)
+      .select(`*, user:users(first_name, last_name, username, house:houses(name, color))`)
+      .eq("is_shared_to_feed", true)
+      .eq("feed_approved", true)
+      .not("proof_image_url", "is", null)
+      .gte("created_at", cutoff.toISOString())
+      .order("feed_likes", { ascending: false })
+      .limit(limit);
+
+    if (error) throw new Error(error.message);
+
+    return ((data || []) as ActivityInterface[]).filter((a) => {
+      const user = a.user as Record<string, unknown> | undefined;
+      const house = user?.house as Record<string, unknown> | undefined;
+      return house?.school_id === schoolId;
+    });
+  }
+
+  async toggleFeedSharing(activityId: string, userId: string): Promise<void> {
+    const existing = await this.getById(activityId);
+    if (!existing || existing.user_id !== userId) {
+      throw new Error("Not your activity to share");
+    }
+    const { error } = await this.supabaseClient
+      .from(TABLE_NAME)
+      .update({
+        is_shared_to_feed: !existing.is_shared_to_feed,
+        feed_approved: existing.feed_approved,
+      })
+      .eq("id", activityId);
+    if (error) throw new Error(error.message);
+  }
+
+  async approveFeedPost(activityId: string): Promise<void> {
+    const { error } = await this.supabaseClient
+      .from(TABLE_NAME)
+      .update({ feed_approved: true })
+      .eq("id", activityId);
+    if (error) throw new Error(error.message);
+  }
+
+  async rejectFeedPost(activityId: string): Promise<void> {
+    const { error } = await this.supabaseClient
+      .from(TABLE_NAME)
+      .update({ feed_approved: false, is_shared_to_feed: false })
+      .eq("id", activityId);
+    if (error) throw new Error(error.message);
+  }
+
+  async likeFeedPost(activityId: string): Promise<void> {
+    const { error } = await this.supabaseClient.rpc("increment_feed_like", {
+      p_activity_id: activityId,
+    });
+    if (error) throw new Error(error.message);
+  }
+
+  async getPendingFeedPosts(schoolId: string): Promise<ActivityInterface[]> {
+    const { data, error } = await this.supabaseClient
+      .from(TABLE_NAME)
+      .select(
+        `*, user:users(first_name, last_name, username, house:houses(name, color, school_id))`,
+      )
+      .eq("is_shared_to_feed", true)
+      .eq("feed_approved", false)
+      .not("proof_image_url", "is", null)
+      .order("created_at", { ascending: false });
+
+    if (error) throw new Error(error.message);
+
+    return ((data || []) as ActivityInterface[]).filter((a) => {
+      const user = a.user as Record<string, unknown> | undefined;
+      const house = user?.house as Record<string, unknown> | undefined;
+      return house?.school_id === schoolId;
+    });
   }
 }

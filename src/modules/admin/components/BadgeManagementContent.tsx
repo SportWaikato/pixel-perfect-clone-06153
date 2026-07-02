@@ -1,16 +1,335 @@
-// TODO: Restore from Next.js source — automated codemod mangled JSX during port.
-// Original at git history pre-TanStack port. Renders a stub for now so routing wires up.
-import { UserInterface } from '@/models/users/interfaces/UserInterface';
+"use client";
+
+import { useState, useMemo } from "react";
+import { UserInterface } from "@/models/users/interfaces/UserInterface";
+import { AchievementInterface } from "@/models/achievements/interfaces/AchievementInterface";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/modules/application/components/DesignSystem/ui/card";
+import { Button } from "@/modules/application/components/DesignSystem/ui/button";
+import { Badge } from "@/modules/application/components/DesignSystem/ui/badge";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/modules/application/components/DesignSystem/ui/tabs";
+import { Input } from "@/modules/application/components/DesignSystem/ui/input";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/modules/application/components/DesignSystem/ui/alert-dialog";
+import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
+import { AchievementService } from "@/models/achievements/services/AchievementService";
+import useAdminData from "@/modules/common/hooks/useAdminData";
+import { BadgeImageHelper } from "@/models/achievements/helpers/BadgeImageHelper";
+import { Plus, Search, Edit, Trash2, Award, ArrowLeft, CheckCircle, X, Home } from "lucide-react";
+import { toast } from "sonner";
+import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
+import { Link } from "@tanstack/react-router";
+import BadgeCreateEditDialog from "./BadgeCreateEditDialog";
 
 interface BadgeManagementContentProps {
   user: UserInterface;
 }
 
-const BadgeManagementContent = ({ user: _user }: BadgeManagementContentProps) => {
+const BadgeManagementContent = ({ user }: BadgeManagementContentProps) => {
+  const achievementService = useMemo(() => new AchievementService(createSupabaseClient()), []);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [editingBadge, setEditingBadge] = useState<AchievementInterface | null>(null);
+
+  const {
+    filteredData: badges,
+    data: allBadges,
+    loading,
+    searchTerm,
+    setSearchTerm,
+    refresh: fetchBadges,
+  } = useAdminData({
+    fetchFn: () => achievementService.getAll(),
+    filterFn: (badge: AchievementInterface, term: string) =>
+      badge.name.toLowerCase().includes(term.toLowerCase()) ||
+      badge.description.toLowerCase().includes(term.toLowerCase()),
+  });
+
+  const activeBadges = badges.filter((badge: AchievementInterface) => badge.is_active);
+  const inactiveBadges = badges.filter((badge: AchievementInterface) => !badge.is_active);
+
+  const handleCreateBadge = () => {
+    setEditingBadge(null);
+    setShowCreateDialog(true);
+  };
+
+  const handleEditBadge = (badge: AchievementInterface) => {
+    setEditingBadge(badge);
+    setShowCreateDialog(true);
+  };
+
+  const handleDeleteBadge = async (badge: AchievementInterface) => {
+    try {
+      await achievementService.deleteWithCleanup(badge.id);
+      toast.success("Badge deleted successfully!");
+      await fetchBadges();
+    } catch (error) {
+      notifyAboutError(error);
+    }
+  };
+
+  const handleBadgeCreated = async () => {
+    setShowCreateDialog(false);
+    setEditingBadge(null);
+    await fetchBadges();
+  };
+
+  const BadgeCard = ({ badge }: { badge: AchievementInterface }) => (
+    <Card className="hover:shadow-md transition-shadow">
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg">{badge.name}</CardTitle>
+          <div className="flex items-center gap-1">
+            <Button
+              onClick={() => handleEditBadge(badge)}
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0"
+            >
+              <Edit size={14} />
+            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                >
+                  <Trash2 size={14} />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete Badge</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to delete "{badge.name}"? This action cannot be undone and
+                    will affect all users who have earned this badge.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => handleDeleteBadge(badge)}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    Delete Badge
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex justify-center">
+          {BadgeImageHelper.hasBadgeImage(badge) ? (
+            <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-gray-100">
+              <img
+                src={BadgeImageHelper.getBadgeImageUrl(badge)}
+                alt={badge.name}
+                className="w-full h-full object-contain"
+              />
+            </div>
+          ) : (
+            <div className="w-20 h-20 rounded-xl bg-gray-100 flex items-center justify-center">
+              <Award className="w-8 h-8 text-gray-400" />
+            </div>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <p className="text-sm text-gray-600 line-clamp-2">{badge.description}</p>
+          <div className="flex items-center justify-between">
+            <Badge
+              variant={badge.is_active ? "default" : "secondary"}
+              style={{ backgroundColor: badge.is_active ? "#19AA4B" : undefined }}
+            >
+              {badge.is_active ? "Active" : "Inactive"}
+            </Badge>
+            <div className="flex items-center gap-1">
+              {(badge as any).scope === "house" && (
+                <Badge
+                  variant="outline"
+                  className="text-xs gap-1 border-purple-300 text-purple-700 bg-purple-50"
+                >
+                  <Home size={10} />
+                  House
+                </Badge>
+              )}
+              <div className="text-sm font-medium text-green-600">{badge.points_reward} pts</div>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  if (loading) {
+    return (
+      <div className="p-6 space-y-6 min-h-screen">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/3 mb-2"></div>
+          <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-32 bg-gray-200 rounded"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="p-8 text-center">
-      <h1 className="text-2xl font-bold mb-2">Badge Management</h1>
-      <p className="text-muted-foreground">This screen needs to be rebuilt — automated migration mangled the JSX.</p>
+    <div className="p-6 space-y-6 min-h-screen">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" asChild>
+            <Link to="/admin">
+              <ArrowLeft size={20} />
+            </Link>
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Badge Management</h1>
+            <p className="text-gray-600">Create and manage achievement badges for students</p>
+          </div>
+        </div>
+        <Button
+          onClick={handleCreateBadge}
+          className="gap-2"
+          style={{ backgroundColor: "#0B4B39" }}
+        >
+          <Plus size={16} />
+          Create Badge
+        </Button>
+      </div>
+
+      <div className="flex items-center gap-4">
+        <div className="relative flex-1 max-w-md">
+          <Search
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+            size={16}
+          />
+          <Input
+            placeholder="Search badges..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+        <Badge variant="secondary" className="gap-1">
+          <Award size={14} />
+          {allBadges.length} total badges
+        </Badge>
+      </div>
+
+      <Tabs defaultValue="active" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="active" className="gap-2">
+            <CheckCircle size={16} />
+            Active Badges ({activeBadges.length})
+          </TabsTrigger>
+          <TabsTrigger value="inactive" className="gap-2">
+            <X size={16} />
+            Inactive Badges ({inactiveBadges.length})
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="active">
+          {activeBadges.length === 0 ? (
+            <Card>
+              <CardContent className="text-center py-12">
+                {searchTerm ? (
+                  <>
+                    <Search className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No badges found</h3>
+                    <p className="text-gray-600">No active badges match your search criteria.</p>
+                  </>
+                ) : (
+                  <>
+                    <Award className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No Active Badges</h3>
+                    <p className="text-gray-600 mb-4">
+                      Get started by creating your first achievement badge.
+                    </p>
+                    <Button
+                      onClick={handleCreateBadge}
+                      className="gap-2"
+                      style={{ backgroundColor: "#0B4B39" }}
+                    >
+                      <Plus size={16} />
+                      Create Badge
+                    </Button>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+              {activeBadges.map((badge: AchievementInterface) => (
+                <BadgeCard key={badge.id} badge={badge} />
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="inactive">
+          {inactiveBadges.length === 0 ? (
+            <Card>
+              <CardContent className="text-center py-12">
+                {searchTerm ? (
+                  <>
+                    <Search className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No badges found</h3>
+                    <p className="text-gray-600">No inactive badges match your search criteria.</p>
+                  </>
+                ) : (
+                  <>
+                    <X className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No Inactive Badges</h3>
+                    <p className="text-gray-600">
+                      All badges are currently active. Inactive badges will appear here.
+                    </p>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+              {inactiveBadges.map((badge: AchievementInterface) => (
+                <BadgeCard key={badge.id} badge={badge} />
+              ))}
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
+
+      <BadgeCreateEditDialog
+        isOpen={showCreateDialog}
+        onClose={() => {
+          setShowCreateDialog(false);
+          setEditingBadge(null);
+        }}
+        onSuccess={handleBadgeCreated}
+        badge={editingBadge}
+      />
     </div>
   );
 };

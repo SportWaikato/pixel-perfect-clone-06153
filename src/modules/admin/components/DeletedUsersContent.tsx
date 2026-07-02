@@ -1,17 +1,22 @@
-import { useState, useEffect, useMemo } from 'react';
-import { useServerFn } from '@tanstack/react-start';
-import { UserInterface } from '@/models/users/interfaces/UserInterface';
-import { Card, CardContent, CardHeader, CardTitle } from '@/modules/application/components/DesignSystem/ui/card';
-import { Button } from '@/modules/application/components/DesignSystem/ui/button';
-import { Badge } from '@/modules/application/components/DesignSystem/ui/badge';
-import UserAvatar from '@/modules/application/components/DesignSystem/ui/user-avatar';
-import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
-import { UserService } from '@/models/users/services/UserService';
-import { fetchUserEmails } from '@/modules/admin/actions/fetchUserEmails';
-import { toast } from 'sonner';
-import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-import { ArrowLeft, RotateCcw, Loader2, Trash2 } from 'lucide-react';
-import { Link } from '@tanstack/react-router';
+import { useState, useEffect, useMemo } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { UserInterface } from "@/models/users/interfaces/UserInterface";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/modules/application/components/DesignSystem/ui/card";
+import { Button } from "@/modules/application/components/DesignSystem/ui/button";
+import { Badge } from "@/modules/application/components/DesignSystem/ui/badge";
+import UserAvatar from "@/modules/application/components/DesignSystem/ui/user-avatar";
+import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
+import { UserService } from "@/models/users/services/UserService";
+import { fetchUserEmails } from "@/modules/admin/actions/fetchUserEmails";
+import { toast } from "sonner";
+import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
+import { ArrowLeft, RotateCcw, Loader2, Trash2 } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 interface DeletedUsersContentProps {
   initialUsers: UserInterface[];
 }
@@ -25,15 +30,20 @@ const DeletedUsersContent = ({ initialUsers }: DeletedUsersContentProps) => {
   const userService = useMemo(() => new UserService(createSupabaseClient()), []);
 
   useEffect(() => {
-    if (users.length === 0) { setEmailMap({}); return; }
-    fetchEmails({ data: { userIds: users.map(u => u.id) } }).then(setEmailMap).catch(console.error);
+    if (users.length === 0) {
+      setEmailMap({});
+      return;
+    }
+    fetchEmails({ data: { userIds: users.map((u) => u.id) } })
+      .then(setEmailMap)
+      .catch(console.error);
   }, [users, fetchEmails]);
 
   const handleRestore = async (userId: string, name: string) => {
     setRestoringId(userId);
     try {
       await userService.restoreUser(userId);
-      setUsers(prev => prev.filter(u => u.id !== userId));
+      setUsers((prev) => prev.filter((u) => u.id !== userId));
       toast.success(`${name} has been restored`);
     } catch (error) {
       notifyAboutError(error);
@@ -42,7 +52,7 @@ const DeletedUsersContent = ({ initialUsers }: DeletedUsersContentProps) => {
     }
   };
 
-  const usersWithEmail = users.map(u => ({ ...u, email: emailMap[u.id] ?? u.email }));
+  const usersWithEmail = users.map((u) => ({ ...u, email: emailMap[u.id] ?? u.email }));
 
   return (
     <div className="p-6 space-y-6 min-h-screen">
@@ -54,7 +64,9 @@ const DeletedUsersContent = ({ initialUsers }: DeletedUsersContentProps) => {
         </Button>
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Deleted Users</h1>
-          <p className="text-gray-600">Users removed from active lists — restore to make them active again</p>
+          <p className="text-gray-600">
+            Users removed from active lists — restore to make them active again
+          </p>
         </div>
       </div>
 
@@ -88,11 +100,15 @@ const DeletedUsersContent = ({ initialUsers }: DeletedUsersContentProps) => {
                     <div>
                       <div className="font-medium flex items-center gap-2">
                         {user.first_name} {user.last_name}
-                        {user.role === 'super_admin' && (
-                          <Badge className="bg-purple-100 text-purple-800 border-purple-200">Super Admin</Badge>
+                        {user.role === "super_admin" && (
+                          <Badge className="bg-purple-100 text-purple-800 border-purple-200">
+                            Super Admin
+                          </Badge>
                         )}
-                        {user.role === 'school_admin' && (
-                          <Badge className="bg-blue-100 text-blue-800 border-blue-200">School Admin</Badge>
+                        {user.role === "school_admin" && (
+                          <Badge className="bg-blue-100 text-blue-800 border-blue-200">
+                            School Admin
+                          </Badge>
                         )}
                       </div>
                       <div className="text-sm text-gray-500">

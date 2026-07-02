@@ -1,4 +1,4 @@
-import { UserInterface } from '@/models/users/interfaces/UserInterface';
+import { UserInterface } from "@/models/users/interfaces/UserInterface";
 
 export interface KooreroVoteInterface {
   id: string;
@@ -7,15 +7,15 @@ export interface KooreroVoteInterface {
   feedback?: string;
   created_at: string;
   updated_at: string;
-  
+
   // Relationships
   user?: UserInterface;
 }
 
 export const INTEREST_LEVELS = {
-  1: 'Not interested',
-  2: 'Slightly interested', 
-  3: 'Moderately interested',
-  4: 'Very interested',
-  5: 'Extremely interested'
-} as const; 
+  1: "Not interested",
+  2: "Slightly interested",
+  3: "Moderately interested",
+  4: "Very interested",
+  5: "Extremely interested",
+} as const;

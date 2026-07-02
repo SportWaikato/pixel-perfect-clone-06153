@@ -1,10 +1,16 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { toast } from "sonner";
-import { useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+import DashboardContent from "@/modules/dashboard/components/DashboardContent";
+import { UserInterface } from "@/models/users/interfaces/UserInterface";
+import {
+  AchievementInterface,
+  UserAchievementInterface,
+} from "@/models/achievements/interfaces/AchievementInterface";
+import { ActivityInterface } from "@/models/activities/interfaces/ActivityInterface";
+import { AchievementService } from "@/models/achievements/services/AchievementService";
+import { ActivityService } from "@/models/activities/services/ActivityService";
+import { UserService } from "@/models/users/services/UserService";
+import { SurveyService } from "@/models/surveys/services/SurveyService";
+import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -13,93 +19,91 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
       { name: "description", content: "Your Karawhiua Virtual Sports Day dashboard." },
     ],
   }),
+  beforeLoad: async ({ context }) => {
+    const profile = context.profile as UserInterface | null;
+
+    if (!profile) {
+      return {
+        userAchievements: [] as UserAchievementInterface[],
+        allAchievements: [] as AchievementInterface[],
+        userPointsData: {
+          totalFinalPoints: 0,
+          totalBasePoints: 0,
+          totalBonusPoints: 0,
+          challengeActivitiesCount: 0,
+          totalActivitiesCount: 0,
+        },
+        currentMonthMinutes: 0,
+        recentActivities: [] as ActivityInterface[],
+        pendingSurvey: null,
+      };
+    }
+
+    const supabase = createSupabaseClient();
+    const achievementService = new AchievementService(supabase);
+    const activityService = new ActivityService(supabase);
+    const userService = new UserService(supabase);
+    const surveyService = new SurveyService(supabase);
+
+    await surveyService.checkAndTriggerSurveys(profile.id, profile.created_at);
+
+    const [
+      userAchievements,
+      allAchievements,
+      userPointsData,
+      monthProgress,
+      recentActivities,
+      pendingSurvey,
+    ] = await Promise.all([
+      achievementService.getUserAchievements(profile.id),
+      achievementService.getAllAchievements(),
+      userService.getUserPointsBreakdown(profile.id),
+      userService.getCurrentMonthProgress(profile.id),
+      activityService.getByUserId(profile.id, 3),
+      surveyService.shouldShowSurvey(profile.id),
+    ]);
+
+    return {
+      userAchievements,
+      allAchievements,
+      userPointsData,
+      currentMonthMinutes:
+        (monthProgress as { current_month_minutes?: number } | null)?.current_month_minutes ?? 0,
+      recentActivities: recentActivities ?? [],
+      pendingSurvey,
+    };
+  },
   component: Dashboard,
 });
 
-type Profile = {
-  id: string;
-  first_name: string | null;
-  last_name: string | null;
-  username: string | null;
-  school_id: string | null;
-  house_id: string | null;
-  role: string | null;
-};
-
 function Dashboard() {
-  const { user } = Route.useRouteContext();
-  const navigate = useNavigate();
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const {
+    profile,
+    userAchievements,
+    allAchievements,
+    userPointsData,
+    currentMonthMinutes,
+    recentActivities,
+    pendingSurvey,
+  } = Route.useRouteContext();
 
-  useEffect(() => {
-    let active = true;
-    (async () => {
-      const { data, error } = await supabase
-        .from("users")
-        .select("id, first_name, last_name, username, school_id, house_id, role")
-        .eq("id", user.id)
-        .maybeSingle();
-      if (!active) return;
-      if (error) toast.error(error.message);
-      setProfile(data ?? null);
-      setLoading(false);
-    })();
-    return () => {
-      active = false;
-    };
-  }, [user.id]);
-
-  async function handleSignOut() {
-    await supabase.auth.signOut();
-    toast.success("Signed out");
-    navigate({ to: "/auth", replace: true });
-  }
+  if (!profile) return null;
+  const userProfile = profile as UserInterface;
 
   return (
-    <div className="min-h-screen p-6">
-      <div className="mx-auto max-w-3xl space-y-6">
-        <header className="flex items-center justify-between">
-          <div>
-            <p className="text-xs uppercase tracking-widest text-brand-green-soft">Karawhiua</p>
-            <h1 className="text-3xl font-bold text-brand-green">Kia ora{profile?.first_name ? `, ${profile.first_name}` : ""}</h1>
-          </div>
-          <Button variant="outline" onClick={handleSignOut}>Sign out</Button>
-        </header>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Profile</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm">
-            {loading ? (
-              <p>Loading…</p>
-            ) : profile ? (
-              <>
-                <p><span className="text-muted-foreground">Email:</span> {user.email}</p>
-                <p><span className="text-muted-foreground">Name:</span> {profile.first_name} {profile.last_name}</p>
-                <p><span className="text-muted-foreground">Username:</span> {profile.username ?? "—"}</p>
-                <p><span className="text-muted-foreground">Role:</span> {profile.role ?? "—"}</p>
-                <p><span className="text-muted-foreground">School:</span> {profile.school_id ?? "Not selected"}</p>
-                <p><span className="text-muted-foreground">House:</span> {profile.house_id ?? "Not selected"}</p>
-              </>
-            ) : (
-              <p className="text-destructive">
-                No user record yet. <Link to="/auth" className="underline">Complete signup</Link>.
-              </p>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Coming soon</CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
-            Activity logging, leaderboards, events, and admin tools land in upcoming slices.
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+    <DashboardContent
+      user={userProfile}
+      initialUserAchievements={userAchievements as UserAchievementInterface[]}
+      allAchievements={allAchievements as AchievementInterface[]}
+      initialTotalPoints={(userPointsData as { totalFinalPoints: number }).totalFinalPoints}
+      initialCurrentMonthMinutes={currentMonthMinutes as number}
+      recentActivities={recentActivities as ActivityInterface[]}
+      pendingSurvey={
+        pendingSurvey as {
+          survey: import("@/models/surveys/interfaces/SurveyInterface").SurveyInterface;
+          status: import("@/models/surveys/interfaces/SurveyInterface").UserSurveyStatusInterface;
+        } | null
+      }
+    />
   );
 }

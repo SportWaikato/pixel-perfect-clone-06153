@@ -1,26 +1,51 @@
-import { UserInterface } from '@/models/users/interfaces/UserInterface';
-import { Card, CardContent, CardHeader, CardTitle } from '@/modules/application/components/DesignSystem/ui/card';
-import { Button } from '@/modules/application/components/DesignSystem/ui/button';
-import { Badge } from '@/modules/application/components/DesignSystem/ui/badge';
-import { Users, Calendar, TrendingUp, Award, Copy, Check, Link as LinkIcon, Clock, ShieldAlert, Activity, MessageSquare, Crown, QrCode, Monitor } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/modules/application/components/DesignSystem/ui/dialog';
-import { Link } from '@tanstack/react-router';
-import { useState, useEffect, useRef, useCallback } from 'react';
-import QRCode from 'qrcode';
-import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
-import { UserService } from '@/models/users/services/UserService';
-import { EventService } from '@/models/events/services/EventService';
-import { SchoolMessageService } from '@/models/schoolMessages/services/SchoolMessageService';
-import { LeaderboardService } from '@/models/leaderboards/services/LeaderboardService';
-import { toast } from 'sonner';
-import ActivityLogPreview from './ActivityLogPreview';
-import { regenerateJoinCode } from '@/lib/registration.functions';
+import { UserInterface } from "@/models/users/interfaces/UserInterface";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/modules/application/components/DesignSystem/ui/card";
+import { Button } from "@/modules/application/components/DesignSystem/ui/button";
+import { Badge } from "@/modules/application/components/DesignSystem/ui/badge";
+import {
+  Users,
+  Calendar,
+  TrendingUp,
+  Award,
+  Copy,
+  Check,
+  Link as LinkIcon,
+  Clock,
+  ShieldAlert,
+  Activity,
+  MessageSquare,
+  Crown,
+  QrCode,
+  Monitor,
+} from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/modules/application/components/DesignSystem/ui/dialog";
+import { Link } from "@tanstack/react-router";
+import { useState, useEffect, useRef, useCallback } from "react";
+import QRCode from "qrcode";
+import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
+import { UserService } from "@/models/users/services/UserService";
+import { EventService } from "@/models/events/services/EventService";
+import { SchoolMessageService } from "@/models/schoolMessages/services/SchoolMessageService";
+import { LeaderboardService } from "@/models/leaderboards/services/LeaderboardService";
+import { toast } from "sonner";
+import ActivityLogPreview from "./ActivityLogPreview";
+import { regenerateJoinCode } from "@/lib/registration.functions";
 
 interface SchoolAdminDashboardProps {
   user: UserInterface;
   viewingSchoolId?: string;
   viewingSchoolName?: string;
-  viewingSchoolRegistrationMethod?: 'domain_blocklist' | 'allowlist';
+  viewingSchoolRegistrationMethod?: "domain_blocklist" | "allowlist";
 }
 
 interface DashboardStats {
@@ -32,11 +57,17 @@ interface DashboardStats {
   totalMinutes: number;
 }
 
-const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewingSchoolRegistrationMethod }: SchoolAdminDashboardProps) => {
+const SchoolAdminDashboard = ({
+  user,
+  viewingSchoolId,
+  viewingSchoolName,
+  viewingSchoolRegistrationMethod,
+}: SchoolAdminDashboardProps) => {
   const schoolId = viewingSchoolId || user.school_id;
   const schoolName = viewingSchoolName || user.school?.name;
-  const registrationMethod = viewingSchoolRegistrationMethod ?? user.school?.registration_method ?? 'domain_blocklist';
-  const isAllowList = registrationMethod === 'allowlist';
+  const registrationMethod =
+    viewingSchoolRegistrationMethod ?? user.school?.registration_method ?? "domain_blocklist";
+  const isAllowList = registrationMethod === "allowlist";
   const [stats, setStats] = useState<DashboardStats>({
     totalUsers: 0,
     activeUsers: 0,
@@ -56,7 +87,8 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
   const [regenerateModal, setRegenerateModal] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const signUpUrl = typeof window !== 'undefined' ? `${window.location.origin}/schools/${schoolId}/signup` : '';
+  const signUpUrl =
+    typeof window !== "undefined" ? `${window.location.origin}/schools/${schoolId}/signup` : "";
 
   useEffect(() => {
     if (!schoolId) return;
@@ -76,7 +108,7 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
           messageService.countUnreadBySchoolId(schoolId),
         ]);
 
-        const schoolEntry = leaderboard.find(entry => entry.id === schoolId);
+        const schoolEntry = leaderboard.find((entry) => entry.id === schoolId);
 
         setStats({
           totalUsers: userStats.total,
@@ -87,7 +119,7 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
           totalMinutes: userStats.totalMinutes,
         });
       } catch (error) {
-        console.error('Error fetching admin stats:', error);
+        console.error("Error fetching admin stats:", error);
       } finally {
         setLoading(false);
       }
@@ -98,14 +130,14 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
 
   // Fetch join code
   useEffect(() => {
-    if (!schoolId) { setJoinCodeLoading(false); return; }
+    if (!schoolId) {
+      setJoinCodeLoading(false);
+      return;
+    }
     const loadJoinCode = async () => {
       try {
         const sb = createSupabaseClient();
-        const { data } = await sb.from("schools")
-          .select("join_code")
-          .eq("id", schoolId)
-          .single();
+        const { data } = await sb.from("schools").select("join_code").eq("id", schoolId).single();
         setJoinCode(data?.join_code || null);
       } catch {
         setJoinCode(null);
@@ -148,10 +180,10 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
-      toast.success('Sign up URL copied to clipboard!');
+      toast.success("Sign up URL copied to clipboard!");
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error('Failed to copy URL to clipboard');
+      toast.error("Failed to copy URL to clipboard");
     }
   };
 
@@ -174,13 +206,13 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
     try {
       canvas.toBlob(async (blob) => {
         if (!blob) return;
-        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+        await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
         setQrCopied(true);
-        toast.success('QR code copied to clipboard!');
+        toast.success("QR code copied to clipboard!");
         setTimeout(() => setQrCopied(false), 2000);
       });
     } catch {
-      toast.error('Failed to copy QR code to clipboard');
+      toast.error("Failed to copy QR code to clipboard");
     }
   };
 
@@ -191,7 +223,7 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
           <div className="h-8 bg-gray-200 rounded w-1/3 mb-2"></div>
           <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[1, 2, 3, 4].map(i => (
+            {[1, 2, 3, 4].map((i) => (
               <div key={i} className="h-32 bg-gray-200 rounded"></div>
             ))}
           </div>
@@ -200,42 +232,42 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
     );
   }
 
-  const schoolParam = viewingSchoolId ? `?schoolId=${viewingSchoolId}` : '';
+  const schoolParam = viewingSchoolId ? `?schoolId=${viewingSchoolId}` : "";
   const quickActions = [
     {
-      title: 'Manage Houses',
-      description: 'Add and edit house teams',
+      title: "Manage Houses",
+      description: "Add and edit house teams",
       href: `/admin/houses${schoolParam}`,
       icon: Crown,
-      color: 'bg-purple-500',
+      color: "bg-purple-500",
       badge: 0,
     },
     {
-      title: 'Manage Challenges',
-      description: 'Review pending challenges',
-      href: `/admin/challenges${schoolParam}`,
+      title: "Manage Challenges",
+      description: "Review pending challenges",
+      href: `/admin/events${schoolParam}`,
       icon: Clock,
-      color: 'bg-orange-500',
+      color: "bg-orange-500",
       badge: stats.pendingEvents,
       needsAttention: stats.pendingEvents > 0,
-      secondaryHref: '/challenges',
-      secondaryLabel: 'View challenges',
+      secondaryHref: "/challenges",
+      secondaryLabel: "View challenges",
     },
     {
-      title: 'Activity Log',
-      description: 'View and moderate activity logs',
+      title: "Activity Log",
+      description: "View and moderate activity logs",
       href: `/admin/activity${schoolParam}`,
       icon: Activity,
-      color: 'bg-red-500',
+      color: "bg-red-500",
       badge: 0,
       needsAttention: false,
     },
     {
-      title: 'Assembly Mode',
-      description: 'Present live updates to the school',
+      title: "Assembly Mode",
+      description: "Present live updates to the school",
       href: `/admin/assembly${schoolParam}`,
       icon: Monitor,
-      color: 'bg-[#0B4B39]',
+      color: "bg-[#0B4B39]",
       badge: 0,
       needsAttention: false,
     },
@@ -253,9 +285,7 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
           </div>
         )}
         <h1 className="text-3xl font-bold text-gray-900">School Admin Dashboard</h1>
-        <p className="text-gray-600">
-          Managing {schoolName}
-        </p>
+        <p className="text-gray-600">Managing {schoolName}</p>
       </div>
 
       {/* School Join Link */}
@@ -272,7 +302,11 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
               <code className="flex-1 text-sm bg-white px-3 py-2 rounded border border-brand-green/20 break-all">
                 {typeof window !== "undefined" && `${window.location.origin}/join/${joinCode}`}
               </code>
-              <Button size="sm" onClick={handleCopyJoinLink} className="bg-brand-green text-white hover:bg-brand-green-soft shrink-0">
+              <Button
+                size="sm"
+                onClick={handleCopyJoinLink}
+                className="bg-brand-green text-white hover:bg-brand-green-soft shrink-0"
+              >
                 {joinCopied ? <Check size={14} /> : <Copy size={14} />}
                 {joinCopied ? "Copied" : "Copy"}
               </Button>
@@ -295,10 +329,14 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle>Regenerate join link?</DialogTitle>
-            <p className="text-sm text-gray-500">This will invalidate the current link. Students with the old link cannot use it.</p>
+            <p className="text-sm text-gray-500">
+              This will invalidate the current link. Students with the old link cannot use it.
+            </p>
           </DialogHeader>
           <div className="flex gap-2 justify-end">
-            <Button variant="outline" onClick={() => setRegenerateModal(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setRegenerateModal(false)}>
+              Cancel
+            </Button>
             <Button
               onClick={handleRegenerateJoinCode}
               disabled={regenerating}
@@ -319,9 +357,7 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalUsers}</div>
-            <p className="text-xs text-muted-foreground">
-              {stats.activeUsers} active
-            </p>
+            <p className="text-xs text-muted-foreground">{stats.activeUsers} active</p>
           </CardContent>
         </Card>
 
@@ -332,9 +368,7 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{Math.round(stats.totalMinutes)} minutes</div>
-            <p className="text-xs text-muted-foreground">
-              All student activities
-            </p>
+            <p className="text-xs text-muted-foreground">All student activities</p>
           </CardContent>
         </Card>
 
@@ -346,11 +380,9 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
           <CardContent className="flex flex-col flex-1 justify-between">
             <div>
               <div className="text-2xl font-bold">{stats.messageCount}</div>
-              <p className="text-xs text-muted-foreground">
-                Unread messages
-              </p>
+              <p className="text-xs text-muted-foreground">Unread messages</p>
             </div>
-            <Button asChild className="w-full mt-4" style={{ backgroundColor: '#0B4B39' }}>
+            <Button asChild className="w-full mt-4" style={{ backgroundColor: "#0B4B39" }}>
               <Link to={`/admin/updates${schoolParam}`}>Manage messages</Link>
             </Button>
           </CardContent>
@@ -363,9 +395,7 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">#{stats.schoolRank}</div>
-            <p className="text-xs text-muted-foreground">
-              In district
-            </p>
+            <p className="text-xs text-muted-foreground">In district</p>
           </CardContent>
         </Card>
       </div>
@@ -388,9 +418,9 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
                     </div>
                     <div className="flex items-center gap-2">
                       {action.badge > 0 && (
-                        <Badge 
+                        <Badge
                           variant={action.needsAttention ? "default" : "secondary"}
-                          className={`flex items-center gap-1 ${action.needsAttention ? 'bg-blue-500 hover:bg-blue-600' : ''}`}
+                          className={`flex items-center gap-1 ${action.needsAttention ? "bg-blue-500 hover:bg-blue-600" : ""}`}
                         >
                           {action.needsAttention && <Calendar size={12} />}
                           {action.badge}
@@ -401,23 +431,19 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600 mb-4">{action.description}</p>
-                  <Button asChild className="w-full" style={{ backgroundColor: '#0B4B39' }}>
-                    <Link to={action.href}>
-                      Open {action.title}
-                    </Link>
+                  <Button asChild className="w-full" style={{ backgroundColor: "#0B4B39" }}>
+                    <Link to={action.href}>Open {action.title}</Link>
                   </Button>
                   {action.secondaryHref && (
                     <Button asChild variant="outline" className="w-full mt-2">
-                      <Link to={action.secondaryHref}>
-                        {action.secondaryLabel}
-                      </Link>
+                      <Link to={action.secondaryHref}>{action.secondaryLabel}</Link>
                     </Button>
                   )}
                 </CardContent>
               </Card>
             );
           })}
-          
+
           {/* Copy Sign Up URL Card */}
           <Card className="hover:shadow-md transition-shadow">
             <CardHeader>
@@ -435,7 +461,7 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
               <Button
                 onClick={handleCopySignUpUrl}
                 className="w-full gap-2"
-                style={{ backgroundColor: '#0B4B39' }}
+                style={{ backgroundColor: "#0B4B39" }}
               >
                 {copied ? (
                   <>
@@ -452,7 +478,7 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
               <Button
                 onClick={() => setQrModalOpen(true)}
                 className="w-full gap-2 mt-2"
-                style={{ backgroundColor: '#0B4B39' }}
+                style={{ backgroundColor: "#0B4B39" }}
               >
                 <QrCode size={16} />
                 Generate QR Code
@@ -464,7 +490,9 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
             <DialogContent className="sm:max-w-sm">
               <DialogHeader>
                 <DialogTitle className="text-xl font-bold">Print or share invite</DialogTitle>
-                <p className="text-sm text-gray-500">Share this QR code with your students to help them register with Karawhiua</p>
+                <p className="text-sm text-gray-500">
+                  Share this QR code with your students to help them register with Karawhiua
+                </p>
               </DialogHeader>
               <div className="flex justify-center py-2">
                 <canvas ref={canvasRef} className="rounded-lg" />
@@ -472,7 +500,7 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
               <Button
                 onClick={handleCopyQrCode}
                 className="w-full gap-2"
-                style={{ backgroundColor: '#0B4B39' }}
+                style={{ backgroundColor: "#0B4B39" }}
               >
                 {qrCopied ? (
                   <>
@@ -495,19 +523,23 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
       <ActivityLogPreview schoolId={schoolId} schoolParam={schoolParam} />
 
       {/* Registration method */}
-      <Card className={isAllowList ? 'border-green-100' : 'border-red-100'}>
+      <Card className={isAllowList ? "border-green-100" : "border-red-100"}>
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-lg text-white ${isAllowList ? 'bg-green-600' : 'bg-red-500'}`}>
+            <div
+              className={`p-2 rounded-lg text-white ${isAllowList ? "bg-green-600" : "bg-red-500"}`}
+            >
               <ShieldAlert size={18} />
             </div>
             <div>
-              <CardTitle>{isAllowList ? 'Allow List' : 'Block List'}</CardTitle>
+              <CardTitle>{isAllowList ? "Allow List" : "Block List"}</CardTitle>
               <p className="text-sm text-gray-600 mt-0.5">Control which students can register</p>
             </div>
           </div>
-          <Button asChild style={{ backgroundColor: '#0B4B39' }}>
-            <Link to={`/admin/allowlist${schoolParam}`}>{isAllowList ? 'Manage Allow List' : 'Manage Block List'}</Link>
+          <Button asChild style={{ backgroundColor: "#0B4B39" }}>
+            <Link to={`/admin/allowlist${schoolParam}`}>
+              {isAllowList ? "Manage Allow List" : "Manage Block List"}
+            </Link>
           </Button>
         </CardHeader>
       </Card>
@@ -515,4 +547,4 @@ const SchoolAdminDashboard = ({ user, viewingSchoolId, viewingSchoolName, viewin
   );
 };
 
-export default SchoolAdminDashboard; 
+export default SchoolAdminDashboard;

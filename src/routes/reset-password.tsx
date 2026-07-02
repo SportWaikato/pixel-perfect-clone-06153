@@ -106,7 +106,8 @@ function ResetPasswordPage() {
                   <Button
                     type="submit"
                     disabled={isSubmitting || !ready}
-                    style={{ backgroundColor: "#0A4B39", color: "#fff" }} className="w-full" 
+                    style={{ backgroundColor: "#0A4B39", color: "#fff" }}
+                    className="w-full"
                   >
                     {isSubmitting ? "Updating…" : "Update password"}
                   </Button>

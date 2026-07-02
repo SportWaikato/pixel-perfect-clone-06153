@@ -1,43 +1,49 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Formik, Form, FormikProps } from 'formik';
-import { UserInterface } from '@/models/users/interfaces/UserInterface';
-import { createEventSchema, EventAudienceOption } from '@/models/forms/schemas/eventSchemas';
-import { ACTIVITY_TYPES } from '@/models/activities/interfaces/ActivityInterface';
+import { useEffect, useMemo, useState } from "react";
+import { Formik, Form, FormikProps } from "formik";
+import { UserInterface } from "@/models/users/interfaces/UserInterface";
+import { createEventSchema, EventAudienceOption } from "@/models/forms/schemas/eventSchemas";
+import { ACTIVITY_TYPES } from "@/models/activities/interfaces/ActivityInterface";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/modules/application/components/DesignSystem/ui/dialog';
-import { Button } from '@/modules/application/components/DesignSystem/ui/button';
-import { SelectItem } from '@/modules/application/components/DesignSystem/ui/select';
+} from "@/modules/application/components/DesignSystem/ui/dialog";
+import { Button } from "@/modules/application/components/DesignSystem/ui/button";
+import { SelectItem } from "@/modules/application/components/DesignSystem/ui/select";
 import {
   FormikInputField,
   FormikSelectField,
   FormikTextareaField,
   FormikSwitchField,
-} from '@/modules/common/components/Formik';
-import { createSupabaseClient } from '@/models/supabase/services/SupabaseClient';
-import { EventService } from '@/models/events/services/EventService';
-import { AchievementService } from '@/models/achievements/services/AchievementService';
-import { isSuperAdmin as checkIsSuperAdmin, isAdmin as checkIsAdmin } from '@/modules/auth/utils/roleUtils';
-import { AchievementInterface } from '@/models/achievements/interfaces/AchievementInterface';
-import { toast } from 'sonner';
-import { notifyAboutError } from '@/modules/application/utils/notifyAboutError';
-import BadgeImagePicker, { BadgeImageSelection } from '@/modules/admin/components/badges/BadgeImagePicker';
-import BadgeCriteriaBuilder from '@/modules/admin/components/badges/BadgeCriteriaBuilder';
+} from "@/modules/common/components/Formik";
+import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
+import { EventService } from "@/models/events/services/EventService";
+import { AchievementService } from "@/models/achievements/services/AchievementService";
+import {
+  isSuperAdmin as checkIsSuperAdmin,
+  isAdmin as checkIsAdmin,
+} from "@/modules/auth/utils/roleUtils";
+import { AchievementInterface } from "@/models/achievements/interfaces/AchievementInterface";
+import { toast } from "sonner";
+import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
+import BadgeImagePicker, {
+  BadgeImageSelection,
+} from "@/modules/admin/components/badges/BadgeImagePicker";
+import AIBadgeGenerator from "@/modules/admin/components/badges/AIBadgeGenerator";
+import BadgeCriteriaBuilder from "@/modules/admin/components/badges/BadgeCriteriaBuilder";
 import {
   type BadgeFormValues,
   buildBadgeCriteriaFromValues,
   getInitialBadgeFormValues,
   parseBadgeNumberField,
-} from '@/modules/admin/components/badges/badgeCriteriaHelpers';
-import { SchoolService } from '@/models/schools/services/SchoolService';
-import { SchoolInterface } from '@/models/schools/interfaces/SchoolInterface';
-import EventIconPicker from '@/modules/admin/components/EventIconPicker';
-import SchoolCheckboxList from '@/modules/admin/components/SchoolCheckboxList';
-import SubmitButton from '@/modules/admin/components/SubmitButton';
-import EventImageUpload, { EventImageState } from '@/modules/admin/components/EventImageUpload';
+} from "@/modules/admin/components/badges/badgeCriteriaHelpers";
+import { SchoolService } from "@/models/schools/services/SchoolService";
+import { SchoolInterface } from "@/models/schools/interfaces/SchoolInterface";
+import EventIconPicker from "@/modules/admin/components/EventIconPicker";
+import SchoolCheckboxList from "@/modules/admin/components/SchoolCheckboxList";
+import SubmitButton from "@/modules/admin/components/SubmitButton";
+import EventImageUpload, { EventImageState } from "@/modules/admin/components/EventImageUpload";
 
 interface CreateEventDialogProps {
   open: boolean;
@@ -66,7 +72,7 @@ interface CreateEventFormValues {
 interface CreateEventFormInnerProps {
   isSubmitting: boolean;
   values: CreateEventFormValues;
-  setFieldValue: FormikProps<CreateEventFormValues>['setFieldValue'];
+  setFieldValue: FormikProps<CreateEventFormValues>["setFieldValue"];
   isSuperAdmin: boolean;
   isAdmin: boolean;
   creatorSchoolId: string | null | undefined;
@@ -100,7 +106,7 @@ const CreateEventFormInner = ({
 }: CreateEventFormInnerProps) => {
   useEffect(() => {
     if (!values.shouldCreateBadge) {
-      setFieldValue('badge', getInitialBadgeFormValues(null), false);
+      setFieldValue("badge", getInitialBadgeFormValues(null), false);
       onBadgeImageSelect(null);
     }
   }, [values.shouldCreateBadge, setFieldValue, onBadgeImageSelect]);
@@ -113,9 +119,9 @@ const CreateEventFormInner = ({
       const current = normalizeIds(values.selected_school_ids);
       if (
         enforcedIds.length !== current.length ||
-        enforcedIds.some(id => !current.includes(id))
+        enforcedIds.some((id) => !current.includes(id))
       ) {
-        setFieldValue('selected_school_ids', enforcedIds, false);
+        setFieldValue("selected_school_ids", enforcedIds, false);
       }
       return;
     }
@@ -126,19 +132,19 @@ const CreateEventFormInner = ({
 
       if (
         normalizedIncoming.length === current.length &&
-        normalizedIncoming.every(id => current.includes(id))
+        normalizedIncoming.every((id) => current.includes(id))
       ) {
         return;
       }
 
-      setFieldValue('selected_school_ids', normalizedIncoming, false);
+      setFieldValue("selected_school_ids", normalizedIncoming, false);
     };
 
-    if (values.audience === 'creator_school') {
+    if (values.audience === "creator_school") {
       applySelectionIfDifferent(creatorSchoolId ? [creatorSchoolId] : []);
-    } else if (values.audience === 'all_schools') {
+    } else if (values.audience === "all_schools") {
       applySelectionIfDifferent([]);
-    } else if (values.audience === 'sport_waikato') {
+    } else if (values.audience === "sport_waikato") {
       applySelectionIfDifferent(sportWaikatoSchoolIds);
     }
   }, [
@@ -170,10 +176,12 @@ const CreateEventFormInner = ({
           <FormikSelectField
             name="event_type"
             label="Challenge Type"
-            onValueChange={(value, { form }) => form.setFieldValue('icon_type', value, false)}
+            onValueChange={(value, { form }) => form.setFieldValue("icon_type", value, false)}
           >
             {Object.entries(ACTIVITY_TYPES).map(([value, label]) => (
-              <SelectItem key={value} value={value}>{label}</SelectItem>
+              <SelectItem key={value} value={value}>
+                {label}
+              </SelectItem>
             ))}
             <SelectItem value="mixed">Mixed Activities</SelectItem>
           </FormikSelectField>
@@ -187,12 +195,7 @@ const CreateEventFormInner = ({
           />
         </div>
 
-        {isAdmin && (
-          <EventIconPicker
-            value={values.icon_type}
-            onChange={onIconChange}
-          />
-        )}
+        {isAdmin && <EventIconPicker value={values.icon_type} onChange={onIconChange} />}
 
         <div>
           <FormikInputField
@@ -202,7 +205,8 @@ const CreateEventFormInner = ({
             placeholder="e.g. 50"
           />
           <p className="mt-1 text-xs text-gray-500">
-            When set, students earn exactly this many points per activity in this challenge — no per-minute calculation.
+            When set, students earn exactly this many points per activity in this challenge — no
+            per-minute calculation.
           </p>
         </div>
 
@@ -219,11 +223,10 @@ const CreateEventFormInner = ({
 
         <div className="space-y-2">
           <p className="text-sm font-medium text-gray-900">Challenge Image (Optional)</p>
-          <p className="text-xs text-gray-500">Upload a banner image displayed on the challenge page.</p>
-          <EventImageUpload
-            currentImageUrl={eventImageUrl}
-            onChange={onEventImageChange}
-          />
+          <p className="text-xs text-gray-500">
+            Upload a banner image displayed on the challenge page.
+          </p>
+          <EventImageUpload currentImageUrl={eventImageUrl} onChange={onEventImageChange} />
         </div>
 
         {values.target_hours && (
@@ -253,23 +256,23 @@ const CreateEventFormInner = ({
               <SelectItem value="creator_school">Only the creating school</SelectItem>
             </FormikSelectField>
 
-            {values.audience === 'sport_waikato' && sportWaikatoSchoolIds.length === 0 && (
+            {values.audience === "sport_waikato" && sportWaikatoSchoolIds.length === 0 && (
               <p className="text-sm text-red-600">
                 There are no internal schools set up yet. Select a different audience.
               </p>
             )}
 
-            {values.audience === 'custom' && (
+            {values.audience === "custom" && (
               <SchoolCheckboxList
                 schools={schools}
                 selectedIds={values.selected_school_ids}
                 isLoading={isLoadingSchools}
-                onToggle={id => {
+                onToggle={(id) => {
                   const current = values.selected_school_ids;
                   setFieldValue(
-                    'selected_school_ids',
-                    current.includes(id) ? current.filter(x => x !== id) : [...current, id],
-                    false
+                    "selected_school_ids",
+                    current.includes(id) ? current.filter((x) => x !== id) : [...current, id],
+                    false,
                   );
                 }}
                 emptyMessage="Select at least one school."
@@ -284,93 +287,107 @@ const CreateEventFormInner = ({
       </div>
 
       {isAdmin && (
-      <div className="space-y-4 border-t pt-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-medium">Assembly Mode</h3>
-            <p className="text-sm text-gray-600">
-              Feature this challenge in the Assembly Mode presentation for your school.
-            </p>
+        <div className="space-y-4 border-t pt-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-medium">Assembly Mode</h3>
+              <p className="text-sm text-gray-600">
+                Feature this challenge in the Assembly Mode presentation for your school.
+              </p>
+            </div>
+            <FormikSwitchField
+              name="is_assembly"
+              label={values.is_assembly ? "Featured" : "Feature in Assembly"}
+            />
           </div>
-          <FormikSwitchField
-            name="is_assembly"
-            label={values.is_assembly ? 'Featured' : 'Feature in Assembly'}
-          />
         </div>
-      </div>
       )}
 
       {isAdmin && (
-      <div className="space-y-4 border-t pt-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-medium">Add Badge Incentive</h3>
-            <p className="text-sm text-gray-600">
-              Create a badge that unlocks when participants complete this challenge.
-            </p>
+        <div className="space-y-4 border-t pt-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-medium">Add Badge Incentive</h3>
+              <p className="text-sm text-gray-600">
+                Create a badge that unlocks when participants complete this challenge.
+              </p>
+            </div>
+            <FormikSwitchField
+              name="shouldCreateBadge"
+              label={values.shouldCreateBadge ? "Badge enabled" : "Enable badge"}
+            />
           </div>
-          <FormikSwitchField
-            name="shouldCreateBadge"
-            label={values.shouldCreateBadge ? 'Badge enabled' : 'Enable badge'}
-          />
+
+          {values.shouldCreateBadge && (
+            <div className="space-y-6 rounded-xl border border-gray-200 bg-gray-50 p-5">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <FormikInputField
+                  name="badge.name"
+                  label="Badge Name"
+                  placeholder="e.g. Nature Explorer"
+                />
+                <FormikInputField
+                  name="badge.icon_name"
+                  label="Icon Name"
+                  placeholder="e.g. award, trophy, star"
+                />
+              </div>
+
+              <FormikTextareaField
+                name="badge.description"
+                label="Badge Description"
+                placeholder="Describe what learners must do to earn this badge..."
+                rows={3}
+              />
+
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <FormikInputField
+                  name="badge.points_reward"
+                  type="number"
+                  label="Points Reward"
+                  placeholder="10"
+                />
+                <FormikSelectField
+                  name="badge.is_active"
+                  label="Badge Status"
+                  placeholder="Select status"
+                >
+                  <SelectItem value="true">Active</SelectItem>
+                  <SelectItem value="false">Inactive</SelectItem>
+                </FormikSelectField>
+              </div>
+
+              <div className="space-y-2">
+                <h4 className="text-sm font-medium text-gray-900">Badge Image (optional)</h4>
+                <p className="text-xs text-gray-500">Choose an image from the badge library.</p>
+                <BadgeImagePicker selectedUrl={selectedBadgeUrl} onSelect={onBadgeImageSelect} />
+              </div>
+
+              <div className="border-t pt-3">
+                <AIBadgeGenerator
+                  badgeName={values.badge.name}
+                  badgeDescription={values.badge.description}
+                  iconContext={values.badge.icon_name}
+                  onGenerated={(storageUrl, storagePath) => {
+                    onBadgeImageSelect({
+                      storage_url: storageUrl,
+                      storage_path: storagePath,
+                      is_custom_upload: true,
+                    });
+                  }}
+                  hasExistingImage={!!selectedBadgeImage}
+                  disabled={!values.badge.name?.trim()}
+                />
+              </div>
+
+              <BadgeCriteriaBuilder
+                values={values.badge}
+                setFieldValue={setFieldValue}
+                namePrefix="badge"
+              />
+            </div>
+          )}
         </div>
-
-        {values.shouldCreateBadge && (
-          <div className="space-y-6 rounded-xl border border-gray-200 bg-gray-50 p-5">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <FormikInputField
-                name="badge.name"
-                label="Badge Name"
-                placeholder="e.g. Nature Explorer"
-              />
-              <FormikInputField
-                name="badge.icon_name"
-                label="Icon Name"
-                placeholder="e.g. award, trophy, star"
-              />
-            </div>
-
-            <FormikTextareaField
-              name="badge.description"
-              label="Badge Description"
-              placeholder="Describe what learners must do to earn this badge..."
-              rows={3}
-            />
-
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <FormikInputField
-                name="badge.points_reward"
-                type="number"
-                label="Points Reward"
-                placeholder="10"
-              />
-              <FormikSelectField
-                name="badge.is_active"
-                label="Badge Status"
-                placeholder="Select status"
-              >
-                <SelectItem value="true">Active</SelectItem>
-                <SelectItem value="false">Inactive</SelectItem>
-              </FormikSelectField>
-            </div>
-
-            <div className="space-y-2">
-              <h4 className="text-sm font-medium text-gray-900">Badge Image (optional)</h4>
-              <p className="text-xs text-gray-500">Choose an image from the badge library.</p>
-              <BadgeImagePicker
-                selectedUrl={selectedBadgeUrl}
-                onSelect={onBadgeImageSelect}
-              />
-            </div>
-
-            <BadgeCriteriaBuilder
-              values={values.badge}
-              setFieldValue={setFieldValue}
-              namePrefix="badge"
-            />
-          </div>
-        )}
-      </div>
       )}
 
       <div className="flex gap-4 pt-4">
@@ -384,14 +401,19 @@ const CreateEventFormInner = ({
           Cancel
         </Button>
         <SubmitButton isSubmitting={isSubmitting} loadingText="Creating..." className="flex-1">
-          {values.shouldCreateBadge ? 'Create Challenge & Badge' : 'Create Challenge'}
+          {values.shouldCreateBadge ? "Create Challenge & Badge" : "Create Challenge"}
         </SubmitButton>
       </div>
     </Form>
   );
 };
 
-const CreateEventDialog = ({ open, onOpenChange, user, onEventCreated }: CreateEventDialogProps) => {
+const CreateEventDialog = ({
+  open,
+  onOpenChange,
+  user,
+  onEventCreated,
+}: CreateEventDialogProps) => {
   const [selectedBadgeImage, setSelectedBadgeImage] = useState<BadgeImageSelection | null>(null);
   const [selectedEventImage, setSelectedEventImage] = useState<EventImageState | null>(null);
   const [schools, setSchools] = useState<SchoolInterface[]>([]);
@@ -424,24 +446,24 @@ const CreateEventDialog = ({ open, onOpenChange, user, onEventCreated }: CreateE
   }, [open, isSuperAdmin]);
 
   const sportWaikatoSchoolIds = useMemo(
-    () => schools.filter(school => school.is_internal).map(school => school.id),
-    [schools]
+    () => schools.filter((school) => school.is_internal).map((school) => school.id),
+    [schools],
   );
 
   const initialValues: CreateEventFormValues = {
-    name: '',
-    description: '',
-    event_type: 'mixed',
-    icon_type: '',
-    start_date: '',
-    end_date: '',
+    name: "",
+    description: "",
+    event_type: "mixed",
+    icon_type: "",
+    start_date: "",
+    end_date: "",
     target_hours: null,
     challenge_points: null,
-    youtube_video_url: '',
+    youtube_video_url: "",
     is_assembly: false,
     shouldCreateBadge: false,
     badge: getInitialBadgeFormValues(null),
-    audience: isSuperAdmin ? 'all_schools' : 'creator_school',
+    audience: isSuperAdmin ? "all_schools" : "creator_school",
     selected_school_ids: creatorSchoolId ? [creatorSchoolId] : [],
   };
 
@@ -461,27 +483,34 @@ const CreateEventDialog = ({ open, onOpenChange, user, onEventCreated }: CreateE
         }
 
         switch (values.audience) {
-          case 'all_schools':
+          case "all_schools":
             return null;
-          case 'sport_waikato':
+          case "sport_waikato":
             return sportWaikatoSchoolIds;
-          case 'custom':
+          case "custom":
             return values.selected_school_ids;
-          case 'creator_school':
+          case "creator_school":
           default:
             return creatorSchoolId ? [creatorSchoolId] : [];
         }
       })();
 
-      if (values.audience === 'sport_waikato' && isSuperAdmin && sportWaikatoSchoolIds.length === 0) {
-        toast.error('No internal (Sport Waikato) schools are configured yet. Please choose another audience.');
+      if (
+        values.audience === "sport_waikato" &&
+        isSuperAdmin &&
+        sportWaikatoSchoolIds.length === 0
+      ) {
+        toast.error(
+          "No internal (Sport Waikato) schools are configured yet. Please choose another audience.",
+        );
         setSubmitting(false);
         return;
       }
 
-      const normalizedTargetSchools = resolvedTargetSchools && resolvedTargetSchools.length > 0
-        ? Array.from(new Set(resolvedTargetSchools))
-        : null;
+      const normalizedTargetSchools =
+        resolvedTargetSchools && resolvedTargetSchools.length > 0
+          ? Array.from(new Set(resolvedTargetSchools))
+          : null;
 
       const eventData = {
         name: values.name,
@@ -507,8 +536,8 @@ const CreateEventDialog = ({ open, onOpenChange, user, onEventCreated }: CreateE
 
       if (values.shouldCreateBadge) {
         const pointsReward = parseBadgeNumberField(values.badge.points_reward);
-        if (typeof pointsReward === 'undefined') {
-          toast.error('Badge points reward is invalid');
+        if (typeof pointsReward === "undefined") {
+          toast.error("Badge points reward is invalid");
           setSubmitting(false);
           return;
         }
@@ -520,7 +549,7 @@ const CreateEventDialog = ({ open, onOpenChange, user, onEventCreated }: CreateE
           description: values.badge.description,
           icon_name: values.badge.icon_name,
           points_reward: pointsReward,
-          is_active: values.badge.is_active === 'true',
+          is_active: values.badge.is_active === "true",
           criteria: badgeCriteria,
         };
 
@@ -542,11 +571,11 @@ const CreateEventDialog = ({ open, onOpenChange, user, onEventCreated }: CreateE
 
       const successMessage = values.shouldCreateBadge
         ? isAdmin
-          ? 'Challenge and badge created and published successfully!'
-          : 'Challenge and badge submitted for approval!'
+          ? "Challenge and badge created and published successfully!"
+          : "Challenge and badge submitted for approval!"
         : isAdmin
-          ? 'Challenge created and published successfully!'
-          : 'Challenge submitted for approval!';
+          ? "Challenge created and published successfully!"
+          : "Challenge submitted for approval!";
 
       toast.success(successMessage);
     } catch (error) {
@@ -582,13 +611,15 @@ const CreateEventDialog = ({ open, onOpenChange, user, onEventCreated }: CreateE
                 schools={schools}
                 selectedBadgeUrl={
                   selectedBadgeImage?.storage_url ||
-                  (selectedBadgeImage?.image_filename ? `/badges/${selectedBadgeImage.image_filename}` : '')
+                  (selectedBadgeImage?.image_filename
+                    ? `/badges/${selectedBadgeImage.image_filename}`
+                    : "")
                 }
                 onBadgeImageSelect={handleBadgeImageSelect}
-                eventImageUrl={selectedEventImage?.url || ''}
+                eventImageUrl={selectedEventImage?.url || ""}
                 onEventImageChange={setSelectedEventImage}
                 onCancel={() => onOpenChange(false)}
-                onIconChange={(v) => setFieldValue('icon_type', v, false)}
+                onIconChange={(v) => setFieldValue("icon_type", v, false)}
               />
             )}
           </Formik>

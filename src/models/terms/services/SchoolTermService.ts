@@ -1,10 +1,10 @@
-import { SupabaseClient } from '@supabase/supabase-js';
-import { SchoolTermInterface } from '../interfaces/SchoolTermInterface';
+import { SupabaseClient } from "@supabase/supabase-js";
+import { SchoolTermInterface } from "../interfaces/SchoolTermInterface";
 
-const TABLE = 'school_terms';
+const TABLE = "school_terms";
 
 const nzDateString = (date: Date = new Date()) =>
-  new Intl.DateTimeFormat('en-CA', { timeZone: 'Pacific/Auckland' }).format(date);
+  new Intl.DateTimeFormat("en-CA", { timeZone: "Pacific/Auckland" }).format(date);
 
 export class SchoolTermService {
   private supabaseClient: SupabaseClient;
@@ -16,10 +16,10 @@ export class SchoolTermService {
   async getBySchoolId(schoolId: string): Promise<SchoolTermInterface[]> {
     const { data, error } = await this.supabaseClient
       .from(TABLE)
-      .select('*')
-      .eq('school_id', schoolId)
-      .order('year', { ascending: false })
-      .order('term_number', { ascending: true });
+      .select("*")
+      .eq("school_id", schoolId)
+      .order("year", { ascending: false })
+      .order("term_number", { ascending: true });
     if (error) throw new Error(error.message);
     return data || [];
   }
@@ -27,10 +27,10 @@ export class SchoolTermService {
   async getBySchoolAndYear(schoolId: string, year: number): Promise<SchoolTermInterface[]> {
     const { data, error } = await this.supabaseClient
       .from(TABLE)
-      .select('*')
-      .eq('school_id', schoolId)
-      .eq('year', year)
-      .order('term_number', { ascending: true });
+      .select("*")
+      .eq("school_id", schoolId)
+      .eq("year", year)
+      .order("term_number", { ascending: true });
     if (error) throw new Error(error.message);
     return data || [];
   }
@@ -39,20 +39,22 @@ export class SchoolTermService {
     const today = nzDateString();
     const { data, error } = await this.supabaseClient
       .from(TABLE)
-      .select('*')
-      .eq('school_id', schoolId)
-      .lte('start_date', today)
-      .gte('end_date', today)
+      .select("*")
+      .eq("school_id", schoolId)
+      .lte("start_date", today)
+      .gte("end_date", today)
       .maybeSingle();
     if (error) throw new Error(error.message);
     return data;
   }
 
-  async create(termData: Omit<SchoolTermInterface, 'id' | 'created_at' | 'updated_at'>): Promise<SchoolTermInterface> {
+  async create(
+    termData: Omit<SchoolTermInterface, "id" | "created_at" | "updated_at">,
+  ): Promise<SchoolTermInterface> {
     const { data, error } = await this.supabaseClient
       .from(TABLE)
       .insert(termData)
-      .select('*')
+      .select("*")
       .single();
     if (error) throw new Error(error.message);
     return data;
@@ -62,16 +64,21 @@ export class SchoolTermService {
     const { data, error } = await this.supabaseClient
       .from(TABLE)
       .update({ ...termData, updated_at: new Date().toISOString() })
-      .eq('id', id)
-      .select('*')
+      .eq("id", id)
+      .select("*")
       .single();
     if (error) throw new Error(error.message);
     return data;
   }
 
   async delete(id: string): Promise<void> {
-    const { error } = await this.supabaseClient.from(TABLE).delete().eq('id', id);
+    const { error } = await this.supabaseClient.from(TABLE).delete().eq("id", id);
     if (error) throw new Error(error.message);
+  }
+
+  async setCurrentTerm(schoolId: string, termId: string): Promise<void> {
+    await this.supabaseClient.from(TABLE).update({ is_current: false }).eq("school_id", schoolId);
+    await this.supabaseClient.from(TABLE).update({ is_current: true }).eq("id", termId);
   }
 
   static getCurrentWeekNumber(term: SchoolTermInterface): number {
@@ -89,7 +96,10 @@ export class SchoolTermService {
     return Math.ceil(diffDays / 7);
   }
 
-  static getWeekBounds(term: SchoolTermInterface, weekNumber: number): { startDate: string; endDate: string } {
+  static getWeekBounds(
+    term: SchoolTermInterface,
+    weekNumber: number,
+  ): { startDate: string; endDate: string } {
     const termStart = new Date(term.start_date);
     const termEnd = new Date(term.end_date);
 

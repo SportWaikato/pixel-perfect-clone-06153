@@ -7,4 +7,4 @@ export interface HouseInterface {
   school_id: string;
   total_points: number;
   total_kilometers: number;
-} 
+}

@@ -5,7 +5,7 @@ export const calculateBasePoints = (durationMinutes: number): number =>
 
 export const calculatePointsWithMultiplier = (
   basePoints: number,
-  eventMultiplier = 1.0
+  eventMultiplier = 1.0,
 ): { base_points: number; final_points: number; challenge_points_multiplier: number } => ({
   base_points: basePoints,
   final_points: Math.round(basePoints * eventMultiplier),
@@ -15,7 +15,7 @@ export const calculatePointsWithMultiplier = (
 // Challenge bonus: student earns per-minute base points plus the fixed challenge bonus.
 export const calculateFixedChallengePoints = (
   basePoints: number,
-  challengePoints: number
+  challengePoints: number,
 ): { base_points: number; final_points: number; challenge_points_multiplier: number } => ({
   base_points: basePoints,
   final_points: basePoints + challengePoints,

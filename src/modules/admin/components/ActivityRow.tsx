@@ -1,17 +1,21 @@
-import { AlertTriangle, MoreHorizontal, RotateCcw, X } from 'lucide-react';
-import { ActivityInterface } from '@/models/activities/interfaces/ActivityInterface';
-import { SchoolInterface } from '@/models/schools/interfaces/SchoolInterface';
-import { Button } from '@/modules/application/components/DesignSystem/ui/button';
-import { Badge } from '@/modules/application/components/DesignSystem/ui/badge';
+import { AlertTriangle, MoreHorizontal, RotateCcw, X } from "lucide-react";
+import { ActivityInterface } from "@/models/activities/interfaces/ActivityInterface";
+import { SchoolInterface } from "@/models/schools/interfaces/SchoolInterface";
+import { Button } from "@/modules/application/components/DesignSystem/ui/button";
+import { Badge } from "@/modules/application/components/DesignSystem/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/modules/application/components/DesignSystem/ui/dropdown-menu';
-import { format } from 'date-fns';
-import { toZonedTime } from 'date-fns-tz';
-import { NZ_TIMEZONE, getUserInitials, getActivityDisplayName } from '@/modules/admin/utils/activityUtils';
+} from "@/modules/application/components/DesignSystem/ui/dropdown-menu";
+import { format } from "date-fns";
+import { toZonedTime } from "date-fns-tz";
+import {
+  NZ_TIMEZONE,
+  getUserInitials,
+  getActivityDisplayName,
+} from "@/modules/admin/utils/activityUtils";
 
 export interface ActivityRowProps {
   activity: ActivityInterface;
@@ -45,10 +49,10 @@ const ActivityRow = ({
     <div
       className={`flex items-center justify-between p-3 rounded-lg border ${
         activity.is_rejected
-          ? 'bg-gray-50 border-gray-200 opacity-60'
+          ? "bg-gray-50 border-gray-200 opacity-60"
           : activity.is_flagged
-          ? 'bg-amber-50 border-amber-300 border-l-4 border-l-amber-500'
-          : 'bg-white border-gray-200'
+            ? "bg-amber-50 border-amber-300 border-l-4 border-l-amber-500"
+            : "bg-white border-gray-200"
       }`}
     >
       <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -63,8 +67,10 @@ const ActivityRow = ({
             {isSuperAdmin && !selectedSchoolId && activity.user && (
               <span className="text-xs text-gray-400">
                 {(activity.user as { school_id?: string }).school_id
-                  ? (schools?.find(s => s.id === (activity.user as { school_id?: string }).school_id)?.name ?? '')
-                  : ''}
+                  ? (schools?.find(
+                      (s) => s.id === (activity.user as { school_id?: string }).school_id,
+                    )?.name ?? "")
+                  : ""}
               </span>
             )}
             {activity.is_flagged && (
@@ -80,9 +86,9 @@ const ActivityRow = ({
             )}
           </div>
           <div className="text-xs text-gray-500 truncate">
-            {getActivityDisplayName(activity)} • {activity.duration_minutes} min •{' '}
-            {activity.final_points || activity.house_points_awarded} pts •{' '}
-            {format(toZonedTime(new Date(activity.created_at), NZ_TIMEZONE), 'MMM d, yyyy h:mm a')}
+            {getActivityDisplayName(activity)} • {activity.duration_minutes} min •{" "}
+            {activity.final_points || activity.house_points_awarded} pts •{" "}
+            {format(toZonedTime(new Date(activity.created_at), NZ_TIMEZONE), "MMM d, yyyy h:mm a")}
           </div>
         </div>
       </div>
