@@ -20,20 +20,18 @@ function JoinByCode() {
 
   useEffect(() => {
     (async () => {
-      const { data, error: err } = await supabase
-        .from("schools")
-        .select("id, name")
-        .eq("join_code", code)
-        .eq("is_active", true)
-        .eq("join_link_active", true)
-        .maybeSingle();
+      const { data, error: err } = await supabase.rpc("lookup_school_by_join_code", {
+        p_join_code: code,
+      });
 
       if (err) {
         setError("Something went wrong. Please try again.");
         setLoading(false);
         return;
       }
-      if (!data) {
+
+      const schoolData = data as unknown as { id: string; name: string } | null;
+      if (!schoolData) {
         setError(
           "This join link is invalid or has expired. Contact your school admin for a new link.",
         );
@@ -41,7 +39,7 @@ function JoinByCode() {
         return;
       }
 
-      setSchool(data);
+      setSchool(schoolData);
 
       const {
         data: { user },

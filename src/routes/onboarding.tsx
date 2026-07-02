@@ -89,18 +89,23 @@ function OnboardingPage() {
       // Check sessionStorage for join code
       const joinCode = sessionStorage.getItem("join_code");
       if (joinCode) {
-        const { data } = await supabase
-          .from("schools")
-          .select("id, name, email_domain, secondary_email_domain")
-          .eq("join_code", joinCode)
-          .eq("is_active", true)
-          .maybeSingle();
-        if (data) {
-          setMatchedSchool(data);
-          setSelectedSchool(data);
-          sessionStorage.removeItem("join_code");
-          setLoadingSchool(false);
-          return;
+        const { data } = await supabase.rpc("lookup_school_by_join_code", {
+          p_join_code: joinCode,
+        });
+        const rpcData = data as unknown as { id: string; name: string } | null;
+        if (rpcData) {
+          const { data: schoolData } = await supabase
+            .from("schools")
+            .select("id, name, email_domain, secondary_email_domain")
+            .eq("id", rpcData.id)
+            .maybeSingle();
+          if (schoolData) {
+            setMatchedSchool(schoolData);
+            setSelectedSchool(schoolData);
+            sessionStorage.removeItem("join_code");
+            setLoadingSchool(false);
+            return;
+          }
         }
         sessionStorage.removeItem("join_code");
       }

@@ -137,8 +137,11 @@ const SchoolAdminDashboard = ({
     const loadJoinCode = async () => {
       try {
         const sb = createSupabaseClient();
-        const { data } = await sb.from("schools").select("join_code").eq("id", schoolId).single();
-        setJoinCode(data?.join_code || null);
+        const { data } = await sb.rpc("get_school_join_code", {
+          p_school_id: schoolId,
+        });
+        const codeData = data as unknown as { join_code: string } | null;
+        setJoinCode(codeData?.join_code || null);
       } catch {
         setJoinCode(null);
       } finally {

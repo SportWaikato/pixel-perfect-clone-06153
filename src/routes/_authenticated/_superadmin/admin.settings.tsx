@@ -11,11 +11,5 @@ function Page() {
   const { profile } = Route.useRouteContext();
   if (!profile) return null;
   const user = profile as UserInterface;
-  return (
-    <TermManagementContent
-      terms={[]}
-      schoolId={user.school_id ?? ""}
-      currentUser={user}
-    />
-  );
+  return <TermManagementContent terms={[]} schoolId={user.school_id ?? ""} currentUser={user} />;
 }
