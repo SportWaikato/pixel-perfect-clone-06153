@@ -80,13 +80,13 @@ const ChallengeProgressBar = ({ event, userId, houseId, schoolId }: ChallengePro
           <span className="text-xs text-gray-400">{pct}%</span>
         )}
       </div>
-      <Progress
-        value={pct}
-        className="h-2"
-        indicatorClassName={
-          progress.completed ? "bg-green-500" : pct > 50 ? "bg-[#0B4B39]" : "bg-[#D103D1]"
-        }
-      />
+      {progress.completed ? (
+        <Progress value={pct} className="h-2 [&_[data-slot=progress-indicator]]:bg-green-500" />
+      ) : pct > 50 ? (
+        <Progress value={pct} className="h-2 [&_[data-slot=progress-indicator]]:bg-[#0B4B39]" />
+      ) : (
+        <Progress value={pct} className="h-2 [&_[data-slot=progress-indicator]]:bg-[#D103D1]" />
+      )}
       {event.scope === "house" && (
         <div className="flex items-center gap-1 text-xs text-gray-400">
           <Users size={10} />

@@ -38,7 +38,7 @@ Create exactly one badge for "${badgeName}".`;
       model: IMAGE_MODEL,
       generationConfig: {
         responseModalities: ["Text", "Image"],
-      },
+      } as any,
     });
 
     const response = await model.generateContent(prompt);

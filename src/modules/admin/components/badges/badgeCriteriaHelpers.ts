@@ -317,7 +317,7 @@ export const getActivityLabel = (activityType?: string) => {
 };
 
 export const getInitialBadgeFormValues = (badge: AchievementInterface | null): BadgeFormValues => {
-  const rawCriteria =
+  const rawCriteria: any =
     badge?.criteria && typeof badge.criteria === "object" ? badge.criteria : defaultCriteria;
   const criteriaType = (rawCriteria?.type as CriteriaType) || "specific_activity";
   const scope: Scope = (badge?.scope as Scope) || "student";

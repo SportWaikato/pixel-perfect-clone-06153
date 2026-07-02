@@ -287,6 +287,17 @@ export class EventService {
     return data;
   }
 
+  async update(id: string, data: Partial<EventInterface>): Promise<EventInterface> {
+    const { data: result, error } = await this.supabaseClient
+      .from(TABLE_NAME)
+      .update({ ...data, updated_at: new Date().toISOString() })
+      .eq("id", id)
+      .select("*")
+      .single();
+    if (error) throw new Error(error.message);
+    return result;
+  }
+
   async updateEvent(eventId: string, eventData: Partial<EventInterface>): Promise<EventInterface> {
     const { error: updateError } = await this.supabaseClient
       .from(TABLE_NAME)

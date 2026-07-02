@@ -18,6 +18,15 @@ export class AchievementService {
     this.supabaseClient = supabaseClient;
   }
 
+  private async getAuthenticatedUserId(): Promise<string | null> {
+    const {
+      data: { user },
+      error,
+    } = await this.supabaseClient.auth.getUser();
+    if (error || !user) return null;
+    return user.id;
+  }
+
   async checkAndAwardAchievements(
     userId: string,
     activityData: {
@@ -28,6 +37,12 @@ export class AchievementService {
       event_id?: string;
     },
   ): Promise<UserAchievementInterface[]> {
+    const authUserId = await this.getAuthenticatedUserId();
+    if (!authUserId || authUserId !== userId) {
+      console.error("Security: userId does not match authenticated user");
+      return [];
+    }
+
     const newAchievements: UserAchievementInterface[] = [];
 
     const [achievementsResult, userAchievementsResult] = await Promise.all([
@@ -308,6 +323,12 @@ export class AchievementService {
   }
 
   async checkHistoricalAchievements(userId: string): Promise<UserAchievementInterface[]> {
+    const authUserId = await this.getAuthenticatedUserId();
+    if (!authUserId || authUserId !== userId) {
+      console.error("Security: userId does not match authenticated user");
+      return [];
+    }
+
     const newAchievements: UserAchievementInterface[] = [];
 
     // Fetch all required data in parallel — none of these depend on each other
@@ -466,6 +487,12 @@ export class AchievementService {
   }
 
   async checkEventBasedAchievements(userId: string): Promise<UserAchievementInterface[]> {
+    const authUserId = await this.getAuthenticatedUserId();
+    if (!authUserId || authUserId !== userId) {
+      console.error("Security: userId does not match authenticated user");
+      return [];
+    }
+
     const newAchievements: UserAchievementInterface[] = [];
 
     // Get user's existing achievements

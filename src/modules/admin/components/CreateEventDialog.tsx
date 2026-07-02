@@ -375,7 +375,7 @@ const CreateEventFormInner = ({
                       is_custom_upload: true,
                     });
                   }}
-                  hasExistingImage={!!selectedBadgeImage}
+                  hasExistingImage={!!selectedBadgeUrl}
                   disabled={!values.badge.name?.trim()}
                 />
               </div>

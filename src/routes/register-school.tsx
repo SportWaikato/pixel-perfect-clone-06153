@@ -304,14 +304,13 @@ function RegisterSchoolPage() {
         .from("schools")
         .insert({
           name: schoolName.trim(),
+          code: schoolName.trim().slice(0, 6).toUpperCase().replace(/\s/g, ""),
           region,
           school_type: schoolType,
           email_domain: primaryDomain,
           secondary_email_domain: secondaryDomain || null,
-          status: "pending",
-          is_active: false,
-          self_registered: true,
-        })
+          registration_method: "self",
+        } as any)
         .select("id")
         .single();
 

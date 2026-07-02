@@ -278,12 +278,21 @@ const UserManagementContent = ({
     if (!promoteUser) return;
     const { user: target, targetRole } = promoteUser;
     try {
-      const updates: Partial<UserInterface> = { role: targetRole };
+      await userService.updateUserRole(target.id, targetRole);
       if (targetRole === "school_admin") {
-        updates.year_group = "Staff";
+        await userService.update(target.id, { year_group: "Staff" });
       }
-      await userService.update(target.id, updates);
-      setUsers((prev) => prev.map((u) => (u.id === target.id ? { ...u, ...updates } : u)));
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.id === target.id
+            ? {
+                ...u,
+                role: targetRole,
+                year_group: targetRole === "school_admin" ? "Staff" : u.year_group,
+              }
+            : u,
+        ),
+      );
       const roleLabel = targetRole === "super_admin" ? "Super Admin" : "School Admin";
       toast.success(`${target.first_name} ${target.last_name} promoted to ${roleLabel}`);
       setPromoteUser(null);

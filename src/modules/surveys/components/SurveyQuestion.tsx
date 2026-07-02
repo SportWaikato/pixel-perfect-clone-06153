@@ -2,7 +2,7 @@
 
 import { useField } from "formik";
 import { SurveyQuestionInterface } from "@/models/surveys/interfaces/SurveyInterface";
-import { Checkbox } from "@/modules/application/components/DesignSystem/ui/checkbox";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/modules/application/components/DesignSystem/ui/label";
 import {
   Select,

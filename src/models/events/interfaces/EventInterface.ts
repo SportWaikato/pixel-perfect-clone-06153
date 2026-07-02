@@ -39,6 +39,8 @@ export interface EventInterface {
   event_image_url?: string | null;
   event_image_storage_path?: string | null;
   is_student_suggested?: boolean;
+  suggestion_image_url?: string | null;
+  rejection_reason?: string | null;
   icon_type?: string | null;
   is_published: boolean;
   last_interaction_at?: string | null;

@@ -87,10 +87,32 @@ export class UserService {
   }
 
   async update(id: string, userData: Partial<UserInterface>): Promise<UserInterface | null> {
+    const { role: _role, ...safeData } = userData;
     const { data, error } = await this.supabaseClient
       .from(TABLE_NAME)
       .update({
-        ...userData,
+        ...safeData,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", id)
+      .select(
+        `
+        *,
+        school:schools(*),
+        house:houses(*)
+      `,
+      )
+      .maybeSingle();
+
+    if (error) throw new Error(error.message);
+    return data;
+  }
+
+  async updateUserRole(id: string, role: UserInterface["role"]): Promise<UserInterface | null> {
+    const { data, error } = await this.supabaseClient
+      .from(TABLE_NAME)
+      .update({
+        role,
         updated_at: new Date().toISOString(),
       })
       .eq("id", id)

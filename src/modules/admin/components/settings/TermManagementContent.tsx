@@ -105,6 +105,7 @@ const TermManagementContent = ({
           start_date: values.start_date,
           end_date: values.end_date,
           created_by: currentUser.id,
+          is_current: false,
         });
         setTerms((prev) => [...prev, created]);
         toast.success("Term created");
