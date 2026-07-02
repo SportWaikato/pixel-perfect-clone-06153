@@ -106,20 +106,47 @@ function RegisterSchoolPage() {
     "protonmail.com",
   ];
 
-  const validateStep1 = () => {
-    if (!schoolName.trim()) {
-      toast.error("Enter your school name");
-      return false;
+  // Restore form state after OAuth redirect
+  useEffect(() => {
+    const saved = sessionStorage.getItem("register_school_state");
+    if (saved) {
+      try {
+        const state = JSON.parse(saved);
+        if (state.schoolName) setSchoolName(state.schoolName);
+        if (state.region) setRegion(state.region);
+        if (state.schoolType) setSchoolType(state.schoolType);
+        if (state.primaryDomain) setPrimaryDomain(state.primaryDomain);
+        if (state.secondaryDomain) setSecondaryDomain(state.secondaryDomain);
+        if (state.houses) setCustomHouses(state.houses);
+        if (state.step) setStep(state.step);
+      } catch {
+        sessionStorage.removeItem("register_school_state");
+      }
     }
-    if (!region) {
-      toast.error("Select your region");
-      return false;
+  }, []);
+
+  const getSavedDomain = () => {
+    try {
+      const saved = sessionStorage.getItem("register_school_state");
+      return saved ? JSON.parse(saved).primaryDomain : "";
+    } catch {
+      return "";
     }
-    if (!schoolType) {
-      toast.error("Select your school type");
-      return false;
-    }
-    return true;
+  };
+
+  const saveFormState = () => {
+    sessionStorage.setItem(
+      "register_school_state",
+      JSON.stringify({
+        schoolName,
+        region,
+        schoolType,
+        primaryDomain,
+        secondaryDomain,
+        houses: customHouses,
+        step: 4,
+      }),
+    );
   };
 
   const validateStep2 = () => {
@@ -207,6 +234,7 @@ function RegisterSchoolPage() {
       return;
     }
     setGoogleProcessing(true);
+    saveFormState();
 
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -222,7 +250,7 @@ function RegisterSchoolPage() {
     }
 
     setGoogleProcessing(false);
-  }, [primaryDomain]);
+  }, [primaryDomain, schoolName, region, schoolType, secondaryDomain, customHouses]);
 
   // Listen for Google OAuth return (popup or redirect)
   useEffect(() => {
@@ -231,11 +259,12 @@ function RegisterSchoolPage() {
         const user = session.user;
         const email = user.email ?? "";
         const domain = email.split("@")[1]?.toLowerCase();
+        const expectedDomain = primaryDomain || getSavedDomain();
 
-        if (!domain || domain !== primaryDomain) {
+        if (!domain || domain !== expectedDomain) {
           await supabase.auth.signOut();
           toast.error(
-            `Your Google account email must match your school domain (@${primaryDomain}). Please use your school Google account or sign up with email below.`,
+            `Your Google account email must match your school domain (@${expectedDomain}). Please use your school Google account or sign up with email below.`,
           );
           return;
         }
@@ -253,20 +282,27 @@ function RegisterSchoolPage() {
 
   // Check for existing Google session on mount (for redirect flow)
   useEffect(() => {
+    if (authMethod !== null) return;
     (async () => {
       const { data } = await supabase.auth.getUser();
       if (data.user && data.user.email) {
         const email = data.user.email;
         const domain = email.split("@")[1]?.toLowerCase();
-        if (domain && domain === primaryDomain && authMethod === null && step === 4) {
+        const restoredDomain = sessionStorage.getItem("register_school_state")
+          ? JSON.parse(sessionStorage.getItem("register_school_state")!).primaryDomain
+          : primaryDomain;
+
+        if (domain && restoredDomain && domain === restoredDomain) {
           setAdminEmail(email);
           setAdminFirstName(data.user.user_metadata?.full_name?.split(" ")[0] ?? "");
           setAdminLastName(data.user.user_metadata?.full_name?.split(" ").slice(1).join(" ") ?? "");
           setAuthMethod("google");
+          setStep(4);
+          toast.success("Signed in with Google!");
         }
       }
     })();
-  }, [primaryDomain, step, authMethod]);
+  }, []);
 
   const handleSubmit = async () => {
     if (!validateStep4()) return;
@@ -383,6 +419,7 @@ function RegisterSchoolPage() {
 
       // Super-admin notification is handled server-side (users table has no email column).
 
+      sessionStorage.removeItem("register_school_state");
       setCompleted(true);
     } catch (err: any) {
       toast.error(err.message || "Something went wrong");
