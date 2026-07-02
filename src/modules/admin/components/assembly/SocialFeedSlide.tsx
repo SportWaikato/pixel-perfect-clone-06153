@@ -39,7 +39,7 @@ const SocialFeedSlide = ({ schoolId }: SocialFeedSlideProps) => {
       </div>
       <div className="flex gap-4 items-start justify-center">
         {photos.map((activity, idx) => {
-          const user = (activity.user as Record<string, unknown>) || {};
+          const user = (activity.user as unknown as Record<string, unknown>) || {};
           const house = (user.house as Record<string, unknown>) || {};
           const isCenter = idx === 1;
 

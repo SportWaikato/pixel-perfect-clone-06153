@@ -59,7 +59,21 @@ const HouseStatisticsSlide = ({ schoolId, onBack }: HouseStatisticsSlideProps) =
           let termPoints = 0;
           if (currentTerm) {
             try {
-              termPoints = await termService.getTermPointsForHouse(house.house_id, currentTerm.id);
+              const { data: pts } = await (
+                termService as unknown as {
+                  supabaseClient: {
+                    rpc: (
+                      fn: string,
+                      args: Record<string, unknown>,
+                    ) => Promise<{ data: number | null; error: unknown }>;
+                  };
+                }
+              ).supabaseClient.rpc("get_term_points", {
+                p_entity_type: "house",
+                p_entity_id: house.house_id,
+                p_term_id: currentTerm.id,
+              });
+              termPoints = pts ?? 0;
             } catch {
               termPoints = 0;
             }

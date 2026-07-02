@@ -86,8 +86,8 @@ function RegisterSchoolPage() {
     }
     setCheckingDomain(true);
     checkDomainAvailable({ data: { domain: primaryDomain } })
-      .then((avail) => {
-        setDomainAvailable(avail);
+      .then((res) => {
+        setDomainAvailable(res.available);
         setCheckingDomain(false);
       })
       .catch(() => {
@@ -333,13 +333,17 @@ function RegisterSchoolPage() {
       );
 
       if (housesError) {
-        await supabase
-          .from("schools")
-          .delete()
-          .eq("id", school.id)
-          .catch(() => {});
+        try {
+          await supabase.from("schools").delete().eq("id", school.id);
+        } catch {
+          /* best-effort cleanup */
+        }
         if (authMethod !== "google") {
-          await supabase.auth.admin.deleteUser(userId).catch(() => {});
+          try {
+            await supabase.auth.admin.deleteUser(userId);
+          } catch {
+            /* best-effort cleanup */
+          }
         }
         throw housesError;
       }
@@ -350,12 +354,9 @@ function RegisterSchoolPage() {
         first_name: adminFirstName.trim(),
         last_name: adminLastName.trim(),
         username: adminEmail.split("@")[0],
-        email: adminEmail,
         school_id: school.id,
         role: "school_admin",
-        is_admin: true,
         is_active: true,
-        is_public: false,
       });
 
       if (userError) throw userError;

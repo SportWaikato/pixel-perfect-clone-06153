@@ -10,5 +10,12 @@ export const Route = createFileRoute("/_authenticated/_superadmin/admin/settings
 function Page() {
   const { profile } = Route.useRouteContext();
   if (!profile) return null;
-  return <TermManagementContent user={profile as UserInterface} schools={[]} />;
+  const user = profile as UserInterface;
+  return (
+    <TermManagementContent
+      terms={[]}
+      schoolId={user.school_id ?? ""}
+      currentUser={user}
+    />
+  );
 }
