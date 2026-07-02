@@ -160,6 +160,22 @@ function RegisterSchoolPage() {
     );
   };
 
+  const validateStep1 = () => {
+    if (!schoolName.trim()) {
+      toast.error("Enter your school name");
+      return false;
+    }
+    if (!region) {
+      toast.error("Select your school's region");
+      return false;
+    }
+    if (!schoolType) {
+      toast.error("Select your school type");
+      return false;
+    }
+    return true;
+  };
+
   const validateStep2 = () => {
     if (!primaryDomain) {
       toast.error("Enter your school email domain");

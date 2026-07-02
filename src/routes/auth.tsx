@@ -21,10 +21,32 @@ import { listHousesBySchool, listSchools } from "@/lib/schools.functions";
 
 type SearchParams = { redirect?: string };
 
+const ALLOWED_REDIRECTS = new Set([
+  "/dashboard",
+  "/admin",
+  "/activities",
+  "/register-school",
+  "/events",
+  "/profile",
+  "/survey",
+  "/school",
+]);
+
+function validateRedirect(redirect: string | undefined): string | undefined {
+  if (!redirect) return undefined;
+  const clean = redirect.split("?")[0].split("#")[0]; // strip query/hash
+  if (!clean.startsWith("/")) return undefined; // must be relative
+  // Allow exact match or subpath of an allowed prefix
+  for (const prefix of ALLOWED_REDIRECTS) {
+    if (clean === prefix || clean.startsWith(prefix + "/")) return clean;
+  }
+  return undefined;
+}
+
 export const Route = createFileRoute("/auth")({
   ssr: false,
   validateSearch: (search: Record<string, unknown>): SearchParams => ({
-    redirect: typeof search.redirect === "string" ? search.redirect : undefined,
+    redirect: typeof search.redirect === "string" ? validateRedirect(search.redirect) : undefined,
   }),
   head: () => ({
     meta: [

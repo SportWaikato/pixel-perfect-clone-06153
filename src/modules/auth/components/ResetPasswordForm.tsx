@@ -25,7 +25,7 @@ const ResetPasswordForm = () => {
       await authService.updatePassword(values.password);
 
       toast.success("Password has been reset successfully!");
-      navigate({ to: "/auth/login" });
+      navigate({ to: "/auth" });
       router.invalidate();
     } catch (error) {
       notifyAboutError(error);

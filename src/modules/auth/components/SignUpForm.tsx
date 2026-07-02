@@ -150,7 +150,7 @@ const SignUpForm = ({ schools }: SignUpFormProps) => {
       });
 
       toast.success("Account created successfully!");
-      navigate({ to: "/auth/login" });
+      navigate({ to: "/auth" });
     } catch (error) {
       notifyAboutError(error);
     } finally {

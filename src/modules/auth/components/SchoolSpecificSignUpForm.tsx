@@ -111,7 +111,7 @@ const SchoolSpecificSignUpForm = ({ school }: SchoolSpecificSignUpFormProps) => 
       });
 
       toast.success(`Welcome to ${school.name}!`);
-      navigate({ to: "/auth/login" });
+      navigate({ to: "/auth" });
     } catch (error) {
       notifyAboutError(error);
     } finally {
@@ -254,8 +254,8 @@ const SchoolSpecificSignUpForm = ({ school }: SchoolSpecificSignUpFormProps) => 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Already have an account?{" "}
-              <Link to="/auth/login" className="text-primary hover:underline">
-                Log in
+              <Link to="/auth" className="text-primary hover:underline">
+                Sign in
               </Link>
             </p>
           </div>

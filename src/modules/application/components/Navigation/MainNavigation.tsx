@@ -132,7 +132,7 @@ const MainNavigation = () => {
     const supabase = createSupabaseClient();
     await supabase.auth.signOut();
     toast.success("Logged out successfully");
-    navigate({ to: "/auth/login" });
+    navigate({ to: "/auth" });
   };
 
   const closeMobileMenu = () => {
