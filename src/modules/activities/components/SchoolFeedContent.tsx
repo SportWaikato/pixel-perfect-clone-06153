@@ -101,7 +101,7 @@ const SchoolFeedContent = ({ schoolId, userId }: SchoolFeedContentProps) => {
         </Card>
       ) : (
         activities.map((activity) => {
-          const user = (activity.user as Record<string, unknown>) || {};
+          const user = (activity.user as unknown as Record<string, unknown>) || {};
           const house = (user.house as Record<string, unknown>) || {};
 
           return (

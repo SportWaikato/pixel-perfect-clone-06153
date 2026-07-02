@@ -86,8 +86,8 @@ function RegisterSchoolPage() {
     }
     setCheckingDomain(true);
     checkDomainAvailable({ data: { domain: primaryDomain } })
-      .then((avail) => {
-        setDomainAvailable(avail);
+      .then((res) => {
+        setDomainAvailable(res.available);
         setCheckingDomain(false);
       })
       .catch(() => {
@@ -333,13 +333,17 @@ function RegisterSchoolPage() {
       );
 
       if (housesError) {
-        await supabase
-          .from("schools")
-          .delete()
-          .eq("id", school.id)
-          .catch(() => {});
+        try {
+          await supabase.from("schools").delete().eq("id", school.id);
+        } catch {
+          /* best-effort cleanup */
+        }
         if (authMethod !== "google") {
-          await supabase.auth.admin.deleteUser(userId).catch(() => {});
+          try {
+            await supabase.auth.admin.deleteUser(userId);
+          } catch {
+            /* best-effort cleanup */
+          }
         }
         throw housesError;
       }
@@ -350,12 +354,9 @@ function RegisterSchoolPage() {
         first_name: adminFirstName.trim(),
         last_name: adminLastName.trim(),
         username: adminEmail.split("@")[0],
-        email: adminEmail,
         school_id: school.id,
         role: "school_admin",
-        is_admin: true,
         is_active: true,
-        is_public: false,
       });
 
       if (userError) throw userError;
@@ -380,27 +381,7 @@ function RegisterSchoolPage() {
         console.error("Failed to send confirmation email:", err);
       }
 
-      // Send notification to super admins
-      try {
-        const { data: superAdmins } = await supabase
-          .from("users")
-          .select("email")
-          .eq("role", "super_admin")
-          .not("email", "is", null);
-
-        if (superAdmins?.length) {
-          const { sendEmail } = await import("@/lib/sendEmail");
-          await sendEmail({
-            data: {
-              to: superAdmins[0].email ?? "",
-              subject: `New school registration: ${schoolName.trim()}`,
-              html: `<p>${adminFirstName.trim()} ${adminLastName.trim()} from ${schoolName.trim()} has submitted a registration request.</p><p>Review it at <a href="https://app.karawhiua.app/admin/schools/pending">the admin dashboard</a>.</p>`,
-            },
-          });
-        }
-      } catch (err) {
-        console.error("Failed to notify super admins:", err);
-      }
+      // Super-admin notification is handled server-side (users table has no email column).
 
       setCompleted(true);
     } catch (err: any) {
