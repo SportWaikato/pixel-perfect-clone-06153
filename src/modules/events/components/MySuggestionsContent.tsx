@@ -93,7 +93,7 @@ const MySuggestionsContent = ({ user }: MySuggestionsContentProps) => {
           </Link>
         </Button>
         <div>
-          <h1 className="text-3xl font-black text-[#0B4B39]">My Suggestions</h1>
+          <h1 className="text-3xl font-black text-[#1B5E4B]">My Suggestions</h1>
           <p className="text-sm" style={{ color: "#357665" }}>
             Challenges you&apos;ve submitted for approval
           </p>
@@ -108,7 +108,7 @@ const MySuggestionsContent = ({ user }: MySuggestionsContentProps) => {
             <p className="text-gray-600 mb-4">
               You haven&apos;t submitted any challenge suggestions. Share your ideas!
             </p>
-            <Button asChild style={{ backgroundColor: "#0B4B39", color: "white" }}>
+            <Button asChild style={{ backgroundColor: "#1B5E4B", color: "white" }}>
               <Link to="/events">Browse Challenges</Link>
             </Button>
           </CardContent>
@@ -142,7 +142,7 @@ const MySuggestionsContent = ({ user }: MySuggestionsContentProps) => {
                     )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-bold text-[#0B4B39] truncate">{suggestion.name}</h3>
+                        <h3 className="font-bold text-[#1B5E4B] truncate">{suggestion.name}</h3>
                         <Badge
                           variant="outline"
                           className="shrink-0 gap-1 text-xs px-2 py-0.5 h-5 border-0"

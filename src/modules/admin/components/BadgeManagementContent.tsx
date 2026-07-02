@@ -214,7 +214,7 @@ const BadgeManagementContent = ({ user }: BadgeManagementContentProps) => {
         <Button
           onClick={handleCreateBadge}
           className="gap-2"
-          style={{ backgroundColor: "#0B4B39" }}
+          style={{ backgroundColor: "#1B5E4B" }}
         >
           <Plus size={16} />
           Create Badge
@@ -272,7 +272,7 @@ const BadgeManagementContent = ({ user }: BadgeManagementContentProps) => {
                     <Button
                       onClick={handleCreateBadge}
                       className="gap-2"
-                      style={{ backgroundColor: "#0B4B39" }}
+                      style={{ backgroundColor: "#1B5E4B" }}
                     >
                       <Plus size={16} />
                       Create Badge

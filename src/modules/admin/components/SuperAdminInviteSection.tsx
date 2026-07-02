@@ -122,7 +122,7 @@ const SuperAdminInviteSection = ({ initialInvites }: SuperAdminInviteSectionProp
               <Button
                 onClick={handleGenerate}
                 disabled={generating}
-                style={{ backgroundColor: "#0B4B39" }}
+                style={{ backgroundColor: "#1B5E4B" }}
               >
                 {generating ? "Generating…" : "Generate Link"}
               </Button>

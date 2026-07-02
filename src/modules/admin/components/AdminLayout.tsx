@@ -125,7 +125,7 @@ const AdminLayout = ({ user, children }: AdminLayoutProps) => {
                 to={item.href}
                 className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md mb-1 ${
                   item.current
-                    ? "bg-[#0B4B39]/10 text-[#0B4B39] font-semibold"
+                    ? "bg-[#1B5E4B]/10 text-[#1B5E4B] font-semibold"
                     : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                 }`}
               >
@@ -153,7 +153,7 @@ const AdminLayout = ({ user, children }: AdminLayoutProps) => {
                 to={item.href}
                 className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md mb-1 ${
                   item.current
-                    ? "bg-[#0B4B39]/10 text-[#0B4B39] font-semibold"
+                    ? "bg-[#1B5E4B]/10 text-[#1B5E4B] font-semibold"
                     : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                 }`}
               >

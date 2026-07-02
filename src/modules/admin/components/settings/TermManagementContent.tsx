@@ -296,7 +296,7 @@ const TermManagementContent = ({
             Manage competition terms and school configuration.
           </p>
         </div>
-        <Button asChild className="gap-2 bg-[#0B4B39] hover:bg-[#0a3f30]">
+        <Button asChild className="gap-2 bg-[#1B5E4B] hover:bg-[#0a3f30]">
           <Link to={`/admin/assembly${schoolId ? `?schoolId=${schoolId}` : ""}`}>
             <Monitor className="h-4 w-4" /> Assembly Mode
           </Link>
@@ -405,7 +405,7 @@ const TermManagementContent = ({
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-[#0B4B39] hover:bg-[#0a3f30]"
+                  className="w-full bg-[#1B5E4B] hover:bg-[#0a3f30]"
                 >
                   {isSubmitting ? "Saving…" : editingTerm ? "Save Changes" : "Create Term"}
                 </Button>

@@ -77,13 +77,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { name: "theme-color", content: "#0a4b39" },
+      { name: "theme-color", content: "#1B5E4B" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "apple-mobile-web-app-title", content: "Karawhiua" },
       { name: "application-name", content: "Karawhiua" },
       { name: "msapplication-TileImage", content: "/pwa-192x192.png" },
-      { name: "msapplication-TileColor", content: "#0a4b39" },
+      { name: "msapplication-TileColor", content: "#1B5E4B" },
       { title: "Karawhiua Virtual Sports Day" },
       {
         name: "description",

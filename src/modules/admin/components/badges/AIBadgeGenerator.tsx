@@ -120,7 +120,7 @@ const AIBadgeGenerator = ({
             onClick={handleUpload}
             disabled={uploading}
             className="gap-2"
-            style={{ backgroundColor: "#0B4B39" }}
+            style={{ backgroundColor: "#1B5E4B" }}
           >
             {uploading ? (
               <>

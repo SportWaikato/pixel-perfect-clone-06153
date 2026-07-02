@@ -270,7 +270,7 @@ const SchoolAdminDashboard = ({
       description: "Present live updates to the school",
       href: `/admin/assembly${schoolParam}`,
       icon: Monitor,
-      color: "bg-[#0B4B39]",
+      color: "bg-[#1B5E4B]",
       badge: 0,
       needsAttention: false,
     },
@@ -385,7 +385,7 @@ const SchoolAdminDashboard = ({
               <div className="text-2xl font-bold">{stats.messageCount}</div>
               <p className="text-xs text-muted-foreground">Unread messages</p>
             </div>
-            <Button asChild className="w-full mt-4" style={{ backgroundColor: "#0B4B39" }}>
+            <Button asChild className="w-full mt-4" style={{ backgroundColor: "#1B5E4B" }}>
               <Link to={`/admin/updates${schoolParam}`}>Manage messages</Link>
             </Button>
           </CardContent>
@@ -434,7 +434,7 @@ const SchoolAdminDashboard = ({
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600 mb-4">{action.description}</p>
-                  <Button asChild className="w-full" style={{ backgroundColor: "#0B4B39" }}>
+                  <Button asChild className="w-full" style={{ backgroundColor: "#1B5E4B" }}>
                     <Link to={action.href}>Open {action.title}</Link>
                   </Button>
                   {action.secondaryHref && (
@@ -464,7 +464,7 @@ const SchoolAdminDashboard = ({
               <Button
                 onClick={handleCopySignUpUrl}
                 className="w-full gap-2"
-                style={{ backgroundColor: "#0B4B39" }}
+                style={{ backgroundColor: "#1B5E4B" }}
               >
                 {copied ? (
                   <>
@@ -481,7 +481,7 @@ const SchoolAdminDashboard = ({
               <Button
                 onClick={() => setQrModalOpen(true)}
                 className="w-full gap-2 mt-2"
-                style={{ backgroundColor: "#0B4B39" }}
+                style={{ backgroundColor: "#1B5E4B" }}
               >
                 <QrCode size={16} />
                 Generate QR Code
@@ -503,7 +503,7 @@ const SchoolAdminDashboard = ({
               <Button
                 onClick={handleCopyQrCode}
                 className="w-full gap-2"
-                style={{ backgroundColor: "#0B4B39" }}
+                style={{ backgroundColor: "#1B5E4B" }}
               >
                 {qrCopied ? (
                   <>
@@ -539,7 +539,7 @@ const SchoolAdminDashboard = ({
               <p className="text-sm text-gray-600 mt-0.5">Control which students can register</p>
             </div>
           </div>
-          <Button asChild style={{ backgroundColor: "#0B4B39" }}>
+          <Button asChild style={{ backgroundColor: "#1B5E4B" }}>
             <Link to={`/admin/allowlist${schoolParam}`}>
               {isAllowList ? "Manage Allow List" : "Manage Block List"}
             </Link>

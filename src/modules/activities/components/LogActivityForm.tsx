@@ -90,12 +90,12 @@ const DurationInput = ({ name, label }: { name: string; label: string }) => {
 
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-[#0B4B39]">{label}</label>
+      <label className="text-sm font-medium text-[#1B5E4B]">{label}</label>
       <div className="flex items-center gap-2">
         <Button
           type="button"
           onClick={decrement}
-          className="w-8 sm:w-10 md:w-12 h-10 sm:h-12 md:h-[4.5rem] p-0 bg-[#0B4B39]/10 text-[#0B4B39] border-[#0B4B39]/20 hover:bg-[#0B4B39]/20 shrink-0"
+          className="w-8 sm:w-10 md:w-12 h-10 sm:h-12 md:h-[4.5rem] p-0 bg-[#1B5E4B]/10 text-[#1B5E4B] border-[#1B5E4B]/20 hover:bg-[#1B5E4B]/20 shrink-0"
           disabled={!field.value || parseInt(field.value) <= 0}
         >
           <Minus size={16} />
@@ -106,14 +106,14 @@ const DurationInput = ({ name, label }: { name: string; label: string }) => {
           onChange={handleChange}
           onBlur={field.onBlur}
           name={field.name}
-          className="flex-1 min-w-0 text-center text-xl sm:text-2xl md:text-3xl font-bold py-2 sm:py-3 md:py-4 px-2 sm:px-3 md:px-4 bg-white text-gray-900 border border-gray-300 rounded-lg focus:border-[#0B4B39]/40 focus:outline-none"
+          className="flex-1 min-w-0 text-center text-xl sm:text-2xl md:text-3xl font-bold py-2 sm:py-3 md:py-4 px-2 sm:px-3 md:px-4 bg-white text-gray-900 border border-gray-300 rounded-lg focus:border-[#1B5E4B]/40 focus:outline-none"
           placeholder="60"
           min="0"
         />
         <Button
           type="button"
           onClick={increment}
-          className="w-8 sm:w-10 md:w-12 h-10 sm:h-12 md:h-[4.5rem] p-0 bg-[#0B4B39]/10 text-[#0B4B39] border-[#0B4B39]/20 hover:bg-[#0B4B39]/20 shrink-0"
+          className="w-8 sm:w-10 md:w-12 h-10 sm:h-12 md:h-[4.5rem] p-0 bg-[#1B5E4B]/10 text-[#1B5E4B] border-[#1B5E4B]/20 hover:bg-[#1B5E4B]/20 shrink-0"
         >
           <Plus size={16} />
         </Button>
@@ -134,7 +134,7 @@ const ParticipationTypeSelector = ({ name, label }: { name: string; label: strin
 
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-[#0B4B39]">{label}</label>
+      <label className="text-sm font-medium text-[#1B5E4B]">{label}</label>
       <div className="flex gap-2 sm:gap-3 px-1 sm:px-2 mt-2">
         {participationTypes.map((type) => {
           const IconComponent = type.icon;
@@ -145,13 +145,13 @@ const ParticipationTypeSelector = ({ name, label }: { name: string; label: strin
               onClick={() => helpers.setValue(type.value)}
               className={`flex-1 p-2 sm:p-3 rounded-xl border-2 transition-all duration-150 hover:scale-105 ${
                 field.value === type.value
-                  ? "border-[#0B4B39] bg-[#0B4B39]/10 scale-105"
-                  : "border-gray-300 hover:border-[#0B4B39]/50"
+                  ? "border-[#1B5E4B] bg-[#1B5E4B]/10 scale-105"
+                  : "border-gray-300 hover:border-[#1B5E4B]/50"
               }`}
               title={type.label}
             >
               <div className="flex flex-col items-center gap-1">
-                <IconComponent className="w-4 h-4 sm:w-5 sm:h-5 text-[#0B4B39]" />
+                <IconComponent className="w-4 h-4 sm:w-5 sm:h-5 text-[#1B5E4B]" />
                 <span className="text-xs sm:text-sm font-medium text-gray-700">{type.label}</span>
               </div>
             </button>
@@ -175,7 +175,7 @@ const EmojiFeeling = ({ name, label }: { name: string; label: string }) => {
 
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-[#0B4B39]">{label}</label>
+      <label className="text-sm font-medium text-[#1B5E4B]">{label}</label>
       <div className="flex gap-1 sm:gap-2 justify-start">
         {feelings.map((feeling) => (
           <button
@@ -184,8 +184,8 @@ const EmojiFeeling = ({ name, label }: { name: string; label: string }) => {
             onClick={() => helpers.setValue(feeling.value)}
             className={`p-2 sm:p-3 rounded-xl border-2 transition-all duration-150 hover:scale-110 ${
               field.value === feeling.value
-                ? "border-[#0B4B39] bg-[#0B4B39]/10 scale-110"
-                : "border-gray-300 hover:border-[#0B4B39]/50"
+                ? "border-[#1B5E4B] bg-[#1B5E4B]/10 scale-110"
+                : "border-gray-300 hover:border-[#1B5E4B]/50"
             }`}
             title={feeling.label}
           >
@@ -225,7 +225,7 @@ const ChallengeSelector = ({
 
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-[#0B4B39]">{label}</label>
+      <label className="text-sm font-medium text-[#1B5E4B]">{label}</label>
       <div className="space-y-3">
         {/* Option for no challenge */}
         <button
@@ -233,8 +233,8 @@ const ChallengeSelector = ({
           onClick={handleSelectGeneral}
           className={`w-full p-4 rounded-xl border-2 transition-all duration-150 text-left ${
             !field.value
-              ? "border-[#0B4B39] bg-[#0B4B39]/10"
-              : "border-gray-300 hover:border-[#0B4B39]/50 bg-[#0B4B39]/5"
+              ? "border-[#1B5E4B] bg-[#1B5E4B]/10"
+              : "border-gray-300 hover:border-[#1B5E4B]/50 bg-[#1B5E4B]/5"
           }`}
         >
           <div>
@@ -252,7 +252,7 @@ const ChallengeSelector = ({
             className={`w-full p-4 rounded-xl border-2 transition-all duration-150 text-left ${
               field.value === challenge.id
                 ? "border-yellow-500 bg-yellow-50"
-                : "border-gray-300 hover:border-[#0B4B39]/50 bg-[#0B4B39]/5"
+                : "border-gray-300 hover:border-[#1B5E4B]/50 bg-[#1B5E4B]/5"
             }`}
           >
             <div>
@@ -436,7 +436,7 @@ const LogActivityForm = ({
       style={{ backgroundColor: "#f9fefd" }}
     >
       <CardHeader>
-        <CardTitle className="text-[#0B4B39]">
+        <CardTitle className="text-[#1B5E4B]">
           {editingActivity ? "Edit Activity" : "Log Activity"}
         </CardTitle>
         <p className="text-gray-600">
@@ -474,7 +474,7 @@ const LogActivityForm = ({
               : null;
 
             return (
-              <Form className="space-y-4 [&_label]:text-[#0B4B39] [&_input]:bg-white [&_input]:text-gray-900 [&_input]:border-gray-300 [&_input:focus]:border-[#0B4B39]/40 [&_input::placeholder]:text-gray-400 [&_textarea]:bg-white [&_textarea]:text-gray-900 [&_textarea]:border-gray-300 [&_textarea:focus]:border-[#0B4B39]/40 [&_textarea::placeholder]:text-gray-400 [&_button[role=combobox]]:bg-white [&_button[role=combobox]]:text-gray-900 [&_button[role=combobox]]:border-gray-300 [&_button[role=combobox]:hover]:border-[#0B4B39]/40">
+              <Form className="space-y-4 [&_label]:text-[#1B5E4B] [&_input]:bg-white [&_input]:text-gray-900 [&_input]:border-gray-300 [&_input:focus]:border-[#1B5E4B]/40 [&_input::placeholder]:text-gray-400 [&_textarea]:bg-white [&_textarea]:text-gray-900 [&_textarea]:border-gray-300 [&_textarea:focus]:border-[#1B5E4B]/40 [&_textarea::placeholder]:text-gray-400 [&_button[role=combobox]]:bg-white [&_button[role=combobox]]:text-gray-900 [&_button[role=combobox]]:border-gray-300 [&_button[role=combobox]:hover]:border-[#1B5E4B]/40">
                 <ChallengeSelector
                   name="event_id"
                   label="Challenge (Optional)"
@@ -483,8 +483,8 @@ const LogActivityForm = ({
 
                 {lockedActivityType ? (
                   <div className="space-y-1">
-                    <label className="text-sm font-medium text-[#0B4B39]">Activity Type</label>
-                    <div className="w-full py-2 px-3 bg-[#0B4B39]/10 text-[#0B4B39] border border-[#0B4B39]/20 rounded-lg">
+                    <label className="text-sm font-medium text-[#1B5E4B]">Activity Type</label>
+                    <div className="w-full py-2 px-3 bg-[#1B5E4B]/10 text-[#1B5E4B] border border-[#1B5E4B]/20 rounded-lg">
                       {ACTIVITY_TYPES[lockedActivityType as keyof typeof ACTIVITY_TYPES]}
                     </div>
                     <p className="text-xs text-gray-400">Activity type set by challenge</p>
@@ -516,7 +516,7 @@ const LogActivityForm = ({
                 )}
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-[#0B4B39]">Activity Date</label>
+                  <label className="text-sm font-medium text-[#1B5E4B]">Activity Date</label>
                   <Field name="activity_date">
                     {({ field, meta }: any) => (
                       <div>
@@ -529,7 +529,7 @@ const LogActivityForm = ({
                             { timeZone: NZ_TIMEZONE },
                           )}
                           max={getNZDateString()}
-                          className="w-full py-2 px-3 bg-white text-gray-900 border border-gray-300 rounded-lg focus:border-[#0B4B39]/40 focus:outline-none"
+                          className="w-full py-2 px-3 bg-white text-gray-900 border border-gray-300 rounded-lg focus:border-[#1B5E4B]/40 focus:outline-none"
                         />
                         {meta.touched && meta.error && (
                           <div className="text-red-500 text-sm mt-1">{meta.error}</div>
@@ -543,7 +543,7 @@ const LogActivityForm = ({
                 <div className="space-y-4">
                   <DurationInput name="duration_minutes" label="Duration (minutes)" />
                   {values.duration_minutes > 0 && values.activity_type && (
-                    <div className="p-3 bg-[#0B4B39]/5 border border-gray-200 rounded-md space-y-1">
+                    <div className="p-3 bg-[#1B5E4B]/5 border border-gray-200 rounded-md space-y-1">
                       {(() => {
                         const basePoints = Number(values.duration_minutes);
                         const selectedChallenge = challenges.find((c) => c.id === values.event_id);
@@ -551,7 +551,7 @@ const LogActivityForm = ({
                         if (selectedChallenge?.challenge_points) {
                           return (
                             <p className="text-sm text-gray-700">
-                              <strong className="text-[#0B4B39]">Points:</strong>{" "}
+                              <strong className="text-[#1B5E4B]">Points:</strong>{" "}
                               {selectedChallenge.challenge_points} (fixed challenge reward)
                             </p>
                           );
@@ -567,7 +567,7 @@ const LogActivityForm = ({
                           return (
                             <>
                               <p className="text-sm text-gray-700">
-                                <strong className="text-[#0B4B39]">Your Points:</strong>{" "}
+                                <strong className="text-[#1B5E4B]">Your Points:</strong>{" "}
                                 {finalPoints} ({selectedChallenge.points_multiplier}x challenge
                                 bonus)
                               </p>
@@ -578,7 +578,7 @@ const LogActivityForm = ({
 
                         return (
                           <p className="text-sm text-gray-700">
-                            <strong className="text-[#0B4B39]">Points:</strong> {basePoints}
+                            <strong className="text-[#1B5E4B]">Points:</strong> {basePoints}
                           </p>
                         );
                       })()}
@@ -610,7 +610,7 @@ const LogActivityForm = ({
                     type="submit"
                     disabled={isSubmitting}
                     className="flex-1 text-white"
-                    style={{ backgroundColor: "#0B4B39" }}
+                    style={{ backgroundColor: "#1B5E4B" }}
                   >
                     {isSubmitting
                       ? editingActivity

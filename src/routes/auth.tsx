@@ -200,7 +200,7 @@ function SignInForm({ redirectTo }: { redirectTo: string }) {
           <Button
             type="submit"
             disabled={isSubmitting}
-            style={{ backgroundColor: "#0A4B39", color: "#fff" }}
+            style={{ backgroundColor: "#1B5E4B", color: "#fff" }}
             className="w-full"
           >
             {isSubmitting ? "Signing in…" : "Sign in"}
@@ -452,7 +452,7 @@ function SignUpForm({ redirectTo }: { redirectTo: string }) {
           <Button
             type="submit"
             disabled={isSubmitting}
-            style={{ backgroundColor: "#0A4B39", color: "#fff" }}
+            style={{ backgroundColor: "#1B5E4B", color: "#fff" }}
             className="w-full"
           >
             {isSubmitting ? "Creating account…" : "Create account"}
@@ -483,7 +483,7 @@ function GoogleButton() {
       className="w-full"
       onClick={handleClick}
       disabled={loading}
-      style={{ borderColor: "#0A4B39", color: "#0A4B39" }}
+      style={{ borderColor: "#1B5E4B", color: "#1B5E4B" }}
     >
       {loading ? "Redirecting…" : "Continue with Google"}
     </Button>

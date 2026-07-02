@@ -90,7 +90,7 @@ const AdminMobileBottomNav = () => {
               <div className="relative">
                 <IconComponent
                   size={22}
-                  className={cn(isActive ? "text-[#0B4B39]" : "text-gray-400")}
+                  className={cn(isActive ? "text-[#1B5E4B]" : "text-gray-400")}
                 />
                 {tab.href === "/school/events" && pendingEventsCount > 0 && (
                   <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-400 rounded-full" />
@@ -100,7 +100,7 @@ const AdminMobileBottomNav = () => {
                 )}
               </div>
               <span
-                className={cn("text-xs font-medium", isActive ? "text-[#0B4B39]" : "text-gray-400")}
+                className={cn("text-xs font-medium", isActive ? "text-[#1B5E4B]" : "text-gray-400")}
               >
                 {tab.label}
               </span>

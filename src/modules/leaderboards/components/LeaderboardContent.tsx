@@ -98,7 +98,7 @@ const LeaderboardContent = ({
         style={{ backgroundColor: "#f9fefd" }}
       >
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-[#0B4B39]">
+          <CardTitle className="flex items-center gap-2 text-[#1B5E4B]">
             <Trophy className="w-5 h-5 text-yellow-500" />
             Your Rankings
           </CardTitle>
@@ -106,8 +106,8 @@ const LeaderboardContent = ({
         <CardContent className="p-6 sm:p-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {/* School Ranking */}
-            <div className="text-center p-5 sm:p-6 bg-[#0B4B39]/5 border border-gray-200 rounded-2xl">
-              <div className="text-4xl sm:text-5xl font-bold text-[#0B4B39] mb-1">
+            <div className="text-center p-5 sm:p-6 bg-[#1B5E4B]/5 border border-gray-200 rounded-2xl">
+              <div className="text-4xl sm:text-5xl font-bold text-[#1B5E4B] mb-1">
                 {userRankings?.school_rank != null
                   ? getRankingEmoji(userRankings.school_rank)
                   : "?"}
@@ -117,8 +117,8 @@ const LeaderboardContent = ({
             </div>
 
             {/* House Ranking */}
-            <div className="text-center p-5 sm:p-6 bg-[#0B4B39]/5 border border-gray-200 rounded-2xl">
-              <div className="text-4xl sm:text-5xl font-bold text-[#0B4B39] mb-1">
+            <div className="text-center p-5 sm:p-6 bg-[#1B5E4B]/5 border border-gray-200 rounded-2xl">
+              <div className="text-4xl sm:text-5xl font-bold text-[#1B5E4B] mb-1">
                 {userRankings?.house_rank != null ? getRankingEmoji(userRankings.house_rank) : "?"}
               </div>
               <div className="text-sm text-gray-600">in your house</div>
@@ -126,8 +126,8 @@ const LeaderboardContent = ({
             </div>
 
             {/* Year Group Ranking */}
-            <div className="text-center p-5 sm:p-6 bg-[#0B4B39]/5 border border-gray-200 rounded-2xl">
-              <div className="text-4xl sm:text-5xl font-bold text-[#0B4B39] mb-1">
+            <div className="text-center p-5 sm:p-6 bg-[#1B5E4B]/5 border border-gray-200 rounded-2xl">
+              <div className="text-4xl sm:text-5xl font-bold text-[#1B5E4B] mb-1">
                 {userRankings?.year_group_rank != null
                   ? getRankingEmoji(userRankings.year_group_rank)
                   : "?"}
@@ -137,8 +137,8 @@ const LeaderboardContent = ({
             </div>
 
             {/* Overall Ranking */}
-            <div className="text-center p-5 sm:p-6 bg-[#0B4B39]/5 border border-gray-200 rounded-2xl">
-              <div className="text-4xl sm:text-5xl font-bold text-[#0B4B39] mb-1">
+            <div className="text-center p-5 sm:p-6 bg-[#1B5E4B]/5 border border-gray-200 rounded-2xl">
+              <div className="text-4xl sm:text-5xl font-bold text-[#1B5E4B] mb-1">
                 {userRankings?.overall_rank != null ? `#${userRankings.overall_rank}` : "?"}
               </div>
               <div className="text-sm text-gray-600">overall</div>
@@ -147,7 +147,7 @@ const LeaderboardContent = ({
 
           {/* Current Progress */}
           <div className="mt-16 text-center">
-            <div className="text-3xl sm:text-4xl font-bold text-[#0B4B39] mb-3">
+            <div className="text-3xl sm:text-4xl font-bold text-[#1B5E4B] mb-3">
               {formatTimeDisplay(user.total_minutes || 0)}
             </div>
             <p className="text-gray-600 mb-6">
@@ -170,7 +170,7 @@ const LeaderboardContent = ({
       >
         <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
-            <CardTitle className="flex items-center gap-2 text-[#0B4B39]">
+            <CardTitle className="flex items-center gap-2 text-[#1B5E4B]">
               <Award className="w-5 h-5 text-yellow-500" />
               School Competition
             </CardTitle>
@@ -180,7 +180,7 @@ const LeaderboardContent = ({
           </div>
           <Badge
             variant="secondary"
-            className="flex items-center gap-1 bg-[#0B4B39]/10 text-[#0B4B39] border-[#0B4B39]/20 self-start sm:self-auto"
+            className="flex items-center gap-1 bg-[#1B5E4B]/10 text-[#1B5E4B] border-[#1B5E4B]/20 self-start sm:self-auto"
           >
             <Info className="w-3 h-3" />
             Pro-rata scoring
@@ -195,12 +195,12 @@ const LeaderboardContent = ({
                   key={school.id}
                   className={`flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between p-4 sm:p-5 rounded-2xl transition-all ${
                     isUserSchool
-                      ? "bg-[#0B4B39]/10 border-2 border-[#0B4B39]/30 shadow-md"
-                      : "bg-[#0B4B39]/5 border border-gray-200 hover:bg-[#0B4B39]/10"
+                      ? "bg-[#1B5E4B]/10 border-2 border-[#1B5E4B]/30 shadow-md"
+                      : "bg-[#1B5E4B]/5 border border-gray-200 hover:bg-[#1B5E4B]/10"
                   }`}
                 >
                   <div className="flex items-center gap-4">
-                    <div className="text-3xl sm:text-4xl font-bold w-14 sm:w-16 text-[#0B4B39]">
+                    <div className="text-3xl sm:text-4xl font-bold w-14 sm:w-16 text-[#1B5E4B]">
                       {getRankingEmoji(school.rank)}
                     </div>
                     <div>
@@ -209,7 +209,7 @@ const LeaderboardContent = ({
                         {isUserSchool && (
                           <Badge
                             variant="secondary"
-                            className="ml-2 text-xs bg-[#0B4B39]/10 text-[#0B4B39] border-[#0B4B39]/20"
+                            className="ml-2 text-xs bg-[#1B5E4B]/10 text-[#1B5E4B] border-[#1B5E4B]/20"
                           >
                             Your School
                           </Badge>
@@ -222,7 +222,7 @@ const LeaderboardContent = ({
                     </div>
                   </div>
                   <div className="text-left sm:text-right">
-                    <div className="text-base sm:text-lg font-bold text-[#0B4B39]">
+                    <div className="text-base sm:text-lg font-bold text-[#1B5E4B]">
                       {Math.round(school.pro_rata_score)}
                     </div>
                     <div className="text-xs text-gray-400">pro-rata score</div>
@@ -232,11 +232,11 @@ const LeaderboardContent = ({
             })}
           </div>
 
-          <div className="mt-6 p-4 bg-[#0B4B39]/5 border border-gray-200 rounded-2xl">
+          <div className="mt-6 p-4 bg-[#1B5E4B]/5 border border-gray-200 rounded-2xl">
             <div className="flex items-start gap-2">
-              <Info className="w-4 h-4 text-[#0B4B39] mt-0.5" />
+              <Info className="w-4 h-4 text-[#1B5E4B] mt-0.5" />
               <div className="text-sm text-gray-600">
-                <strong className="text-[#0B4B39]">Fair Competition:</strong> Pro-rata scoring
+                <strong className="text-[#1B5E4B]">Fair Competition:</strong> Pro-rata scoring
                 calculates (total points ÷ student count) × 100 to ensure fair comparison between
                 schools of different sizes.
               </div>
@@ -254,7 +254,7 @@ const LeaderboardContent = ({
         style={{ backgroundColor: "#f9fefd" }}
       >
         <CardHeader className="space-y-2">
-          <CardTitle className="flex flex-wrap items-center gap-2 text-[#0B4B39] text-lg sm:text-xl">
+          <CardTitle className="flex flex-wrap items-center gap-2 text-[#1B5E4B] text-lg sm:text-xl">
             <Crown className="w-5 h-5 text-yellow-500" />
             House Battle - {user.school?.name}
           </CardTitle>
@@ -278,15 +278,15 @@ const LeaderboardContent = ({
                     key={house.id}
                     className={`p-4 rounded-2xl space-y-3 ${
                       isUserHouse
-                        ? "bg-[#0B4B39]/10 border-2 border-[#0B4B39]/30"
-                        : "bg-[#0B4B39]/5 border border-gray-200"
+                        ? "bg-[#1B5E4B]/10 border-2 border-[#1B5E4B]/30"
+                        : "bg-[#1B5E4B]/5 border border-gray-200"
                     }`}
                   >
                     {/* Mobile Layout: Stacked */}
                     <div className="flex items-start justify-between gap-3">
                       {/* Left side: Rank, Color, Name */}
                       <div className="flex items-start gap-3 flex-1">
-                        <div className="text-2xl font-bold text-[#0B4B39] flex-shrink-0">
+                        <div className="text-2xl font-bold text-[#1B5E4B] flex-shrink-0">
                           {getRankingEmoji(index + 1)}
                         </div>
                         <div
@@ -299,7 +299,7 @@ const LeaderboardContent = ({
                             {isUserHouse && (
                               <Badge
                                 variant="secondary"
-                                className="ml-2 text-[10px] sm:text-xs bg-[#0B4B39]/10 text-[#0B4B39] border-[#0B4B39]/20 inline-block"
+                                className="ml-2 text-[10px] sm:text-xs bg-[#1B5E4B]/10 text-[#1B5E4B] border-[#1B5E4B]/20 inline-block"
                               >
                                 Your House
                               </Badge>
@@ -313,7 +313,7 @@ const LeaderboardContent = ({
 
                       {/* Right side: Points */}
                       <div className="text-right flex-shrink-0">
-                        <div className="font-bold text-lg text-[#0B4B39]">{house.total_points}</div>
+                        <div className="font-bold text-lg text-[#1B5E4B]">{house.total_points}</div>
                         <div className="text-xs text-gray-400">points</div>
                       </div>
                     </div>
@@ -370,7 +370,7 @@ const LeaderboardContent = ({
           onClick={loadLeaderboardData}
           variant="outline"
           className="gap-2 w-full sm:w-auto"
-          style={{ backgroundColor: "#0B4B39", color: "white", borderColor: "#0B4B39" }}
+          style={{ backgroundColor: "#1B5E4B", color: "white", borderColor: "#1B5E4B" }}
         >
           <RefreshCw className="w-4 h-4" />
           Refresh
@@ -384,21 +384,21 @@ const LeaderboardContent = ({
         >
           <TabsTrigger
             value="personal"
-            className="flex items-center justify-center gap-2 rounded-full px-3 py-2.5 text-xs font-medium text-gray-500 hover:text-[#0B4B39] hover:bg-[#0B4B39]/10 transition-all duration-150 sm:px-4 sm:py-2 sm:text-base data-[state=active]:bg-[#0B4B39] data-[state=active]:text-white"
+            className="flex items-center justify-center gap-2 rounded-full px-3 py-2.5 text-xs font-medium text-gray-500 hover:text-[#1B5E4B] hover:bg-[#1B5E4B]/10 transition-all duration-150 sm:px-4 sm:py-2 sm:text-base data-[state=active]:bg-[#1B5E4B] data-[state=active]:text-white"
           >
             <Trophy className="w-4 h-4" />
             Your Rankings
           </TabsTrigger>
           <TabsTrigger
             value="houses"
-            className="flex items-center justify-center gap-2 rounded-full px-3 py-2.5 text-xs font-medium text-gray-500 hover:text-[#0B4B39] hover:bg-[#0B4B39]/10 transition-all duration-150 sm:px-4 sm:py-2 sm:text-base data-[state=active]:bg-[#0B4B39] data-[state=active]:text-white"
+            className="flex items-center justify-center gap-2 rounded-full px-3 py-2.5 text-xs font-medium text-gray-500 hover:text-[#1B5E4B] hover:bg-[#1B5E4B]/10 transition-all duration-150 sm:px-4 sm:py-2 sm:text-base data-[state=active]:bg-[#1B5E4B] data-[state=active]:text-white"
           >
             <Crown className="w-4 h-4" />
             House Battle
           </TabsTrigger>
           <TabsTrigger
             value="schools"
-            className="flex items-center justify-center gap-2 rounded-full px-3 py-2.5 text-xs font-medium text-gray-500 hover:text-[#0B4B39] hover:bg-[#0B4B39]/10 transition-all duration-150 sm:px-4 sm:py-2 sm:text-base data-[state=active]:bg-[#0B4B39] data-[state=active]:text-white"
+            className="flex items-center justify-center gap-2 rounded-full px-3 py-2.5 text-xs font-medium text-gray-500 hover:text-[#1B5E4B] hover:bg-[#1B5E4B]/10 transition-all duration-150 sm:px-4 sm:py-2 sm:text-base data-[state=active]:bg-[#1B5E4B] data-[state=active]:text-white"
           >
             <Award className="w-4 h-4" />
             School Competition

@@ -46,7 +46,7 @@ const Step3DateDuration = ({ data, challenges, onChange }: Step3DateDurationProp
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-black text-[#0B4B39] mb-1">When and how long?</h2>
+        <h2 className="text-2xl font-black text-[#1B5E4B] mb-1">When and how long?</h2>
         <p className="text-gray-500 text-sm">
           Tell us when you did this activity and for how long.
         </p>
@@ -61,7 +61,7 @@ const Step3DateDuration = ({ data, challenges, onChange }: Step3DateDurationProp
           min={minDate}
           max={getNZDateString()}
           onChange={(e) => onChange({ activityDate: e.target.value })}
-          className="w-full py-3 px-4 bg-[#0B4B39]/5 text-gray-900 border border-gray-200 rounded-xl focus:border-[#cf04d2] focus:outline-none transition-colors"
+          className="w-full py-3 px-4 bg-[#1B5E4B]/5 text-gray-900 border border-gray-200 rounded-xl focus:border-[#cf04d2] focus:outline-none transition-colors"
         />
         {selectedChallenge && selectedChallenge.start_date > sevenDaysAgo && (
           <p className="text-xs" style={{ color: "#62988a" }}>
@@ -80,7 +80,7 @@ const Step3DateDuration = ({ data, challenges, onChange }: Step3DateDurationProp
             variant="outline"
             onClick={() => onChange({ durationMinutes: Math.max(0, data.durationMinutes - 1) })}
             disabled={data.durationMinutes <= 0}
-            className="shrink-0 w-14 h-14 p-0 rounded-xl border-2 text-xl font-bold text-[#0B4B39] border-gray-200"
+            className="shrink-0 w-14 h-14 p-0 rounded-xl border-2 text-xl font-bold text-[#1B5E4B] border-gray-200"
           >
             <Minus size={18} />
           </Button>
@@ -93,13 +93,13 @@ const Step3DateDuration = ({ data, challenges, onChange }: Step3DateDurationProp
             }}
             placeholder="0"
             min="0"
-            className="min-w-0 flex-1 text-center text-4xl font-black py-3 px-2 bg-[#0B4B39]/5 text-gray-900 border border-gray-200 rounded-xl focus:border-[#cf04d2] focus:outline-none transition-colors"
+            className="min-w-0 flex-1 text-center text-4xl font-black py-3 px-2 bg-[#1B5E4B]/5 text-gray-900 border border-gray-200 rounded-xl focus:border-[#cf04d2] focus:outline-none transition-colors"
           />
           <Button
             type="button"
             variant="outline"
             onClick={() => onChange({ durationMinutes: data.durationMinutes + 1 })}
-            className="shrink-0 w-14 h-14 p-0 rounded-xl border-2 text-xl font-bold text-[#0B4B39] border-gray-200"
+            className="shrink-0 w-14 h-14 p-0 rounded-xl border-2 text-xl font-bold text-[#1B5E4B] border-gray-200"
           >
             <Plus size={18} />
           </Button>
@@ -108,9 +108,9 @@ const Step3DateDuration = ({ data, challenges, onChange }: Step3DateDurationProp
 
       {/* Points preview */}
       {data.durationMinutes > 0 && (
-        <div className="flex items-start gap-2 p-3 bg-[#0B4B39]/5 border border-[#0B4B39]/20 rounded-xl">
-          <Info size={16} className="text-[#0B4B39] mt-0.5 shrink-0" />
-          <div className="text-sm text-[#0B4B39]">
+        <div className="flex items-start gap-2 p-3 bg-[#1B5E4B]/5 border border-[#1B5E4B]/20 rounded-xl">
+          <Info size={16} className="text-[#1B5E4B] mt-0.5 shrink-0" />
+          <div className="text-sm text-[#1B5E4B]">
             {selectedChallenge?.challenge_points ? (
               <span>
                 You&apos;ll earn <strong>{pointsDisplay} points</strong> as a fixed challenge reward

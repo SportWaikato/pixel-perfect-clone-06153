@@ -267,7 +267,7 @@ const HouseManagementContent = ({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting} style={{ backgroundColor: "#0B4B39" }}>
+            <Button type="submit" disabled={isSubmitting} style={{ backgroundColor: "#1B5E4B" }}>
               {isSubmitting ? "Saving..." : submitText}
             </Button>
           </div>
@@ -307,7 +307,7 @@ const HouseManagementContent = ({
         {effectiveSchoolId && (
           <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
             <DialogTrigger asChild>
-              <Button className="gap-2" style={{ backgroundColor: "#0B4B39" }}>
+              <Button className="gap-2" style={{ backgroundColor: "#1B5E4B" }}>
                 <Plus size={16} />
                 Add House
               </Button>

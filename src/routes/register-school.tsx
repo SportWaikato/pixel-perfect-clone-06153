@@ -34,7 +34,7 @@ const SCHOOL_TYPES = ["Primary", "Intermediate", "Secondary", "Full Primary", "C
 
 const DEFAULT_HOUSES = [
   { name: "", color: "#D103D1" },
-  { name: "", color: "#0A4B39" },
+  { name: "", color: "#1B5E4B" },
   { name: "", color: "#118061" },
   { name: "", color: "#10EFEB" },
 ];
@@ -438,7 +438,7 @@ function RegisterSchoolPage() {
         <Card className="w-full max-w-md text-center">
           <CardHeader>
             <div className="text-5xl mb-2">🎉</div>
-            <CardTitle className="text-2xl" style={{ color: "#0A4B39" }}>
+            <CardTitle className="text-2xl" style={{ color: "#1B5E4B" }}>
               Registration submitted!
             </CardTitle>
           </CardHeader>
@@ -451,7 +451,7 @@ function RegisterSchoolPage() {
               We'll email you at <strong>{adminEmail}</strong> once your school has been approved.
             </p>
             <Button
-              style={{ backgroundColor: "#0A4B39" }}
+              style={{ backgroundColor: "#1B5E4B" }}
               className="text-white hover:opacity-90"
               onClick={() => navigate({ to: "/dashboard" })}
             >
@@ -473,7 +473,7 @@ function RegisterSchoolPage() {
             className="mx-auto mb-2"
             style={{ width: "140px", height: "auto" }}
           />
-          <h1 className="text-2xl font-bold" style={{ color: "#0A4B39" }}>
+          <h1 className="text-2xl font-bold" style={{ color: "#1B5E4B" }}>
             Register your school
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
@@ -829,7 +829,7 @@ function RegisterSchoolPage() {
           )}
           {step < totalSteps ? (
             <Button
-              style={{ backgroundColor: "#0A4B39" }}
+              style={{ backgroundColor: "#1B5E4B" }}
               className="text-white hover:opacity-90"
               onClick={() => {
                 if (step === 1 && validateStep1()) setStep(2);
@@ -841,7 +841,7 @@ function RegisterSchoolPage() {
             </Button>
           ) : (
             <Button
-              style={{ backgroundColor: "#0A4B39" }}
+              style={{ backgroundColor: "#1B5E4B" }}
               className="text-white hover:opacity-90"
               onClick={handleSubmit}
               disabled={submitting}

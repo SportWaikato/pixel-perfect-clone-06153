@@ -74,7 +74,7 @@ const SurveyModal = ({ survey, status }: SurveyModalProps) => {
       style={{ backgroundColor: "#f9fefd" }}
     >
       <CardHeader>
-        <CardTitle className="text-2xl font-black text-[#0B4B39]">{survey.name}</CardTitle>
+        <CardTitle className="text-2xl font-black text-[#1B5E4B]">{survey.name}</CardTitle>
         {survey.description && <p className="text-gray-600 text-sm">{survey.description}</p>}
         <div className="mt-3">
           <div className="flex justify-between text-xs text-gray-500 mb-1">
@@ -121,7 +121,7 @@ const SurveyModal = ({ survey, status }: SurveyModalProps) => {
                       type="button"
                       onClick={() => setCurrentQuestionIndex((i) => i + 1)}
                       className="text-white"
-                      style={{ backgroundColor: "#0B4B39" }}
+                      style={{ backgroundColor: "#1B5E4B" }}
                     >
                       Next
                       <ChevronRight size={16} className="ml-1" />
@@ -131,7 +131,7 @@ const SurveyModal = ({ survey, status }: SurveyModalProps) => {
                       type="submit"
                       disabled={isSubmitting}
                       className="text-white"
-                      style={{ backgroundColor: "#0B4B39" }}
+                      style={{ backgroundColor: "#1B5E4B" }}
                     >
                       {isSubmitting ? "Submitting..." : "Submit"}
                       <Send size={16} className="ml-1" />

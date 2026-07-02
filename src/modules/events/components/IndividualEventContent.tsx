@@ -238,7 +238,7 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
             <div className="flex flex-wrap gap-2">
               <Badge
                 variant="secondary"
-                className="capitalize bg-[#0B4B39]/10 text-[#0B4B39] border-[#0B4B39]/20"
+                className="capitalize bg-[#1B5E4B]/10 text-[#1B5E4B] border-[#1B5E4B]/20"
               >
                 {event.event_type}
               </Badge>
@@ -259,7 +259,7 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
             ) : null}
           </div>
 
-          <h1 className="text-3xl font-black text-[#0B4B39] mb-2">{event.name}</h1>
+          <h1 className="text-3xl font-black text-[#1B5E4B] mb-2">{event.name}</h1>
           <div className="flex items-center gap-4 text-gray-500 text-sm mb-4">
             <span className="flex items-center gap-1.5">
               <Calendar size={14} />
@@ -314,7 +314,7 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
                 onClick={handleJoinEvent}
                 disabled={actionLoading}
                 className="gap-2 font-bold"
-                style={{ backgroundColor: "#0B4B39", color: "white" }}
+                style={{ backgroundColor: "#1B5E4B", color: "white" }}
               >
                 <Users size={16} />
                 Join Challenge
@@ -362,7 +362,7 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
               />
             </div>
             <div>
-              <p className="text-xs font-semibold tracking-wide text-[#0B4B39] uppercase mb-0.5">
+              <p className="text-xs font-semibold tracking-wide text-[#1B5E4B] uppercase mb-0.5">
                 Challenge Badge
               </p>
               <p className="font-bold text-gray-800">{event.badge.name}</p>
@@ -383,15 +383,15 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-3 gap-3">
-              <div className="text-center p-3 bg-[#0B4B39]/5 rounded-xl">
-                <p className="text-2xl font-black text-[#0B4B39]">{userProgress.totalMinutes}</p>
+              <div className="text-center p-3 bg-[#1B5E4B]/5 rounded-xl">
+                <p className="text-2xl font-black text-[#1B5E4B]">{userProgress.totalMinutes}</p>
                 <p className="text-xs text-gray-500">mins logged</p>
               </div>
-              <div className="text-center p-3 bg-[#0B4B39]/5 rounded-xl">
-                <p className="text-2xl font-black text-[#0B4B39]">{userActivities.length}</p>
+              <div className="text-center p-3 bg-[#1B5E4B]/5 rounded-xl">
+                <p className="text-2xl font-black text-[#1B5E4B]">{userActivities.length}</p>
                 <p className="text-xs text-gray-500">activities</p>
               </div>
-              <div className="text-center p-3 bg-[#0B4B39]/5 rounded-xl">
+              <div className="text-center p-3 bg-[#1B5E4B]/5 rounded-xl">
                 <p className="text-2xl font-black" style={{ color: "#19AA4B" }}>
                   {userProgress.totalPoints}
                 </p>
@@ -405,7 +405,7 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
                   <span className="text-gray-600">
                     {userProgress.totalMinutes} of {event.target_minutes} mins
                   </span>
-                  <span className="font-semibold text-[#0B4B39]">
+                  <span className="font-semibold text-[#1B5E4B]">
                     {Math.round(progressPercentage)}% complete
                   </span>
                 </div>

@@ -155,7 +155,7 @@ const ActivityHistory = ({
                               onEditActivity(activity);
                             }}
                             variant="ghost"
-                            className="p-1.5 h-auto text-gray-400 hover:text-[#0B4B39] hover:bg-[#0B4B39]/10 rounded-lg"
+                            className="p-1.5 h-auto text-gray-400 hover:text-[#1B5E4B] hover:bg-[#1B5E4B]/10 rounded-lg"
                             title="Edit activity"
                           >
                             <Edit2 size={14} />

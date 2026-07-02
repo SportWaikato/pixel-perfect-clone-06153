@@ -116,13 +116,13 @@ const EventsContent = ({
             >
               <Target size={22} />
             </div>
-            <h1 className="text-3xl sm:text-4xl font-black text-[#0B4B39]">Challenges</h1>
+            <h1 className="text-3xl sm:text-4xl font-black text-[#1B5E4B]">Challenges</h1>
           </div>
           <Button
             onClick={() => setShowCreateDialog(true)}
             size="sm"
             className="gap-2 font-bold shrink-0"
-            style={{ backgroundColor: "#0B4B39", color: "white" }}
+            style={{ backgroundColor: "#1B5E4B", color: "white" }}
           >
             <Plus className="w-4 h-4" />
             <span className="hidden sm:inline">Suggest a challenge</span>
@@ -152,7 +152,7 @@ const EventsContent = ({
           variant={!showJoinedOnly ? "default" : "outline"}
           onClick={() => setShowJoinedOnly(false)}
           className="font-semibold"
-          style={!showJoinedOnly ? { backgroundColor: "#0B4B39", color: "white" } : {}}
+          style={!showJoinedOnly ? { backgroundColor: "#1B5E4B", color: "white" } : {}}
         >
           All Challenges
         </Button>
@@ -161,7 +161,7 @@ const EventsContent = ({
           variant={showJoinedOnly ? "default" : "outline"}
           onClick={() => setShowJoinedOnly(true)}
           className="font-semibold gap-2"
-          style={showJoinedOnly ? { backgroundColor: "#0B4B39", color: "white" } : {}}
+          style={showJoinedOnly ? { backgroundColor: "#1B5E4B", color: "white" } : {}}
         >
           Joined Challenges
           <span
@@ -169,7 +169,7 @@ const EventsContent = ({
             style={
               showJoinedOnly
                 ? { backgroundColor: "rgba(255,255,255,0.25)", color: "white" }
-                : { backgroundColor: "#0B4B39", color: "white" }
+                : { backgroundColor: "#1B5E4B", color: "white" }
             }
           >
             {joinedEventCount}
@@ -180,7 +180,7 @@ const EventsContent = ({
       {/* Current Challenges */}
       {currentEvents.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-base font-bold mb-3" style={{ color: "#0B4B39" }}>
+          <h2 className="text-base font-bold mb-3" style={{ color: "#1B5E4B" }}>
             Current Challenges
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -210,7 +210,7 @@ const EventsContent = ({
                     <div className="flex-1 min-w-0 flex flex-col gap-2">
                       <div className="flex items-center gap-2">
                         <div className="flex-1 min-w-0">
-                          <p className="font-bold text-[#0B4B39] leading-snug truncate">
+                          <p className="font-bold text-[#1B5E4B] leading-snug truncate">
                             {event.name}
                           </p>
                           <p className="text-xs mt-0.5" style={{ color: "#62988a" }}>
@@ -287,7 +287,7 @@ const EventsContent = ({
       {/* Coming Soon Challenges */}
       {comingSoonEvents.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-base font-bold mb-3" style={{ color: "#0B4B39" }}>
+          <h2 className="text-base font-bold mb-3" style={{ color: "#1B5E4B" }}>
             Challenges Coming Soon
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -312,7 +312,7 @@ const EventsContent = ({
                     <div className="flex-1 min-w-0 flex flex-col gap-2">
                       <div className="flex items-center gap-2">
                         <div className="flex-1 min-w-0">
-                          <p className="font-bold text-[#0B4B39] leading-snug truncate">
+                          <p className="font-bold text-[#1B5E4B] leading-snug truncate">
                             {event.name}
                           </p>
                           <p className="text-xs mt-0.5" style={{ color: "#62988a" }}>

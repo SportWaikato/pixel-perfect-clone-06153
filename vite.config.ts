@@ -21,7 +21,7 @@ export default defineConfig({
         name: "Karawhiua Virtual Sports Day",
         short_name: "Karawhiua",
         description: "School physical activity competition platform for Sport Waikato",
-        theme_color: "#0a4b39",
+        theme_color: "#1B5E4B",
         background_color: "#f5f5f0",
         display: "standalone",
         start_url: "/",

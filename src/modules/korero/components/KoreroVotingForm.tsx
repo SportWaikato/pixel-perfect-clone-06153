@@ -107,7 +107,7 @@ const KoreroVotingForm = ({ user }: KoreroVotingFormProps) => {
         style={{ backgroundColor: "#f9fefd" }}
       >
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-[#0B4B39]">
+          <CardTitle className="flex items-center gap-2 text-[#1B5E4B]">
             <Star className="w-5 h-5 text-yellow-500" />
             Tell us your interest level
           </CardTitle>
@@ -130,7 +130,7 @@ const KoreroVotingForm = ({ user }: KoreroVotingFormProps) => {
             {({ isSubmitting, values, setFieldValue }) => (
               <Form className="space-y-6">
                 <div className="space-y-4">
-                  <Label className="text-base font-medium text-[#0B4B39]">
+                  <Label className="text-base font-medium text-[#1B5E4B]">
                     How interested are you in this feature?
                   </Label>
                   <RadioGroup
@@ -141,12 +141,12 @@ const KoreroVotingForm = ({ user }: KoreroVotingFormProps) => {
                     {Object.entries(INTEREST_LEVELS).map(([level, description]) => (
                       <div
                         key={level}
-                        className="flex items-center space-x-3 p-3 rounded-2xl border border-gray-200 bg-[#0B4B39]/5 hover:bg-[#0B4B39]/10 transition-colors"
+                        className="flex items-center space-x-3 p-3 rounded-2xl border border-gray-200 bg-[#1B5E4B]/5 hover:bg-[#1B5E4B]/10 transition-colors"
                       >
                         <RadioGroupItem
                           value={level}
                           id={`level-${level}`}
-                          className="border-[#0B4B39]/40 text-[#0B4B39]"
+                          className="border-[#1B5E4B]/40 text-[#1B5E4B]"
                         />
                         <Label
                           htmlFor={`level-${level}`}
@@ -160,14 +160,14 @@ const KoreroVotingForm = ({ user }: KoreroVotingFormProps) => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-base font-medium text-[#0B4B39]">
+                  <Label className="text-base font-medium text-[#1B5E4B]">
                     Additional feedback (optional)
                   </Label>
                   <textarea
                     name="feedback"
                     placeholder="What specific features would you like to see? Any concerns or suggestions?"
                     rows={4}
-                    className="w-full p-3 bg-white rounded-2xl border border-gray-200 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-[#0B4B39]/30 focus:border-[#0B4B39]/40 focus:outline-none"
+                    className="w-full p-3 bg-white rounded-2xl border border-gray-200 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-[#1B5E4B]/30 focus:border-[#1B5E4B]/40 focus:outline-none"
                     value={values.feedback || ""}
                     onChange={(e) => setFieldValue("feedback", e.target.value)}
                   />
@@ -178,7 +178,7 @@ const KoreroVotingForm = ({ user }: KoreroVotingFormProps) => {
                     type="submit"
                     disabled={isSubmitting || !values.interest_level}
                     className="flex-1 text-white font-semibold rounded-2xl"
-                    style={{ backgroundColor: "#0B4B39" }}
+                    style={{ backgroundColor: "#1B5E4B" }}
                   >
                     {isSubmitting
                       ? existingVote
@@ -191,8 +191,8 @@ const KoreroVotingForm = ({ user }: KoreroVotingFormProps) => {
                 </div>
 
                 {hasVoted && (
-                  <div className="p-4 bg-[#0B4B39]/10 border border-[#0B4B39]/20 rounded-2xl">
-                    <div className="flex items-center gap-2 text-[#0B4B39]">
+                  <div className="p-4 bg-[#1B5E4B]/10 border border-[#1B5E4B]/20 rounded-2xl">
+                    <div className="flex items-center gap-2 text-[#1B5E4B]">
                       <Star className="w-4 h-4 text-yellow-500" />
                       <span className="font-medium">Thank you for your feedback!</span>
                     </div>
@@ -213,30 +213,30 @@ const KoreroVotingForm = ({ user }: KoreroVotingFormProps) => {
         style={{ backgroundColor: "#f9fefd" }}
       >
         <CardHeader>
-          <CardTitle className="text-lg text-[#0B4B39]">What to expect from Kōrero:</CardTitle>
+          <CardTitle className="text-lg text-[#1B5E4B]">What to expect from Kōrero:</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-4 bg-[#0B4B39]/5 border border-gray-200 rounded-2xl">
-              <h4 className="font-medium text-[#0B4B39] mb-2">🎯 Goal Groups</h4>
+            <div className="p-4 bg-[#1B5E4B]/5 border border-gray-200 rounded-2xl">
+              <h4 className="font-medium text-[#1B5E4B] mb-2">🎯 Goal Groups</h4>
               <p className="text-sm text-gray-600">
                 Join groups with similar fitness goals and motivate each other
               </p>
             </div>
-            <div className="p-4 bg-[#0B4B39]/5 border border-gray-200 rounded-2xl">
-              <h4 className="font-medium text-[#0B4B39] mb-2">🏆 Achievement Sharing</h4>
+            <div className="p-4 bg-[#1B5E4B]/5 border border-gray-200 rounded-2xl">
+              <h4 className="font-medium text-[#1B5E4B] mb-2">🏆 Achievement Sharing</h4>
               <p className="text-sm text-gray-600">
                 Celebrate milestones and inspire others with your progress
               </p>
             </div>
-            <div className="p-4 bg-[#0B4B39]/5 border border-gray-200 rounded-2xl">
-              <h4 className="font-medium text-[#0B4B39] mb-2">💬 School Chat</h4>
+            <div className="p-4 bg-[#1B5E4B]/5 border border-gray-200 rounded-2xl">
+              <h4 className="font-medium text-[#1B5E4B] mb-2">💬 School Chat</h4>
               <p className="text-sm text-gray-600">
                 Connect with students from your school and other schools
               </p>
             </div>
-            <div className="p-4 bg-[#0B4B39]/5 border border-gray-200 rounded-2xl">
-              <h4 className="font-medium text-[#0B4B39] mb-2">🔥 Challenge Updates</h4>
+            <div className="p-4 bg-[#1B5E4B]/5 border border-gray-200 rounded-2xl">
+              <h4 className="font-medium text-[#1B5E4B] mb-2">🔥 Challenge Updates</h4>
               <p className="text-sm text-gray-600">
                 Get real-time updates on competitions and events
               </p>

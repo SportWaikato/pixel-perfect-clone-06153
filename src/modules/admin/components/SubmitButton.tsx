@@ -13,7 +13,7 @@ const SubmitButton = ({ isSubmitting, loadingText, children, className }: Submit
     type="submit"
     disabled={isSubmitting}
     className={className}
-    style={{ backgroundColor: "#0B4B39" }}
+    style={{ backgroundColor: "#1B5E4B" }}
   >
     {isSubmitting ? (
       <span className="flex items-center justify-center gap-2">

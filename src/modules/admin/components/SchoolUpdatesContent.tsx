@@ -312,7 +312,7 @@ const SchoolUpdatesContent = ({
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  style={{ backgroundColor: "#0B4B39" }}
+                  style={{ backgroundColor: "#1B5E4B" }}
                 >
                   {isSubmitting ? "Posting..." : "Post Update"}
                 </Button>

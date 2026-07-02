@@ -202,7 +202,7 @@ const ReportsContent = ({ user, schools, currentTerm }: ReportsContentProps) => 
               onClick={fetchReport}
               disabled={loading || !selectedSchoolId}
               className="gap-2"
-              style={{ backgroundColor: "#0B4B39" }}
+              style={{ backgroundColor: "#1B5E4B" }}
             >
               {loading ? <Loader2 size={16} className="animate-spin" /> : <FileText size={16} />}
               Generate Report
@@ -365,7 +365,7 @@ const ReportsContent = ({ user, schools, currentTerm }: ReportsContentProps) => 
               onClick={fetchVerification}
               disabled={verificationLoading || !selectedSchoolId}
               className="gap-2"
-              style={{ backgroundColor: "#0B4B39" }}
+              style={{ backgroundColor: "#1B5E4B" }}
             >
               {verificationLoading ? (
                 <Loader2 size={16} className="animate-spin" />

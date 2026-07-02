@@ -39,7 +39,7 @@ const MobileBottomNav = () => {
                 <span
                   className={cn(
                     "w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-transform active:scale-95",
-                    isActive ? "bg-[#0B4B39]" : "bg-[#D103D1]",
+                    isActive ? "bg-[#1B5E4B]" : "bg-[#D103D1]",
                   )}
                 >
                   <IconComponent size={24} color="white" />
@@ -47,7 +47,7 @@ const MobileBottomNav = () => {
                 <span
                   className={cn(
                     "text-xs font-medium",
-                    isActive ? "text-[#0B4B39]" : "text-gray-400",
+                    isActive ? "text-[#1B5E4B]" : "text-gray-400",
                   )}
                 >
                   {tab.label}
@@ -65,10 +65,10 @@ const MobileBottomNav = () => {
             >
               <IconComponent
                 size={22}
-                className={cn(isActive ? "text-[#0B4B39]" : "text-gray-400")}
+                className={cn(isActive ? "text-[#1B5E4B]" : "text-gray-400")}
               />
               <span
-                className={cn("text-xs font-medium", isActive ? "text-[#0B4B39]" : "text-gray-400")}
+                className={cn("text-xs font-medium", isActive ? "text-[#1B5E4B]" : "text-gray-400")}
               >
                 {tab.label}
               </span>

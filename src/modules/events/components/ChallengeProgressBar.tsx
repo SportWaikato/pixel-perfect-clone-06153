@@ -83,7 +83,7 @@ const ChallengeProgressBar = ({ event, userId, houseId, schoolId }: ChallengePro
       {progress.completed ? (
         <Progress value={pct} className="h-2 [&_[data-slot=progress-indicator]]:bg-green-500" />
       ) : pct > 50 ? (
-        <Progress value={pct} className="h-2 [&_[data-slot=progress-indicator]]:bg-[#0B4B39]" />
+        <Progress value={pct} className="h-2 [&_[data-slot=progress-indicator]]:bg-[#1B5E4B]" />
       ) : (
         <Progress value={pct} className="h-2 [&_[data-slot=progress-indicator]]:bg-[#D103D1]" />
       )}

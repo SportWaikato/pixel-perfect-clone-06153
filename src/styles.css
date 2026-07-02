@@ -7,7 +7,7 @@
 /*
  * Karawhiua design system.
  *
- * Primary dark green:    #0A4B39
+ * Primary dark green:    #1B5E4B
  * Primary mid green:     #118061
  * Primary surface:       #2A5D4B
  * Accent purple/pink:    #D103D1
@@ -70,7 +70,7 @@
 :root {
   --radius: 0.625rem;
 
-  --brand-primary-green: #0a4b39;
+  --brand-primary-green: #1B5E4B;
   --brand-supporting-green: #118061;
   --brand-magenta: #d103d1;
   --brand-pink: #db4fdb;
@@ -83,10 +83,10 @@
   --card-foreground: #333333;
   --popover: #ffffff;
   --popover-foreground: #333333;
-  --primary: #0a4b39;
+  --primary: #1B5E4B;
   --primary-foreground: #ffffff;
   --secondary: oklch(0.97 0 0);
-  --secondary-foreground: #0a4b39;
+  --secondary-foreground: #1B5E4B;
   --muted: oklch(0.96 0 0);
   --muted-foreground: oklch(0.45 0 0);
   --accent: #d103d1;
@@ -96,7 +96,7 @@
   --border: oklch(0.9 0 0);
   --input: oklch(0.92 0 0);
   --ring: #118061;
-  --chart-1: #0a4b39;
+  --chart-1: #1B5E4B;
   --chart-2: #118061;
   --chart-3: #d103d1;
   --chart-4: #db4fdb;

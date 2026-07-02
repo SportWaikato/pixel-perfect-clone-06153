@@ -51,7 +51,7 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: #0b4b39; /* Karawhiua green */
+  --primary: #1B5E4B; /* Karawhiua green */
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
@@ -64,7 +64,7 @@
   --input: oklch(0.922 0 0);
   --ring: #0f8061; /* Supporting green */
   /* Add Karawhiua brand color variables */
-  --brand-primary-green: #0b4b39;
+  --brand-primary-green: #1B5E4B;
   --brand-magenta: #d103d1;
   --brand-white: #ffffff;
   --brand-grey: #f0efeb;
@@ -144,14 +144,14 @@
 
   /* Primary green buttons hover to supporting green */
   button[style*="background-color: rgb(11, 75, 57)"],
-  button[style*="background-color:#0B4B39"],
-  button[style*="backgroundColor: '#0B4B39'"] {
+  button[style*="background-color:#1B5E4B"],
+  button[style*="backgroundColor: '#1B5E4B'"] {
     transition: background-color 0.2s ease-in-out;
   }
 
   button[style*="background-color: rgb(11, 75, 57)"]:hover,
-  button[style*="background-color:#0B4B39"]:hover,
-  button[style*="backgroundColor: '#0B4B39'"]:hover {
+  button[style*="background-color:#1B5E4B"]:hover,
+  button[style*="backgroundColor: '#1B5E4B'"]:hover {
     background-color: #0f8061 !important;
   }
 }

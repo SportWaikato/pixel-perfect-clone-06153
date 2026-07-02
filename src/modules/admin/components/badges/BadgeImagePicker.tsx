@@ -77,7 +77,7 @@ const BadgeImagePicker = ({ selectedUrl, onSelect }: BadgeImagePickerProps) => {
             }
             className={`relative flex aspect-square items-center justify-center rounded-lg border-2 p-1.5 transition-colors ${
               isSelected
-                ? "border-[#0B4B39] bg-emerald-50"
+                ? "border-[#1B5E4B] bg-emerald-50"
                 : "border-transparent bg-gray-50 hover:border-gray-300"
             }`}
           >
@@ -90,7 +90,7 @@ const BadgeImagePicker = ({ selectedUrl, onSelect }: BadgeImagePickerProps) => {
               />
             </div>
             {isSelected && (
-              <CheckCircle2 className="absolute -right-1 -top-1 h-4 w-4 fill-white text-[#0B4B39]" />
+              <CheckCircle2 className="absolute -right-1 -top-1 h-4 w-4 fill-white text-[#1B5E4B]" />
             )}
           </button>
         );

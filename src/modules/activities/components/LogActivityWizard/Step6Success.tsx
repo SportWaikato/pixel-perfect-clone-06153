@@ -18,12 +18,12 @@ const Step6Success = ({ user, pointsEarned, onLogAnother }: Step6SuccessProps) =
       <div className="text-6xl select-none">🏆</div>
 
       <div>
-        <h2 className="text-2xl font-black text-[#0B4B39]">Activity logged!</h2>
+        <h2 className="text-2xl font-black text-[#1B5E4B]">Activity logged!</h2>
         <p className="text-lg font-bold text-gray-700 mt-1">Ka pai, {firstName}!</p>
       </div>
 
       {/* Points */}
-      <div className="w-full p-5 bg-[#0B4B39]/5 border border-[#0B4B39]/15 rounded-2xl space-y-3">
+      <div className="w-full p-5 bg-[#1B5E4B]/5 border border-[#1B5E4B]/15 rounded-2xl space-y-3">
         <div className="text-5xl font-black" style={{ color: "#19AA4B" }}>
           +{pointsEarned}
         </div>
@@ -42,7 +42,7 @@ const Step6Success = ({ user, pointsEarned, onLogAnother }: Step6SuccessProps) =
         <Button
           onClick={onLogAnother}
           className="w-full gap-2 py-3 rounded-2xl font-bold"
-          style={{ backgroundColor: "#0B4B39", color: "white" }}
+          style={{ backgroundColor: "#1B5E4B", color: "white" }}
         >
           <Plus size={16} />
           Log another activity

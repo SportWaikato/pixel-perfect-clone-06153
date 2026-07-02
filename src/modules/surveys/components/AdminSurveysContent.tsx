@@ -57,7 +57,7 @@ const AdminSurveysContent = ({ surveys, results }: AdminSurveysContentProps) => 
                 <Card className="shadow-sm rounded-2xl border border-gray-200">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-xl font-bold text-gray-800">
-                      <ClipboardList className="w-5 h-5 text-[#0B4B39]" />
+                      <ClipboardList className="w-5 h-5 text-[#1B5E4B]" />
                       {survey.name}
                     </CardTitle>
                     {survey.description && (
@@ -154,7 +154,7 @@ const AdminSurveysContent = ({ surveys, results }: AdminSurveysContentProps) => 
                                       className="h-2 rounded-full transition-all"
                                       style={{
                                         width: `${percentage}%`,
-                                        backgroundColor: "#0B4B39",
+                                        backgroundColor: "#1B5E4B",
                                       }}
                                     />
                                   </div>

@@ -8,7 +8,7 @@
 --   3. activities: restrict "view all activities" to authenticated only
 --   4. events: restrict "view events" to authenticated only
 --   5. achievements: restrict "anyone can view achievements" to authenticated only
---   6. Revoke remaining EXECUTE on sensitive SECURITY DEFINER functions (users table)
+--   6. Revoke remaining EXECUTE on sensitive SECURITY DEFINER functions
 --   7. Drop any lingering GRANT SELECT on core tables to anon (follow-up to 20260702072116)
 
 -- 1. user_achievements: proper insert policy
@@ -57,13 +57,30 @@ CREATE POLICY "Anyone can view achievements" ON public.achievements
   FOR SELECT TO authenticated
   USING (true);
 
--- 6. Revoke remaining EXECUTE on sensitive user/security functions
+-- 6. Revoke remaining EXECUTE on sensitive SECURITY DEFINER functions
 -- Some of these may already be revoked by 20260702072116, but the REVOKE is idempotent
 REVOKE EXECUTE ON FUNCTION public.prevent_privileged_column_changes() FROM PUBLIC, anon, authenticated;
-REVOKE EXECUTE ON FUNCTION public.handle_new_user() FROM PUBLIC, anon;
-REVOKE EXECUTE ON FUNCTION public.handle_user_login() FROM PUBLIC, anon;
-REVOKE EXECUTE ON FUNCTION public.delete_user(uuid) FROM PUBLIC, anon, authenticated;
-REVOKE EXECUTE ON FUNCTION public.admin_delete_user(uuid) FROM PUBLIC, anon, authenticated;
+
+-- Wrapped in DO blocks so migration doesn't fail if function doesn't exist on this project
+DO $$ BEGIN
+  REVOKE EXECUTE ON FUNCTION public.handle_new_user() FROM PUBLIC, anon;
+EXCEPTION WHEN undefined_function THEN NULL;
+END $$;
+
+DO $$ BEGIN
+  REVOKE EXECUTE ON FUNCTION public.handle_user_login() FROM PUBLIC, anon;
+EXCEPTION WHEN undefined_function THEN NULL;
+END $$;
+
+DO $$ BEGIN
+  REVOKE EXECUTE ON FUNCTION public.delete_user(uuid) FROM PUBLIC, anon, authenticated;
+EXCEPTION WHEN undefined_function THEN NULL;
+END $$;
+
+DO $$ BEGIN
+  REVOKE EXECUTE ON FUNCTION public.admin_delete_user(uuid) FROM PUBLIC, anon, authenticated;
+EXCEPTION WHEN undefined_function THEN NULL;
+END $$;
 
 -- 7. Explicitly revoke anon SELECT on core tables (defence in depth)
 -- The migration 20260702072116 already did this for schools with a column-restricted GRANT.

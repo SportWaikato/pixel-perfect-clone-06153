@@ -59,7 +59,7 @@ const AchievementsGrid = ({ userAchievements, allAchievements }: AchievementsGri
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8 min-h-screen">
       <div>
-        <h1 className="text-4xl font-black text-[#0B4B39]">Achievements</h1>
+        <h1 className="text-4xl font-black text-[#1B5E4B]">Achievements</h1>
         <p className="text-gray-700 mt-1">
           Earn badges by logging activities, staying consistent, and hitting milestones
         </p>
@@ -73,7 +73,7 @@ const AchievementsGrid = ({ userAchievements, allAchievements }: AchievementsGri
             variant={filter === tab.key ? "default" : "outline"}
             onClick={() => setFilter(tab.key)}
             className="font-semibold gap-2"
-            style={filter === tab.key ? { backgroundColor: "#0B4B39", color: "white" } : {}}
+            style={filter === tab.key ? { backgroundColor: "#1B5E4B", color: "white" } : {}}
           >
             {tab.label}
             {tab.count !== undefined && (
@@ -82,7 +82,7 @@ const AchievementsGrid = ({ userAchievements, allAchievements }: AchievementsGri
                 style={
                   filter === tab.key
                     ? { backgroundColor: "rgba(255,255,255,0.25)", color: "white" }
-                    : { backgroundColor: "#0B4B39", color: "white" }
+                    : { backgroundColor: "#1B5E4B", color: "white" }
                 }
               >
                 {tab.count}
@@ -99,7 +99,7 @@ const AchievementsGrid = ({ userAchievements, allAchievements }: AchievementsGri
         >
           <CardContent className="py-12 text-center">
             <Award className="w-12 h-12 mx-auto text-gray-300 mb-4" />
-            <p className="text-lg font-bold text-[#0B4B39]">
+            <p className="text-lg font-bold text-[#1B5E4B]">
               {filter === "earned" ? "No badges earned yet" : "No achievements found"}
             </p>
             <p className="text-sm text-gray-500 mt-2">
