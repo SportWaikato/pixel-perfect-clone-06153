@@ -16,7 +16,8 @@ export const Route = createFileRoute("/_authenticated")({
       .eq("id", auth.user.id)
       .maybeSingle();
 
-    const needsOnboarding = !profile || !profile.school_id;
+    const isSuperAdmin = profile?.role === "super_admin";
+    const needsOnboarding = !profile || (!profile.school_id && !isSuperAdmin);
     if (needsOnboarding && !location.pathname.startsWith("/onboarding")) {
       throw redirect({ to: "/onboarding" });
     }
