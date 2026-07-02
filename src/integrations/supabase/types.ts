@@ -594,6 +594,7 @@ export type Database = {
           id: string
           name: string
           school_id: string | null
+          term_points: number | null
           total_kilometers: number | null
           total_points: number | null
           updated_at: string | null
@@ -604,6 +605,7 @@ export type Database = {
           id?: string
           name: string
           school_id?: string | null
+          term_points?: number | null
           total_kilometers?: number | null
           total_points?: number | null
           updated_at?: string | null
@@ -614,6 +616,7 @@ export type Database = {
           id?: string
           name?: string
           school_id?: string | null
+          term_points?: number | null
           total_kilometers?: number | null
           total_points?: number | null
           updated_at?: string | null
@@ -952,6 +955,7 @@ export type Database = {
           secondary_email_domain: string | null
           self_registered: boolean | null
           status: string | null
+          term_points: number | null
           total_kilometers: number | null
           total_points: number | null
           total_students: number | null
@@ -977,6 +981,7 @@ export type Database = {
           secondary_email_domain?: string | null
           self_registered?: boolean | null
           status?: string | null
+          term_points?: number | null
           total_kilometers?: number | null
           total_points?: number | null
           total_students?: number | null
@@ -1002,6 +1007,7 @@ export type Database = {
           secondary_email_domain?: string | null
           self_registered?: boolean | null
           status?: string | null
+          term_points?: number | null
           total_kilometers?: number | null
           total_points?: number | null
           total_students?: number | null
