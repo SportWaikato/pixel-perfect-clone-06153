@@ -108,7 +108,28 @@ export class UserService {
     return data;
   }
 
-  async updateUserRole(id: string, role: UserInterface["role"]): Promise<UserInterface | null> {
+  async updateUserRole(
+    id: string,
+    role: UserInterface["role"],
+    callerId: string,
+  ): Promise<UserInterface | null> {
+    if (id === callerId) {
+      throw new Error("You cannot change your own role");
+    }
+
+    const { data: caller } = await this.supabaseClient
+      .from(TABLE_NAME)
+      .select("role")
+      .eq("id", callerId)
+      .single();
+
+    const callerRole = caller?.role;
+    if (callerRole !== "super_admin") {
+      if (role !== "student") {
+        throw new Error("Only super admins can assign admin roles");
+      }
+    }
+
     const { data, error } = await this.supabaseClient
       .from(TABLE_NAME)
       .update({
@@ -126,6 +147,14 @@ export class UserService {
       .maybeSingle();
 
     if (error) throw new Error(error.message);
+
+    if (data) {
+      await this.supabaseClient.rpc("sync_user_role_to_auth_metadata", {
+        p_user_id: data.id,
+        p_role: role,
+      });
+    }
+
     return data;
   }
 

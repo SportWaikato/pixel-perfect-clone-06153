@@ -278,7 +278,7 @@ const UserManagementContent = ({
     if (!promoteUser) return;
     const { user: target, targetRole } = promoteUser;
     try {
-      await userService.updateUserRole(target.id, targetRole);
+      await userService.updateUserRole(target.id, targetRole, currentUser.id);
       if (targetRole === "school_admin") {
         await userService.update(target.id, { year_group: "Staff" });
       }
