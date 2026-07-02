@@ -362,9 +362,8 @@ function RegisterSchoolPage() {
         .single();
 
       if (schoolError) {
-        if (authMethod !== "google") {
-          await supabase.auth.admin.deleteUser(userId).catch(() => {});
-        }
+        // User cleanup is handled server-side by the registration function.
+        // Browser client does not have admin privileges for auth.admin operations.
         throw schoolError;
       }
 
@@ -385,13 +384,8 @@ function RegisterSchoolPage() {
         } catch {
           /* best-effort cleanup */
         }
-        if (authMethod !== "google") {
-          try {
-            await supabase.auth.admin.deleteUser(userId);
-          } catch {
-            /* best-effort cleanup */
-          }
-        }
+        // User/auth cleanup is handled server-side by the registration function.
+        // Browser client does not have admin privileges for auth.admin operations.
         throw housesError;
       }
 

@@ -7,6 +7,8 @@ export const approveSchool = createServerFn({ method: "POST" })
     return { schoolId };
   })
   .handler(async ({ data }) => {
+    // SSR guard — prevent accidental client bundle inclusion
+    if (!import.meta.env.SSR) throw new Error("This function can only run server-side");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { sendEmail } = await import("@/lib/sendEmail");
     const { schoolApproved } = await import("@/emails/index");
@@ -93,6 +95,7 @@ export const rejectSchool = createServerFn({ method: "POST" })
     return { schoolId, reason: reason.trim() };
   })
   .handler(async ({ data }) => {
+    if (!import.meta.env.SSR) throw new Error("This function can only run server-side");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { sendEmail } = await import("@/lib/sendEmail");
     const { schoolRejected } = await import("@/emails/index");
@@ -149,6 +152,7 @@ export const regenerateJoinCode = createServerFn({ method: "POST" })
     return { schoolId };
   })
   .handler(async ({ data }) => {
+    if (!import.meta.env.SSR) throw new Error("This function can only run server-side");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
