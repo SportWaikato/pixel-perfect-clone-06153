@@ -106,7 +106,7 @@ function RegisterSchoolPage() {
     "protonmail.com",
   ];
 
-  // Restore form state after OAuth redirect
+  // Restore form state AND check for Google OAuth return on mount
   useEffect(() => {
     const saved = sessionStorage.getItem("register_school_state");
     if (saved) {
@@ -123,16 +123,27 @@ function RegisterSchoolPage() {
         sessionStorage.removeItem("register_school_state");
       }
     }
-  }, []);
 
-  const getSavedDomain = () => {
-    try {
-      const saved = sessionStorage.getItem("register_school_state");
-      return saved ? JSON.parse(saved).primaryDomain : "";
-    } catch {
-      return "";
-    }
-  };
+    // After restoring state, check for existing Google session on mount (OAuth redirect flow)
+    (async () => {
+      const { data } = await supabase.auth.getUser();
+      if (data.user && data.user.email) {
+        const email = data.user.email;
+        const domain = email.split("@")[1]?.toLowerCase();
+        const restoredDomain = sessionStorage.getItem("register_school_state")
+          ? JSON.parse(sessionStorage.getItem("register_school_state")!).primaryDomain
+          : "";
+
+        if (domain && restoredDomain && domain === restoredDomain) {
+          setAdminEmail(email);
+          setAdminFirstName(data.user.user_metadata?.full_name?.split(" ")[0] ?? "");
+          setAdminLastName(data.user.user_metadata?.full_name?.split(" ").slice(1).join(" ") ?? "");
+          setAuthMethod("google");
+          setStep(4);
+        }
+      }
+    })();
+  }, []);
 
   const saveFormState = () => {
     sessionStorage.setItem(
@@ -259,7 +270,15 @@ function RegisterSchoolPage() {
         const user = session.user;
         const email = user.email ?? "";
         const domain = email.split("@")[1]?.toLowerCase();
-        const expectedDomain = primaryDomain || getSavedDomain();
+        const savedDomain = (() => {
+          try {
+            const saved = sessionStorage.getItem("register_school_state");
+            return saved ? JSON.parse(saved).primaryDomain : "";
+          } catch {
+            return "";
+          }
+        })();
+        const expectedDomain = primaryDomain || savedDomain;
 
         if (!domain || domain !== expectedDomain) {
           await supabase.auth.signOut();
@@ -279,30 +298,6 @@ function RegisterSchoolPage() {
 
     return () => listener.subscription.unsubscribe();
   }, [primaryDomain]);
-
-  // Check for existing Google session on mount (for redirect flow)
-  useEffect(() => {
-    if (authMethod !== null) return;
-    (async () => {
-      const { data } = await supabase.auth.getUser();
-      if (data.user && data.user.email) {
-        const email = data.user.email;
-        const domain = email.split("@")[1]?.toLowerCase();
-        const restoredDomain = sessionStorage.getItem("register_school_state")
-          ? JSON.parse(sessionStorage.getItem("register_school_state")!).primaryDomain
-          : primaryDomain;
-
-        if (domain && restoredDomain && domain === restoredDomain) {
-          setAdminEmail(email);
-          setAdminFirstName(data.user.user_metadata?.full_name?.split(" ")[0] ?? "");
-          setAdminLastName(data.user.user_metadata?.full_name?.split(" ").slice(1).join(" ") ?? "");
-          setAuthMethod("google");
-          setStep(4);
-          toast.success("Signed in with Google!");
-        }
-      }
-    })();
-  }, []);
 
   const handleSubmit = async () => {
     if (!validateStep4()) return;
