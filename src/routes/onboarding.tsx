@@ -78,7 +78,6 @@ function OnboardingPage() {
   // Step 4 — final
   const [submitting, setSubmitting] = useState(false);
   const [completed, setCompleted] = useState(false);
-  const [userType, setUserType] = useState<"student" | "teacher">("student");
 
   const userDomain = email.split("@")[1]?.toLowerCase() || "";
 
@@ -210,10 +209,10 @@ function OnboardingPage() {
       username: email.split("@")[0],
       school_id: selectedSchool!.id,
       house_id: selectedHouse,
-      year_group: userType === "teacher" ? "Staff" : yearGroup,
+      year_group: yearGroup,
       class: className || null,
-      role: userType === "teacher" ? "school_admin" : "student",
-      is_admin: userType === "teacher",
+      role: "student",
+      is_admin: false,
       is_active: true,
       is_public: true,
     });
@@ -437,28 +436,6 @@ function OnboardingPage() {
             {/* Step 3 — About You */}
             {step === 3 && (
               <>
-                <div>
-                  <Label>I am a... *</Label>
-                  <p className="text-xs text-muted-foreground mb-2">
-                    Students log activity to earn points for their house. Teachers manage challenges
-                    and can also compete.
-                  </p>
-                  <Select
-                    value={userType}
-                    onValueChange={(v) => {
-                      setUserType(v as "student" | "teacher");
-                      if (v === "teacher") setYearGroup("Staff");
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="student">Student</SelectItem>
-                      <SelectItem value="teacher">Teacher / Staff</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label htmlFor="firstName">First name *</Label>
@@ -479,11 +456,7 @@ function OnboardingPage() {
                 </div>
                 <div>
                   <Label>Year group *</Label>
-                  <Select
-                    value={yearGroup}
-                    onValueChange={setYearGroup}
-                    disabled={userType === "teacher"}
-                  >
+                  <Select value={yearGroup} onValueChange={setYearGroup}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select year group" />
                     </SelectTrigger>
@@ -495,11 +468,6 @@ function OnboardingPage() {
                       ))}
                     </SelectContent>
                   </Select>
-                  {userType === "teacher" && (
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Auto-set to Staff for teachers.
-                    </p>
-                  )}
                 </div>
                 <div>
                   <Label htmlFor="class">Class (optional)</Label>
@@ -542,12 +510,6 @@ function OnboardingPage() {
                       </span>
                     </div>
                   )}
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Role</span>
-                    <span className="font-medium">
-                      {userType === "teacher" ? "Teacher / Staff" : "Student"}
-                    </span>
-                  </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Year group</span>
                     <span className="font-medium">{yearGroup}</span>

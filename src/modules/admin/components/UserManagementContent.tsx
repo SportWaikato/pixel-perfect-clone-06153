@@ -97,6 +97,9 @@ const UserManagementContent = ({
   const [houseFilter, setHouseFilter] = useState("all");
   const [yearGroupFilter, setYearGroupFilter] = useState("all");
   const [classFilter, setClassFilter] = useState("");
+  const [activityFilter, setActivityFilter] = useState<
+    "all" | "never_logged" | "recently_joined" | "inactive"
+  >("all");
   const [selectedSchoolId, setSelectedSchoolId] = useState<string>(
     schoolId || (isSuperAdmin ? "all" : currentUser.school_id || ""),
   );
@@ -223,6 +226,19 @@ const UserManagementContent = ({
       const classTerm = classFilter.toLowerCase();
       filtered = filtered.filter((user) => user.class?.toLowerCase().includes(classTerm));
     }
+    if (activityFilter === "never_logged") {
+      filtered = filtered.filter((user) => !user.total_minutes || user.total_minutes === 0);
+    } else if (activityFilter === "recently_joined") {
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      filtered = filtered.filter((user) => user.created_at && new Date(user.created_at) > weekAgo);
+    } else if (activityFilter === "inactive") {
+      const monthAgo = new Date();
+      monthAgo.setDate(monthAgo.getDate() - 30);
+      filtered = filtered.filter(
+        (user) => !user.last_activity_date || new Date(user.last_activity_date) < monthAgo,
+      );
+    }
     filtered.sort((a, b) => {
       const aVal = (a[sortField] || "").toLowerCase();
       const bVal = (b[sortField] || "").toLowerCase();
@@ -238,6 +254,7 @@ const UserManagementContent = ({
     classFilter,
     sortField,
     sortDirection,
+    activityFilter,
   ]);
 
   const handleSchoolChange = (value: string) => {
@@ -495,7 +512,27 @@ const UserManagementContent = ({
                 className="w-40"
               />
             </div>
-            {(searchTerm || houseFilter !== "all" || yearGroupFilter !== "all" || classFilter) && (
+            <Select
+              value={activityFilter}
+              onValueChange={(v) =>
+                setActivityFilter(v as "all" | "never_logged" | "recently_joined" | "inactive")
+              }
+            >
+              <SelectTrigger className="w-44">
+                <SelectValue placeholder="All Users" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Users</SelectItem>
+                <SelectItem value="never_logged">Never Logged Activity</SelectItem>
+                <SelectItem value="recently_joined">Recently Joined (7d)</SelectItem>
+                <SelectItem value="inactive">Inactive (30d+)</SelectItem>
+              </SelectContent>
+            </Select>
+            {(searchTerm ||
+              houseFilter !== "all" ||
+              yearGroupFilter !== "all" ||
+              classFilter ||
+              activityFilter !== "all") && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -504,6 +541,7 @@ const UserManagementContent = ({
                   setHouseFilter("all");
                   setYearGroupFilter("all");
                   setClassFilter("");
+                  setActivityFilter("all");
                 }}
               >
                 Clear
