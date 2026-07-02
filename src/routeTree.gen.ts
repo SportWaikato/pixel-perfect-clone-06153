@@ -18,9 +18,11 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as JoinCodeRouteImport } from './routes/join.$code'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
+import { Route as AuthenticatedSurveyRouteImport } from './routes/_authenticated/survey'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedLeaderboardRouteImport } from './routes/_authenticated/leaderboard'
 import { Route as AuthenticatedKoreroRouteImport } from './routes/_authenticated/korero'
+import { Route as AuthenticatedFeedRouteImport } from './routes/_authenticated/feed'
 import { Route as AuthenticatedEventsRouteImport } from './routes/_authenticated/events'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedActivitiesRouteImport } from './routes/_authenticated/activities'
@@ -28,20 +30,32 @@ import { Route as AuthenticatedAchievementsRouteImport } from './routes/_authent
 import { Route as AuthenticatedSuperadminRouteImport } from './routes/_authenticated/_superadmin'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/_admin'
 import { Route as AuthenticatedEventsIdRouteImport } from './routes/_authenticated/events.$id'
+import { Route as AuthenticatedChallengesMySuggestionsRouteImport } from './routes/_authenticated/challenges.my-suggestions'
 import { Route as AuthenticatedSuperadminAdminRouteImport } from './routes/_authenticated/_superadmin/admin'
 import { Route as AuthenticatedAdminSchoolRouteImport } from './routes/_authenticated/_admin/school'
 import { Route as AuthenticatedSuperadminAdminUsersRouteImport } from './routes/_authenticated/_superadmin/admin.users'
+import { Route as AuthenticatedSuperadminAdminSurveysRouteImport } from './routes/_authenticated/_superadmin/admin.surveys'
+import { Route as AuthenticatedSuperadminAdminSettingsRouteImport } from './routes/_authenticated/_superadmin/admin.settings'
 import { Route as AuthenticatedSuperadminAdminSchoolsRouteImport } from './routes/_authenticated/_superadmin/admin.schools'
+import { Route as AuthenticatedSuperadminAdminReportsRouteImport } from './routes/_authenticated/_superadmin/admin.reports'
 import { Route as AuthenticatedSuperadminAdminMediaRouteImport } from './routes/_authenticated/_superadmin/admin.media'
+import { Route as AuthenticatedSuperadminAdminInvitesRouteImport } from './routes/_authenticated/_superadmin/admin.invites'
 import { Route as AuthenticatedSuperadminAdminHousesRouteImport } from './routes/_authenticated/_superadmin/admin.houses'
 import { Route as AuthenticatedSuperadminAdminEventsRouteImport } from './routes/_authenticated/_superadmin/admin.events'
+import { Route as AuthenticatedSuperadminAdminDeletedUsersRouteImport } from './routes/_authenticated/_superadmin/admin.deleted-users'
 import { Route as AuthenticatedSuperadminAdminBadgesRouteImport } from './routes/_authenticated/_superadmin/admin.badges'
+import { Route as AuthenticatedSuperadminAdminAuditLogRouteImport } from './routes/_authenticated/_superadmin/admin.audit-log'
 import { Route as AuthenticatedSuperadminAdminAssemblyRouteImport } from './routes/_authenticated/_superadmin/admin.assembly'
+import { Route as AuthenticatedSuperadminAdminAnalyticsRouteImport } from './routes/_authenticated/_superadmin/admin.analytics'
+import { Route as AuthenticatedSuperadminAdminAllowlistRouteImport } from './routes/_authenticated/_superadmin/admin.allowlist'
 import { Route as AuthenticatedAdminSchoolUsersRouteImport } from './routes/_authenticated/_admin/school.users'
 import { Route as AuthenticatedAdminSchoolUpdatesRouteImport } from './routes/_authenticated/_admin/school.updates'
 import { Route as AuthenticatedAdminSchoolMessagesRouteImport } from './routes/_authenticated/_admin/school.messages'
 import { Route as AuthenticatedAdminSchoolLeaderboardRouteImport } from './routes/_authenticated/_admin/school.leaderboard'
+import { Route as AuthenticatedAdminSchoolFeedRouteImport } from './routes/_authenticated/_admin/school.feed'
+import { Route as AuthenticatedAdminSchoolEventsRouteImport } from './routes/_authenticated/_admin/school.events'
 import { Route as AuthenticatedAdminSchoolAssemblyRouteImport } from './routes/_authenticated/_admin/school.assembly'
+import { Route as AuthenticatedAdminSchoolActivityRouteImport } from './routes/_authenticated/_admin/school.activity'
 import { Route as AuthenticatedSuperadminAdminSchoolsPendingRouteImport } from './routes/_authenticated/_superadmin/admin.schools.pending'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -88,6 +102,11 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
   path: '/callback',
   getParentRoute: () => AuthRoute,
 } as any)
+const AuthenticatedSurveyRoute = AuthenticatedSurveyRouteImport.update({
+  id: '/survey',
+  path: '/survey',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -102,6 +121,11 @@ const AuthenticatedLeaderboardRoute =
 const AuthenticatedKoreroRoute = AuthenticatedKoreroRouteImport.update({
   id: '/korero',
   path: '/korero',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedFeedRoute = AuthenticatedFeedRouteImport.update({
+  id: '/feed',
+  path: '/feed',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedEventsRoute = AuthenticatedEventsRouteImport.update({
@@ -138,6 +162,12 @@ const AuthenticatedEventsIdRoute = AuthenticatedEventsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AuthenticatedEventsRoute,
 } as any)
+const AuthenticatedChallengesMySuggestionsRoute =
+  AuthenticatedChallengesMySuggestionsRouteImport.update({
+    id: '/challenges/my-suggestions',
+    path: '/challenges/my-suggestions',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedSuperadminAdminRoute =
   AuthenticatedSuperadminAdminRouteImport.update({
     id: '/admin',
@@ -156,16 +186,40 @@ const AuthenticatedSuperadminAdminUsersRoute =
     path: '/users',
     getParentRoute: () => AuthenticatedSuperadminAdminRoute,
   } as any)
+const AuthenticatedSuperadminAdminSurveysRoute =
+  AuthenticatedSuperadminAdminSurveysRouteImport.update({
+    id: '/surveys',
+    path: '/surveys',
+    getParentRoute: () => AuthenticatedSuperadminAdminRoute,
+  } as any)
+const AuthenticatedSuperadminAdminSettingsRoute =
+  AuthenticatedSuperadminAdminSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedSuperadminAdminRoute,
+  } as any)
 const AuthenticatedSuperadminAdminSchoolsRoute =
   AuthenticatedSuperadminAdminSchoolsRouteImport.update({
     id: '/schools',
     path: '/schools',
     getParentRoute: () => AuthenticatedSuperadminAdminRoute,
   } as any)
+const AuthenticatedSuperadminAdminReportsRoute =
+  AuthenticatedSuperadminAdminReportsRouteImport.update({
+    id: '/reports',
+    path: '/reports',
+    getParentRoute: () => AuthenticatedSuperadminAdminRoute,
+  } as any)
 const AuthenticatedSuperadminAdminMediaRoute =
   AuthenticatedSuperadminAdminMediaRouteImport.update({
     id: '/media',
     path: '/media',
+    getParentRoute: () => AuthenticatedSuperadminAdminRoute,
+  } as any)
+const AuthenticatedSuperadminAdminInvitesRoute =
+  AuthenticatedSuperadminAdminInvitesRouteImport.update({
+    id: '/invites',
+    path: '/invites',
     getParentRoute: () => AuthenticatedSuperadminAdminRoute,
   } as any)
 const AuthenticatedSuperadminAdminHousesRoute =
@@ -180,16 +234,40 @@ const AuthenticatedSuperadminAdminEventsRoute =
     path: '/events',
     getParentRoute: () => AuthenticatedSuperadminAdminRoute,
   } as any)
+const AuthenticatedSuperadminAdminDeletedUsersRoute =
+  AuthenticatedSuperadminAdminDeletedUsersRouteImport.update({
+    id: '/deleted-users',
+    path: '/deleted-users',
+    getParentRoute: () => AuthenticatedSuperadminAdminRoute,
+  } as any)
 const AuthenticatedSuperadminAdminBadgesRoute =
   AuthenticatedSuperadminAdminBadgesRouteImport.update({
     id: '/badges',
     path: '/badges',
     getParentRoute: () => AuthenticatedSuperadminAdminRoute,
   } as any)
+const AuthenticatedSuperadminAdminAuditLogRoute =
+  AuthenticatedSuperadminAdminAuditLogRouteImport.update({
+    id: '/audit-log',
+    path: '/audit-log',
+    getParentRoute: () => AuthenticatedSuperadminAdminRoute,
+  } as any)
 const AuthenticatedSuperadminAdminAssemblyRoute =
   AuthenticatedSuperadminAdminAssemblyRouteImport.update({
     id: '/assembly',
     path: '/assembly',
+    getParentRoute: () => AuthenticatedSuperadminAdminRoute,
+  } as any)
+const AuthenticatedSuperadminAdminAnalyticsRoute =
+  AuthenticatedSuperadminAdminAnalyticsRouteImport.update({
+    id: '/analytics',
+    path: '/analytics',
+    getParentRoute: () => AuthenticatedSuperadminAdminRoute,
+  } as any)
+const AuthenticatedSuperadminAdminAllowlistRoute =
+  AuthenticatedSuperadminAdminAllowlistRouteImport.update({
+    id: '/allowlist',
+    path: '/allowlist',
     getParentRoute: () => AuthenticatedSuperadminAdminRoute,
   } as any)
 const AuthenticatedAdminSchoolUsersRoute =
@@ -216,10 +294,28 @@ const AuthenticatedAdminSchoolLeaderboardRoute =
     path: '/leaderboard',
     getParentRoute: () => AuthenticatedAdminSchoolRoute,
   } as any)
+const AuthenticatedAdminSchoolFeedRoute =
+  AuthenticatedAdminSchoolFeedRouteImport.update({
+    id: '/feed',
+    path: '/feed',
+    getParentRoute: () => AuthenticatedAdminSchoolRoute,
+  } as any)
+const AuthenticatedAdminSchoolEventsRoute =
+  AuthenticatedAdminSchoolEventsRouteImport.update({
+    id: '/events',
+    path: '/events',
+    getParentRoute: () => AuthenticatedAdminSchoolRoute,
+  } as any)
 const AuthenticatedAdminSchoolAssemblyRoute =
   AuthenticatedAdminSchoolAssemblyRouteImport.update({
     id: '/assembly',
     path: '/assembly',
+    getParentRoute: () => AuthenticatedAdminSchoolRoute,
+  } as any)
+const AuthenticatedAdminSchoolActivityRoute =
+  AuthenticatedAdminSchoolActivityRouteImport.update({
+    id: '/activity',
+    path: '/activity',
     getParentRoute: () => AuthenticatedAdminSchoolRoute,
   } as any)
 const AuthenticatedSuperadminAdminSchoolsPendingRoute =
@@ -240,25 +336,39 @@ export interface FileRoutesByFullPath {
   '/activities': typeof AuthenticatedActivitiesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/events': typeof AuthenticatedEventsRouteWithChildren
+  '/feed': typeof AuthenticatedFeedRoute
   '/korero': typeof AuthenticatedKoreroRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/survey': typeof AuthenticatedSurveyRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/join/$code': typeof JoinCodeRoute
   '/school': typeof AuthenticatedAdminSchoolRouteWithChildren
   '/admin': typeof AuthenticatedSuperadminAdminRouteWithChildren
+  '/challenges/my-suggestions': typeof AuthenticatedChallengesMySuggestionsRoute
   '/events/$id': typeof AuthenticatedEventsIdRoute
+  '/school/activity': typeof AuthenticatedAdminSchoolActivityRoute
   '/school/assembly': typeof AuthenticatedAdminSchoolAssemblyRoute
+  '/school/events': typeof AuthenticatedAdminSchoolEventsRoute
+  '/school/feed': typeof AuthenticatedAdminSchoolFeedRoute
   '/school/leaderboard': typeof AuthenticatedAdminSchoolLeaderboardRoute
   '/school/messages': typeof AuthenticatedAdminSchoolMessagesRoute
   '/school/updates': typeof AuthenticatedAdminSchoolUpdatesRoute
   '/school/users': typeof AuthenticatedAdminSchoolUsersRoute
+  '/admin/allowlist': typeof AuthenticatedSuperadminAdminAllowlistRoute
+  '/admin/analytics': typeof AuthenticatedSuperadminAdminAnalyticsRoute
   '/admin/assembly': typeof AuthenticatedSuperadminAdminAssemblyRoute
+  '/admin/audit-log': typeof AuthenticatedSuperadminAdminAuditLogRoute
   '/admin/badges': typeof AuthenticatedSuperadminAdminBadgesRoute
+  '/admin/deleted-users': typeof AuthenticatedSuperadminAdminDeletedUsersRoute
   '/admin/events': typeof AuthenticatedSuperadminAdminEventsRoute
   '/admin/houses': typeof AuthenticatedSuperadminAdminHousesRoute
+  '/admin/invites': typeof AuthenticatedSuperadminAdminInvitesRoute
   '/admin/media': typeof AuthenticatedSuperadminAdminMediaRoute
+  '/admin/reports': typeof AuthenticatedSuperadminAdminReportsRoute
   '/admin/schools': typeof AuthenticatedSuperadminAdminSchoolsRouteWithChildren
+  '/admin/settings': typeof AuthenticatedSuperadminAdminSettingsRoute
+  '/admin/surveys': typeof AuthenticatedSuperadminAdminSurveysRoute
   '/admin/users': typeof AuthenticatedSuperadminAdminUsersRoute
   '/admin/schools/pending': typeof AuthenticatedSuperadminAdminSchoolsPendingRoute
 }
@@ -273,25 +383,39 @@ export interface FileRoutesByTo {
   '/activities': typeof AuthenticatedActivitiesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/events': typeof AuthenticatedEventsRouteWithChildren
+  '/feed': typeof AuthenticatedFeedRoute
   '/korero': typeof AuthenticatedKoreroRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/survey': typeof AuthenticatedSurveyRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/join/$code': typeof JoinCodeRoute
   '/school': typeof AuthenticatedAdminSchoolRouteWithChildren
   '/admin': typeof AuthenticatedSuperadminAdminRouteWithChildren
+  '/challenges/my-suggestions': typeof AuthenticatedChallengesMySuggestionsRoute
   '/events/$id': typeof AuthenticatedEventsIdRoute
+  '/school/activity': typeof AuthenticatedAdminSchoolActivityRoute
   '/school/assembly': typeof AuthenticatedAdminSchoolAssemblyRoute
+  '/school/events': typeof AuthenticatedAdminSchoolEventsRoute
+  '/school/feed': typeof AuthenticatedAdminSchoolFeedRoute
   '/school/leaderboard': typeof AuthenticatedAdminSchoolLeaderboardRoute
   '/school/messages': typeof AuthenticatedAdminSchoolMessagesRoute
   '/school/updates': typeof AuthenticatedAdminSchoolUpdatesRoute
   '/school/users': typeof AuthenticatedAdminSchoolUsersRoute
+  '/admin/allowlist': typeof AuthenticatedSuperadminAdminAllowlistRoute
+  '/admin/analytics': typeof AuthenticatedSuperadminAdminAnalyticsRoute
   '/admin/assembly': typeof AuthenticatedSuperadminAdminAssemblyRoute
+  '/admin/audit-log': typeof AuthenticatedSuperadminAdminAuditLogRoute
   '/admin/badges': typeof AuthenticatedSuperadminAdminBadgesRoute
+  '/admin/deleted-users': typeof AuthenticatedSuperadminAdminDeletedUsersRoute
   '/admin/events': typeof AuthenticatedSuperadminAdminEventsRoute
   '/admin/houses': typeof AuthenticatedSuperadminAdminHousesRoute
+  '/admin/invites': typeof AuthenticatedSuperadminAdminInvitesRoute
   '/admin/media': typeof AuthenticatedSuperadminAdminMediaRoute
+  '/admin/reports': typeof AuthenticatedSuperadminAdminReportsRoute
   '/admin/schools': typeof AuthenticatedSuperadminAdminSchoolsRouteWithChildren
+  '/admin/settings': typeof AuthenticatedSuperadminAdminSettingsRoute
+  '/admin/surveys': typeof AuthenticatedSuperadminAdminSurveysRoute
   '/admin/users': typeof AuthenticatedSuperadminAdminUsersRoute
   '/admin/schools/pending': typeof AuthenticatedSuperadminAdminSchoolsPendingRoute
 }
@@ -310,25 +434,39 @@ export interface FileRoutesById {
   '/_authenticated/activities': typeof AuthenticatedActivitiesRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/events': typeof AuthenticatedEventsRouteWithChildren
+  '/_authenticated/feed': typeof AuthenticatedFeedRoute
   '/_authenticated/korero': typeof AuthenticatedKoreroRoute
   '/_authenticated/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/survey': typeof AuthenticatedSurveyRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/join/$code': typeof JoinCodeRoute
   '/_authenticated/_admin/school': typeof AuthenticatedAdminSchoolRouteWithChildren
   '/_authenticated/_superadmin/admin': typeof AuthenticatedSuperadminAdminRouteWithChildren
+  '/_authenticated/challenges/my-suggestions': typeof AuthenticatedChallengesMySuggestionsRoute
   '/_authenticated/events/$id': typeof AuthenticatedEventsIdRoute
+  '/_authenticated/_admin/school/activity': typeof AuthenticatedAdminSchoolActivityRoute
   '/_authenticated/_admin/school/assembly': typeof AuthenticatedAdminSchoolAssemblyRoute
+  '/_authenticated/_admin/school/events': typeof AuthenticatedAdminSchoolEventsRoute
+  '/_authenticated/_admin/school/feed': typeof AuthenticatedAdminSchoolFeedRoute
   '/_authenticated/_admin/school/leaderboard': typeof AuthenticatedAdminSchoolLeaderboardRoute
   '/_authenticated/_admin/school/messages': typeof AuthenticatedAdminSchoolMessagesRoute
   '/_authenticated/_admin/school/updates': typeof AuthenticatedAdminSchoolUpdatesRoute
   '/_authenticated/_admin/school/users': typeof AuthenticatedAdminSchoolUsersRoute
+  '/_authenticated/_superadmin/admin/allowlist': typeof AuthenticatedSuperadminAdminAllowlistRoute
+  '/_authenticated/_superadmin/admin/analytics': typeof AuthenticatedSuperadminAdminAnalyticsRoute
   '/_authenticated/_superadmin/admin/assembly': typeof AuthenticatedSuperadminAdminAssemblyRoute
+  '/_authenticated/_superadmin/admin/audit-log': typeof AuthenticatedSuperadminAdminAuditLogRoute
   '/_authenticated/_superadmin/admin/badges': typeof AuthenticatedSuperadminAdminBadgesRoute
+  '/_authenticated/_superadmin/admin/deleted-users': typeof AuthenticatedSuperadminAdminDeletedUsersRoute
   '/_authenticated/_superadmin/admin/events': typeof AuthenticatedSuperadminAdminEventsRoute
   '/_authenticated/_superadmin/admin/houses': typeof AuthenticatedSuperadminAdminHousesRoute
+  '/_authenticated/_superadmin/admin/invites': typeof AuthenticatedSuperadminAdminInvitesRoute
   '/_authenticated/_superadmin/admin/media': typeof AuthenticatedSuperadminAdminMediaRoute
+  '/_authenticated/_superadmin/admin/reports': typeof AuthenticatedSuperadminAdminReportsRoute
   '/_authenticated/_superadmin/admin/schools': typeof AuthenticatedSuperadminAdminSchoolsRouteWithChildren
+  '/_authenticated/_superadmin/admin/settings': typeof AuthenticatedSuperadminAdminSettingsRoute
+  '/_authenticated/_superadmin/admin/surveys': typeof AuthenticatedSuperadminAdminSurveysRoute
   '/_authenticated/_superadmin/admin/users': typeof AuthenticatedSuperadminAdminUsersRoute
   '/_authenticated/_superadmin/admin/schools/pending': typeof AuthenticatedSuperadminAdminSchoolsPendingRoute
 }
@@ -345,25 +483,39 @@ export interface FileRouteTypes {
     | '/activities'
     | '/dashboard'
     | '/events'
+    | '/feed'
     | '/korero'
     | '/leaderboard'
     | '/profile'
+    | '/survey'
     | '/auth/callback'
     | '/join/$code'
     | '/school'
     | '/admin'
+    | '/challenges/my-suggestions'
     | '/events/$id'
+    | '/school/activity'
     | '/school/assembly'
+    | '/school/events'
+    | '/school/feed'
     | '/school/leaderboard'
     | '/school/messages'
     | '/school/updates'
     | '/school/users'
+    | '/admin/allowlist'
+    | '/admin/analytics'
     | '/admin/assembly'
+    | '/admin/audit-log'
     | '/admin/badges'
+    | '/admin/deleted-users'
     | '/admin/events'
     | '/admin/houses'
+    | '/admin/invites'
     | '/admin/media'
+    | '/admin/reports'
     | '/admin/schools'
+    | '/admin/settings'
+    | '/admin/surveys'
     | '/admin/users'
     | '/admin/schools/pending'
   fileRoutesByTo: FileRoutesByTo
@@ -378,25 +530,39 @@ export interface FileRouteTypes {
     | '/activities'
     | '/dashboard'
     | '/events'
+    | '/feed'
     | '/korero'
     | '/leaderboard'
     | '/profile'
+    | '/survey'
     | '/auth/callback'
     | '/join/$code'
     | '/school'
     | '/admin'
+    | '/challenges/my-suggestions'
     | '/events/$id'
+    | '/school/activity'
     | '/school/assembly'
+    | '/school/events'
+    | '/school/feed'
     | '/school/leaderboard'
     | '/school/messages'
     | '/school/updates'
     | '/school/users'
+    | '/admin/allowlist'
+    | '/admin/analytics'
     | '/admin/assembly'
+    | '/admin/audit-log'
     | '/admin/badges'
+    | '/admin/deleted-users'
     | '/admin/events'
     | '/admin/houses'
+    | '/admin/invites'
     | '/admin/media'
+    | '/admin/reports'
     | '/admin/schools'
+    | '/admin/settings'
+    | '/admin/surveys'
     | '/admin/users'
     | '/admin/schools/pending'
   id:
@@ -414,25 +580,39 @@ export interface FileRouteTypes {
     | '/_authenticated/activities'
     | '/_authenticated/dashboard'
     | '/_authenticated/events'
+    | '/_authenticated/feed'
     | '/_authenticated/korero'
     | '/_authenticated/leaderboard'
     | '/_authenticated/profile'
+    | '/_authenticated/survey'
     | '/auth/callback'
     | '/join/$code'
     | '/_authenticated/_admin/school'
     | '/_authenticated/_superadmin/admin'
+    | '/_authenticated/challenges/my-suggestions'
     | '/_authenticated/events/$id'
+    | '/_authenticated/_admin/school/activity'
     | '/_authenticated/_admin/school/assembly'
+    | '/_authenticated/_admin/school/events'
+    | '/_authenticated/_admin/school/feed'
     | '/_authenticated/_admin/school/leaderboard'
     | '/_authenticated/_admin/school/messages'
     | '/_authenticated/_admin/school/updates'
     | '/_authenticated/_admin/school/users'
+    | '/_authenticated/_superadmin/admin/allowlist'
+    | '/_authenticated/_superadmin/admin/analytics'
     | '/_authenticated/_superadmin/admin/assembly'
+    | '/_authenticated/_superadmin/admin/audit-log'
     | '/_authenticated/_superadmin/admin/badges'
+    | '/_authenticated/_superadmin/admin/deleted-users'
     | '/_authenticated/_superadmin/admin/events'
     | '/_authenticated/_superadmin/admin/houses'
+    | '/_authenticated/_superadmin/admin/invites'
     | '/_authenticated/_superadmin/admin/media'
+    | '/_authenticated/_superadmin/admin/reports'
     | '/_authenticated/_superadmin/admin/schools'
+    | '/_authenticated/_superadmin/admin/settings'
+    | '/_authenticated/_superadmin/admin/surveys'
     | '/_authenticated/_superadmin/admin/users'
     | '/_authenticated/_superadmin/admin/schools/pending'
   fileRoutesById: FileRoutesById
@@ -513,6 +693,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/_authenticated/survey': {
+      id: '/_authenticated/survey'
+      path: '/survey'
+      fullPath: '/survey'
+      preLoaderRoute: typeof AuthenticatedSurveyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/profile': {
       id: '/_authenticated/profile'
       path: '/profile'
@@ -532,6 +719,13 @@ declare module '@tanstack/react-router' {
       path: '/korero'
       fullPath: '/korero'
       preLoaderRoute: typeof AuthenticatedKoreroRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/feed': {
+      id: '/_authenticated/feed'
+      path: '/feed'
+      fullPath: '/feed'
+      preLoaderRoute: typeof AuthenticatedFeedRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/events': {
@@ -583,6 +777,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEventsIdRouteImport
       parentRoute: typeof AuthenticatedEventsRoute
     }
+    '/_authenticated/challenges/my-suggestions': {
+      id: '/_authenticated/challenges/my-suggestions'
+      path: '/challenges/my-suggestions'
+      fullPath: '/challenges/my-suggestions'
+      preLoaderRoute: typeof AuthenticatedChallengesMySuggestionsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/_superadmin/admin': {
       id: '/_authenticated/_superadmin/admin'
       path: '/admin'
@@ -604,6 +805,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSuperadminAdminUsersRouteImport
       parentRoute: typeof AuthenticatedSuperadminAdminRoute
     }
+    '/_authenticated/_superadmin/admin/surveys': {
+      id: '/_authenticated/_superadmin/admin/surveys'
+      path: '/surveys'
+      fullPath: '/admin/surveys'
+      preLoaderRoute: typeof AuthenticatedSuperadminAdminSurveysRouteImport
+      parentRoute: typeof AuthenticatedSuperadminAdminRoute
+    }
+    '/_authenticated/_superadmin/admin/settings': {
+      id: '/_authenticated/_superadmin/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AuthenticatedSuperadminAdminSettingsRouteImport
+      parentRoute: typeof AuthenticatedSuperadminAdminRoute
+    }
     '/_authenticated/_superadmin/admin/schools': {
       id: '/_authenticated/_superadmin/admin/schools'
       path: '/schools'
@@ -611,11 +826,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSuperadminAdminSchoolsRouteImport
       parentRoute: typeof AuthenticatedSuperadminAdminRoute
     }
+    '/_authenticated/_superadmin/admin/reports': {
+      id: '/_authenticated/_superadmin/admin/reports'
+      path: '/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AuthenticatedSuperadminAdminReportsRouteImport
+      parentRoute: typeof AuthenticatedSuperadminAdminRoute
+    }
     '/_authenticated/_superadmin/admin/media': {
       id: '/_authenticated/_superadmin/admin/media'
       path: '/media'
       fullPath: '/admin/media'
       preLoaderRoute: typeof AuthenticatedSuperadminAdminMediaRouteImport
+      parentRoute: typeof AuthenticatedSuperadminAdminRoute
+    }
+    '/_authenticated/_superadmin/admin/invites': {
+      id: '/_authenticated/_superadmin/admin/invites'
+      path: '/invites'
+      fullPath: '/admin/invites'
+      preLoaderRoute: typeof AuthenticatedSuperadminAdminInvitesRouteImport
       parentRoute: typeof AuthenticatedSuperadminAdminRoute
     }
     '/_authenticated/_superadmin/admin/houses': {
@@ -632,6 +861,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSuperadminAdminEventsRouteImport
       parentRoute: typeof AuthenticatedSuperadminAdminRoute
     }
+    '/_authenticated/_superadmin/admin/deleted-users': {
+      id: '/_authenticated/_superadmin/admin/deleted-users'
+      path: '/deleted-users'
+      fullPath: '/admin/deleted-users'
+      preLoaderRoute: typeof AuthenticatedSuperadminAdminDeletedUsersRouteImport
+      parentRoute: typeof AuthenticatedSuperadminAdminRoute
+    }
     '/_authenticated/_superadmin/admin/badges': {
       id: '/_authenticated/_superadmin/admin/badges'
       path: '/badges'
@@ -639,11 +875,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSuperadminAdminBadgesRouteImport
       parentRoute: typeof AuthenticatedSuperadminAdminRoute
     }
+    '/_authenticated/_superadmin/admin/audit-log': {
+      id: '/_authenticated/_superadmin/admin/audit-log'
+      path: '/audit-log'
+      fullPath: '/admin/audit-log'
+      preLoaderRoute: typeof AuthenticatedSuperadminAdminAuditLogRouteImport
+      parentRoute: typeof AuthenticatedSuperadminAdminRoute
+    }
     '/_authenticated/_superadmin/admin/assembly': {
       id: '/_authenticated/_superadmin/admin/assembly'
       path: '/assembly'
       fullPath: '/admin/assembly'
       preLoaderRoute: typeof AuthenticatedSuperadminAdminAssemblyRouteImport
+      parentRoute: typeof AuthenticatedSuperadminAdminRoute
+    }
+    '/_authenticated/_superadmin/admin/analytics': {
+      id: '/_authenticated/_superadmin/admin/analytics'
+      path: '/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AuthenticatedSuperadminAdminAnalyticsRouteImport
+      parentRoute: typeof AuthenticatedSuperadminAdminRoute
+    }
+    '/_authenticated/_superadmin/admin/allowlist': {
+      id: '/_authenticated/_superadmin/admin/allowlist'
+      path: '/allowlist'
+      fullPath: '/admin/allowlist'
+      preLoaderRoute: typeof AuthenticatedSuperadminAdminAllowlistRouteImport
       parentRoute: typeof AuthenticatedSuperadminAdminRoute
     }
     '/_authenticated/_admin/school/users': {
@@ -674,11 +931,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSchoolLeaderboardRouteImport
       parentRoute: typeof AuthenticatedAdminSchoolRoute
     }
+    '/_authenticated/_admin/school/feed': {
+      id: '/_authenticated/_admin/school/feed'
+      path: '/feed'
+      fullPath: '/school/feed'
+      preLoaderRoute: typeof AuthenticatedAdminSchoolFeedRouteImport
+      parentRoute: typeof AuthenticatedAdminSchoolRoute
+    }
+    '/_authenticated/_admin/school/events': {
+      id: '/_authenticated/_admin/school/events'
+      path: '/events'
+      fullPath: '/school/events'
+      preLoaderRoute: typeof AuthenticatedAdminSchoolEventsRouteImport
+      parentRoute: typeof AuthenticatedAdminSchoolRoute
+    }
     '/_authenticated/_admin/school/assembly': {
       id: '/_authenticated/_admin/school/assembly'
       path: '/assembly'
       fullPath: '/school/assembly'
       preLoaderRoute: typeof AuthenticatedAdminSchoolAssemblyRouteImport
+      parentRoute: typeof AuthenticatedAdminSchoolRoute
+    }
+    '/_authenticated/_admin/school/activity': {
+      id: '/_authenticated/_admin/school/activity'
+      path: '/activity'
+      fullPath: '/school/activity'
+      preLoaderRoute: typeof AuthenticatedAdminSchoolActivityRouteImport
       parentRoute: typeof AuthenticatedAdminSchoolRoute
     }
     '/_authenticated/_superadmin/admin/schools/pending': {
@@ -692,7 +970,10 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdminSchoolRouteChildren {
+  AuthenticatedAdminSchoolActivityRoute: typeof AuthenticatedAdminSchoolActivityRoute
   AuthenticatedAdminSchoolAssemblyRoute: typeof AuthenticatedAdminSchoolAssemblyRoute
+  AuthenticatedAdminSchoolEventsRoute: typeof AuthenticatedAdminSchoolEventsRoute
+  AuthenticatedAdminSchoolFeedRoute: typeof AuthenticatedAdminSchoolFeedRoute
   AuthenticatedAdminSchoolLeaderboardRoute: typeof AuthenticatedAdminSchoolLeaderboardRoute
   AuthenticatedAdminSchoolMessagesRoute: typeof AuthenticatedAdminSchoolMessagesRoute
   AuthenticatedAdminSchoolUpdatesRoute: typeof AuthenticatedAdminSchoolUpdatesRoute
@@ -701,8 +982,12 @@ interface AuthenticatedAdminSchoolRouteChildren {
 
 const AuthenticatedAdminSchoolRouteChildren: AuthenticatedAdminSchoolRouteChildren =
   {
+    AuthenticatedAdminSchoolActivityRoute:
+      AuthenticatedAdminSchoolActivityRoute,
     AuthenticatedAdminSchoolAssemblyRoute:
       AuthenticatedAdminSchoolAssemblyRoute,
+    AuthenticatedAdminSchoolEventsRoute: AuthenticatedAdminSchoolEventsRoute,
+    AuthenticatedAdminSchoolFeedRoute: AuthenticatedAdminSchoolFeedRoute,
     AuthenticatedAdminSchoolLeaderboardRoute:
       AuthenticatedAdminSchoolLeaderboardRoute,
     AuthenticatedAdminSchoolMessagesRoute:
@@ -743,29 +1028,53 @@ const AuthenticatedSuperadminAdminSchoolsRouteWithChildren =
   )
 
 interface AuthenticatedSuperadminAdminRouteChildren {
+  AuthenticatedSuperadminAdminAllowlistRoute: typeof AuthenticatedSuperadminAdminAllowlistRoute
+  AuthenticatedSuperadminAdminAnalyticsRoute: typeof AuthenticatedSuperadminAdminAnalyticsRoute
   AuthenticatedSuperadminAdminAssemblyRoute: typeof AuthenticatedSuperadminAdminAssemblyRoute
+  AuthenticatedSuperadminAdminAuditLogRoute: typeof AuthenticatedSuperadminAdminAuditLogRoute
   AuthenticatedSuperadminAdminBadgesRoute: typeof AuthenticatedSuperadminAdminBadgesRoute
+  AuthenticatedSuperadminAdminDeletedUsersRoute: typeof AuthenticatedSuperadminAdminDeletedUsersRoute
   AuthenticatedSuperadminAdminEventsRoute: typeof AuthenticatedSuperadminAdminEventsRoute
   AuthenticatedSuperadminAdminHousesRoute: typeof AuthenticatedSuperadminAdminHousesRoute
+  AuthenticatedSuperadminAdminInvitesRoute: typeof AuthenticatedSuperadminAdminInvitesRoute
   AuthenticatedSuperadminAdminMediaRoute: typeof AuthenticatedSuperadminAdminMediaRoute
+  AuthenticatedSuperadminAdminReportsRoute: typeof AuthenticatedSuperadminAdminReportsRoute
   AuthenticatedSuperadminAdminSchoolsRoute: typeof AuthenticatedSuperadminAdminSchoolsRouteWithChildren
+  AuthenticatedSuperadminAdminSettingsRoute: typeof AuthenticatedSuperadminAdminSettingsRoute
+  AuthenticatedSuperadminAdminSurveysRoute: typeof AuthenticatedSuperadminAdminSurveysRoute
   AuthenticatedSuperadminAdminUsersRoute: typeof AuthenticatedSuperadminAdminUsersRoute
 }
 
 const AuthenticatedSuperadminAdminRouteChildren: AuthenticatedSuperadminAdminRouteChildren =
   {
+    AuthenticatedSuperadminAdminAllowlistRoute:
+      AuthenticatedSuperadminAdminAllowlistRoute,
+    AuthenticatedSuperadminAdminAnalyticsRoute:
+      AuthenticatedSuperadminAdminAnalyticsRoute,
     AuthenticatedSuperadminAdminAssemblyRoute:
       AuthenticatedSuperadminAdminAssemblyRoute,
+    AuthenticatedSuperadminAdminAuditLogRoute:
+      AuthenticatedSuperadminAdminAuditLogRoute,
     AuthenticatedSuperadminAdminBadgesRoute:
       AuthenticatedSuperadminAdminBadgesRoute,
+    AuthenticatedSuperadminAdminDeletedUsersRoute:
+      AuthenticatedSuperadminAdminDeletedUsersRoute,
     AuthenticatedSuperadminAdminEventsRoute:
       AuthenticatedSuperadminAdminEventsRoute,
     AuthenticatedSuperadminAdminHousesRoute:
       AuthenticatedSuperadminAdminHousesRoute,
+    AuthenticatedSuperadminAdminInvitesRoute:
+      AuthenticatedSuperadminAdminInvitesRoute,
     AuthenticatedSuperadminAdminMediaRoute:
       AuthenticatedSuperadminAdminMediaRoute,
+    AuthenticatedSuperadminAdminReportsRoute:
+      AuthenticatedSuperadminAdminReportsRoute,
     AuthenticatedSuperadminAdminSchoolsRoute:
       AuthenticatedSuperadminAdminSchoolsRouteWithChildren,
+    AuthenticatedSuperadminAdminSettingsRoute:
+      AuthenticatedSuperadminAdminSettingsRoute,
+    AuthenticatedSuperadminAdminSurveysRoute:
+      AuthenticatedSuperadminAdminSurveysRoute,
     AuthenticatedSuperadminAdminUsersRoute:
       AuthenticatedSuperadminAdminUsersRoute,
   }
@@ -808,9 +1117,12 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedActivitiesRoute: typeof AuthenticatedActivitiesRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedEventsRoute: typeof AuthenticatedEventsRouteWithChildren
+  AuthenticatedFeedRoute: typeof AuthenticatedFeedRoute
   AuthenticatedKoreroRoute: typeof AuthenticatedKoreroRoute
   AuthenticatedLeaderboardRoute: typeof AuthenticatedLeaderboardRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedSurveyRoute: typeof AuthenticatedSurveyRoute
+  AuthenticatedChallengesMySuggestionsRoute: typeof AuthenticatedChallengesMySuggestionsRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -820,9 +1132,13 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedActivitiesRoute: AuthenticatedActivitiesRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedEventsRoute: AuthenticatedEventsRouteWithChildren,
+  AuthenticatedFeedRoute: AuthenticatedFeedRoute,
   AuthenticatedKoreroRoute: AuthenticatedKoreroRoute,
   AuthenticatedLeaderboardRoute: AuthenticatedLeaderboardRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedSurveyRoute: AuthenticatedSurveyRoute,
+  AuthenticatedChallengesMySuggestionsRoute:
+    AuthenticatedChallengesMySuggestionsRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -851,13 +1167,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
