@@ -1,12 +1,10 @@
--- ============================================================
 -- RUN THIS in project: zxxhjkruhwjondrbftaf SQL Editor
 -- Fixes ALL badge URLs to point to the correct Supabase project
--- ============================================================
 
 -- Map achievement names to the new PNG filenames in the badges bucket
 -- Pattern: https://zxxhjkruhwjondrbftaf.supabase.co/storage/v1/object/public/badges/{filename}
 
--- === NEW BADGES (direct match to the 30 PNGs) ===
+Map achievement names to the new PNG filenames in the badges bucket
 
 UPDATE achievements SET storage_url = 'https://zxxhjkruhwjondrbftaf.supabase.co/storage/v1/object/public/badges/Record%20Breaker.png',
   storage_path = 'badges/Record Breaker.png', is_custom_upload = true
@@ -128,7 +126,7 @@ UPDATE achievements SET storage_url = 'https://zxxhjkruhwjondrbftaf.supabase.co/
   storage_path = 'badges/Leaderboard Champ.png', is_custom_upload = true
 WHERE name ILIKE '%leaderboard%' AND name NOT ILIKE '%champ%';
 
--- === LEGACY BADGES (map to closest new PNG) ===
+-- Legacy badges map to closest new PNG
 
 UPDATE achievements SET storage_url = 'https://zxxhjkruhwjondrbftaf.supabase.co/storage/v1/object/public/badges/30%20day%20legend.png',
   storage_path = 'badges/30 day legend.png', is_custom_upload = true
@@ -182,7 +180,7 @@ UPDATE achievements SET storage_url = 'https://zxxhjkruhwjondrbftaf.supabase.co/
   storage_path = 'badges/Momentum Builder.png', is_custom_upload = true
 WHERE name ILIKE '%smashing%';
 
--- === HOUSE BADGES ===
+-- House badges
 
 UPDATE achievements SET storage_url = 'https://zxxhjkruhwjondrbftaf.supabase.co/storage/v1/object/public/badges/Challenge%20Champions.png',
   storage_path = 'badges/Challenge Champions.png', is_custom_upload = true
