@@ -34,6 +34,7 @@ import { Route as AuthenticatedChallengesMySuggestionsRouteImport } from './rout
 import { Route as AuthenticatedSuperadminAdminRouteImport } from './routes/_authenticated/_superadmin/admin'
 import { Route as AuthenticatedAdminSchoolRouteImport } from './routes/_authenticated/_admin/school'
 import { Route as AuthenticatedSuperadminAdminUsersRouteImport } from './routes/_authenticated/_superadmin/admin.users'
+import { Route as AuthenticatedSuperadminAdminUpdatesRouteImport } from './routes/_authenticated/_superadmin/admin.updates'
 import { Route as AuthenticatedSuperadminAdminSurveysRouteImport } from './routes/_authenticated/_superadmin/admin.surveys'
 import { Route as AuthenticatedSuperadminAdminSettingsRouteImport } from './routes/_authenticated/_superadmin/admin.settings'
 import { Route as AuthenticatedSuperadminAdminSchoolsRouteImport } from './routes/_authenticated/_superadmin/admin.schools'
@@ -57,6 +58,7 @@ import { Route as AuthenticatedAdminSchoolEventsRouteImport } from './routes/_au
 import { Route as AuthenticatedAdminSchoolAssemblyRouteImport } from './routes/_authenticated/_admin/school.assembly'
 import { Route as AuthenticatedAdminSchoolActivityRouteImport } from './routes/_authenticated/_admin/school.activity'
 import { Route as AuthenticatedSuperadminAdminSchoolsPendingRouteImport } from './routes/_authenticated/_superadmin/admin.schools.pending'
+import { Route as AuthenticatedAdminAdminAssemblyPresentRouteImport } from './routes/_authenticated/_admin/admin_.assembly_.present'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -184,6 +186,12 @@ const AuthenticatedSuperadminAdminUsersRoute =
   AuthenticatedSuperadminAdminUsersRouteImport.update({
     id: '/users',
     path: '/users',
+    getParentRoute: () => AuthenticatedSuperadminAdminRoute,
+  } as any)
+const AuthenticatedSuperadminAdminUpdatesRoute =
+  AuthenticatedSuperadminAdminUpdatesRouteImport.update({
+    id: '/updates',
+    path: '/updates',
     getParentRoute: () => AuthenticatedSuperadminAdminRoute,
   } as any)
 const AuthenticatedSuperadminAdminSurveysRoute =
@@ -324,6 +332,12 @@ const AuthenticatedSuperadminAdminSchoolsPendingRoute =
     path: '/pending',
     getParentRoute: () => AuthenticatedSuperadminAdminSchoolsRoute,
   } as any)
+const AuthenticatedAdminAdminAssemblyPresentRoute =
+  AuthenticatedAdminAdminAssemblyPresentRouteImport.update({
+    id: '/admin_/assembly_/present',
+    path: '/admin/assembly/present',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -369,7 +383,9 @@ export interface FileRoutesByFullPath {
   '/admin/schools': typeof AuthenticatedSuperadminAdminSchoolsRouteWithChildren
   '/admin/settings': typeof AuthenticatedSuperadminAdminSettingsRoute
   '/admin/surveys': typeof AuthenticatedSuperadminAdminSurveysRoute
+  '/admin/updates': typeof AuthenticatedSuperadminAdminUpdatesRoute
   '/admin/users': typeof AuthenticatedSuperadminAdminUsersRoute
+  '/admin/assembly/present': typeof AuthenticatedAdminAdminAssemblyPresentRoute
   '/admin/schools/pending': typeof AuthenticatedSuperadminAdminSchoolsPendingRoute
 }
 export interface FileRoutesByTo {
@@ -416,7 +432,9 @@ export interface FileRoutesByTo {
   '/admin/schools': typeof AuthenticatedSuperadminAdminSchoolsRouteWithChildren
   '/admin/settings': typeof AuthenticatedSuperadminAdminSettingsRoute
   '/admin/surveys': typeof AuthenticatedSuperadminAdminSurveysRoute
+  '/admin/updates': typeof AuthenticatedSuperadminAdminUpdatesRoute
   '/admin/users': typeof AuthenticatedSuperadminAdminUsersRoute
+  '/admin/assembly/present': typeof AuthenticatedAdminAdminAssemblyPresentRoute
   '/admin/schools/pending': typeof AuthenticatedSuperadminAdminSchoolsPendingRoute
 }
 export interface FileRoutesById {
@@ -467,7 +485,9 @@ export interface FileRoutesById {
   '/_authenticated/_superadmin/admin/schools': typeof AuthenticatedSuperadminAdminSchoolsRouteWithChildren
   '/_authenticated/_superadmin/admin/settings': typeof AuthenticatedSuperadminAdminSettingsRoute
   '/_authenticated/_superadmin/admin/surveys': typeof AuthenticatedSuperadminAdminSurveysRoute
+  '/_authenticated/_superadmin/admin/updates': typeof AuthenticatedSuperadminAdminUpdatesRoute
   '/_authenticated/_superadmin/admin/users': typeof AuthenticatedSuperadminAdminUsersRoute
+  '/_authenticated/_admin/admin_/assembly_/present': typeof AuthenticatedAdminAdminAssemblyPresentRoute
   '/_authenticated/_superadmin/admin/schools/pending': typeof AuthenticatedSuperadminAdminSchoolsPendingRoute
 }
 export interface FileRouteTypes {
@@ -516,7 +536,9 @@ export interface FileRouteTypes {
     | '/admin/schools'
     | '/admin/settings'
     | '/admin/surveys'
+    | '/admin/updates'
     | '/admin/users'
+    | '/admin/assembly/present'
     | '/admin/schools/pending'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -563,7 +585,9 @@ export interface FileRouteTypes {
     | '/admin/schools'
     | '/admin/settings'
     | '/admin/surveys'
+    | '/admin/updates'
     | '/admin/users'
+    | '/admin/assembly/present'
     | '/admin/schools/pending'
   id:
     | '__root__'
@@ -613,7 +637,9 @@ export interface FileRouteTypes {
     | '/_authenticated/_superadmin/admin/schools'
     | '/_authenticated/_superadmin/admin/settings'
     | '/_authenticated/_superadmin/admin/surveys'
+    | '/_authenticated/_superadmin/admin/updates'
     | '/_authenticated/_superadmin/admin/users'
+    | '/_authenticated/_admin/admin_/assembly_/present'
     | '/_authenticated/_superadmin/admin/schools/pending'
   fileRoutesById: FileRoutesById
 }
@@ -805,6 +831,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSuperadminAdminUsersRouteImport
       parentRoute: typeof AuthenticatedSuperadminAdminRoute
     }
+    '/_authenticated/_superadmin/admin/updates': {
+      id: '/_authenticated/_superadmin/admin/updates'
+      path: '/updates'
+      fullPath: '/admin/updates'
+      preLoaderRoute: typeof AuthenticatedSuperadminAdminUpdatesRouteImport
+      parentRoute: typeof AuthenticatedSuperadminAdminRoute
+    }
     '/_authenticated/_superadmin/admin/surveys': {
       id: '/_authenticated/_superadmin/admin/surveys'
       path: '/surveys'
@@ -966,6 +999,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSuperadminAdminSchoolsPendingRouteImport
       parentRoute: typeof AuthenticatedSuperadminAdminSchoolsRoute
     }
+    '/_authenticated/_admin/admin_/assembly_/present': {
+      id: '/_authenticated/_admin/admin_/assembly_/present'
+      path: '/admin/assembly/present'
+      fullPath: '/admin/assembly/present'
+      preLoaderRoute: typeof AuthenticatedAdminAdminAssemblyPresentRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
 
@@ -1003,10 +1043,13 @@ const AuthenticatedAdminSchoolRouteWithChildren =
 
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminSchoolRoute: typeof AuthenticatedAdminSchoolRouteWithChildren
+  AuthenticatedAdminAdminAssemblyPresentRoute: typeof AuthenticatedAdminAdminAssemblyPresentRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminSchoolRoute: AuthenticatedAdminSchoolRouteWithChildren,
+  AuthenticatedAdminAdminAssemblyPresentRoute:
+    AuthenticatedAdminAdminAssemblyPresentRoute,
 }
 
 const AuthenticatedAdminRouteWithChildren =
@@ -1042,6 +1085,7 @@ interface AuthenticatedSuperadminAdminRouteChildren {
   AuthenticatedSuperadminAdminSchoolsRoute: typeof AuthenticatedSuperadminAdminSchoolsRouteWithChildren
   AuthenticatedSuperadminAdminSettingsRoute: typeof AuthenticatedSuperadminAdminSettingsRoute
   AuthenticatedSuperadminAdminSurveysRoute: typeof AuthenticatedSuperadminAdminSurveysRoute
+  AuthenticatedSuperadminAdminUpdatesRoute: typeof AuthenticatedSuperadminAdminUpdatesRoute
   AuthenticatedSuperadminAdminUsersRoute: typeof AuthenticatedSuperadminAdminUsersRoute
 }
 
@@ -1075,6 +1119,8 @@ const AuthenticatedSuperadminAdminRouteChildren: AuthenticatedSuperadminAdminRou
       AuthenticatedSuperadminAdminSettingsRoute,
     AuthenticatedSuperadminAdminSurveysRoute:
       AuthenticatedSuperadminAdminSurveysRoute,
+    AuthenticatedSuperadminAdminUpdatesRoute:
+      AuthenticatedSuperadminAdminUpdatesRoute,
     AuthenticatedSuperadminAdminUsersRoute:
       AuthenticatedSuperadminAdminUsersRoute,
   }

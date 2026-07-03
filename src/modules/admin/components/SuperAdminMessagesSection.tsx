@@ -70,7 +70,6 @@ const SuperAdminMessagesSection = ({ schools }: SuperAdminMessagesSectionProps) 
       .finally(() => setLoading(false));
   }, [selectedSchoolId]);
 
-  const schoolParam = !isAllSchools && selectedSchoolId ? `?schoolId=${selectedSchoolId}` : "";
 
   return (
     <Card>
@@ -92,7 +91,9 @@ const SuperAdminMessagesSection = ({ schools }: SuperAdminMessagesSectionProps) 
           </Select>
           {selectedSchoolId && !isAllSchools && (
             <Button variant="outline" size="sm" asChild>
-              <Link to={`/admin/updates${schoolParam}`}>Manage →</Link>
+              <Link to="/admin/updates" search={!isAllSchools && selectedSchoolId ? { schoolId: selectedSchoolId } : {}}>
+                Manage →
+              </Link>
             </Button>
           )}
         </div>

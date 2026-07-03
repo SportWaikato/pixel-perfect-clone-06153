@@ -37,7 +37,7 @@ const AssemblyManagementContent = ({
   const navigate = useNavigate();
 
   const handleSchoolChange = (newSchoolId: string) => {
-    navigate({ to: `/admin/assembly?schoolId=${newSchoolId}` });
+    navigate({ to: "/admin/assembly", search: { schoolId: newSchoolId } });
   };
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<PeriodMode>(() => {
@@ -118,8 +118,10 @@ const AssemblyManagementContent = ({
     }
 
     setLoading(true);
-    const params = new URLSearchParams({ schoolId, startDate, endDate, periodLabel });
-    navigate({ to: `/admin/assembly/present?${params.toString()}` });
+    navigate({
+      to: "/admin/assembly/present",
+      search: { schoolId, startDate, endDate, periodLabel },
+    });
   };
 
   const canEnter = mode !== "term" || !!selectedTerm;
@@ -171,7 +173,7 @@ const AssemblyManagementContent = ({
             )}
           </div>
           <Button asChild variant="outline" size="sm" className="gap-2">
-            <Link to={`/admin/settings?schoolId=${schoolId}`}>
+            <Link to="/admin/settings" search={{ schoolId }}>
               <Settings className="h-4 w-4" /> Configure Terms
             </Link>
           </Button>
@@ -195,7 +197,7 @@ const AssemblyManagementContent = ({
               <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" />
               <span>
                 No school terms configured.{" "}
-                <Link to={`/admin/settings?schoolId=${schoolId}`} className="font-medium underline">
+                <Link to="/admin/settings" search={{ schoolId }} className="font-medium underline">
                   Set up terms in Settings
                 </Link>{" "}
                 to use term-based weekly scoring.

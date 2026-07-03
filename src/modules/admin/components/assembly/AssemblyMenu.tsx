@@ -71,13 +71,13 @@ const cards = [
 const AssemblyMenu = ({ onSelect, isFullscreen, schoolId }: AssemblyMenuProps) => {
   const router = useRouter();
   const navigate = useNavigate();
-  const exitHref = schoolId ? `/admin/assembly?schoolId=${schoolId}` : "/admin/assembly";
+
 
   return (
     <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-8 py-12">
       {!isFullscreen && (
         <button
-          onClick={() => navigate({ to: exitHref })}
+          onClick={() => navigate({ to: "/admin/assembly", search: schoolId ? { schoolId } : {} })}
           className="absolute right-6 top-6 rounded-full bg-white p-2 transition-colors hover:bg-white/90"
           style={{ color: "#357565" }}
         >
