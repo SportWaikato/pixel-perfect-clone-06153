@@ -11,10 +11,13 @@ export interface BadgeGenerationResult {
 export class AIImageService {
   private genAI: GoogleGenerativeAI;
 
+  // SECURITY: server-only. Never read a VITE_-prefixed key here — anything
+  // VITE_-prefixed is bundled into client JS. Badge generation for the admin
+  // UI goes through the authenticated server function in src/lib/ai.functions.ts.
   constructor(apiKey?: string) {
-    const key = apiKey || import.meta.env.VITE_GOOGLE_AI_API_KEY || process.env.GOOGLE_AI_API_KEY;
+    const key = apiKey || process.env.GOOGLE_AI_API_KEY;
     if (!key) {
-      throw new Error("Google AI API key is not configured. Set VITE_GOOGLE_AI_API_KEY in .env");
+      throw new Error("Google AI API key is not configured. Set GOOGLE_AI_API_KEY (server-side)");
     }
     this.genAI = new GoogleGenerativeAI(key);
   }
