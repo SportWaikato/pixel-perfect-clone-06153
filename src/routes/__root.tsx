@@ -84,7 +84,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Karawhiua Virtual Sports Day — Sport Waikato's school physical activity competition. Log activities, earn points for your house, and climb the leaderboard.",
       },
       { name: "author", content: "Sport Waikato" },
-      { name: "theme-color", content: "#0a4b39" },
+      { name: "theme-color", content: "#1b5e4b" },
       // iOS home-screen behavior — Safari ignores most of the manifest
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "mobile-web-app-capable", content: "yes" },

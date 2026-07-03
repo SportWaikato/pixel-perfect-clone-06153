@@ -325,7 +325,7 @@ const LogActivityForm = ({
         setChallenges(availableChallenges);
 
         // Check for pre-selected challenge from URL
-        const challengeFromUrl = searchParams.get("challenge");
+        const challengeFromUrl = (searchParams as { challenge?: string }).challenge;
         if (challengeFromUrl && availableChallenges.some((c) => c.id === challengeFromUrl)) {
           setPreselectedChallengeId(challengeFromUrl);
         }

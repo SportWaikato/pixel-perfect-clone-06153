@@ -68,7 +68,7 @@ const LogActivityWizard = ({
   const [challengePreselected, setChallengePreselected] = useState(false);
 
   useEffect(() => {
-    const challengeFromUrl = searchParams.get("challenge");
+    const challengeFromUrl = (searchParams as { challenge?: string }).challenge;
     if (challengeFromUrl && challenges.some((c) => c.id === challengeFromUrl)) {
       const found = challenges.find((c) => c.id === challengeFromUrl);
       const locked = found ? EVENT_TYPE_TO_ACTIVITY_TYPE[found.event_type ?? ""] : null;

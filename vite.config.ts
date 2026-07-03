@@ -4,8 +4,14 @@
 //     componentTagger (dev-only), VITE_* env injection, @ path alias, React/TanStack dedupe,
 //     error logger plugins, and sandbox detection (port/host/strictPort).
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
+//
+// PWA note: this app deliberately does NOT use vite-plugin-pwa. The service worker is
+// hand-rolled at public/sw.js and the manifest at public/manifest.webmanifest (see AGENTS.md
+// "Secure-PWA maintenance"). A previous vite-plugin-pwa setup was removed because its worker
+// was never registered (no virtual:pwa-register import anywhere), its generated sw.js collided
+// with public/sw.js in the build output, and its workbox config cached Supabase API responses
+// (auth-sensitive data — must never be cached).
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
-import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
   tanstackStart: {
@@ -13,55 +19,4 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
-  plugins: [
-    VitePWA({
-      registerType: "autoUpdate",
-      includeAssets: ["favicon.svg"],
-      manifest: {
-        name: "Karawhiua Virtual Sports Day",
-        short_name: "Karawhiua",
-        description: "School physical activity competition platform for Sport Waikato",
-        theme_color: "#1B5E4B",
-        background_color: "#f5f5f0",
-        display: "standalone",
-        start_url: "/",
-        scope: "/",
-        icons: [
-          {
-            src: "/pwa-192x192.png",
-            sizes: "192x192",
-            type: "image/png",
-          },
-          {
-            src: "/pwa-512x512.png",
-            sizes: "512x512",
-            type: "image/png",
-          },
-          {
-            src: "/pwa-512x512.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "maskable",
-          },
-        ],
-      },
-      workbox: {
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,jpg}"],
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/zxxhjkruhwjondrbftaf\.supabase\.co\/.*/i,
-            handler: "NetworkFirst",
-            options: {
-              cacheName: "supabase-api",
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24, // 24 hours
-              },
-              networkTimeoutSeconds: 10,
-            },
-          },
-        ],
-      },
-    }),
-  ],
 });
