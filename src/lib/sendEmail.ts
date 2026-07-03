@@ -1,48 +1,44 @@
-import { createServerFn } from "@tanstack/react-start";
-
+// Server-only email helper. This is intentionally NOT a createServerFn:
+// exposing raw {to, subject, html} over HTTP lets anyone use the app as an
+// open mail relay. Call this from authenticated server functions only.
 interface SendEmailInput {
   to: string;
   subject: string;
   html: string;
 }
 
-export const sendEmail = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => {
-    const { to, subject, html } = input as SendEmailInput;
-    if (!to || !subject || !html) throw new Error("to, subject, and html are required");
-    if (typeof to !== "string" || typeof subject !== "string" || typeof html !== "string") {
-      throw new Error("to, subject, and html must be strings");
-    }
-    return { to, subject, html };
-  })
-  .handler(async ({ data }: { data: SendEmailInput }) => {
-    const RESEND_API_KEY = process.env.RESEND_API_KEY;
-    const FROM_EMAIL = process.env.VITE_FROM_EMAIL || "noreply@app.karawhiua.app";
+export async function sendEmailServer({ to, subject, html }: SendEmailInput) {
+  const RESEND_API_KEY = process.env.RESEND_API_KEY;
+  const FROM_EMAIL = process.env.VITE_FROM_EMAIL || "noreply@app.karawhiua.app";
 
-    if (!RESEND_API_KEY) {
-      console.error("RESEND_API_KEY not set — skipping email");
-      return { ok: false, error: "RESEND_API_KEY not configured" };
-    }
+  if (!to || !subject || !html) {
+    return { ok: false, error: "to, subject, and html are required" };
+  }
 
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: FROM_EMAIL,
-        to: data.to,
-        subject: data.subject,
-        html: data.html,
-      }),
-    });
+  if (!RESEND_API_KEY) {
+    console.error("RESEND_API_KEY not set — skipping email");
+    return { ok: false, error: "RESEND_API_KEY not configured" };
+  }
 
-    if (!res.ok) {
-      const body = await res.text();
-      console.error("Resend error:", res.status, body);
-      return { ok: false, error: `Resend error ${res.status}: ${body}` };
-    }
-
-    return { ok: true, data: await res.json() };
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${RESEND_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: FROM_EMAIL,
+      to,
+      subject,
+      html,
+    }),
   });
+
+  if (!res.ok) {
+    const body = await res.text();
+    console.error("Resend error:", res.status, body);
+    return { ok: false, error: `Resend error ${res.status}: ${body}` };
+  }
+
+  return { ok: true, data: await res.json() };
+}

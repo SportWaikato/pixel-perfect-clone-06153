@@ -24,7 +24,14 @@ type SearchParams = { redirect?: string };
 export const Route = createFileRoute("/auth")({
   ssr: false,
   validateSearch: (search: Record<string, unknown>): SearchParams => ({
-    redirect: typeof search.redirect === "string" ? search.redirect : undefined,
+    // Only allow same-app paths ("/x" but not "//host" or full URLs) so the
+    // redirect param can't send users off-site after sign-in.
+    redirect:
+      typeof search.redirect === "string" &&
+      search.redirect.startsWith("/") &&
+      !search.redirect.startsWith("//")
+        ? search.redirect
+        : undefined,
   }),
   head: () => ({
     meta: [

@@ -223,19 +223,11 @@ function OnboardingPage() {
       return;
     }
 
-    // Send welcome email (best-effort)
-    const houseName = (houses as House[]).find((h) => h.id === selectedHouse)?.name || "";
+    // Send welcome email (best-effort) — content and recipient are derived
+    // server-side from the authenticated user's profile
     try {
-      const { sendEmail } = await import("@/lib/sendEmail");
-      const { studentWelcome } = await import("@/emails/index");
-      const houseColour = (houses as House[]).find((h) => h.name === houseName)?.color || "#0A4B39";
-      const { subject, html } = studentWelcome(
-        firstName.trim(),
-        selectedSchool!.name,
-        houseName,
-        houseColour,
-      );
-      await sendEmail({ data: { to: email, subject, html } });
+      const { sendStudentWelcomeEmail } = await import("@/lib/emails.functions");
+      await sendStudentWelcomeEmail();
     } catch (err) {
       console.error("Failed to send welcome email:", err);
     }

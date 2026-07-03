@@ -160,6 +160,22 @@ function RegisterSchoolPage() {
     );
   };
 
+  const validateStep1 = () => {
+    if (!schoolName.trim()) {
+      toast.error("Enter your school name");
+      return false;
+    }
+    if (!region) {
+      toast.error("Select your region");
+      return false;
+    }
+    if (!schoolType) {
+      toast.error("Select your school type");
+      return false;
+    }
+    return true;
+  };
+
   const validateStep2 = () => {
     if (!primaryDomain) {
       toast.error("Enter your school email domain");
@@ -392,22 +408,11 @@ function RegisterSchoolPage() {
 
       if (userError) throw userError;
 
-      // Send confirmation email (best-effort)
+      // Send confirmation email (best-effort) — content and recipient are
+      // derived server-side from the caller's school-admin profile
       try {
-        const { sendEmail } = await import("@/lib/sendEmail");
-        const { schoolRegistrationPending } = await import("@/emails/index");
-        const houseNamesJoined = customHouses
-          .filter((h) => h.name.trim())
-          .map((h) => h.name.trim())
-          .join(", ");
-        const { subject, html } = schoolRegistrationPending(
-          adminFirstName.trim(),
-          schoolName.trim(),
-          region,
-          primaryDomain,
-          houseNamesJoined,
-        );
-        await sendEmail({ data: { to: adminEmail, subject, html } });
+        const { notifySchoolRegistrationPending } = await import("@/lib/emails.functions");
+        await notifySchoolRegistrationPending();
       } catch (err) {
         console.error("Failed to send confirmation email:", err);
       }
