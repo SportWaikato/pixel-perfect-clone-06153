@@ -179,7 +179,7 @@ function PendingSchoolsPage() {
                   </Button>
                   <Button
                     size="sm"
-                    style={{ backgroundColor: "#0B4B39" }}
+                    style={{ backgroundColor: "#1B5E4B" }}
                     className="text-white hover:opacity-90"
                     onClick={() => handleApprove(school.id)}
                     disabled={approving === school.id}

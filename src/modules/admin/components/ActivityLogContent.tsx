@@ -246,7 +246,7 @@ const ActivityLogContent = ({ user, schools, initialSchoolId }: ActivityLogConte
                   setPage(0);
                 }}
                 style={
-                  !showFlaggedOnly ? { backgroundColor: "#0B4B39", color: "white" } : undefined
+                  !showFlaggedOnly ? { backgroundColor: "#1B5E4B", color: "white" } : undefined
                 }
               >
                 All

@@ -88,7 +88,7 @@ const LoginForm = () => {
           />
 
           <div className="text-right">
-            <Link to="/auth/forgot-password" className="text-sm text-primary hover:underline">
+            <Link to="/forgot-password" className="text-sm text-primary hover:underline">
               Forgot Password?
             </Link>
           </div>

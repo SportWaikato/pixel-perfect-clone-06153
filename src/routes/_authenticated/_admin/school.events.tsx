@@ -135,7 +135,7 @@ function Page() {
         <Button
           onClick={() => setCreateOpen(true)}
           className="gap-2"
-          style={{ backgroundColor: "#0B4B39" }}
+          style={{ backgroundColor: "#1B5E4B" }}
         >
           <Plus size={16} />
           Create Event
@@ -172,13 +172,13 @@ function Page() {
                 <div className="flex items-start gap-4">
                   <div
                     className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
-                    style={{ backgroundColor: "#0B4B3918", color: "#0B4B39" }}
+                    style={{ backgroundColor: "#1B5E4B18", color: "#1B5E4B" }}
                   >
                     {event.icon_type || <Clock size={20} />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-bold text-[#0B4B39] truncate">{event.name}</h3>
+                      <h3 className="font-bold text-[#1B5E4B] truncate">{event.name}</h3>
                       {getStatusBadge(event)}
                     </div>
                     {event.description && (

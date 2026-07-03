@@ -39,8 +39,8 @@ const MultiSelectQuestion = ({ question, name }: SurveyQuestionProps) => {
           className={cn(
             "flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-150 cursor-pointer",
             selected.includes(option)
-              ? "border-[#0B4B39] bg-[#0B4B39]/10"
-              : "border-gray-200 hover:border-[#0B4B39]/40",
+              ? "border-[#1B5E4B] bg-[#1B5E4B]/10"
+              : "border-gray-200 hover:border-[#1B5E4B]/40",
           )}
         >
           <Checkbox checked={selected.includes(option)} onCheckedChange={() => toggle(option)} />
@@ -106,7 +106,7 @@ const RankOrderQuestion = ({ question, name }: SurveyQuestionProps) => {
                 className={cn(
                   "w-8 h-8 rounded-lg text-xs font-bold transition-all",
                   rankings[option] === rank
-                    ? "bg-[#0B4B39] text-white"
+                    ? "bg-[#1B5E4B] text-white"
                     : "bg-gray-100 text-gray-500 hover:bg-gray-200",
                 )}
               >
@@ -123,7 +123,7 @@ const RankOrderQuestion = ({ question, name }: SurveyQuestionProps) => {
 const SurveyQuestion = ({ question, name }: SurveyQuestionProps) => {
   return (
     <div className="space-y-3">
-      <Label className="text-base font-semibold text-[#0B4B39]">
+      <Label className="text-base font-semibold text-[#1B5E4B]">
         {question.question_text}
         {question.is_required && <span className="text-red-400 ml-1">*</span>}
       </Label>

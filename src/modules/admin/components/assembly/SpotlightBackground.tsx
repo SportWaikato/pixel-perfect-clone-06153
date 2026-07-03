@@ -28,7 +28,7 @@ const spotlights = [
 ];
 
 const SpotlightBackground = () => (
-  <div className="fixed inset-0 z-0 overflow-hidden bg-gradient-to-br from-[#0B4B39] to-[#071f18]">
+  <div className="fixed inset-0 z-0 overflow-hidden bg-gradient-to-br from-[#1B5E4B] to-[#071f18]">
     {spotlights.map((s, i) => (
       <m.div
         key={i}

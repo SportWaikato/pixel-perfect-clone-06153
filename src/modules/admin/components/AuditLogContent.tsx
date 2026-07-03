@@ -247,7 +247,7 @@ const AuditLogContent = ({ user, schools }: AuditLogContentProps) => {
               onClick={fetchAuditLog}
               disabled={loading || !selectedSchoolId}
               className="gap-2"
-              style={{ backgroundColor: "#0B4B39" }}
+              style={{ backgroundColor: "#1B5E4B" }}
             >
               {loading ? <Loader2 size={16} className="animate-spin" /> : <ScrollText size={16} />}
               Load Log

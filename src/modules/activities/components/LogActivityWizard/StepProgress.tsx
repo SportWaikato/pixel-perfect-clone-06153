@@ -7,7 +7,7 @@ interface StepProgressProps {
 const StepProgress = ({ currentStep }: StepProgressProps) => {
   return (
     <div className="mb-6">
-      <p className="text-xs font-semibold tracking-widest text-[#0B4B39] mb-3">
+      <p className="text-xs font-semibold tracking-widest text-[#1B5E4B] mb-3">
         STEP {currentStep} OF {TOTAL_STEPS} — {STEP_LABELS[currentStep]}
       </p>
       <div className="flex gap-1.5">
@@ -15,7 +15,7 @@ const StepProgress = ({ currentStep }: StepProgressProps) => {
           <div
             key={i}
             className="h-1.5 flex-1 rounded-full transition-colors duration-300"
-            style={{ backgroundColor: i < currentStep ? "#0B4B39" : "#D1D5DB" }}
+            style={{ backgroundColor: i < currentStep ? "#1B5E4B" : "#D1D5DB" }}
           />
         ))}
       </div>

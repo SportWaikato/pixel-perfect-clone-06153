@@ -112,7 +112,7 @@ const InviteRegistrationForm = ({ email, token }: InviteRegistrationFormProps) =
             type="submit"
             disabled={isSubmitting}
             className="w-full"
-            style={{ backgroundColor: "#0B4B39" }}
+            style={{ backgroundColor: "#1B5E4B" }}
           >
             {isSubmitting ? "Creating Account…" : "Create Account"}
           </Button>

@@ -109,9 +109,9 @@ export const getActivityColor = (activityType: string) => {
     case "cycling":
     case "bike_cycle":
     case "bmx":
-      return "#0B4B39";
+      return "#1B5E4B";
     case "swimming":
-      return "#0B4B39";
+      return "#1B5E4B";
     case "team_sports":
     case "team_sport":
     case "training_practice":
@@ -134,7 +134,7 @@ export const getActivityColor = (activityType: string) => {
       return "#00ACEF";
     case "hunting_diving":
     case "rock_climbing":
-      return "#0B4B39";
+      return "#1B5E4B";
     case "active_games":
     case "pickleball":
       return "#DB4FDB";
@@ -149,7 +149,7 @@ export const getActivityColor = (activityType: string) => {
     case "kayaking":
     case "rowing":
     case "water_polo":
-      return "#0B4B39";
+      return "#1B5E4B";
     case "rugby":
     case "boxing":
     case "martial_arts":
@@ -174,6 +174,6 @@ export const getActivityColor = (activityType: string) => {
     case "other":
       return "#6B7280";
     default:
-      return "#0B4B39";
+      return "#1B5E4B";
   }
 };

@@ -109,7 +109,7 @@ function JoinByCode() {
         <CardHeader>
           <div className="text-5xl mb-2">👋</div>
           <CardTitle className="text-2xl">
-            Join <span style={{ color: "#0A4B39" }}>{school.name}</span>
+            Join <span style={{ color: "#1B5E4B" }}>{school.name}</span>
           </CardTitle>
           <p className="text-sm text-muted-foreground mt-2">on Karawhiua Virtual Sports Day</p>
         </CardHeader>
@@ -121,7 +121,7 @@ function JoinByCode() {
               </p>
               <Button
                 className="w-full text-white hover:opacity-90"
-                style={{ backgroundColor: "#0A4B39" }}
+                style={{ backgroundColor: "#1B5E4B" }}
                 onClick={() => navigate({ to: "/onboarding" })}
               >
                 Continue to onboarding
@@ -131,7 +131,7 @@ function JoinByCode() {
             <>
               <Button
                 className="w-full text-white hover:opacity-90"
-                style={{ backgroundColor: "#0A4B39" }}
+                style={{ backgroundColor: "#1B5E4B" }}
                 onClick={handleSignUp}
               >
                 Sign up with email
@@ -142,7 +142,7 @@ function JoinByCode() {
                   type="button"
                   onClick={handleSignIn}
                   className="underline cursor-pointer"
-                  style={{ color: "#0A4B39" }}
+                  style={{ color: "#1B5E4B" }}
                 >
                   Sign in
                 </button>

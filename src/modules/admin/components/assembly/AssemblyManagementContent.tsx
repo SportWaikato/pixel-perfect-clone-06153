@@ -128,7 +128,7 @@ const AssemblyManagementContent = ({
     <button
       onClick={() => setMode(value)}
       className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-        mode === value ? "bg-[#0B4B39] text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+        mode === value ? "bg-[#1B5E4B] text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
       }`}
     >
       {label}
@@ -282,7 +282,7 @@ const AssemblyManagementContent = ({
             onClick={handleEnter}
             disabled={loading || !canEnter}
             size="lg"
-            className="flex items-center gap-2 bg-[#0B4B39] px-8 py-6 text-base hover:bg-[#0a3f30] disabled:opacity-50"
+            className="flex items-center gap-2 bg-[#1B5E4B] px-8 py-6 text-base hover:bg-[#0a3f30] disabled:opacity-50"
           >
             {loading ? (
               <Loader2 className="h-5 w-5 animate-spin" />

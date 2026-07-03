@@ -239,7 +239,7 @@ const LogActivityWizard = ({
                 onClick={handleNext}
                 disabled={!canAdvance()}
                 className="w-full rounded-xl py-3 font-bold"
-                style={{ backgroundColor: "#0B4B39", color: "white" }}
+                style={{ backgroundColor: "#1B5E4B", color: "white" }}
               >
                 Next
               </Button>

@@ -122,7 +122,7 @@ const RegistrationMethodField = ({ isSubmitting }: { isSubmitting: boolean }) =>
                 className={cn(
                   "w-full text-left rounded-lg border p-3 transition-colors",
                   isSelected
-                    ? "border-[#0B4B39] bg-[#0B4B39]/5"
+                    ? "border-[#1B5E4B] bg-[#1B5E4B]/5"
                     : "border-gray-200 hover:border-gray-300 hover:bg-gray-50",
                 )}
               >
@@ -130,18 +130,18 @@ const RegistrationMethodField = ({ isSubmitting }: { isSubmitting: boolean }) =>
                   <div
                     className={cn(
                       "mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2",
-                      isSelected ? "border-[#0B4B39]" : "border-gray-300",
+                      isSelected ? "border-[#1B5E4B]" : "border-gray-300",
                     )}
                   >
-                    {isSelected && <div className="h-2 w-2 rounded-full bg-[#0B4B39]" />}
+                    {isSelected && <div className="h-2 w-2 rounded-full bg-[#1B5E4B]" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <Icon size={14} className={isSelected ? "text-[#0B4B39]" : "text-gray-400"} />
+                      <Icon size={14} className={isSelected ? "text-[#1B5E4B]" : "text-gray-400"} />
                       <span
                         className={cn(
                           "text-sm font-medium",
-                          isSelected ? "text-[#0B4B39]" : "text-gray-700",
+                          isSelected ? "text-[#1B5E4B]" : "text-gray-700",
                         )}
                       >
                         {option.label}
@@ -154,7 +154,7 @@ const RegistrationMethodField = ({ isSubmitting }: { isSubmitting: boolean }) =>
 
               {/* Email domain sub-field — only shown under domain_blocklist */}
               {option.value === "domain_blocklist" && isSelected && (
-                <div className="ml-7 mt-2 pl-3 border-l-2 border-[#0B4B39]/20">
+                <div className="ml-7 mt-2 pl-3 border-l-2 border-[#1B5E4B]/20">
                   <Field name="email_domain">
                     {({ field, meta }: any) => (
                       <div className="space-y-1">

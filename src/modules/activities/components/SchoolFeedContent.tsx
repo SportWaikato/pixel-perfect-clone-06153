@@ -114,7 +114,7 @@ const SchoolFeedContent = ({ schoolId, userId }: SchoolFeedContentProps) => {
                   <div className="flex items-center gap-2">
                     <div
                       className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                      style={{ backgroundColor: (house.color as string) || "#0B4B39" }}
+                      style={{ backgroundColor: (house.color as string) || "#1B5E4B" }}
                     >
                       <User2 size={14} />
                     </div>

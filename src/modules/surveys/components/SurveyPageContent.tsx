@@ -38,12 +38,12 @@ const SurveyPageContent = ({ pendingSurvey }: SurveyPageContentProps) => {
           style={{ backgroundColor: "#f9fefd" }}
         >
           <CardContent className="p-8 text-center">
-            <CheckCircle className="w-16 h-16 text-[#0B4B39] mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-[#0B4B39] mb-2">All caught up!</h2>
+            <CheckCircle className="w-16 h-16 text-[#1B5E4B] mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-[#1B5E4B] mb-2">All caught up!</h2>
             <p className="text-gray-600 mb-6">
               There are no surveys for you right now. Check back later!
             </p>
-            <Button asChild className="text-white" style={{ backgroundColor: "#0B4B39" }}>
+            <Button asChild className="text-white" style={{ backgroundColor: "#1B5E4B" }}>
               <Link to="/dashboard">Back to Dashboard</Link>
             </Button>
           </CardContent>

@@ -70,7 +70,7 @@ const Step5Confirm = ({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-black text-[#0B4B39] mb-1">Confirm and log it</h2>
+        <h2 className="text-2xl font-black text-[#1B5E4B] mb-1">Confirm and log it</h2>
         <p className="text-gray-500 text-sm">
           Everything look good? Hit &quot;Log it&quot; to record your activity.
         </p>
@@ -147,7 +147,7 @@ const Step5Confirm = ({
             </button>
           </div>
         ) : (
-          <label className="flex items-center gap-2 cursor-pointer text-sm text-[#0B4B39] font-medium hover:underline">
+          <label className="flex items-center gap-2 cursor-pointer text-sm text-[#1B5E4B] font-medium hover:underline">
             <Camera size={16} />
             Add proof photo
             <input
@@ -179,7 +179,7 @@ const Step5Confirm = ({
         onClick={onSubmit}
         disabled={isSubmitting}
         className="w-full py-4 text-base font-bold rounded-2xl gap-2"
-        style={{ backgroundColor: "#0B4B39", color: "white" }}
+        style={{ backgroundColor: "#1B5E4B", color: "white" }}
       >
         <Zap size={18} />
         {isSubmitting ? "Logging…" : "Log it"}

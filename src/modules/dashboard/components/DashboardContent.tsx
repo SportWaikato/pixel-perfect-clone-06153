@@ -203,7 +203,7 @@ const DashboardContent = ({
       >
         <CardHeader className="flex flex-row items-center justify-between px-8">
           <div>
-            <CardTitle className="flex items-center gap-2 text-[#0B4B39] text-2xl font-black">
+            <CardTitle className="flex items-center gap-2 text-[#1B5E4B] text-2xl font-black">
               Monthly Progress
               <span className="text-sm font-normal text-gray-500">
                 {new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })}
@@ -211,14 +211,14 @@ const DashboardContent = ({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-6 w-6 p-0 text-[#0B4B39] hover:bg-[#0B4B39]/10"
+                className="h-6 w-6 p-0 text-[#1B5E4B] hover:bg-[#1B5E4B]/10"
                 onClick={handleRecalculateTotals}
                 title="Refresh monthly progress"
               >
                 <RefreshCw size={14} />
               </Button>
             </CardTitle>
-            <div className="text-6xl font-black mt-2 text-[#0B4B39]">
+            <div className="text-6xl font-black mt-2 text-[#1B5E4B]">
               {formatTimeDisplay(currentMonthMinutes)}
             </div>
             <p className="text-lg font-semibold text-gray-600">
@@ -246,15 +246,15 @@ const DashboardContent = ({
           </div>
           <div className="grid grid-cols-3 text-center">
             <div className="py-4 px-4 rounded-2xl">
-              <div className="text-3xl font-bold text-[#0B4B39]">{totalPoints}</div>
+              <div className="text-3xl font-bold text-[#1B5E4B]">{totalPoints}</div>
               <p className="text-sm text-gray-500">Total Points</p>
             </div>
             <div className="py-4 px-4 rounded-2xl">
-              <div className="text-3xl font-bold text-[#0B4B39]">{earnedCount}</div>
+              <div className="text-3xl font-bold text-[#1B5E4B]">{earnedCount}</div>
               <p className="text-sm text-gray-500">Badges Earned</p>
             </div>
             <div className="py-4 px-4 rounded-2xl">
-              <div className="text-3xl font-bold text-[#0B4B39]">
+              <div className="text-3xl font-bold text-[#1B5E4B]">
                 {Math.max(0, Math.ceil((monthlyGoalMinutes - currentMonthMinutes) / 60))}
               </div>
               <p className="text-sm text-gray-500">Hours to Goal</p>
@@ -275,7 +275,7 @@ const DashboardContent = ({
               <Button
                 variant="ghost"
                 size="sm"
-                className="absolute top-3 right-3 h-6 w-6 p-0 text-gray-400 hover:text-[#0B4B39] hover:bg-[#0B4B39]/10"
+                className="absolute top-3 right-3 h-6 w-6 p-0 text-gray-400 hover:text-[#1B5E4B] hover:bg-[#1B5E4B]/10"
                 onClick={handleRecalculateStreaks}
                 title="Refresh streak calculation"
               >
@@ -296,17 +296,17 @@ const DashboardContent = ({
               </div>
 
               {/* Streak number */}
-              <div className="text-7xl font-black leading-none text-[#0B4B39] mb-2">
+              <div className="text-7xl font-black leading-none text-[#1B5E4B] mb-2">
                 {currentStreak}
               </div>
-              <p className="text-lg font-bold text-[#0B4B39] mb-1">Day Streak</p>
+              <p className="text-lg font-bold text-[#1B5E4B] mb-1">Day Streak</p>
               <p className="text-sm text-gray-400 mb-6">
                 Best Streak: {longestStreak} days in a row
               </p>
 
               {/* Next Milestone box */}
               <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4">
-                <p className="text-sm font-bold text-[#0B4B39] mb-3">Next Milestone</p>
+                <p className="text-sm font-bold text-[#1B5E4B] mb-3">Next Milestone</p>
                 <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
                   <div
                     className="h-2 rounded-full transition-all duration-300"
@@ -331,19 +331,19 @@ const DashboardContent = ({
             style={{ backgroundColor: "#f9fefd" }}
           >
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-2xl font-black text-[#0B4B39]">
+              <CardTitle className="flex items-center gap-2 text-2xl font-black text-[#1B5E4B]">
                 <Award className="w-5 h-5 text-yellow-500" />
                 Achievements
                 <Badge
                   variant="secondary"
-                  className="bg-[#0B4B39]/10 text-[#0B4B39] border-[#0B4B39]/20"
+                  className="bg-[#1B5E4B]/10 text-[#1B5E4B] border-[#1B5E4B]/20"
                 >
                   {earnedCount}/{allAchievements.length}
                 </Badge>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-6 w-6 p-0 text-[#0B4B39] hover:bg-[#0B4B39]/10"
+                  className="h-6 w-6 p-0 text-[#1B5E4B] hover:bg-[#1B5E4B]/10"
                   onClick={handleCheckHistoricalAchievements}
                   title="Check for achievements you may have earned"
                 >
@@ -469,7 +469,7 @@ const DashboardContent = ({
         <Card className="shadow-sm rounded-2xl border border-gray-100">
           <CardHeader className="flex flex-row items-center justify-between pb-3">
             <CardTitle className="text-lg font-bold text-gray-800">Recent Activities</CardTitle>
-            <Link to="/activities" className="text-sm text-[#0B4B39] font-medium hover:underline">
+            <Link to="/activities" className="text-sm text-[#1B5E4B] font-medium hover:underline">
               View all
             </Link>
           </CardHeader>

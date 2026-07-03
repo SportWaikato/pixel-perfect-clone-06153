@@ -106,7 +106,7 @@ function Page() {
                     type="submit"
                     disabled={sending}
                     className="gap-2"
-                    style={{ backgroundColor: "#0B4B39", color: "white" }}
+                    style={{ backgroundColor: "#1B5E4B", color: "white" }}
                   >
                     {sending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
                     Send Message

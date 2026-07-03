@@ -119,7 +119,7 @@ const UpdatesFeed = ({ user, initialUpdates = [], embedded = false }: UpdatesFee
   const contactForm = (
     <div className="bg-white rounded-xl p-6 space-y-4">
       <div>
-        <h3 className="text-xl font-bold" style={{ color: "#0B4B39" }}>
+        <h3 className="text-xl font-bold" style={{ color: "#1B5E4B" }}>
           Need to get in touch?
         </h3>
         <p className="text-sm text-gray-600 mt-1">
@@ -140,7 +140,7 @@ const UpdatesFeed = ({ user, initialUpdates = [], embedded = false }: UpdatesFee
               type="submit"
               disabled={isSubmitting}
               className="w-full"
-              style={{ backgroundColor: "#0B4B39" }}
+              style={{ backgroundColor: "#1B5E4B" }}
             >
               {isSubmitting ? "Sending..." : "Save"}
             </Button>
@@ -188,7 +188,7 @@ const UpdatesFeed = ({ user, initialUpdates = [], embedded = false }: UpdatesFee
         {updatesList}
         <div className="bg-white rounded-xl p-6 space-y-4">
           <div>
-            <h2 className="text-xl font-bold" style={{ color: "#0B4B39" }}>
+            <h2 className="text-xl font-bold" style={{ color: "#1B5E4B" }}>
               Need to get in touch?
             </h2>
             <p className="text-sm text-gray-600 mt-1">
@@ -209,7 +209,7 @@ const UpdatesFeed = ({ user, initialUpdates = [], embedded = false }: UpdatesFee
                   type="submit"
                   disabled={isSubmitting}
                   className="w-full"
-                  style={{ backgroundColor: "#0B4B39" }}
+                  style={{ backgroundColor: "#1B5E4B" }}
                 >
                   {isSubmitting ? "Sending..." : "Save"}
                 </Button>

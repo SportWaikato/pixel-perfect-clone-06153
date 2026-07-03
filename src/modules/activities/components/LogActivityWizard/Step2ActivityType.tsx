@@ -40,7 +40,7 @@ const Step2ActivityType = ({ data, challenges, onChange }: Step2ActivityTypeProp
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-2xl font-black text-[#0B4B39] mb-1">What did you do?</h2>
+        <h2 className="text-2xl font-black text-[#1B5E4B] mb-1">What did you do?</h2>
         <p className="text-gray-500 text-sm">
           Choose the activity that best describes what you did.
         </p>
@@ -50,8 +50,8 @@ const Step2ActivityType = ({ data, challenges, onChange }: Step2ActivityTypeProp
         <div className="p-4 rounded-2xl border border-[#cf04d2] bg-white">
           <div className="flex items-center gap-3">
             <div
-              className="w-12 h-12 rounded-xl flex items-center justify-center bg-[#0B4B39]/10"
-              style={{ color: "#0B4B39" }}
+              className="w-12 h-12 rounded-xl flex items-center justify-center bg-[#1B5E4B]/10"
+              style={{ color: "#1B5E4B" }}
             >
               {getActivityIcon(lockedType, 22)}
             </div>
@@ -76,7 +76,7 @@ const Step2ActivityType = ({ data, challenges, onChange }: Step2ActivityTypeProp
                   onClick={() => handleSelect(type)}
                   className={`p-4 rounded-2xl border flex flex-col items-center gap-2 transition-all duration-150 ${
                     isSelected
-                      ? "border-[#cf04d2] bg-[#0B4B39]/5 shadow-sm"
+                      ? "border-[#cf04d2] bg-[#1B5E4B]/5 shadow-sm"
                       : "border-gray-200 bg-white hover:border-gray-300"
                   }`}
                 >

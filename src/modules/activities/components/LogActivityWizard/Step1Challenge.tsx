@@ -33,7 +33,7 @@ const Step1Challenge = ({ data, challenges, onChange }: Step1ChallengeProps) => 
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-2xl font-black text-[#0B4B39] mb-1">Link to a challenge?</h2>
+        <h2 className="text-2xl font-black text-[#1B5E4B] mb-1">Link to a challenge?</h2>
         <p className="text-gray-500 text-sm">
           Link your activity to earn bonus points or challenge rewards.
         </p>
@@ -50,11 +50,11 @@ const Step1Challenge = ({ data, challenges, onChange }: Step1ChallengeProps) => 
           <div className="flex items-center gap-3">
             <div
               className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-              style={{ backgroundColor: "#0B4B39" }}
+              style={{ backgroundColor: "#1B5E4B" }}
             >
               <Signpost size={18} className="text-white" />
             </div>
-            <p className="font-semibold text-[#0B4B39]">No challenge — general activity</p>
+            <p className="font-semibold text-[#1B5E4B]">No challenge — general activity</p>
           </div>
         </button>
 
@@ -88,7 +88,7 @@ const Step1Challenge = ({ data, challenges, onChange }: Step1ChallengeProps) => 
                         {getActivityIcon(activityType, 32)}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-[#0B4B39] truncate">{challenge.name}</p>
+                        <p className="font-semibold text-[#1B5E4B] truncate">{challenge.name}</p>
                         <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
                           <Calendar size={12} />
                           <span>Until {formatEventDate(challenge.end_date, "MMM d")}</span>

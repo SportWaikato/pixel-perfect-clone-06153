@@ -21,19 +21,19 @@ const SURVEY_DESCRIPTIONS: Record<SurveyType, string> = {
 const SurveyPromptCard = ({ surveyType, surveyName }: SurveyPromptCardProps) => {
   return (
     <Card
-      className="shadow-sm rounded-2xl border border-[#0B4B39]/20"
+      className="shadow-sm rounded-2xl border border-[#1B5E4B]/20"
       style={{ backgroundColor: "#f0faf6" }}
     >
       <CardContent className="p-4 sm:p-6">
         <div className="flex items-center gap-4">
           <div
             className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
-            style={{ backgroundColor: "#0B4B39" }}
+            style={{ backgroundColor: "#1B5E4B" }}
           >
             <ClipboardList className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-[#0B4B39] text-sm sm:text-base">{surveyName}</h3>
+            <h3 className="font-bold text-[#1B5E4B] text-sm sm:text-base">{surveyName}</h3>
             <p className="text-xs sm:text-sm text-gray-600 truncate">
               {SURVEY_DESCRIPTIONS[surveyType]}
             </p>
@@ -42,7 +42,7 @@ const SurveyPromptCard = ({ surveyType, surveyName }: SurveyPromptCardProps) => 
             asChild
             size="sm"
             className="text-white shrink-0"
-            style={{ backgroundColor: "#0B4B39" }}
+            style={{ backgroundColor: "#1B5E4B" }}
           >
             <Link to="/survey">Take Survey</Link>
           </Button>

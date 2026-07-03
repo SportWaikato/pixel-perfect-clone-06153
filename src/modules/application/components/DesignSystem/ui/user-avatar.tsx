@@ -37,7 +37,7 @@ const UserAvatar = ({
       {profileIconUrl && <AvatarImage src={profileIconUrl} alt={`${firstName} ${lastName}`} />}
       <AvatarFallback
         className="bg-blue-600 text-white font-medium"
-        style={{ backgroundColor: "#0B4B39" }}
+        style={{ backgroundColor: "#1B5E4B" }}
       >
         {getInitials()}
       </AvatarFallback>

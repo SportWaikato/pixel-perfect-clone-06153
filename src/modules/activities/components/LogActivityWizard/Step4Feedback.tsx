@@ -18,7 +18,7 @@ const Step4Feedback = ({ data, onChange }: Step4FeedbackProps) => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-black text-[#0B4B39] mb-0.5">One more thing&hellip;</h2>
+        <h2 className="text-2xl font-black text-[#1B5E4B] mb-0.5">One more thing&hellip;</h2>
         <p className="text-gray-500 text-sm">Takes 10 seconds.</p>
       </div>
 
@@ -37,7 +37,7 @@ const Step4Feedback = ({ data, onChange }: Step4FeedbackProps) => {
               className={cn(
                 "flex-1 py-2.5 rounded-xl border text-2xl transition-all duration-150 hover:scale-110",
                 data.feeling === f.value
-                  ? "border-[#cf04d2] bg-[#0B4B39]/5 scale-110"
+                  ? "border-[#cf04d2] bg-[#1B5E4B]/5 scale-110"
                   : "border-gray-200 bg-white hover:border-gray-300",
               )}
             >
@@ -66,7 +66,7 @@ const Step4Feedback = ({ data, onChange }: Step4FeedbackProps) => {
                 className={cn(
                   "flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border text-sm font-medium transition-all duration-150",
                   data.participationType === opt.value
-                    ? "border-[#cf04d2] bg-[#0B4B39]/5 text-[#0B4B39]"
+                    ? "border-[#cf04d2] bg-[#1B5E4B]/5 text-[#1B5E4B]"
                     : "border-gray-200 bg-white text-gray-600 hover:border-gray-300",
                 )}
               >
@@ -88,7 +88,7 @@ const Step4Feedback = ({ data, onChange }: Step4FeedbackProps) => {
           onChange={(e) => onChange({ notes: e.target.value })}
           placeholder="Add any details about your activity..."
           rows={3}
-          className="w-full py-3 px-4 bg-[#0B4B39]/5 text-gray-900 border border-gray-200 rounded-xl focus:border-[#cf04d2] focus:outline-none transition-colors resize-none text-sm placeholder:text-gray-400"
+          className="w-full py-3 px-4 bg-[#1B5E4B]/5 text-gray-900 border border-gray-200 rounded-xl focus:border-[#cf04d2] focus:outline-none transition-colors resize-none text-sm placeholder:text-gray-400"
         />
       </div>
     </div>

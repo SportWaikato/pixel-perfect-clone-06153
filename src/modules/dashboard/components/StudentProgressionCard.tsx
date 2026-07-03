@@ -182,7 +182,7 @@ const StudentProgressionCard = ({
           <>
             <div
               className="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center"
-              style={{ backgroundColor: "#0B4B3918", color: "#0B4B39" }}
+              style={{ backgroundColor: "#1B5E4B18", color: "#1B5E4B" }}
             >
               <Calendar size={16} />
             </div>
@@ -192,7 +192,7 @@ const StudentProgressionCard = ({
                   New Term!
                 </span>
               )}
-              <p className="text-sm font-bold text-[#0B4B39]">
+              <p className="text-sm font-bold text-[#1B5E4B]">
                 This term: <span style={{ color: "#D103D1" }}>{termPoints} pts</span>
               </p>
               <p className="text-xs text-gray-500">
@@ -213,8 +213,8 @@ const StudentProgressionCard = ({
       style={{ backgroundColor: "#f9fefd" }}
     >
       <CardHeader className="px-8 pt-6 pb-2">
-        <CardTitle className="flex items-center gap-2 text-2xl font-black text-[#0B4B39]">
-          <TrendingUp size={20} className="text-[#0B4B39]" />
+        <CardTitle className="flex items-center gap-2 text-2xl font-black text-[#1B5E4B]">
+          <TrendingUp size={20} className="text-[#1B5E4B]" />
           Your Progression
         </CardTitle>
         {isNewTerm && (
@@ -232,7 +232,7 @@ const StudentProgressionCard = ({
           <>
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <Calendar size={14} />
-              <span className="font-semibold text-[#0B4B39]">{termName}</span>
+              <span className="font-semibold text-[#1B5E4B]">{termName}</span>
               <span>
                 ({formatDate(currentTerm.start_date)} – {formatDate(currentTerm.end_date)})
               </span>
@@ -247,7 +247,7 @@ const StudentProgressionCard = ({
                   className="h-2 rounded-full transition-all duration-300"
                   style={{
                     width: `${Math.min(termProgressPercent, 100)}%`,
-                    backgroundColor: "#0B4B39",
+                    backgroundColor: "#1B5E4B",
                   }}
                 />
               </div>
@@ -262,13 +262,13 @@ const StudentProgressionCard = ({
             <p className="text-xs text-gray-500 mt-1">{termName || "Current Term"}</p>
           </div>
           <div className="py-4 px-3 rounded-2xl bg-white border border-gray-100">
-            <div className="text-3xl font-black text-[#0B4B39]">{yearPoints}</div>
+            <div className="text-3xl font-black text-[#1B5E4B]">{yearPoints}</div>
             <p className="text-xs text-gray-500 mt-1">
               {currentTerm ? `${currentTerm.year} Year` : "2026 Year"}
             </p>
           </div>
           <div className="py-4 px-3 rounded-2xl bg-white border border-gray-100">
-            <div className="text-3xl font-black text-[#0B4B39]">{lifetimePoints}</div>
+            <div className="text-3xl font-black text-[#1B5E4B]">{lifetimePoints}</div>
             <p className="text-xs text-gray-500 mt-1">Lifetime</p>
           </div>
         </div>

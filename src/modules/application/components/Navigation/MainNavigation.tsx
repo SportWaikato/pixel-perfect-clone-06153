@@ -142,7 +142,7 @@ const MainNavigation = () => {
   // Don't render the dropdown if we don't have user data yet
   if (loading || !user) {
     return (
-      <nav className="border-b px-4 sm:px-6 py-4" style={{ backgroundColor: "#0B4B39" }}>
+      <nav className="border-b px-4 sm:px-6 py-4" style={{ backgroundColor: "#1B5E4B" }}>
         <div className="flex items-center justify-between">
           {/* Logo and Desktop Navigation Skeleton */}
           <div className="flex items-center gap-8">
@@ -185,7 +185,7 @@ const MainNavigation = () => {
   return (
     <nav
       className="border-b border-white/10 px-4 sm:px-6 py-4"
-      style={{ backgroundColor: "#0B4B39" }}
+      style={{ backgroundColor: "#1B5E4B" }}
     >
       <div className="flex items-center justify-between">
         {/* Logo and Desktop Navigation */}

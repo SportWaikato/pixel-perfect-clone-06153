@@ -21,6 +21,28 @@ import { listHousesBySchool, listSchools } from "@/lib/schools.functions";
 
 type SearchParams = { redirect?: string };
 
+const ALLOWED_REDIRECTS = new Set([
+  "/dashboard",
+  "/admin",
+  "/activities",
+  "/register-school",
+  "/events",
+  "/profile",
+  "/survey",
+  "/school",
+]);
+
+function validateRedirect(redirect: string | undefined): string | undefined {
+  if (!redirect) return undefined;
+  const clean = redirect.split("?")[0].split("#")[0]; // strip query/hash
+  if (!clean.startsWith("/")) return undefined; // must be relative
+  // Allow exact match or subpath of an allowed prefix
+  for (const prefix of ALLOWED_REDIRECTS) {
+    if (clean === prefix || clean.startsWith(prefix + "/")) return clean;
+  }
+  return undefined;
+}
+
 export const Route = createFileRoute("/auth")({
   ssr: false,
   validateSearch: (search: Record<string, unknown>): SearchParams => ({
@@ -185,7 +207,7 @@ function SignInForm({ redirectTo }: { redirectTo: string }) {
           <Button
             type="submit"
             disabled={isSubmitting}
-            style={{ backgroundColor: "#0A4B39", color: "#fff" }}
+            style={{ backgroundColor: "#1B5E4B", color: "#fff" }}
             className="w-full"
           >
             {isSubmitting ? "Signing in…" : "Sign in"}
@@ -437,7 +459,7 @@ function SignUpForm({ redirectTo }: { redirectTo: string }) {
           <Button
             type="submit"
             disabled={isSubmitting}
-            style={{ backgroundColor: "#0A4B39", color: "#fff" }}
+            style={{ backgroundColor: "#1B5E4B", color: "#fff" }}
             className="w-full"
           >
             {isSubmitting ? "Creating account…" : "Create account"}
@@ -468,7 +490,7 @@ function GoogleButton() {
       className="w-full"
       onClick={handleClick}
       disabled={loading}
-      style={{ borderColor: "#0A4B39", color: "#0A4B39" }}
+      style={{ borderColor: "#1B5E4B", color: "#1B5E4B" }}
     >
       {loading ? "Redirecting…" : "Continue with Google"}
     </Button>
