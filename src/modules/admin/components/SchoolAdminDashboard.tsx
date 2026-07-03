@@ -248,7 +248,7 @@ const SchoolAdminDashboard = ({
     {
       title: "Manage Challenges",
       description: "Review pending challenges",
-      href: `/admin/events${schoolParam}`,
+      href: "/school/events",
       icon: Clock,
       color: "bg-orange-500",
       badge: stats.pendingEvents,
@@ -259,7 +259,7 @@ const SchoolAdminDashboard = ({
     {
       title: "Activity Log",
       description: "View and moderate activity logs",
-      href: `/admin/activity${schoolParam}`,
+      href: "/school/activity",
       icon: Activity,
       color: "bg-red-500",
       badge: 0,
@@ -268,7 +268,7 @@ const SchoolAdminDashboard = ({
     {
       title: "Assembly Mode",
       description: "Present live updates to the school",
-      href: `/admin/assembly${schoolParam}`,
+      href: "/school/assembly",
       icon: Monitor,
       color: "bg-[#0B4B39]",
       badge: 0,
@@ -386,7 +386,7 @@ const SchoolAdminDashboard = ({
               <p className="text-xs text-muted-foreground">Unread messages</p>
             </div>
             <Button asChild className="w-full mt-4" style={{ backgroundColor: "#0B4B39" }}>
-              <Link to={`/admin/updates${schoolParam}`}>Manage messages</Link>
+              <Link to="/school/updates">Manage messages</Link>
             </Button>
           </CardContent>
         </Card>
@@ -523,7 +523,7 @@ const SchoolAdminDashboard = ({
       </div>
 
       {/* Recent Activity Preview */}
-      <ActivityLogPreview schoolId={schoolId} schoolParam={schoolParam} />
+      <ActivityLogPreview schoolId={schoolId} />
 
       {/* Registration method */}
       <Card className={isAllowList ? "border-green-100" : "border-red-100"}>
