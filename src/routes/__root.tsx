@@ -76,55 +76,45 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { name: "theme-color", content: "#1B5E4B" },
-      { name: "apple-mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
-      { name: "apple-mobile-web-app-title", content: "Karawhiua" },
-      { name: "application-name", content: "Karawhiua" },
-      { name: "msapplication-TileImage", content: "/pwa-192x192.png" },
-      { name: "msapplication-TileColor", content: "#1B5E4B" },
-      { title: "Karawhiua Virtual Sports Day" },
+      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { title: "Karawhiua — Virtual Sports Day" },
       {
         name: "description",
         content:
-          "Get active, compete with your school, and survive the Reaper in Karawhiua Virtual Sports Day.",
+          "Karawhiua Virtual Sports Day — Sport Waikato's school physical activity competition. Log activities, earn points for your house, and climb the leaderboard.",
       },
       { name: "author", content: "Sport Waikato" },
-      { property: "og:title", content: "Karawhiua Virtual Sports Day" },
+      { name: "theme-color", content: "#0a4b39" },
+      // iOS home-screen behavior — Safari ignores most of the manifest
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "default" },
+      { name: "apple-mobile-web-app-title", content: "Karawhiua" },
+      { property: "og:title", content: "Karawhiua — Virtual Sports Day" },
       {
         property: "og:description",
         content:
-          "Get active, compete with your school, and survive the Reaper in Karawhiua Virtual Sports Day.",
+          "Sport Waikato's school physical activity competition. Log activities, earn points for your house, and climb the leaderboard.",
       },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Karawhiua Virtual Sports Day" },
+      { property: "og:image", content: "/KarawhiuaLogo.png" },
+      { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "Karawhiua — Virtual Sports Day" },
       {
         name: "twitter:description",
         content:
-          "Get active, compete with your school, and survive the Reaper in Karawhiua Virtual Sports Day.",
+          "Sport Waikato's school physical activity competition. Log activities, earn points for your house, and climb the leaderboard.",
       },
+      { name: "twitter:image", content: "/KarawhiuaLogo.png" },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
       },
-      {
-        rel: "icon",
-        type: "image/svg+xml",
-        href: "/favicon.svg",
-      },
-      {
-        rel: "apple-touch-icon",
-        sizes: "192x192",
-        href: "/pwa-192x192.png",
-      },
-      {
-        rel: "manifest",
-        href: "/manifest.webmanifest",
-      },
+      { rel: "icon", type: "image/png", href: "/KarawhiuaLogo.png" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "apple-touch-icon", href: "/icons/apple-touch-icon.png" },
     ],
   }),
   shellComponent: RootShell,
@@ -166,6 +156,15 @@ function RootComponent() {
       unsub?.();
     };
   }, [queryClient, router]);
+
+  useEffect(() => {
+    if (import.meta.env.DEV) return; // avoid stale caches fighting HMR in dev
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch((err) => {
+        console.error("Service worker registration failed:", err);
+      });
+    }
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

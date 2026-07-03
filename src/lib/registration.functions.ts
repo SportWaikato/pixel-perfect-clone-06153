@@ -1,16 +1,26 @@
 import { createServerFn } from "@tanstack/react-start";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export const approveSchool = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => {
     const { schoolId } = input as { schoolId: string };
     if (!schoolId) throw new Error("schoolId required");
     return { schoolId };
   })
-  .handler(async ({ data }) => {
-    // SSR guard — prevent accidental client bundle inclusion
-    if (!import.meta.env.SSR) throw new Error("This function can only run server-side");
+  .handler(async ({ data, context }) => {
+    // Runs with the service-role client below, so the caller's role must be
+    // verified first — the middleware only proves authentication.
+    const { data: caller, error: callerError } = await context.supabase
+      .from("users")
+      .select("role")
+      .eq("id", context.userId)
+      .maybeSingle();
+    if (callerError) throw new Error(callerError.message);
+    if (caller?.role !== "super_admin") throw new Error("Forbidden");
+
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { sendEmail } = await import("@/lib/sendEmail");
+    const { sendEmailServer } = await import("@/lib/sendEmail");
     const { schoolApproved } = await import("@/emails/index");
 
     // Get school info and admin user
@@ -78,7 +88,7 @@ export const approveSchool = createServerFn({ method: "POST" })
           joinCode,
           school.email_domain || "school.nz",
         );
-        await sendEmail({ data: { to: adminEmail, subject, html } });
+        await sendEmailServer({ to: adminEmail, subject, html });
       } catch (err) {
         console.error("Failed to send approval email:", err);
       }
@@ -88,16 +98,24 @@ export const approveSchool = createServerFn({ method: "POST" })
   });
 
 export const rejectSchool = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => {
     const { schoolId, reason } = input as { schoolId: string; reason: string };
     if (!schoolId) throw new Error("schoolId required");
     if (!reason) throw new Error("reason required");
     return { schoolId, reason: reason.trim() };
   })
-  .handler(async ({ data }) => {
-    if (!import.meta.env.SSR) throw new Error("This function can only run server-side");
+  .handler(async ({ data, context }) => {
+    const { data: caller, error: callerError } = await context.supabase
+      .from("users")
+      .select("role")
+      .eq("id", context.userId)
+      .maybeSingle();
+    if (callerError) throw new Error(callerError.message);
+    if (caller?.role !== "super_admin") throw new Error("Forbidden");
+
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { sendEmail } = await import("@/lib/sendEmail");
+    const { sendEmailServer } = await import("@/lib/sendEmail");
     const { schoolRejected } = await import("@/emails/index");
 
     // Get school info and admin user
@@ -136,7 +154,7 @@ export const rejectSchool = createServerFn({ method: "POST" })
     if (adminEmail) {
       try {
         const { subject, html } = schoolRejected(firstName, school.name, data.reason);
-        await sendEmail({ data: { to: adminEmail, subject, html } });
+        await sendEmailServer({ to: adminEmail, subject, html });
       } catch (err) {
         console.error("Failed to send rejection email:", err);
       }
@@ -146,13 +164,24 @@ export const rejectSchool = createServerFn({ method: "POST" })
   });
 
 export const regenerateJoinCode = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => {
     const { schoolId } = input as { schoolId: string };
     if (!schoolId) throw new Error("schoolId required");
     return { schoolId };
   })
-  .handler(async ({ data }) => {
-    if (!import.meta.env.SSR) throw new Error("This function can only run server-side");
+  .handler(async ({ data, context }) => {
+    // Super admins may regenerate any school's code; school admins only their own.
+    const { data: caller, error: callerError } = await context.supabase
+      .from("users")
+      .select("role, school_id")
+      .eq("id", context.userId)
+      .maybeSingle();
+    if (callerError) throw new Error(callerError.message);
+    const isSuperAdmin = caller?.role === "super_admin";
+    const isOwnSchoolAdmin = caller?.role === "school_admin" && caller.school_id === data.schoolId;
+    if (!isSuperAdmin && !isOwnSchoolAdmin) throw new Error("Forbidden");
+
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -185,7 +214,13 @@ export const checkDomainAvailable = createServerFn({ method: "GET" })
   .inputValidator((input: unknown) => {
     const { domain } = input as { domain: string };
     if (!domain) throw new Error("domain required");
-    return { domain: domain.toLowerCase().trim() };
+    const normalized = domain.toLowerCase().trim();
+    // Interpolated into a PostgREST .or() filter below — restrict to hostname
+    // characters so filter syntax (commas, parens, dots are fine) can't be injected.
+    if (!/^[a-z0-9][a-z0-9.-]{0,252}$/.test(normalized)) {
+      throw new Error("Invalid domain");
+    }
+    return { domain: normalized };
   })
   .handler(async ({ data }) => {
     const { createClient } = await import("@supabase/supabase-js");

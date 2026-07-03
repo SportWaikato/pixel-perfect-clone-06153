@@ -72,7 +72,7 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
 
       if (!eventData) {
         toast.error("Event not found");
-        navigate({ to: "/challenges" });
+        navigate({ to: "/events" });
         return;
       }
 
@@ -91,7 +91,7 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
       setUserProgress({ totalMinutes, totalPoints });
     } catch (error) {
       notifyAboutError(error);
-      navigate({ to: "/challenges" });
+      navigate({ to: "/events" });
     } finally {
       setLoading(false);
     }
@@ -220,7 +220,7 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
       {/* Back button */}
       <Button
         variant="ghost"
-        onClick={() => navigate({ to: "/challenges" })}
+        onClick={() => navigate({ to: "/events" })}
         className="gap-2 -ml-2 text-gray-600"
       >
         <ArrowLeft size={16} />

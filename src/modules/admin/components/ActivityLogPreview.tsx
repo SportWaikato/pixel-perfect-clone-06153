@@ -25,10 +25,9 @@ const PREVIEW_COUNT = 5;
 
 interface ActivityLogPreviewProps {
   schoolId: string;
-  schoolParam: string;
 }
 
-const ActivityLogPreview = ({ schoolId, schoolParam }: ActivityLogPreviewProps) => {
+const ActivityLogPreview = ({ schoolId }: ActivityLogPreviewProps) => {
   const [allFetched, setAllFetched] = useState<ActivityInterface[]>([]);
   const [loading, setLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
@@ -114,7 +113,7 @@ const ActivityLogPreview = ({ schoolId, schoolParam }: ActivityLogPreviewProps) 
           <p className="text-sm text-gray-600 mt-0.5">Overview of recent school activity</p>
         </div>
         <Button variant="outline" size="sm" asChild>
-          <Link to={`/admin/activity${schoolParam}`}>See all activity →</Link>
+          <Link to="/school/activity">See all activity →</Link>
         </Button>
       </CardHeader>
       <CardContent>

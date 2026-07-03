@@ -21,6 +21,11 @@ dist-ssr
 .nitro
 *.local
 
+# Environment files — never commit real secrets (see .env.example)
+.env
+.env.*
+!.env.example
+
 # Wrangler / Cloudflare
 .wrangler/
 .dev.vars

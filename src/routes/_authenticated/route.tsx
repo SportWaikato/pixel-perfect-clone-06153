@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import type { UserInterface } from "@/models/users/interfaces/UserInterface";
+import ConditionalNavigation from "@/modules/application/components/Navigation/ConditionalNavigation";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -27,5 +28,10 @@ export const Route = createFileRoute("/_authenticated")({
       profile: (profile ?? null) as unknown as UserInterface | null,
     };
   },
-  component: () => <Outlet />,
+  component: () => (
+    <>
+      <ConditionalNavigation />
+      <Outlet />
+    </>
+  ),
 });
