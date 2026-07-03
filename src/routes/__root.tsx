@@ -77,44 +77,37 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
+      { title: "Karawhiua — Virtual Sports Day" },
       {
         name: "description",
         content:
-          "Pixel Perfect Replica creates an exact replica of a given screenshot, implementing only the visual elements and functionality present.",
+          "Karawhiua Virtual Sports Day — Sport Waikato's school physical activity competition. Log activities, earn points for your house, and climb the leaderboard.",
       },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
+      { name: "author", content: "Sport Waikato" },
+      { name: "theme-color", content: "#0a4b39" },
+      { property: "og:title", content: "Karawhiua — Virtual Sports Day" },
       {
         property: "og:description",
         content:
-          "Pixel Perfect Replica creates an exact replica of a given screenshot, implementing only the visual elements and functionality present.",
+          "Sport Waikato's school physical activity competition. Log activities, earn points for your house, and climb the leaderboard.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: "/KarawhiuaLogo.png" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "Lovable App" },
+      { name: "twitter:title", content: "Karawhiua — Virtual Sports Day" },
       {
         name: "twitter:description",
         content:
-          "Pixel Perfect Replica creates an exact replica of a given screenshot, implementing only the visual elements and functionality present.",
+          "Sport Waikato's school physical activity competition. Log activities, earn points for your house, and climb the leaderboard.",
       },
-      {
-        property: "og:image",
-        content:
-          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9e8be425-bab4-46c5-9d50-d48336a19f8b/id-preview-aba96f07--a2c27a3f-fdfa-4e45-bc76-540843c4a7b5.lovable.app-1782977064917.png",
-      },
-      {
-        name: "twitter:image",
-        content:
-          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9e8be425-bab4-46c5-9d50-d48336a19f8b/id-preview-aba96f07--a2c27a3f-fdfa-4e45-bc76-540843c4a7b5.lovable.app-1782977064917.png",
-      },
+      { name: "twitter:image", content: "/KarawhiuaLogo.png" },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
       },
+      { rel: "icon", type: "image/png", href: "/KarawhiuaLogo.png" },
     ],
   }),
   shellComponent: RootShell,
