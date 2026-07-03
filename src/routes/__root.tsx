@@ -85,6 +85,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { name: "author", content: "Sport Waikato" },
       { name: "theme-color", content: "#0a4b39" },
+      // iOS home-screen behavior — Safari ignores most of the manifest
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "default" },
+      { name: "apple-mobile-web-app-title", content: "Karawhiua" },
       { property: "og:title", content: "Karawhiua — Virtual Sports Day" },
       {
         property: "og:description",
@@ -108,6 +113,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: appCss,
       },
       { rel: "icon", type: "image/png", href: "/KarawhiuaLogo.png" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "apple-touch-icon", href: "/icons/apple-touch-icon.png" },
     ],
   }),
   shellComponent: RootShell,
@@ -149,6 +156,15 @@ function RootComponent() {
       unsub?.();
     };
   }, [queryClient, router]);
+
+  useEffect(() => {
+    if (import.meta.env.DEV) return; // avoid stale caches fighting HMR in dev
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch((err) => {
+        console.error("Service worker registration failed:", err);
+      });
+    }
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
