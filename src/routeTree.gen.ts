@@ -17,6 +17,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as JoinCodeRouteImport } from './routes/join.$code'
+import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as AuthenticatedSurveyRouteImport } from './routes/_authenticated/survey'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
@@ -29,6 +30,7 @@ import { Route as AuthenticatedActivitiesRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAchievementsRouteImport } from './routes/_authenticated/achievements'
 import { Route as AuthenticatedSuperadminRouteImport } from './routes/_authenticated/_superadmin'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/_admin'
+import { Route as SchoolsSchoolIdSignupRouteImport } from './routes/schools.$schoolId.signup'
 import { Route as AuthenticatedEventsIdRouteImport } from './routes/_authenticated/events.$id'
 import { Route as AuthenticatedChallengesMySuggestionsRouteImport } from './routes/_authenticated/challenges.my-suggestions'
 import { Route as AuthenticatedSuperadminAdminRouteImport } from './routes/_authenticated/_superadmin/admin'
@@ -99,6 +101,11 @@ const JoinCodeRoute = JoinCodeRouteImport.update({
   path: '/join/$code',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InviteTokenRoute = InviteTokenRouteImport.update({
+  id: '/invite/$token',
+  path: '/invite/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthCallbackRoute = AuthCallbackRouteImport.update({
   id: '/callback',
   path: '/callback',
@@ -158,6 +165,11 @@ const AuthenticatedSuperadminRoute = AuthenticatedSuperadminRouteImport.update({
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/_admin',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const SchoolsSchoolIdSignupRoute = SchoolsSchoolIdSignupRouteImport.update({
+  id: '/schools/$schoolId/signup',
+  path: '/schools/$schoolId/signup',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedEventsIdRoute = AuthenticatedEventsIdRouteImport.update({
   id: '/$id',
@@ -356,11 +368,13 @@ export interface FileRoutesByFullPath {
   '/profile': typeof AuthenticatedProfileRoute
   '/survey': typeof AuthenticatedSurveyRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/join/$code': typeof JoinCodeRoute
   '/school': typeof AuthenticatedAdminSchoolRouteWithChildren
   '/admin': typeof AuthenticatedSuperadminAdminRouteWithChildren
   '/challenges/my-suggestions': typeof AuthenticatedChallengesMySuggestionsRoute
   '/events/$id': typeof AuthenticatedEventsIdRoute
+  '/schools/$schoolId/signup': typeof SchoolsSchoolIdSignupRoute
   '/school/activity': typeof AuthenticatedAdminSchoolActivityRoute
   '/school/assembly': typeof AuthenticatedAdminSchoolAssemblyRoute
   '/school/events': typeof AuthenticatedAdminSchoolEventsRoute
@@ -405,11 +419,13 @@ export interface FileRoutesByTo {
   '/profile': typeof AuthenticatedProfileRoute
   '/survey': typeof AuthenticatedSurveyRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/join/$code': typeof JoinCodeRoute
   '/school': typeof AuthenticatedAdminSchoolRouteWithChildren
   '/admin': typeof AuthenticatedSuperadminAdminRouteWithChildren
   '/challenges/my-suggestions': typeof AuthenticatedChallengesMySuggestionsRoute
   '/events/$id': typeof AuthenticatedEventsIdRoute
+  '/schools/$schoolId/signup': typeof SchoolsSchoolIdSignupRoute
   '/school/activity': typeof AuthenticatedAdminSchoolActivityRoute
   '/school/assembly': typeof AuthenticatedAdminSchoolAssemblyRoute
   '/school/events': typeof AuthenticatedAdminSchoolEventsRoute
@@ -458,11 +474,13 @@ export interface FileRoutesById {
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/survey': typeof AuthenticatedSurveyRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/join/$code': typeof JoinCodeRoute
   '/_authenticated/_admin/school': typeof AuthenticatedAdminSchoolRouteWithChildren
   '/_authenticated/_superadmin/admin': typeof AuthenticatedSuperadminAdminRouteWithChildren
   '/_authenticated/challenges/my-suggestions': typeof AuthenticatedChallengesMySuggestionsRoute
   '/_authenticated/events/$id': typeof AuthenticatedEventsIdRoute
+  '/schools/$schoolId/signup': typeof SchoolsSchoolIdSignupRoute
   '/_authenticated/_admin/school/activity': typeof AuthenticatedAdminSchoolActivityRoute
   '/_authenticated/_admin/school/assembly': typeof AuthenticatedAdminSchoolAssemblyRoute
   '/_authenticated/_admin/school/events': typeof AuthenticatedAdminSchoolEventsRoute
@@ -509,11 +527,13 @@ export interface FileRouteTypes {
     | '/profile'
     | '/survey'
     | '/auth/callback'
+    | '/invite/$token'
     | '/join/$code'
     | '/school'
     | '/admin'
     | '/challenges/my-suggestions'
     | '/events/$id'
+    | '/schools/$schoolId/signup'
     | '/school/activity'
     | '/school/assembly'
     | '/school/events'
@@ -558,11 +578,13 @@ export interface FileRouteTypes {
     | '/profile'
     | '/survey'
     | '/auth/callback'
+    | '/invite/$token'
     | '/join/$code'
     | '/school'
     | '/admin'
     | '/challenges/my-suggestions'
     | '/events/$id'
+    | '/schools/$schoolId/signup'
     | '/school/activity'
     | '/school/assembly'
     | '/school/events'
@@ -610,11 +632,13 @@ export interface FileRouteTypes {
     | '/_authenticated/profile'
     | '/_authenticated/survey'
     | '/auth/callback'
+    | '/invite/$token'
     | '/join/$code'
     | '/_authenticated/_admin/school'
     | '/_authenticated/_superadmin/admin'
     | '/_authenticated/challenges/my-suggestions'
     | '/_authenticated/events/$id'
+    | '/schools/$schoolId/signup'
     | '/_authenticated/_admin/school/activity'
     | '/_authenticated/_admin/school/assembly'
     | '/_authenticated/_admin/school/events'
@@ -651,7 +675,9 @@ export interface RootRouteChildren {
   OnboardingRoute: typeof OnboardingRoute
   RegisterSchoolRoute: typeof RegisterSchoolRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  InviteTokenRoute: typeof InviteTokenRoute
   JoinCodeRoute: typeof JoinCodeRoute
+  SchoolsSchoolIdSignupRoute: typeof SchoolsSchoolIdSignupRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -710,6 +736,13 @@ declare module '@tanstack/react-router' {
       path: '/join/$code'
       fullPath: '/join/$code'
       preLoaderRoute: typeof JoinCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/invite/$token': {
+      id: '/invite/$token'
+      path: '/invite/$token'
+      fullPath: '/invite/$token'
+      preLoaderRoute: typeof InviteTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/callback': {
@@ -795,6 +828,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/schools/$schoolId/signup': {
+      id: '/schools/$schoolId/signup'
+      path: '/schools/$schoolId/signup'
+      fullPath: '/schools/$schoolId/signup'
+      preLoaderRoute: typeof SchoolsSchoolIdSignupRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/events/$id': {
       id: '/_authenticated/events/$id'
@@ -1208,7 +1248,9 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingRoute: OnboardingRoute,
   RegisterSchoolRoute: RegisterSchoolRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  InviteTokenRoute: InviteTokenRoute,
   JoinCodeRoute: JoinCodeRoute,
+  SchoolsSchoolIdSignupRoute: SchoolsSchoolIdSignupRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

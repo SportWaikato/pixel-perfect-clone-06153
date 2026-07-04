@@ -32,13 +32,22 @@ Fixed this session (all 🟡 until click-verified against live Supabase):
   `docs/SUPABASE_RUNBOOK.md`): same-school users SELECT scoping + tightened
   `school-updates` storage bucket writes.
 
+Build session 3 additions:
+- `/schools/$schoolId/signup` built (public, uses the previously-orphaned
+  SchoolSpecificSignUpForm + new `getSchoolForSignup` server fn) — the QR/copy
+  links from the school-admin dashboard now resolve. 🟡 happy path needs live
+  Supabase.
+- `/invite/$token` built (public, uses the previously-orphaned
+  InviteRegistrationForm + anon `get_super_admin_invite` RPC) — super-admin
+  invite emails now resolve. Handles invalid/expired/used tokens. 🟡
+- **NEW CRITICAL migration staged**: `20260704090000_guard_role_on_self_insert`
+  — client-side profile creation meant any auth user could self-INSERT
+  role='super_admin' (UPDATE trigger didn't cover INSERT). Apply via runbook.
+
 New flags:
 - `public/badges/Unlocked-Technology-logging-VR-Gamefit.png` is a 0-byte file
   and `Unlocked-Technology-logging-VR` (no extension) is undecodable — both
   left in place; confirm delete/replace.
-- SchoolAdminDashboard generates sign-up URLs at `/schools/$id/signup` — no
-  such route exists (relates to orphaned `SchoolSpecificSignUpForm`). QR code
-  and copy-link features produce dead URLs. ⬜ build or repoint.
 - Hydration warning re-check on `/` still blocked (live URL unreachable from
   sandbox).
 - Schema reconciliation (drifted tables/RPCs) requires `supabase db pull` by a

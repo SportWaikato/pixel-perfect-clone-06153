@@ -13,6 +13,12 @@ paste and run, in order:
    — stops any signed-in student enumerating every child on the platform.
 2. `supabase/migrations/20260703130500_tighten_school_updates_storage.sql`
    — stops students uploading/deleting school-update images.
+3. `supabase/migrations/20260704090000_guard_role_on_self_insert.sql`
+   — blocks privilege escalation: profile creation is client-side, and the
+   existing trigger only guards UPDATEs, so any auth user without a profile
+   could INSERT themselves role='super_admin' (or school_admin of any school).
+   After applying, re-test all three registration flows: student onboarding,
+   /register-school, and /invite/<token> — the trigger allows each legit path.
 
 Then sanity-check as a **student** account (SQL editor → run as... or just use
 the app): the leaderboard and dashboard should still load (they use
