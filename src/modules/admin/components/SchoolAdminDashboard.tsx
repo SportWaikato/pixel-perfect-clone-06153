@@ -391,7 +391,7 @@ const SchoolAdminDashboard = ({
               <div className="text-2xl font-bold">{stats.messageCount}</div>
               <p className="text-xs text-muted-foreground">Unread messages</p>
             </div>
-            <Button asChild className="w-full mt-4" style={{ backgroundColor: "#0B4B39" }}>
+            <Button asChild className="w-full mt-4" style={{ backgroundColor: "var(--brand-primary-green)" }}>
               <Link to="/school/updates">Manage messages</Link>
             </Button>
           </CardContent>

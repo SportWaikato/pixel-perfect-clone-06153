@@ -28,7 +28,7 @@ export const sendStudentWelcomeEmail = createServerFn({ method: "POST" })
     }
 
     let houseName = "";
-    let houseColour = "#0A4B39";
+    let houseColour = "#1B5E4B";
     if (profile.house_id) {
       const { data: house } = await context.supabase
         .from("houses")

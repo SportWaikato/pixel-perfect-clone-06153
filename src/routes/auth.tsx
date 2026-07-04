@@ -46,14 +46,11 @@ function validateRedirect(redirect: string | undefined): string | undefined {
 export const Route = createFileRoute("/auth")({
   ssr: false,
   validateSearch: (search: Record<string, unknown>): SearchParams => ({
-    // Only allow same-app paths ("/x" but not "//host" or full URLs) so the
-    // redirect param can't send users off-site after sign-in.
-    redirect:
-      typeof search.redirect === "string" &&
-      search.redirect.startsWith("/") &&
-      !search.redirect.startsWith("//")
-        ? search.redirect
-        : undefined,
+    // Allowlist of same-app destinations so the redirect param can't send
+    // users off-site (or to arbitrary internal states) after sign-in.
+    redirect: validateRedirect(
+      typeof search.redirect === "string" ? search.redirect : undefined,
+    ),
   }),
   head: () => ({
     meta: [
@@ -138,7 +135,7 @@ function AuthPage() {
             <GoogleButton />
 
             <p className="mt-4 text-center text-xs text-muted-foreground">
-              <Link to="/forgot-password" className="underline">
+              <Link to="/forgot-password" className="inline-block py-4 underline">
                 Forgot your password?
               </Link>
             </p>
