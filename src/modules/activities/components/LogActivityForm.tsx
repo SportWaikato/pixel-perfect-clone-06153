@@ -27,10 +27,11 @@ import {
 } from "@/models/application/constants/applicationConstants";
 import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
 import { ActivityService } from "@/models/activities/services/ActivityService";
+import { StorageService } from "@/models/storage/services/StorageService";
 import { EventService } from "@/models/events/services/EventService";
 import { toast } from "sonner";
 import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
-import { Plus, Minus, User, Users, Zap } from "lucide-react";
+import { Plus, Minus, User, Users, Zap, Camera, X } from "lucide-react";
 import { FEELING_MAPPINGS } from "@/modules/activities/utils/activityIcons";
 import { subDays } from "date-fns";
 import { formatEventDate } from "@/modules/common/utils/dateUtils";
@@ -301,6 +302,31 @@ const LogActivityForm = ({
   const searchParams = useSearch({ strict: false });
   const [challenges, setChallenges] = useState<EventInterface[]>([]);
   const [preselectedChallengeId, setPreselectedChallengeId] = useState<string | null>(null);
+  // Proof photo + share-to-feed — parity with the create wizard so editing an
+  // activity doesn't silently drop this capability.
+  const [proofFile, setProofFile] = useState<File | null>(null);
+  const [proofPreview, setProofPreview] = useState<string | null>(
+    editingActivity?.proof_image_url ?? null,
+  );
+  const [proofRemoved, setProofRemoved] = useState(false);
+  const [shareToFeed, setShareToFeed] = useState<boolean>(
+    editingActivity?.is_shared_to_feed ?? false,
+  );
+
+  const handleProofSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setProofFile(file);
+    setProofRemoved(false);
+    setProofPreview(URL.createObjectURL(file));
+  };
+
+  const handleProofRemove = () => {
+    setProofFile(null);
+    setProofPreview(null);
+    setProofRemoved(true);
+    setShareToFeed(false);
+  };
 
   useEffect(() => {
     const loadChallenges = async () => {
@@ -360,6 +386,20 @@ const LogActivityForm = ({
           : null;
 
       if (editingActivity) {
+        // Resolve proof photo: upload a newly-chosen file, clear if removed,
+        // otherwise leave the existing proof untouched.
+        let proofUrl = editingActivity.proof_image_url ?? undefined;
+        let proofPath = editingActivity.proof_image_storage_path ?? undefined;
+        if (proofFile) {
+          const storageService = new StorageService(supabase);
+          const uploaded = await storageService.uploadActivityProofImage(proofFile);
+          proofUrl = uploaded.storage_url;
+          proofPath = uploaded.storage_path;
+        } else if (proofRemoved) {
+          proofUrl = undefined;
+          proofPath = undefined;
+        }
+
         // Update existing activity
         const activityData = {
           activity_type: values.activity_type,
@@ -370,6 +410,9 @@ const LogActivityForm = ({
           description: values.description,
           event_id: values.event_id || null,
           custom_activity_name: customActivityName,
+          proof_image_url: proofUrl ?? null,
+          proof_image_storage_path: proofPath ?? null,
+          is_shared_to_feed: shareToFeed && !!proofUrl,
           created_at:
             values.activity_date !== getNZDateString()
               ? createNZDate(values.activity_date)
@@ -596,6 +639,55 @@ const LogActivityForm = ({
                   placeholder="Add any details about your activity..."
                   rows={3}
                 />
+
+                {/* Proof photo (optional) — parity with the create wizard */}
+                <div className="space-y-2 pt-2">
+                  <p className="text-sm font-medium text-gray-700">Proof (optional)</p>
+                  <p className="text-xs text-gray-400">
+                    Attach a screenshot or photo for context — Strava, gym machine, team practice.
+                  </p>
+                  {proofPreview ? (
+                    <div className="relative inline-block">
+                      <img
+                        src={proofPreview}
+                        alt="Proof preview"
+                        className="w-24 h-24 object-cover rounded-xl border border-gray-200"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleProofRemove}
+                        className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600"
+                      >
+                        <X size={10} />
+                      </button>
+                    </div>
+                  ) : (
+                    <label className="flex items-center gap-2 cursor-pointer text-sm text-[#1B5E4B] font-medium hover:underline w-fit">
+                      <Camera size={16} />
+                      Add proof photo
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/jpg,image/png,image/webp"
+                        className="hidden"
+                        onChange={handleProofSelect}
+                      />
+                    </label>
+                  )}
+                </div>
+
+                {proofPreview && (
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={shareToFeed}
+                      onChange={(e) => setShareToFeed(e.target.checked)}
+                      className="w-4 h-4 rounded border-gray-300 text-[#D103D1] focus:ring-[#D103D1]"
+                    />
+                    <span className="text-sm text-gray-600">
+                      Share to school feed (requires admin approval)
+                    </span>
+                  </label>
+                )}
 
                 <div className="flex gap-4 pt-4">
                   <Button

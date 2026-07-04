@@ -9,7 +9,8 @@ type Slide =
   | "house-badges"
   | "house-stats"
   | "school-leaderboard"
-  | "winners-gallery";
+  | "winners-gallery"
+  | "school-feed";
 
 interface AssemblyMenuProps {
   onSelect: (slide: Slide) => void;
@@ -66,12 +67,17 @@ const cards = [
     subtitle: "Past spot prize winners",
     icon: "/assembly/top-score-by-houseicon.svg",
   },
+  {
+    id: "school-feed" as Slide,
+    title: "SCHOOL FEED",
+    subtitle: "This week's top moments",
+    icon: "/assembly/school-feed-icon.svg",
+  },
 ];
 
 const AssemblyMenu = ({ onSelect, isFullscreen, schoolId }: AssemblyMenuProps) => {
   const router = useRouter();
   const navigate = useNavigate();
-
 
   return (
     <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-8 py-12">
