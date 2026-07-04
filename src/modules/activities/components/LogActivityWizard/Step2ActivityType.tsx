@@ -11,7 +11,7 @@ import {
 } from "@/modules/application/components/DesignSystem/ui/select";
 import { Input } from "@/modules/application/components/DesignSystem/ui/input";
 
-const FEATURED_TYPES = ["run_jog", "bike_cycle", "walk_hike", "scooter_skate"] as const;
+const FEATURED_TYPES = ["run_jog", "bike_cycle", "walk_hike", "skating"] as const;
 
 interface Step2ActivityTypeProps {
   data: WizardState;
@@ -53,7 +53,7 @@ const Step2ActivityType = ({ data, challenges, onChange }: Step2ActivityTypeProp
               className="w-12 h-12 rounded-xl flex items-center justify-center bg-[#1B5E4B]/10"
               style={{ color: "#1B5E4B" }}
             >
-              {getActivityIcon(lockedType, 22)}
+              {getActivityIcon(lockedType, 38)}
             </div>
             <div>
               <p className="font-semibold text-gray-800">
@@ -84,7 +84,7 @@ const Step2ActivityType = ({ data, challenges, onChange }: Step2ActivityTypeProp
                     className="w-12 h-12 rounded-xl flex items-center justify-center"
                     style={{ backgroundColor: `${color}18`, color }}
                   >
-                    {getActivityIcon(type, 22)}
+                    {getActivityIcon(type, 38)}
                   </div>
                   <span className="text-sm font-medium text-gray-800">
                     {ACTIVITY_TYPES[type as keyof typeof ACTIVITY_TYPES]}

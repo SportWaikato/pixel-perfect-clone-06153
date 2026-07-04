@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" fill="none">
+  <!-- placeholder flat glyph; re-commission in the illustrated style of the PNG set -->
+  <g stroke="#1B5E4B" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M78 196 L150 196"/>            <!-- deck -->
+    <path d="M150 196 L196 70"/>            <!-- stem -->
+    <path d="M170 70 L216 70"/>             <!-- handlebar -->
+  </g>
+  <g fill="#E019C3">
+    <circle cx="62" cy="196" r="26" fill="none" stroke="#E019C3" stroke-width="16"/>
+    <circle cx="166" cy="196" r="26" fill="none" stroke="#E019C3" stroke-width="16"/>
+  </g>
+</svg>

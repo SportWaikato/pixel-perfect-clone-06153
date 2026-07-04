@@ -2,6 +2,7 @@ import { UserInterface } from "@/models/users/interfaces/UserInterface";
 import {
   ActivityInterface,
   ACTIVITY_TYPES,
+  ALL_ACTIVITY_TYPE_LABELS,
 } from "@/models/activities/interfaces/ActivityInterface";
 import {
   Card,
@@ -41,7 +42,7 @@ const ActivityHistory = ({
     }
 
     return (
-      ACTIVITY_TYPES[activity.activity_type as keyof typeof ACTIVITY_TYPES] ??
+      ALL_ACTIVITY_TYPE_LABELS[activity.activity_type as keyof typeof ACTIVITY_TYPES] ??
       activity.activity_type.replace("_", " ")
     );
   };
@@ -90,7 +91,7 @@ const ActivityHistory = ({
                     className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                     style={{ backgroundColor: `${color}18`, color }}
                   >
-                    {getActivityIcon(activity.activity_type, 18)}
+                    {getActivityIcon(activity.activity_type, 30)}
                   </div>
 
                   {/* Details */}

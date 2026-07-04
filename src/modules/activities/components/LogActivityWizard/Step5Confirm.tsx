@@ -1,5 +1,8 @@
 import { useState, useRef } from "react";
-import { ACTIVITY_TYPES } from "@/models/activities/interfaces/ActivityInterface";
+import {
+  ACTIVITY_TYPES,
+  ALL_ACTIVITY_TYPE_LABELS,
+} from "@/models/activities/interfaces/ActivityInterface";
 import {
   getActivityIcon,
   getActivityColor,
@@ -40,7 +43,7 @@ const Step5Confirm = ({
   const displayName =
     data.activityType === "something_else" && data.customActivityName
       ? data.customActivityName
-      : (ACTIVITY_TYPES[displayType as keyof typeof ACTIVITY_TYPES] ?? displayType);
+      : (ALL_ACTIVITY_TYPE_LABELS[displayType as keyof typeof ACTIVITY_TYPES] ?? displayType);
 
   const basePoints = data.durationMinutes;
   const pointsEarned = (() => {
@@ -83,7 +86,7 @@ const Step5Confirm = ({
             className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
             style={{ backgroundColor: `${iconColor}18`, color: iconColor }}
           >
-            {getActivityIcon(displayType, 22)}
+            {getActivityIcon(displayType, 38)}
           </div>
           <div className="flex-1 min-w-0">
             <p className="font-bold text-gray-800 truncate">{displayName}</p>

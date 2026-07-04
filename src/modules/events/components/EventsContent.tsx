@@ -205,7 +205,7 @@ const EventsContent = ({
                       className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
                       style={{ backgroundColor: `${color}18`, color }}
                     >
-                      {getActivityIcon(iconType, 22)}
+                      {getActivityIcon(iconType, 30)}
                     </div>
                     <div className="flex-1 min-w-0 flex flex-col gap-2">
                       <div className="flex items-center gap-2">
@@ -307,7 +307,7 @@ const EventsContent = ({
                       className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
                       style={{ backgroundColor: `${color}18`, color }}
                     >
-                      {getActivityIcon(iconType, 22)}
+                      {getActivityIcon(iconType, 30)}
                     </div>
                     <div className="flex-1 min-w-0 flex flex-col gap-2">
                       <div className="flex items-center gap-2">

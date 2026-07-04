@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" fill="none">
+  <!-- placeholder flat glyph; re-commission in the illustrated style of the PNG set -->
+  <g stroke="#1B5E4B" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M40 150 L216 150" fill="none"/>
+    <path d="M40 150 q-14 0 -14 -14 M216 150 q14 0 14 -14" fill="none"/>
+  </g>
+  <g fill="#E019C3">
+    <circle cx="78" cy="196" r="20"/>
+    <circle cx="178" cy="196" r="20"/>
+  </g>
+  <g stroke="#1B5E4B" stroke-width="10" stroke-linecap="round">
+    <path d="M78 172 L78 158 M178 172 L178 158"/>
+  </g>
+</svg>

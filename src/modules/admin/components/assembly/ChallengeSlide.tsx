@@ -47,7 +47,7 @@ const ChallengeSlide = ({ assemblyEvent, onBack }: ChallengeSlideProps) => {
             className="rounded-2xl bg-white px-10 py-10 text-center shadow-2xl"
           >
             <div className="mb-5 flex justify-center">
-              {getActivityIcon(resolveEventIconType(assemblyEvent), 80)}
+              {getActivityIcon(resolveEventIconType(assemblyEvent), 112)}
             </div>
             <h3 className="text-3xl font-extrabold text-gray-900">{assemblyEvent.name}</h3>
 

@@ -33,7 +33,10 @@ import { toast } from "sonner";
 import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
 import YouTubeVideoEmbed from "./YouTubeVideoEmbed";
 import { getActivityIcon, getActivityColor } from "@/modules/activities/utils/activityIcons";
-import { ACTIVITY_TYPES } from "@/models/activities/interfaces/ActivityInterface";
+import {
+  ACTIVITY_TYPES,
+  ALL_ACTIVITY_TYPE_LABELS,
+} from "@/models/activities/interfaces/ActivityInterface";
 
 interface IndividualEventContentProps {
   user: UserInterface;
@@ -429,8 +432,9 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
                 const displayName =
                   activity.activity_type === "something_else" && activity.custom_activity_name
                     ? activity.custom_activity_name
-                    : (ACTIVITY_TYPES[activity.activity_type as keyof typeof ACTIVITY_TYPES] ??
-                      activity.activity_type.replace(/_/g, " "));
+                    : (ALL_ACTIVITY_TYPE_LABELS[
+                        activity.activity_type as keyof typeof ACTIVITY_TYPES
+                      ] ?? activity.activity_type.replace(/_/g, " "));
                 return (
                   <div
                     key={activity.id}
@@ -440,7 +444,7 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
                       className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                       style={{ backgroundColor: `${color}18`, color }}
                     >
-                      {getActivityIcon(activity.activity_type, 18)}
+                      {getActivityIcon(activity.activity_type, 30)}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-gray-800 truncate">{displayName}</p>

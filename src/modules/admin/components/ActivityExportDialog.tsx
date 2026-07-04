@@ -22,7 +22,10 @@ import { Download, Calendar, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
 import { format, startOfMonth, endOfMonth, subMonths } from "date-fns";
-import { ACTIVITY_TYPES } from "@/models/activities/interfaces/ActivityInterface";
+import {
+  ACTIVITY_TYPES,
+  ALL_ACTIVITY_TYPE_LABELS,
+} from "@/models/activities/interfaces/ActivityInterface";
 
 interface ActivityExportDialogProps {
   isOpen: boolean;
@@ -104,7 +107,7 @@ const ActivityExportDialog = ({ isOpen, onClose }: ActivityExportDialogProps) =>
     const rows = activities.map((activity) => {
       const dateTime = new Date(activity.created_at);
       const activityTypeName =
-        ACTIVITY_TYPES[activity.activity_type as keyof typeof ACTIVITY_TYPES] ||
+        ALL_ACTIVITY_TYPE_LABELS[activity.activity_type as keyof typeof ACTIVITY_TYPES] ||
         activity.activity_type;
 
       return [
