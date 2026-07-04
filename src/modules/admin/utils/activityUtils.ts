@@ -1,6 +1,7 @@
 import {
   ActivityInterface,
   ACTIVITY_TYPES,
+  ALL_ACTIVITY_TYPE_LABELS,
 } from "@/models/activities/interfaces/ActivityInterface";
 
 export const NZ_TIMEZONE = "Pacific/Auckland";
@@ -13,7 +14,7 @@ export const getActivityDisplayName = (activity: ActivityInterface) => {
     return activity.custom_activity_name;
   }
   return (
-    ACTIVITY_TYPES[activity.activity_type as keyof typeof ACTIVITY_TYPES] ??
+    ALL_ACTIVITY_TYPE_LABELS[activity.activity_type as keyof typeof ACTIVITY_TYPES] ??
     activity.activity_type.replace("_", " ")
   );
 };

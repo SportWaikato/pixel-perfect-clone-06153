@@ -490,7 +490,7 @@ const DashboardContent = ({
                     className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                     style={{ backgroundColor: `${color}18`, color }}
                   >
-                    {getActivityIcon(actType, 18)}
+                    {getActivityIcon(actType, 30)}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-gray-800 capitalize truncate">{displayName}</p>

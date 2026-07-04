@@ -68,7 +68,7 @@ const EventIconPicker = ({ value, onChange }: EventIconPickerProps) => {
                 backgroundColor: isSelected ? `${color}18` : "#f9fafb",
               }}
             >
-              <div style={{ color }}>{getActivityIcon(opt.value, 20)}</div>
+              <div style={{ color }}>{getActivityIcon(opt.value, 28)}</div>
               <span className="text-[9px] text-center leading-tight text-gray-500 line-clamp-2">
                 {opt.label}
               </span>

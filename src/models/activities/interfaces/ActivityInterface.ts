@@ -44,7 +44,8 @@ export const ACTIVITY_TYPES = {
   game_day_competition: "Game Day / Competition",
   solo_sport: "Solo Sport",
   workout_gym: "Gym / Workout",
-  scooter_skate: "Scooter / Skate",
+  skating: "Skating",
+  scootering: "Scootering",
   walk_hike: "Walk / Hike",
   kapa_haka: "Kapa Haka",
   hunting_diving: "Hunting / Diving",
@@ -67,6 +68,23 @@ export const ACTIVITY_TYPES = {
   tramping: "Tramping",
   something_else: "Something else?",
 } as const;
+
+// Retired activity types kept only so historical records still resolve to a
+// friendly label + icon. NOT shown in pickers (see SELECTABLE_ACTIVITY_TYPES).
+// `scooter_skate` was split into `skating` + `scootering` on 2026-07-04; existing
+// rows are intentionally left as-is pending a reviewed reclassification decision.
+export const LEGACY_ACTIVITY_TYPES = {
+  scooter_skate: "Scooter / Skate",
+} as const;
+
+// Label lookup across current + legacy types (use for DISPLAY, not for pickers).
+export const ALL_ACTIVITY_TYPE_LABELS: Record<string, string> = {
+  ...ACTIVITY_TYPES,
+  ...LEGACY_ACTIVITY_TYPES,
+};
+
+// Selectable types for pickers — current types only, legacy excluded.
+export const SELECTABLE_ACTIVITY_TYPES = ACTIVITY_TYPES;
 
 export const INPUT_TYPES = {
   manual: "Manual Entry",

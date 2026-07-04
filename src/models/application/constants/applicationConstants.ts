@@ -20,7 +20,9 @@ export const ACTIVITY_CONVERSION_RATES = {
   team_sport: 0.01, // Same as team_sports
   solo_sport: 0.01, // Same as team_sports
   workout_gym: 0.006, // Same as gym_fitness
-  scooter_skate: 0.012, // Between cycling and running
+  skating: 0.012, // Between cycling and running
+  scootering: 0.012, // Between cycling and running
+  scooter_skate: 0.012, // Legacy — kept so historical records still convert
   walk_hike: 0.0006, // Same as walking
   kapa_haka: 0.008, // Same as dance
   hunting_diving: 0.008, // Similar to swimming

@@ -36,7 +36,9 @@ const glyphSrc: Record<string, string> = {
   team_sport: "/glyphs/Team training.png",
   solo_sport: "/glyphs/Golf.png",
   workout_gym: "/glyphs/Gym_Workout.png",
-  scooter_skate: "/glyphs/Ice Skating.png",
+  skating: "/glyphs/Skateboard.svg",
+  scootering: "/glyphs/Scooter.svg",
+  scooter_skate: "/glyphs/Skateboard.svg", // legacy records — kept resolvable
   kapa_haka: "/glyphs/Kapa Haka.png",
   hunting_diving: "/glyphs/Hunting.png",
   active_games: "/glyphs/Badminton.png",
@@ -127,6 +129,8 @@ export const getActivityColor = (activityType: string) => {
     case "solo_sport":
     case "archery":
       return "#19AA4B";
+    case "skating":
+    case "scootering":
     case "scooter_skate":
     case "ice_skating":
     case "snowboarding":
