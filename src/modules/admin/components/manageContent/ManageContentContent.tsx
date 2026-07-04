@@ -47,7 +47,7 @@ const FileTypeBadge = ({ fileType }: { fileType: string }) => {
       ) : isVideo ? (
         <Video size={10} />
       ) : isImage ? (
-        <img />
+        <Image size={10} />
       ) : (
         <FileText size={10} />
       )}

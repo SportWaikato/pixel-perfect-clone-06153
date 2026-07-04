@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/modules/application/components/DesignSystem/ui/button";
 import { Sparkles, Loader2, X, Check } from "lucide-react";
 import { toast } from "sonner";
-import { AIImageService } from "@/models/ai/services/AIImageService";
+import { generateBadgeImage } from "@/lib/ai.functions";
 import { StorageService } from "@/models/storage/services/StorageService";
 import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
 
@@ -41,16 +41,23 @@ const AIBadgeGenerator = ({
     setUploaded(false);
 
     try {
-      const aiService = new AIImageService();
-      const result = await aiService.generateBadge(
-        badgeName.trim(),
-        badgeDescription?.trim(),
-        iconContext?.trim(),
-      );
+      // Generation happens server-side so the Gemini key never ships to the browser.
+      const result = await generateBadgeImage({
+        data: {
+          badgeName: badgeName.trim(),
+          badgeDescription: badgeDescription?.trim(),
+          iconContext: iconContext?.trim(),
+        },
+      });
 
-      const url = URL.createObjectURL(result.imageBlob);
+      const byteChars = atob(result.base64);
+      const bytes = new Uint8Array(byteChars.length);
+      for (let i = 0; i < byteChars.length; i++) bytes[i] = byteChars.charCodeAt(i);
+      const imageBlob = new Blob([bytes], { type: result.mimeType });
+
+      const url = URL.createObjectURL(imageBlob);
       setPreviewUrl(url);
-      setGeneratedBlob(result.imageBlob);
+      setGeneratedBlob(imageBlob);
       toast.success("Badge generated! Review it and click Upload to save.");
     } catch (error) {
       const message = error instanceof Error ? error.message : "Failed to generate badge";

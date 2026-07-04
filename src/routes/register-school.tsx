@@ -362,8 +362,16 @@ function RegisterSchoolPage() {
         .single();
 
       if (schoolError) {
-        // User cleanup is handled server-side by the registration function.
-        // Browser client does not have admin privileges for auth.admin operations.
+        if (authMethod !== "google") {
+          // Roll back the just-created auth account via the server (the browser
+          // client has no auth.admin privileges).
+          try {
+            const { cleanupOwnFailedRegistration } = await import("@/lib/registration.functions");
+            await cleanupOwnFailedRegistration();
+          } catch {
+            /* best-effort cleanup */
+          }
+        }
         throw schoolError;
       }
 
@@ -384,8 +392,14 @@ function RegisterSchoolPage() {
         } catch {
           /* best-effort cleanup */
         }
-        // User/auth cleanup is handled server-side by the registration function.
-        // Browser client does not have admin privileges for auth.admin operations.
+        if (authMethod !== "google") {
+          try {
+            const { cleanupOwnFailedRegistration } = await import("@/lib/registration.functions");
+            await cleanupOwnFailedRegistration();
+          } catch {
+            /* best-effort cleanup */
+          }
+        }
         throw housesError;
       }
 

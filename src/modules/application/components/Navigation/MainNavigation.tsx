@@ -206,7 +206,7 @@ const MainNavigation = () => {
           <div className="hidden lg:flex items-center gap-1 overflow-x-auto scrollbar-hide">
             {navItems.map((item) => {
               const IconComponent = item.icon;
-              const isSchoolDashboard = pathname === "/admin" && !!searchParams.get("schoolId");
+              const isSchoolDashboard = pathname === "/admin" && !!(searchParams as { schoolId?: string }).schoolId;
               const isActive =
                 pathname === item.href || (item.href === "/admin/schools" && isSchoolDashboard);
 
@@ -306,7 +306,7 @@ const MainNavigation = () => {
           <div className="space-y-1">
             {navItems.map((item) => {
               const IconComponent = item.icon;
-              const isSchoolDashboard = pathname === "/admin" && !!searchParams.get("schoolId");
+              const isSchoolDashboard = pathname === "/admin" && !!(searchParams as { schoolId?: string }).schoolId;
               const isActive =
                 pathname === item.href || (item.href === "/admin/schools" && isSchoolDashboard);
 

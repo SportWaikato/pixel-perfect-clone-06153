@@ -235,16 +235,22 @@ const SchoolAdminDashboard = ({
     );
   }
 
-  const schoolParam = viewingSchoolId ? `?schoolId=${viewingSchoolId}` : "";
+  const isSuperAdmin = user.role === "super_admin";
   const quickActions = [
-    {
-      title: "Manage Houses",
-      description: "Add and edit house teams",
-      href: `/admin/houses${schoolParam}`,
-      icon: Crown,
-      color: "bg-purple-500",
-      badge: 0,
-    },
+    // Houses management only exists as a super-admin page; hide it for school
+    // admins rather than bouncing them off the _superadmin route gate.
+    ...(isSuperAdmin
+      ? [
+          {
+            title: "Manage Houses",
+            description: "Add and edit house teams",
+            href: "/admin/houses",
+            icon: Crown,
+            color: "bg-purple-500",
+            badge: 0,
+          },
+        ]
+      : []),
     {
       title: "Manage Challenges",
       description: "Review pending challenges",
@@ -385,7 +391,7 @@ const SchoolAdminDashboard = ({
               <div className="text-2xl font-bold">{stats.messageCount}</div>
               <p className="text-xs text-muted-foreground">Unread messages</p>
             </div>
-            <Button asChild className="w-full mt-4" style={{ backgroundColor: "#0B4B39" }}>
+            <Button asChild className="w-full mt-4" style={{ backgroundColor: "var(--brand-primary-green)" }}>
               <Link to="/school/updates">Manage messages</Link>
             </Button>
           </CardContent>
@@ -525,27 +531,31 @@ const SchoolAdminDashboard = ({
       {/* Recent Activity Preview */}
       <ActivityLogPreview schoolId={schoolId} />
 
-      {/* Registration method */}
-      <Card className={isAllowList ? "border-green-100" : "border-red-100"}>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0">
-          <div className="flex items-center gap-3">
-            <div
-              className={`p-2 rounded-lg text-white ${isAllowList ? "bg-green-600" : "bg-red-500"}`}
-            >
-              <ShieldAlert size={18} />
+      {/* Registration method — allowlist management only exists as a super-admin
+          page; hide the card for school admins rather than bouncing them off
+          the _superadmin route gate. */}
+      {isSuperAdmin && (
+        <Card className={isAllowList ? "border-green-100" : "border-red-100"}>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <div className="flex items-center gap-3">
+              <div
+                className={`p-2 rounded-lg text-white ${isAllowList ? "bg-green-600" : "bg-red-500"}`}
+              >
+                <ShieldAlert size={18} />
+              </div>
+              <div>
+                <CardTitle>{isAllowList ? "Allow List" : "Block List"}</CardTitle>
+                <p className="text-sm text-gray-600 mt-0.5">Control which students can register</p>
+              </div>
             </div>
-            <div>
-              <CardTitle>{isAllowList ? "Allow List" : "Block List"}</CardTitle>
-              <p className="text-sm text-gray-600 mt-0.5">Control which students can register</p>
-            </div>
-          </div>
-          <Button asChild style={{ backgroundColor: "#1B5E4B" }}>
-            <Link to={`/admin/allowlist${schoolParam}`}>
-              {isAllowList ? "Manage Allow List" : "Manage Block List"}
-            </Link>
-          </Button>
-        </CardHeader>
-      </Card>
+            <Button asChild style={{ backgroundColor: "var(--brand-primary-green)" }}>
+              <Link to="/admin/allowlist">
+                {isAllowList ? "Manage Allow List" : "Manage Block List"}
+              </Link>
+            </Button>
+          </CardHeader>
+        </Card>
+      )}
     </div>
   );
 };

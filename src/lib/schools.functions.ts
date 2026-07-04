@@ -19,6 +19,31 @@ export const listSchools = createServerFn({ method: "GET" }).handler(async () =>
   return (data ?? []).filter((s) => !s.is_internal);
 });
 
+// School lookup for the public /schools/$schoolId/signup page. Uses the admin
+// client because column-level grants (migration 20260702234408) hide
+// email_domain from anon — the signup form needs it to validate the student's
+// email. Exposure is deliberately limited: single active school by exact UUID,
+// five fields, nothing enumerable.
+export const getSchoolForSignup = createServerFn({ method: "GET" })
+  .inputValidator((input: unknown) => {
+    const { schoolId } = input as { schoolId: string };
+    if (typeof schoolId !== "string" || !/^[0-9a-f-]{36}$/i.test(schoolId)) {
+      throw new Error("Invalid school id");
+    }
+    return { schoolId };
+  })
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: school, error } = await supabaseAdmin
+      .from("schools")
+      .select("id, name, code, is_active, email_domain, secondary_email_domain")
+      .eq("id", data.schoolId)
+      .eq("is_active", true)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return school;
+  });
+
 export const listHousesBySchool = createServerFn({ method: "GET" })
   .inputValidator((input: unknown) => {
     if (!input || typeof input !== "object" || !("schoolId" in input)) {

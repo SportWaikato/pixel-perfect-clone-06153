@@ -4,6 +4,55 @@ Status date: 2026-07-03. Legend: ✅ verified working · 🟡 renders/compiles b
 unverified (needs live Supabase + test accounts) · 🔴 built but broken · ⬜ not built.
 "Verified" means click-tested in a browser, not code-read.
 
+## Update — build session 2 (2026-07-03, later)
+
+Fixed this session (all 🟡 until click-verified against live Supabase):
+- Registration rollback: real server-side `cleanupOwnFailedRegistration` (the
+  browser can never call `auth.admin`); wired into both failure paths.
+- `/admin` super-admin dashboard wired to real data (was a stub).
+- `/admin/assembly/present` route created — assembly Present flow now resolves;
+  school admins pinned to their own school.
+- `/admin/updates` built (super-admin school updates management).
+- AI badge generation moved into an authed super-admin-only server function
+  (`GOOGLE_AI_API_KEY`, server-side); no code path reads a `VITE_` Gemini key.
+- School-admin dashboard: houses/allowlist cards hidden for school admins
+  (pages only exist under the _superadmin gate — decide later if /school
+  equivalents are wanted).
+- `koorero` duplicate module/model removed (`korero` canonical).
+- Removed the parallel-added vite-plugin-pwa stack (unregistered SW, sw.js
+  collision, cached Supabase responses) — hand-rolled SW stays canonical,
+  rebranded to #1B5E4B, CACHE_VERSION → v2, re-verified offline in Chromium.
+- Canonical green = **#1B5E4B** (set deliberately in styles.css on main);
+  last two stragglers normalized; repo is hex-consistent.
+- Badges: 17.7 MB → 1.5 MB in-place (filenames unchanged — DB references).
+- Tap targets ≥44px on mobile (base button/input/tabs, verified 0 sub-44px
+  on /auth); the two genuinely-missing `alt` cases were `<img />` bugs → now
+  lucide `Image` icons.
+- Two new security migrations staged for YOU to apply (see
+  `docs/SUPABASE_RUNBOOK.md`): same-school users SELECT scoping + tightened
+  `school-updates` storage bucket writes.
+
+Build session 3 additions:
+- `/schools/$schoolId/signup` built (public, uses the previously-orphaned
+  SchoolSpecificSignUpForm + new `getSchoolForSignup` server fn) — the QR/copy
+  links from the school-admin dashboard now resolve. 🟡 happy path needs live
+  Supabase.
+- `/invite/$token` built (public, uses the previously-orphaned
+  InviteRegistrationForm + anon `get_super_admin_invite` RPC) — super-admin
+  invite emails now resolve. Handles invalid/expired/used tokens. 🟡
+- **NEW CRITICAL migration staged**: `20260704090000_guard_role_on_self_insert`
+  — client-side profile creation meant any auth user could self-INSERT
+  role='super_admin' (UPDATE trigger didn't cover INSERT). Apply via runbook.
+
+New flags:
+- `public/badges/Unlocked-Technology-logging-VR-Gamefit.png` is a 0-byte file
+  and `Unlocked-Technology-logging-VR` (no extension) is undecodable — both
+  left in place; confirm delete/replace.
+- Hydration warning re-check on `/` still blocked (live URL unreachable from
+  sandbox).
+- Schema reconciliation (drifted tables/RPCs) requires `supabase db pull` by a
+  project owner — runbook step 2.
+
 Verification blockers for 🟡 items (fix these first):
 1. Sandbox network policy blocks `*.supabase.co` — allow it in the Claude Code environment.
 2. Supabase MCP needs auth: claude.ai connector lacks project access; the project-scoped

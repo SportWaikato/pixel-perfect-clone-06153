@@ -1,6 +1,27 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
+// Rollback for a failed self-registration: deletes the CALLER'S OWN auth
+// account, and only while it has no profile row yet (i.e. genuinely
+// mid-registration). The browser client cannot call auth.admin APIs, so this
+// is the only place that cleanup can actually happen.
+export const cleanupOwnFailedRegistration = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data: profile, error: profileError } = await context.supabase
+      .from("users")
+      .select("id")
+      .eq("id", context.userId)
+      .maybeSingle();
+    if (profileError) throw new Error(profileError.message);
+    if (profile) throw new Error("Account already has a profile — refusing to delete");
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.auth.admin.deleteUser(context.userId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 export const approveSchool = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => {

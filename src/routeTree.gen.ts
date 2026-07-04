@@ -17,6 +17,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as JoinCodeRouteImport } from './routes/join.$code'
+import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as AuthenticatedSurveyRouteImport } from './routes/_authenticated/survey'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
@@ -29,11 +30,13 @@ import { Route as AuthenticatedActivitiesRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAchievementsRouteImport } from './routes/_authenticated/achievements'
 import { Route as AuthenticatedSuperadminRouteImport } from './routes/_authenticated/_superadmin'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/_admin'
+import { Route as SchoolsSchoolIdSignupRouteImport } from './routes/schools.$schoolId.signup'
 import { Route as AuthenticatedEventsIdRouteImport } from './routes/_authenticated/events.$id'
 import { Route as AuthenticatedChallengesMySuggestionsRouteImport } from './routes/_authenticated/challenges.my-suggestions'
 import { Route as AuthenticatedSuperadminAdminRouteImport } from './routes/_authenticated/_superadmin/admin'
 import { Route as AuthenticatedAdminSchoolRouteImport } from './routes/_authenticated/_admin/school'
 import { Route as AuthenticatedSuperadminAdminUsersRouteImport } from './routes/_authenticated/_superadmin/admin.users'
+import { Route as AuthenticatedSuperadminAdminUpdatesRouteImport } from './routes/_authenticated/_superadmin/admin.updates'
 import { Route as AuthenticatedSuperadminAdminSurveysRouteImport } from './routes/_authenticated/_superadmin/admin.surveys'
 import { Route as AuthenticatedSuperadminAdminSettingsRouteImport } from './routes/_authenticated/_superadmin/admin.settings'
 import { Route as AuthenticatedSuperadminAdminSchoolsRouteImport } from './routes/_authenticated/_superadmin/admin.schools'
@@ -57,6 +60,7 @@ import { Route as AuthenticatedAdminSchoolEventsRouteImport } from './routes/_au
 import { Route as AuthenticatedAdminSchoolAssemblyRouteImport } from './routes/_authenticated/_admin/school.assembly'
 import { Route as AuthenticatedAdminSchoolActivityRouteImport } from './routes/_authenticated/_admin/school.activity'
 import { Route as AuthenticatedSuperadminAdminSchoolsPendingRouteImport } from './routes/_authenticated/_superadmin/admin.schools.pending'
+import { Route as AuthenticatedAdminAdminAssemblyPresentRouteImport } from './routes/_authenticated/_admin/admin_.assembly_.present'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -95,6 +99,11 @@ const IndexRoute = IndexRouteImport.update({
 const JoinCodeRoute = JoinCodeRouteImport.update({
   id: '/join/$code',
   path: '/join/$code',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InviteTokenRoute = InviteTokenRouteImport.update({
+  id: '/invite/$token',
+  path: '/invite/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthCallbackRoute = AuthCallbackRouteImport.update({
@@ -157,6 +166,11 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/_admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const SchoolsSchoolIdSignupRoute = SchoolsSchoolIdSignupRouteImport.update({
+  id: '/schools/$schoolId/signup',
+  path: '/schools/$schoolId/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedEventsIdRoute = AuthenticatedEventsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -184,6 +198,12 @@ const AuthenticatedSuperadminAdminUsersRoute =
   AuthenticatedSuperadminAdminUsersRouteImport.update({
     id: '/users',
     path: '/users',
+    getParentRoute: () => AuthenticatedSuperadminAdminRoute,
+  } as any)
+const AuthenticatedSuperadminAdminUpdatesRoute =
+  AuthenticatedSuperadminAdminUpdatesRouteImport.update({
+    id: '/updates',
+    path: '/updates',
     getParentRoute: () => AuthenticatedSuperadminAdminRoute,
   } as any)
 const AuthenticatedSuperadminAdminSurveysRoute =
@@ -324,6 +344,12 @@ const AuthenticatedSuperadminAdminSchoolsPendingRoute =
     path: '/pending',
     getParentRoute: () => AuthenticatedSuperadminAdminSchoolsRoute,
   } as any)
+const AuthenticatedAdminAdminAssemblyPresentRoute =
+  AuthenticatedAdminAdminAssemblyPresentRouteImport.update({
+    id: '/admin_/assembly_/present',
+    path: '/admin/assembly/present',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -342,11 +368,13 @@ export interface FileRoutesByFullPath {
   '/profile': typeof AuthenticatedProfileRoute
   '/survey': typeof AuthenticatedSurveyRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/join/$code': typeof JoinCodeRoute
   '/school': typeof AuthenticatedAdminSchoolRouteWithChildren
   '/admin': typeof AuthenticatedSuperadminAdminRouteWithChildren
   '/challenges/my-suggestions': typeof AuthenticatedChallengesMySuggestionsRoute
   '/events/$id': typeof AuthenticatedEventsIdRoute
+  '/schools/$schoolId/signup': typeof SchoolsSchoolIdSignupRoute
   '/school/activity': typeof AuthenticatedAdminSchoolActivityRoute
   '/school/assembly': typeof AuthenticatedAdminSchoolAssemblyRoute
   '/school/events': typeof AuthenticatedAdminSchoolEventsRoute
@@ -369,7 +397,9 @@ export interface FileRoutesByFullPath {
   '/admin/schools': typeof AuthenticatedSuperadminAdminSchoolsRouteWithChildren
   '/admin/settings': typeof AuthenticatedSuperadminAdminSettingsRoute
   '/admin/surveys': typeof AuthenticatedSuperadminAdminSurveysRoute
+  '/admin/updates': typeof AuthenticatedSuperadminAdminUpdatesRoute
   '/admin/users': typeof AuthenticatedSuperadminAdminUsersRoute
+  '/admin/assembly/present': typeof AuthenticatedAdminAdminAssemblyPresentRoute
   '/admin/schools/pending': typeof AuthenticatedSuperadminAdminSchoolsPendingRoute
 }
 export interface FileRoutesByTo {
@@ -389,11 +419,13 @@ export interface FileRoutesByTo {
   '/profile': typeof AuthenticatedProfileRoute
   '/survey': typeof AuthenticatedSurveyRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/join/$code': typeof JoinCodeRoute
   '/school': typeof AuthenticatedAdminSchoolRouteWithChildren
   '/admin': typeof AuthenticatedSuperadminAdminRouteWithChildren
   '/challenges/my-suggestions': typeof AuthenticatedChallengesMySuggestionsRoute
   '/events/$id': typeof AuthenticatedEventsIdRoute
+  '/schools/$schoolId/signup': typeof SchoolsSchoolIdSignupRoute
   '/school/activity': typeof AuthenticatedAdminSchoolActivityRoute
   '/school/assembly': typeof AuthenticatedAdminSchoolAssemblyRoute
   '/school/events': typeof AuthenticatedAdminSchoolEventsRoute
@@ -416,7 +448,9 @@ export interface FileRoutesByTo {
   '/admin/schools': typeof AuthenticatedSuperadminAdminSchoolsRouteWithChildren
   '/admin/settings': typeof AuthenticatedSuperadminAdminSettingsRoute
   '/admin/surveys': typeof AuthenticatedSuperadminAdminSurveysRoute
+  '/admin/updates': typeof AuthenticatedSuperadminAdminUpdatesRoute
   '/admin/users': typeof AuthenticatedSuperadminAdminUsersRoute
+  '/admin/assembly/present': typeof AuthenticatedAdminAdminAssemblyPresentRoute
   '/admin/schools/pending': typeof AuthenticatedSuperadminAdminSchoolsPendingRoute
 }
 export interface FileRoutesById {
@@ -440,11 +474,13 @@ export interface FileRoutesById {
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/survey': typeof AuthenticatedSurveyRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/join/$code': typeof JoinCodeRoute
   '/_authenticated/_admin/school': typeof AuthenticatedAdminSchoolRouteWithChildren
   '/_authenticated/_superadmin/admin': typeof AuthenticatedSuperadminAdminRouteWithChildren
   '/_authenticated/challenges/my-suggestions': typeof AuthenticatedChallengesMySuggestionsRoute
   '/_authenticated/events/$id': typeof AuthenticatedEventsIdRoute
+  '/schools/$schoolId/signup': typeof SchoolsSchoolIdSignupRoute
   '/_authenticated/_admin/school/activity': typeof AuthenticatedAdminSchoolActivityRoute
   '/_authenticated/_admin/school/assembly': typeof AuthenticatedAdminSchoolAssemblyRoute
   '/_authenticated/_admin/school/events': typeof AuthenticatedAdminSchoolEventsRoute
@@ -467,7 +503,9 @@ export interface FileRoutesById {
   '/_authenticated/_superadmin/admin/schools': typeof AuthenticatedSuperadminAdminSchoolsRouteWithChildren
   '/_authenticated/_superadmin/admin/settings': typeof AuthenticatedSuperadminAdminSettingsRoute
   '/_authenticated/_superadmin/admin/surveys': typeof AuthenticatedSuperadminAdminSurveysRoute
+  '/_authenticated/_superadmin/admin/updates': typeof AuthenticatedSuperadminAdminUpdatesRoute
   '/_authenticated/_superadmin/admin/users': typeof AuthenticatedSuperadminAdminUsersRoute
+  '/_authenticated/_admin/admin_/assembly_/present': typeof AuthenticatedAdminAdminAssemblyPresentRoute
   '/_authenticated/_superadmin/admin/schools/pending': typeof AuthenticatedSuperadminAdminSchoolsPendingRoute
 }
 export interface FileRouteTypes {
@@ -489,11 +527,13 @@ export interface FileRouteTypes {
     | '/profile'
     | '/survey'
     | '/auth/callback'
+    | '/invite/$token'
     | '/join/$code'
     | '/school'
     | '/admin'
     | '/challenges/my-suggestions'
     | '/events/$id'
+    | '/schools/$schoolId/signup'
     | '/school/activity'
     | '/school/assembly'
     | '/school/events'
@@ -516,7 +556,9 @@ export interface FileRouteTypes {
     | '/admin/schools'
     | '/admin/settings'
     | '/admin/surveys'
+    | '/admin/updates'
     | '/admin/users'
+    | '/admin/assembly/present'
     | '/admin/schools/pending'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -536,11 +578,13 @@ export interface FileRouteTypes {
     | '/profile'
     | '/survey'
     | '/auth/callback'
+    | '/invite/$token'
     | '/join/$code'
     | '/school'
     | '/admin'
     | '/challenges/my-suggestions'
     | '/events/$id'
+    | '/schools/$schoolId/signup'
     | '/school/activity'
     | '/school/assembly'
     | '/school/events'
@@ -563,7 +607,9 @@ export interface FileRouteTypes {
     | '/admin/schools'
     | '/admin/settings'
     | '/admin/surveys'
+    | '/admin/updates'
     | '/admin/users'
+    | '/admin/assembly/present'
     | '/admin/schools/pending'
   id:
     | '__root__'
@@ -586,11 +632,13 @@ export interface FileRouteTypes {
     | '/_authenticated/profile'
     | '/_authenticated/survey'
     | '/auth/callback'
+    | '/invite/$token'
     | '/join/$code'
     | '/_authenticated/_admin/school'
     | '/_authenticated/_superadmin/admin'
     | '/_authenticated/challenges/my-suggestions'
     | '/_authenticated/events/$id'
+    | '/schools/$schoolId/signup'
     | '/_authenticated/_admin/school/activity'
     | '/_authenticated/_admin/school/assembly'
     | '/_authenticated/_admin/school/events'
@@ -613,7 +661,9 @@ export interface FileRouteTypes {
     | '/_authenticated/_superadmin/admin/schools'
     | '/_authenticated/_superadmin/admin/settings'
     | '/_authenticated/_superadmin/admin/surveys'
+    | '/_authenticated/_superadmin/admin/updates'
     | '/_authenticated/_superadmin/admin/users'
+    | '/_authenticated/_admin/admin_/assembly_/present'
     | '/_authenticated/_superadmin/admin/schools/pending'
   fileRoutesById: FileRoutesById
 }
@@ -625,7 +675,9 @@ export interface RootRouteChildren {
   OnboardingRoute: typeof OnboardingRoute
   RegisterSchoolRoute: typeof RegisterSchoolRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  InviteTokenRoute: typeof InviteTokenRoute
   JoinCodeRoute: typeof JoinCodeRoute
+  SchoolsSchoolIdSignupRoute: typeof SchoolsSchoolIdSignupRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -684,6 +736,13 @@ declare module '@tanstack/react-router' {
       path: '/join/$code'
       fullPath: '/join/$code'
       preLoaderRoute: typeof JoinCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/invite/$token': {
+      id: '/invite/$token'
+      path: '/invite/$token'
+      fullPath: '/invite/$token'
+      preLoaderRoute: typeof InviteTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/callback': {
@@ -770,6 +829,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/schools/$schoolId/signup': {
+      id: '/schools/$schoolId/signup'
+      path: '/schools/$schoolId/signup'
+      fullPath: '/schools/$schoolId/signup'
+      preLoaderRoute: typeof SchoolsSchoolIdSignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/events/$id': {
       id: '/_authenticated/events/$id'
       path: '/$id'
@@ -803,6 +869,13 @@ declare module '@tanstack/react-router' {
       path: '/users'
       fullPath: '/admin/users'
       preLoaderRoute: typeof AuthenticatedSuperadminAdminUsersRouteImport
+      parentRoute: typeof AuthenticatedSuperadminAdminRoute
+    }
+    '/_authenticated/_superadmin/admin/updates': {
+      id: '/_authenticated/_superadmin/admin/updates'
+      path: '/updates'
+      fullPath: '/admin/updates'
+      preLoaderRoute: typeof AuthenticatedSuperadminAdminUpdatesRouteImport
       parentRoute: typeof AuthenticatedSuperadminAdminRoute
     }
     '/_authenticated/_superadmin/admin/surveys': {
@@ -966,6 +1039,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSuperadminAdminSchoolsPendingRouteImport
       parentRoute: typeof AuthenticatedSuperadminAdminSchoolsRoute
     }
+    '/_authenticated/_admin/admin_/assembly_/present': {
+      id: '/_authenticated/_admin/admin_/assembly_/present'
+      path: '/admin/assembly/present'
+      fullPath: '/admin/assembly/present'
+      preLoaderRoute: typeof AuthenticatedAdminAdminAssemblyPresentRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
 
@@ -1003,10 +1083,13 @@ const AuthenticatedAdminSchoolRouteWithChildren =
 
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminSchoolRoute: typeof AuthenticatedAdminSchoolRouteWithChildren
+  AuthenticatedAdminAdminAssemblyPresentRoute: typeof AuthenticatedAdminAdminAssemblyPresentRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminSchoolRoute: AuthenticatedAdminSchoolRouteWithChildren,
+  AuthenticatedAdminAdminAssemblyPresentRoute:
+    AuthenticatedAdminAdminAssemblyPresentRoute,
 }
 
 const AuthenticatedAdminRouteWithChildren =
@@ -1042,6 +1125,7 @@ interface AuthenticatedSuperadminAdminRouteChildren {
   AuthenticatedSuperadminAdminSchoolsRoute: typeof AuthenticatedSuperadminAdminSchoolsRouteWithChildren
   AuthenticatedSuperadminAdminSettingsRoute: typeof AuthenticatedSuperadminAdminSettingsRoute
   AuthenticatedSuperadminAdminSurveysRoute: typeof AuthenticatedSuperadminAdminSurveysRoute
+  AuthenticatedSuperadminAdminUpdatesRoute: typeof AuthenticatedSuperadminAdminUpdatesRoute
   AuthenticatedSuperadminAdminUsersRoute: typeof AuthenticatedSuperadminAdminUsersRoute
 }
 
@@ -1075,6 +1159,8 @@ const AuthenticatedSuperadminAdminRouteChildren: AuthenticatedSuperadminAdminRou
       AuthenticatedSuperadminAdminSettingsRoute,
     AuthenticatedSuperadminAdminSurveysRoute:
       AuthenticatedSuperadminAdminSurveysRoute,
+    AuthenticatedSuperadminAdminUpdatesRoute:
+      AuthenticatedSuperadminAdminUpdatesRoute,
     AuthenticatedSuperadminAdminUsersRoute:
       AuthenticatedSuperadminAdminUsersRoute,
   }
@@ -1162,7 +1248,9 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingRoute: OnboardingRoute,
   RegisterSchoolRoute: RegisterSchoolRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  InviteTokenRoute: InviteTokenRoute,
   JoinCodeRoute: JoinCodeRoute,
+  SchoolsSchoolIdSignupRoute: SchoolsSchoolIdSignupRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
