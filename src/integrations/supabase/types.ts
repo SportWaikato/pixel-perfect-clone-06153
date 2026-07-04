@@ -1403,6 +1403,8 @@ export type Database = {
           longest_streak_days: number
         }[]
       }
+      current_user_is_super_admin: { Args: never; Returns: boolean }
+      current_user_school_id: { Args: never; Returns: string }
       fix_all_broken_streaks: {
         Args: never
         Returns: {
