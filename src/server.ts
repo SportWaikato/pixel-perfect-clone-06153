@@ -3,6 +3,24 @@ import "./lib/error-capture";
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
 
+const SECURITY_HEADERS: Record<string, string> = {
+  "X-Content-Type-Options": "nosniff",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+  "X-Frame-Options": "DENY",
+};
+
+function applySecurityHeaders(response: Response): Response {
+  if (response.headers.get("content-type")?.includes("text/html") || response.status >= 400) {
+    const headers = new Headers(response.headers);
+    for (const [key, value] of Object.entries(SECURITY_HEADERS)) {
+      if (!headers.has(key)) headers.set(key, value);
+    }
+    return new Response(response.body, { status: response.status, headers });
+  }
+  return response;
+}
+
 type ServerEntry = {
   fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
 };
@@ -42,7 +60,7 @@ export default {
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
-      return await normalizeCatastrophicSsrResponse(response);
+      return applySecurityHeaders(await normalizeCatastrophicSsrResponse(response));
     } catch (error) {
       console.error(error);
       return new Response(renderErrorPage(), {

@@ -16,7 +16,7 @@ import { SuperAdminInviteInterface } from "@/models/invites/interfaces/SuperAdmi
 import {
   createSuperAdminInvite,
   revokeSuperAdminInvite,
-} from "@/modules/admin/actions/createSuperAdminInvite";
+} from "@/lib/invites.functions";
 import { formatDistanceToNow, isPast } from "date-fns";
 
 interface SuperAdminInviteSectionProps {
@@ -48,7 +48,7 @@ const SuperAdminInviteSection = ({ initialInvites }: SuperAdminInviteSectionProp
     setGenerating(true);
     setGeneratedUrl(null);
     try {
-      const { invite, url } = await createSuperAdminInvite(email.trim());
+      const { invite, url } = await createSuperAdminInvite({ data: { email: email.trim() } });
       setInvites((prev) => [invite, ...prev]);
       setGeneratedUrl(url);
       setEmail("");
@@ -74,7 +74,7 @@ const SuperAdminInviteSection = ({ initialInvites }: SuperAdminInviteSectionProp
   const handleRevoke = async (id: string) => {
     setRevoking(id);
     try {
-      await revokeSuperAdminInvite(id);
+      await revokeSuperAdminInvite({ data: { id } });
       setInvites((prev) => prev.filter((i) => i.id !== id));
       toast.success("Invite revoked");
     } catch (error) {

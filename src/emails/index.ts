@@ -1,5 +1,19 @@
 // ─── EMAIL 1: schoolRegistrationPending ─────────────────────────────────────
 
+function escapeHtml(value: unknown): string {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function safeColour(value: string): string {
+  if (/^#[0-9A-Fa-f]{6}$/.test(value)) return value;
+  return "#0A4B39";
+}
+
 export function schoolRegistrationPending(
   firstName: string,
   schoolName: string,
@@ -7,6 +21,11 @@ export function schoolRegistrationPending(
   domain: string,
   houseNames: string,
 ) {
+  const eFirstName = escapeHtml(firstName);
+  const eSchoolName = escapeHtml(schoolName);
+  const eRegion = escapeHtml(region);
+  const eDomain = escapeHtml(domain);
+  const eHouseNames = escapeHtml(houseNames);
   const subject = "Karawhiua - your registration is being reviewed";
   let html = `<!DOCTYPE html>
 <html>
@@ -208,11 +227,11 @@ export function schoolRegistrationPending(
 </body>
 </html>`;
   html = html
-    .replace(/\{\{firstName\}\}/g, firstName)
-    .replace(/\{\{schoolName\}\}/g, schoolName)
-    .replace(/\{\{region\}\}/g, region)
-    .replace(/\{\{domain\}\}/g, domain)
-    .replace(/\{\{houseNames\}\}/g, houseNames);
+    .replace(/\{\{firstName\}\}/g, eFirstName)
+    .replace(/\{\{schoolName\}\}/g, eSchoolName)
+    .replace(/\{\{region\}\}/g, eRegion)
+    .replace(/\{\{domain\}\}/g, eDomain)
+    .replace(/\{\{houseNames\}\}/g, eHouseNames);
   return { subject, html };
 }
 
@@ -224,7 +243,11 @@ export function schoolApproved(
   joinCode: string,
   domain: string,
 ) {
-  const subject = `${schoolName} is approved on Karawhiua`;
+  const eFirstName = escapeHtml(firstName);
+  const eSchoolName = escapeHtml(schoolName);
+  const eJoinCode = escapeHtml(joinCode);
+  const eDomain = escapeHtml(domain);
+  const subject = `${eSchoolName} is approved on Karawhiua`;
   let html = `<!DOCTYPE html>
 <html>
 <head>
@@ -434,16 +457,19 @@ export function schoolApproved(
 </body>
 </html>`;
   html = html
-    .replace(/\{\{firstName\}\}/g, firstName)
-    .replace(/\{\{schoolName\}\}/g, schoolName)
-    .replace(/\{\{joinCode\}\}/g, joinCode)
-    .replace(/\{\{domain\}\}/g, domain);
+    .replace(/\{\{firstName\}\}/g, eFirstName)
+    .replace(/\{\{schoolName\}\}/g, eSchoolName)
+    .replace(/\{\{joinCode\}\}/g, eJoinCode)
+    .replace(/\{\{domain\}\}/g, eDomain);
   return { subject, html };
 }
 
 // ─── EMAIL 3: schoolRejected ────────────────────────────────────────────────
 
 export function schoolRejected(firstName: string, schoolName: string, reason: string) {
+  const eFirstName = escapeHtml(firstName);
+  const eSchoolName = escapeHtml(schoolName);
+  const eReason = escapeHtml(reason);
   const subject = "Karawhiua registration - action needed";
   let html = `<!DOCTYPE html>
 <html>
@@ -561,9 +587,9 @@ export function schoolRejected(firstName: string, schoolName: string, reason: st
 </body>
 </html>`;
   html = html
-    .replace(/\{\{firstName\}\}/g, firstName)
-    .replace(/\{\{schoolName\}\}/g, schoolName)
-    .replace(/\{\{reason\}\}/g, reason);
+    .replace(/\{\{firstName\}\}/g, eFirstName)
+    .replace(/\{\{schoolName\}\}/g, eSchoolName)
+    .replace(/\{\{reason\}\}/g, eReason);
   return { subject, html };
 }
 
@@ -575,7 +601,11 @@ export function studentWelcome(
   houseName: string,
   houseColour: string,
 ) {
-  const subject = `Welcome to Karawhiua, ${firstName}`;
+  const eFirstName = escapeHtml(firstName);
+  const eSchoolName = escapeHtml(schoolName);
+  const eHouseName = escapeHtml(houseName);
+  const safeColourValue = safeColour(houseColour);
+  const subject = `Welcome to Karawhiua, ${eFirstName}`;
   let html = `<!DOCTYPE html>
 <html>
 <head>
@@ -750,9 +780,9 @@ export function studentWelcome(
 </body>
 </html>`;
   html = html
-    .replace(/\{\{firstName\}\}/g, firstName)
-    .replace(/\{\{schoolName\}\}/g, schoolName)
-    .replace(/\{\{houseName\}\}/g, houseName)
-    .replace(/\{\{houseColour\}\}/g, houseColour);
+    .replace(/\{\{firstName\}\}/g, eFirstName)
+    .replace(/\{\{schoolName\}\}/g, eSchoolName)
+    .replace(/\{\{houseName\}\}/g, eHouseName)
+    .replace(/\{\{houseColour\}\}/g, safeColourValue);
   return { subject, html };
 }

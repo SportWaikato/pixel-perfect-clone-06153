@@ -1,6 +1,23 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
+const JOIN_CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const JOIN_CODE_LENGTH = 8;
+
+function generateJoinCode(): string {
+  const bytes = new Uint8Array(JOIN_CODE_LENGTH * 2);
+  let code = "";
+  while (code.length < JOIN_CODE_LENGTH) {
+    crypto.getRandomValues(bytes);
+    for (const byte of bytes) {
+      if (code.length >= JOIN_CODE_LENGTH) break;
+      const max = 256 - (256 % JOIN_CODE_ALPHABET.length);
+      if (byte < max) code += JOIN_CODE_ALPHABET[byte % JOIN_CODE_ALPHABET.length];
+    }
+  }
+  return code;
+}
+
 // Rollback for a failed self-registration: deletes the CALLER'S OWN auth
 // account, and only while it has no profile row yet (i.e. genuinely
 // mid-registration). The browser client cannot call auth.admin APIs, so this
@@ -70,9 +87,7 @@ export const approveSchool = createServerFn({ method: "POST" })
     }
 
     // Generate unique join code
-    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    let joinCode = "";
-    for (let i = 0; i < 8; i++) joinCode += chars[Math.floor(Math.random() * chars.length)];
+    let joinCode = generateJoinCode();
 
     let attempts = 0;
     while (attempts < 10) {
@@ -82,8 +97,7 @@ export const approveSchool = createServerFn({ method: "POST" })
         .eq("join_code", joinCode)
         .maybeSingle();
       if (!existing) break;
-      joinCode = "";
-      for (let i = 0; i < 8; i++) joinCode += chars[Math.floor(Math.random() * chars.length)];
+      joinCode = generateJoinCode();
       attempts++;
     }
 
@@ -205,9 +219,7 @@ export const regenerateJoinCode = createServerFn({ method: "POST" })
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    let joinCode = "";
-    for (let i = 0; i < 8; i++) joinCode += chars[Math.floor(Math.random() * chars.length)];
+    let joinCode = generateJoinCode();
 
     let attempts = 0;
     while (attempts < 10) {
@@ -217,8 +229,7 @@ export const regenerateJoinCode = createServerFn({ method: "POST" })
         .eq("join_code", joinCode)
         .maybeSingle();
       if (!existing) break;
-      joinCode = "";
-      for (let i = 0; i < 8; i++) joinCode += chars[Math.floor(Math.random() * chars.length)];
+      joinCode = generateJoinCode();
       attempts++;
     }
 

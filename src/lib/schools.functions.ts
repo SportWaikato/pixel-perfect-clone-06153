@@ -19,11 +19,8 @@ export const listSchools = createServerFn({ method: "GET" }).handler(async () =>
   return (data ?? []).filter((s) => !s.is_internal);
 });
 
-// School lookup for the public /schools/$schoolId/signup page. Uses the admin
-// client because column-level grants (migration 20260702234408) hide
-// email_domain from anon — the signup form needs it to validate the student's
-// email. Exposure is deliberately limited: single active school by exact UUID,
-// five fields, nothing enumerable.
+// School lookup for the public /schools/$schoolId/signup page. Returns only
+// fields safe for public exposure — email_domain is validated server-side only.
 export const getSchoolForSignup = createServerFn({ method: "GET" })
   .inputValidator((input: unknown) => {
     const { schoolId } = input as { schoolId: string };
@@ -36,7 +33,7 @@ export const getSchoolForSignup = createServerFn({ method: "GET" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: school, error } = await supabaseAdmin
       .from("schools")
-      .select("id, name, code, is_active, email_domain, secondary_email_domain")
+      .select("id, name, code, is_active")
       .eq("id", data.schoolId)
       .eq("is_active", true)
       .maybeSingle();

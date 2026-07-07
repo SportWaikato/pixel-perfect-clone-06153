@@ -22,6 +22,20 @@ const confirmPasswordField = string()
   .oneOf([ref("password")], "Passwords must match")
   .required("Confirm your password");
 
+const adminPasswordField = string()
+  .min(12, "Use a strong passphrase at least 12 characters long")
+  .required("Enter a password");
+
+export const inviteRegistrationSchema = object().shape({
+  firstName: firstNameField,
+  lastName: lastNameField,
+  username: usernameField,
+  password: adminPasswordField,
+  confirmPassword: string()
+    .oneOf([ref("password")], "Passwords must match")
+    .required("Confirm your password"),
+});
+
 export const loginSchema = object().shape({
   email: string().email("Enter a valid email").required("Email is required"),
   password: string().required("Password is required"),
@@ -38,14 +52,6 @@ export const resetPasswordSchema = object().shape({
   confirmPassword: string()
     .oneOf([ref("password")], "Passwords must match")
     .required("Please confirm your password"),
-});
-
-export const inviteRegistrationSchema = object().shape({
-  firstName: firstNameField,
-  lastName: lastNameField,
-  username: usernameField,
-  password: signUpPasswordField,
-  confirmPassword: confirmPasswordField,
 });
 
 const emailMatchesDomains = (email: string, emailDomain: string): boolean => {
@@ -84,29 +90,12 @@ export const createSignUpSchema = (schools: SchoolInterface[]) =>
     confirmPassword: confirmPasswordField,
   });
 
-export const createSchoolSpecificSignUpSchema = (school: SchoolInterface) => {
-  const domainList = school.email_domain
-    ? school.email_domain
-        .split(",")
-        .map((d) => d.trim().toLowerCase())
-        .filter(Boolean)
-    : [];
-  const domainMessage =
-    domainList.length > 0
-      ? `Must use your school email (${domainList.map((d) => "@" + d).join(" or ")})`
-      : "Must use your school email";
-
+export const createSchoolSpecificSignUpSchema = (_school: SchoolInterface) => {
   return object().shape({
     firstName: firstNameField,
     lastName: lastNameField,
     username: usernameField,
-    email: string()
-      .email("Enter a valid email")
-      .required("Enter your email")
-      .test("school-email-domain", domainMessage, function (value) {
-        if (!school.email_domain || !value) return true;
-        return emailMatchesDomains(value, school.email_domain);
-      }),
+    email: string().email("Enter a valid email").required("Enter your email"),
     house: string().required("Select a house"),
     yearGroup: string()
       .oneOf([...YEAR_GROUPS], "Select a valid year group")

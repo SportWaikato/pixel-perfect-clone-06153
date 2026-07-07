@@ -1,13 +1,13 @@
 import { Formik, Form } from "formik";
 import { inviteRegistrationSchema } from "@/models/forms/schemas/authSchemas";
 import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
-import { UserService } from "@/models/users/services/UserService";
 import { Button } from "@/modules/application/components/DesignSystem/ui/button";
 import { Input } from "@/modules/application/components/DesignSystem/ui/input";
 import { Label } from "@/modules/application/components/DesignSystem/ui/label";
 import { FormikInputField } from "@/modules/common/components/Formik";
 import { toast } from "sonner";
 import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
+import { acceptSuperAdminInvite } from "@/lib/invites.functions";
 
 interface InviteRegistrationFormProps {
   email: string;
@@ -27,27 +27,14 @@ const InviteRegistrationForm = ({ email, token }: InviteRegistrationFormProps) =
       if (authError) throw authError;
       if (!authData.user) throw new Error("Failed to create user account");
 
-      const userService = new UserService(supabase);
-      await userService.create({
-        id: authData.user.id,
-        username: values.username,
-        first_name: values.firstName,
-        last_name: values.lastName,
-        role: "super_admin",
-        is_admin: true,
-        is_public: true,
-        total_kilometers: 0,
+      await acceptSuperAdminInvite({
+        data: {
+          token,
+          username: values.username,
+          firstName: values.firstName,
+          lastName: values.lastName,
+        },
       });
-
-      const { data: marked } = await supabase.rpc("use_super_admin_invite", {
-        p_token: token,
-        p_user_id: authData.user.id,
-      });
-
-      if (!marked) {
-        // Non-fatal: invite may have just expired between page load and submit
-        console.warn("Could not mark invite as used");
-      }
 
       toast.success("Account created! Welcome.");
       window.location.href = "/admin";
