@@ -14,6 +14,7 @@ import { Button } from "@/modules/application/components/DesignSystem/ui/button"
 import { Progress } from "@/modules/application/components/DesignSystem/ui/progress";
 import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
 import { EventService } from "@/models/events/services/EventService";
+import { BadgeImageHelper } from "@/models/achievements/helpers/BadgeImageHelper";
 import { ActivityService } from "@/models/activities/services/ActivityService";
 import {
   ArrowLeft,
@@ -359,7 +360,7 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
           <CardContent className="p-6 flex items-center gap-5">
             <div className="relative w-20 h-20 shrink-0">
               <img
-                src={`/badges/${event.badge.image_filename}`}
+                src={BadgeImageHelper.getBadgeImageUrl(event.badge)}
                 alt={event.badge.name}
                 className="absolute inset-0 w-full h-full object-cover object-contain drop-shadow"
               />

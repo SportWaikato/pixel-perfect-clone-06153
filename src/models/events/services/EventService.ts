@@ -271,6 +271,7 @@ export class EventService {
           description,
           icon_name,
           image_filename,
+          storage_url,
           points_reward
         )
       `,
