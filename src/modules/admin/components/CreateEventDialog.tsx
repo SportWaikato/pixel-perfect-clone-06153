@@ -30,6 +30,7 @@ import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
 import BadgeImagePicker, {
   BadgeImageSelection,
 } from "@/modules/admin/components/badges/BadgeImagePicker";
+import { BadgeImageHelper } from "@/models/achievements/helpers/BadgeImageHelper";
 import AIBadgeGenerator from "@/modules/admin/components/badges/AIBadgeGenerator";
 import BadgeCriteriaBuilder from "@/modules/admin/components/badges/BadgeCriteriaBuilder";
 import {
@@ -610,10 +611,7 @@ const CreateEventDialog = ({
                 isLoadingSchools={isLoadingSchools}
                 schools={schools}
                 selectedBadgeUrl={
-                  selectedBadgeImage?.storage_url ||
-                  (selectedBadgeImage?.image_filename
-                    ? `/badges/${selectedBadgeImage.image_filename}`
-                    : "")
+                  selectedBadgeImage ? BadgeImageHelper.getBadgeImageUrl(selectedBadgeImage) : ""
                 }
                 onBadgeImageSelect={handleBadgeImageSelect}
                 eventImageUrl={selectedEventImage?.url || ""}

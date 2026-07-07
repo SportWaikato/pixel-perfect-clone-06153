@@ -28,6 +28,7 @@ import { Loader2 } from "lucide-react";
 import BadgeImagePicker, {
   BadgeImageSelection,
 } from "@/modules/admin/components/badges/BadgeImagePicker";
+import { BadgeImageHelper } from "@/models/achievements/helpers/BadgeImageHelper";
 import AIBadgeGenerator from "@/modules/admin/components/badges/AIBadgeGenerator";
 import BadgeCriteriaBuilder from "@/modules/admin/components/badges/BadgeCriteriaBuilder";
 import {
@@ -465,9 +466,9 @@ function EditEventFormFields({
     }
   }, [values.shouldCreateBadge, setSelectedBadgeImage]);
 
-  const selectedBadgeUrl =
-    selectedBadgeImage?.storage_url ||
-    (selectedBadgeImage?.image_filename ? `/badges/${selectedBadgeImage.image_filename}` : "");
+  const selectedBadgeUrl = selectedBadgeImage
+    ? BadgeImageHelper.getBadgeImageUrl(selectedBadgeImage)
+    : "";
 
   return (
     <Form className="space-y-6">
