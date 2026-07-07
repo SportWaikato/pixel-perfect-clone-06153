@@ -1394,6 +1394,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_super_admin_invite: {
+        Args: {
+          p_email: string
+          p_first_name: string
+          p_last_name: string
+          p_token: string
+          p_username: string
+        }
+        Returns: boolean
+      }
       auto_unpublish_stale_events: { Args: never; Returns: number }
       calculate_user_streak: {
         Args: { user_id_param: string }
