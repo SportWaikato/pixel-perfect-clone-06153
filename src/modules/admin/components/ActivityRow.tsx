@@ -76,7 +76,7 @@ const ActivityRow = ({
             {activity.is_flagged && (
               <span className="flex items-center gap-1 text-xs text-amber-700 font-medium">
                 <AlertTriangle size={11} />
-                540 min/day
+                Daily cap reached
               </span>
             )}
             {activity.is_rejected && (

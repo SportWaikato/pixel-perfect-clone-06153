@@ -2,14 +2,14 @@ import { describe, it, expect } from "vitest";
 import {
   MAX_ACTIVITY_DURATION_MINUTES,
   MAX_ACTIVITY_DAYS_AGO,
-  MAX_ACTIVITIES_PER_DAY,
+  MAX_ACTIVITY_MINUTES_PER_DAY,
 } from "../constants/activityValidationConstants";
 import { logActivitySchema } from "@/models/forms/schemas/activitySchemas";
 
 describe("activityValidationConstants", () => {
   it("MAX_ACTIVITY_DURATION_MINUTES is 180", () => expect(MAX_ACTIVITY_DURATION_MINUTES).toBe(180));
   it("MAX_ACTIVITY_DAYS_AGO is 7", () => expect(MAX_ACTIVITY_DAYS_AGO).toBe(7));
-  it("MAX_ACTIVITIES_PER_DAY is 10", () => expect(MAX_ACTIVITIES_PER_DAY).toBe(10));
+  it("MAX_ACTIVITY_MINUTES_PER_DAY is 900", () => expect(MAX_ACTIVITY_MINUTES_PER_DAY).toBe(900));
 });
 
 describe("logActivitySchema matches server-side constants (drift prevention)", () => {

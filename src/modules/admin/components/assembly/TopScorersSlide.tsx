@@ -82,10 +82,10 @@ const TopScorersSlide = ({
           className="mx-auto mb-3"
         />
         <h2 className="text-4xl font-extrabold uppercase tracking-widest text-white">
-          Top Scorers by House This Week
+          Top Scorers by House
         </h2>
         <p className="mt-1 text-sm uppercase tracking-wider" style={{ color: "#FF6B2B" }}>
-          Shout out to the top contributors this week
+          {periodLabel ?? "Shout out to the top contributors this week"}
         </p>
       </div>
 

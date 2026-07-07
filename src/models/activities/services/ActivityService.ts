@@ -9,13 +9,12 @@ import {
 import {
   MAX_ACTIVITY_DURATION_MINUTES,
   MAX_ACTIVITY_DAYS_AGO,
-  MAX_ACTIVITIES_PER_DAY,
   MAX_ACTIVITY_MINUTES_PER_DAY,
 } from "../constants/activityValidationConstants";
 
 const TABLE_NAME = "activities";
 const USERS_TABLE = "users";
-const ACTIVITY_LIMIT_ERROR = `Something isn't right. Please ensure your activity is less than ${MAX_ACTIVITY_DURATION_MINUTES} minutes, within the last ${MAX_ACTIVITY_DAYS_AGO} days, and that you haven't exceeded ${MAX_ACTIVITIES_PER_DAY} logs or ${MAX_ACTIVITY_MINUTES_PER_DAY} total minutes for the day.`;
+const ACTIVITY_LIMIT_ERROR = `Something isn't right. Please ensure each activity is ${MAX_ACTIVITY_DURATION_MINUTES} minutes or less, within the last ${MAX_ACTIVITY_DAYS_AGO} days, and that you haven't exceeded ${MAX_ACTIVITY_MINUTES_PER_DAY} total minutes for the day.`;
 
 export class ActivityService {
   private supabaseClient: SupabaseClient;
@@ -47,7 +46,7 @@ export class ActivityService {
     }
 
     // Rule 3: Max 3 activities per day (by NZ calendar day)
-    // Derive the NZ date string using the same fixed +12 offset used throughout the codebase
+    // Derive the NZ date string using the same fixed +12 offset used throughout the codebase.
     const activityDateNZ = activityData.created_at
       ? (activityData.created_at as string).substring(0, 10)
       : new Intl.DateTimeFormat("en-CA", { timeZone: "Pacific/Auckland" }).format(new Date());
@@ -55,18 +54,8 @@ export class ActivityService {
     const dayStart = new Date(`${activityDateNZ}T00:00:00+12:00`).toISOString();
     const dayEnd = new Date(`${activityDateNZ}T23:59:59+12:00`).toISOString();
 
-    const { count } = await this.supabaseClient
-      .from(TABLE_NAME)
-      .select("*", { count: "exact", head: true })
-      .eq("user_id", activityData.user_id)
-      .gte("created_at", dayStart)
-      .lte("created_at", dayEnd);
-
-    if ((count ?? 0) >= MAX_ACTIVITIES_PER_DAY) {
-      throw new Error(ACTIVITY_LIMIT_ERROR);
-    }
-
-    // Rule 4: Max total minutes per day
+    // Rule 3: No entry-count cap. Students can log multiple activity sessions
+    // in one day as long as their total minutes stays within the daily cap.
     const { data: todayActivities } = await this.supabaseClient
       .from(TABLE_NAME)
       .select("duration_minutes")
@@ -440,7 +429,7 @@ export class ActivityService {
       ? dailyBaseQuery.in("user_id", userIds)
       : dailyBaseQuery);
 
-    // Step 2: Compute daily totals per user (NZ date) — flag days with ≥540 min
+    // Step 2: Compute daily totals per user (NZ date) and flag days at or above the cap.
     const flaggedDays = new Set<string>();
     const dailyTotals = new Map<string, number>();
     for (const a of allActivities || []) {
@@ -448,7 +437,7 @@ export class ActivityService {
       dailyTotals.set(key, (dailyTotals.get(key) || 0) + (a.duration_minutes || 0));
     }
     for (const [key, total] of dailyTotals) {
-      if (total >= 540) flaggedDays.add(key);
+      if (total >= MAX_ACTIVITY_MINUTES_PER_DAY) flaggedDays.add(key);
     }
 
     // Step 3: Fetch paginated activities with full user info

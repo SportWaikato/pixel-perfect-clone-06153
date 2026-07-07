@@ -4,7 +4,7 @@ import { makeSupabaseMock } from "@/models/__tests__/utils/supabaseMock";
 import {
   MAX_ACTIVITY_DURATION_MINUTES,
   MAX_ACTIVITY_DAYS_AGO,
-  MAX_ACTIVITIES_PER_DAY,
+  MAX_ACTIVITY_MINUTES_PER_DAY,
 } from "../constants/activityValidationConstants";
 
 const LIMIT_ERROR_FRAGMENT = "Something isn't right";
@@ -89,21 +89,13 @@ describe("ActivityService.create — validation rules", () => {
     ).resolves.toBeDefined();
   });
 
-  it(`throws when ${MAX_ACTIVITIES_PER_DAY} activities already logged today`, async () => {
-    supabase._chain.lte = vi
-      .fn()
-      .mockReturnValue(Promise.resolve({ count: MAX_ACTIVITIES_PER_DAY, data: null, error: null }));
-    service = new ActivityService(supabase as any);
-
-    await expect(service.create(baseActivity)).rejects.toThrow(LIMIT_ERROR_FRAGMENT);
-  });
-
-  it(`does not throw when ${MAX_ACTIVITIES_PER_DAY - 1} activities logged today`, async () => {
-    supabase._chain.lte = vi
-      .fn()
-      .mockReturnValue(
-        Promise.resolve({ count: MAX_ACTIVITIES_PER_DAY - 1, data: null, error: null }),
-      );
+  it("allows multiple entries in a day when the daily minute cap is not exceeded", async () => {
+    supabase._chain.lte = vi.fn().mockReturnValue(
+      Promise.resolve({
+        data: [{ duration_minutes: 180 }, { duration_minutes: 120 }, { duration_minutes: 60 }],
+        error: null,
+      }),
+    );
     supabase._chain.single.mockResolvedValue({
       data: { ...baseActivity, id: "1", created_at: new Date().toISOString() },
       error: null,
@@ -112,6 +104,18 @@ describe("ActivityService.create — validation rules", () => {
     service = new ActivityService(supabase as any);
 
     await expect(service.create(baseActivity)).resolves.toBeDefined();
+  });
+
+  it(`throws when daily minutes would exceed ${MAX_ACTIVITY_MINUTES_PER_DAY}`, async () => {
+    supabase._chain.lte = vi.fn().mockReturnValue(
+      Promise.resolve({
+        data: [{ duration_minutes: MAX_ACTIVITY_MINUTES_PER_DAY - 30 }],
+        error: null,
+      }),
+    );
+    service = new ActivityService(supabase as any);
+
+    await expect(service.create(baseActivity)).rejects.toThrow(LIMIT_ERROR_FRAGMENT);
   });
 
   it("throws when duration_minutes is missing", async () => {

@@ -21,7 +21,15 @@ const PrizeDrawSlide = ({ schoolId, drawnByUserId, students, onBack }: PrizeDraw
   const [winner, setWinner] = useState<UserInterface | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const eligibleStudents = students.filter((s) => s.is_active !== false && s.role === "student");
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  const eligibleStudents = students.filter(
+    (s) =>
+      s.is_active !== false &&
+      s.role === "student" &&
+      s.last_activity_date != null &&
+      new Date(s.last_activity_date) >= sevenDaysAgo,
+  );
 
   const clearSpin = useCallback(() => {
     if (intervalRef.current) {
@@ -130,8 +138,8 @@ const PrizeDrawSlide = ({ schoolId, drawnByUserId, students, onBack }: PrizeDraw
                 <p className="text-xl font-semibold text-white">Ready to draw the winner?</p>
                 <p className="text-sm text-white/40">
                   {eligibleStudents.length === 0
-                    ? "No eligible students found. Make sure students are registered to this school."
-                    : `${eligibleStudents.length} eligible student${eligibleStudents.length === 1 ? "" : "s"} in the pool`}
+                    ? "No eligible students found. Make sure students have logged activity in the last 7 days."
+                    : `${eligibleStudents.length} active student${eligibleStudents.length === 1 ? "" : "s"} in the pool`}
                 </p>
                 <button
                   onClick={handleDraw}

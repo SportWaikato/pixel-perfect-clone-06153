@@ -100,11 +100,11 @@ describe("ActivityService.getActivitiesForSchool — flagging logic", () => {
     expect(result).toEqual([]);
   });
 
-  it("flags all activities when daily total >= 540 min", async () => {
+  it("flags all activities when daily total >= 900 min", async () => {
     const allActs = [
-      makeRawActivity({ id: "a1", user_id: "u1", duration_minutes: 200 }),
-      makeRawActivity({ id: "a2", user_id: "u1", duration_minutes: 200 }),
-      makeRawActivity({ id: "a3", user_id: "u1", duration_minutes: 140 }), // 200+200+140 = 540
+      makeRawActivity({ id: "a1", user_id: "u1", duration_minutes: 300 }),
+      makeRawActivity({ id: "a2", user_id: "u1", duration_minutes: 300 }),
+      makeRawActivity({ id: "a3", user_id: "u1", duration_minutes: 300 }), // 900 total
     ];
     setupSchoolMock(supabase, {
       schoolUsers: [{ id: "u1" }],
@@ -116,11 +116,11 @@ describe("ActivityService.getActivitiesForSchool — flagging logic", () => {
     expect(result.every((a) => a.is_flagged)).toBe(true);
   });
 
-  it("does NOT flag activities when daily total < 540 min", async () => {
+  it("does NOT flag activities when daily total < 900 min", async () => {
     const allActs = [
-      makeRawActivity({ id: "a1", user_id: "u1", duration_minutes: 200 }),
-      makeRawActivity({ id: "a2", user_id: "u1", duration_minutes: 200 }),
-      makeRawActivity({ id: "a3", user_id: "u1", duration_minutes: 139 }), // 539 total
+      makeRawActivity({ id: "a1", user_id: "u1", duration_minutes: 300 }),
+      makeRawActivity({ id: "a2", user_id: "u1", duration_minutes: 300 }),
+      makeRawActivity({ id: "a3", user_id: "u1", duration_minutes: 299 }), // 899 total
     ];
     setupSchoolMock(supabase, {
       schoolUsers: [{ id: "u1" }],
@@ -134,9 +134,9 @@ describe("ActivityService.getActivitiesForSchool — flagging logic", () => {
 
   it("rejected activity on a flagged day gets is_flagged: false", async () => {
     const allActs = [
-      makeRawActivity({ id: "a1", user_id: "u1", duration_minutes: 300 }),
-      makeRawActivity({ id: "a2", user_id: "u1", duration_minutes: 300, is_rejected: true }),
-    ]; // 600 total → flagged day
+      makeRawActivity({ id: "a1", user_id: "u1", duration_minutes: 450 }),
+      makeRawActivity({ id: "a2", user_id: "u1", duration_minutes: 450, is_rejected: true }),
+    ]; // 900 total -> flagged day
     setupSchoolMock(supabase, {
       schoolUsers: [{ id: "u1" }],
       allActivities: allActs,
@@ -152,7 +152,7 @@ describe("ActivityService.getActivitiesForSchool — flagging logic", () => {
 
   it("user A's flagged day does not affect user B's activities", async () => {
     const allActs = [
-      makeRawActivity({ id: "a1", user_id: "u1", duration_minutes: 600 }), // u1 flagged
+      makeRawActivity({ id: "a1", user_id: "u1", duration_minutes: 900 }), // u1 flagged
       makeRawActivity({ id: "b1", user_id: "u2", duration_minutes: 60 }), // u2 not flagged
     ];
     setupSchoolMock(supabase, {

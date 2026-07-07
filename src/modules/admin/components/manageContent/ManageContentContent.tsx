@@ -253,7 +253,7 @@ const ManageContentContent = ({ schoolId }: ManageContentContentProps) => {
                       <span className="font-medium">{asset.name}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-gray-500 max-w-xs">
+                  <TableCell className="text-gray-500 max-w-xs whitespace-normal break-words">
                     {renderDescription(asset.description)}
                   </TableCell>
                   <TableCell>

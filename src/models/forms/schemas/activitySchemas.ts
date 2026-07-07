@@ -3,10 +3,10 @@ import { subDays, startOfDay } from "date-fns";
 import {
   MAX_ACTIVITY_DURATION_MINUTES,
   MAX_ACTIVITY_DAYS_AGO,
-  MAX_ACTIVITIES_PER_DAY,
+  MAX_ACTIVITY_MINUTES_PER_DAY,
 } from "@/models/activities/constants/activityValidationConstants";
 
-const ACTIVITY_LIMIT_ERROR = `Something isn't right. Please ensure your activity is less than ${MAX_ACTIVITY_DURATION_MINUTES} minutes, within the last ${MAX_ACTIVITY_DAYS_AGO} days, and that you haven't exceeded ${MAX_ACTIVITIES_PER_DAY} logs for the day.`;
+const ACTIVITY_LIMIT_ERROR = `Something isn't right. Please ensure each activity is ${MAX_ACTIVITY_DURATION_MINUTES} minutes or less, within the last ${MAX_ACTIVITY_DAYS_AGO} days, and that you haven't exceeded ${MAX_ACTIVITY_MINUTES_PER_DAY} total minutes for the day.`;
 
 export const logActivitySchema = object().shape({
   activity_type: string().required("Select an activity type"),
