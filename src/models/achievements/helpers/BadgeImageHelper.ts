@@ -1,5 +1,6 @@
 const SUPABASE_BADGES_BASE =
   "https://zxxhjkruhwjondrbftaf.supabase.co/storage/v1/object/public/badges/";
+const CORRECT_PROJECT = "zxxhjkruhwjondrbftaf";
 
 interface BadgeImageFields {
   storage_url?: string | null;
@@ -84,8 +85,8 @@ export class BadgeImageHelper {
    * Priority: storage_url (DB) > name lookup > normalised image_filename > empty
    */
   static getBadgeImageUrl(badge: BadgeImageFields): string {
-    // Priority 1: Supabase storage URL (explicitly set in DB)
-    if (badge.storage_url) {
+    // Priority 1: Supabase storage URL — but only if it references the correct project
+    if (badge.storage_url && badge.storage_url.includes(CORRECT_PROJECT)) {
       return badge.storage_url;
     }
 
