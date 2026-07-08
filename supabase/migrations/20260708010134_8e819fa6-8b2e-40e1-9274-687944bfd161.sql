@@ -1,0 +1,1 @@
+drop policy if exists "storage_no_public_listing" on storage.objects;
