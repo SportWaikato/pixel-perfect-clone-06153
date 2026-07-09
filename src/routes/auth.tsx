@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { listHousesBySchool, listSchools } from "@/lib/schools.functions";
+import RoughText from "@/modules/application/components/Brand/RoughText";
 
 type SearchParams = { redirect?: string };
 
@@ -99,10 +100,14 @@ function AuthPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-brand-grey p-4">
       <div className="w-full max-w-md space-y-4">
-        <div className="text-center">
-          <p className="text-xs uppercase tracking-widest text-brand-green-soft">Karawhiua</p>
-          <h1 className="text-3xl font-bold text-brand-green">Virtual Sports Day</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Sport Waikato's school competition</p>
+        <div className="flex flex-col items-center text-center">
+          <img src="/KarawhiuaWordmark.png" alt="Karawhiua" className="h-14 w-auto" />
+          <div className="mt-2">
+            <RoughText size={38} color="#E019C3">
+              Go For It!
+            </RoughText>
+          </div>
+          <p className="mt-1 text-sm text-muted-foreground">The new way to sports day</p>
         </div>
 
         <Card>
