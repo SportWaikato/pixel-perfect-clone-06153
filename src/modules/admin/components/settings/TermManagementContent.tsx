@@ -289,13 +289,8 @@ const TermManagementContent = ({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">School Settings</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Manage competition terms and school configuration.
-          </p>
-        </div>
+      {/* Heading is provided by the enclosing route; this row is just the action. */}
+      <div className="flex items-center justify-end">
         <Button asChild className="gap-2 bg-[#1B5E4B] hover:bg-[#0a3f30]">
           {currentUser.role === "super_admin" ? (
             <Link to="/admin/assembly" search={schoolId ? { schoolId } : {}}>

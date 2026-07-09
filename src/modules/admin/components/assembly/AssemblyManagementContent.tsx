@@ -144,7 +144,9 @@ const AssemblyManagementContent = ({
       <div>
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Assembly Mode</h1>
+            <h1 className="font-display text-3xl sm:text-4xl font-bold uppercase leading-none tracking-tight text-brand-green">
+              Assembly Mode
+            </h1>
             <p className="mt-1 text-sm text-gray-500">
               Present live school updates during assembly. Share the presentation screen with your
               audience.

@@ -88,7 +88,9 @@ function Page() {
   return (
     <div className="p-6 space-y-6 max-w-3xl mx-auto">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">School Messages</h1>
+        <h1 className="font-display text-3xl sm:text-4xl font-bold uppercase leading-none tracking-tight text-brand-green">
+          School Messages
+        </h1>
         <p className="text-gray-600 mt-2">Send messages and updates to students and staff</p>
       </div>
 

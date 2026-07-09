@@ -284,7 +284,7 @@ function OnboardingPage() {
             className="mx-auto mb-2"
             style={{ width: "140px", height: "auto" }}
           />
-          <h1 className="text-2xl font-bold" style={{ color: "#1B5E4B" }}>
+          <h1 className="font-display text-3xl font-bold uppercase leading-none tracking-tight text-brand-green">
             Set up your profile
           </h1>
           <p className="text-sm text-muted-foreground mt-1">Let's get you started</p>

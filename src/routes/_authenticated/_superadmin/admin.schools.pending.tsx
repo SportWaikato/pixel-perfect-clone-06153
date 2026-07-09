@@ -101,7 +101,9 @@ function PendingSchoolsPage() {
     <div className="p-6 max-w-4xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Pending school approvals</h1>
+          <h1 className="font-display text-3xl sm:text-4xl font-bold uppercase leading-none tracking-tight text-brand-green">
+            Pending school approvals
+          </h1>
           <p className="text-sm text-muted-foreground">
             {schools.length} school{schools.length !== 1 ? "s" : ""} awaiting review
           </p>

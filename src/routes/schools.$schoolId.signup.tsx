@@ -33,9 +33,14 @@ function SchoolSignUpPage() {
     <div className="flex min-h-screen items-center justify-center bg-brand-grey p-4">
       <div className="w-full max-w-md space-y-4">
         <div className="text-center">
-          <p className="text-xs uppercase tracking-widest text-brand-green-soft">Karawhiua</p>
-          <h1 className="text-3xl font-bold text-brand-green">Virtual Sports Day</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Sport Waikato's school competition</p>
+          <img
+            src="/KarawhiuaWordmark.png"
+            alt="Karawhiua — Go For It!"
+            className="mx-auto h-12 w-auto"
+          />
+          <p className="mt-2 text-sm text-muted-foreground">
+            Sport Waikato&apos;s school movement challenge
+          </p>
         </div>
 
         <Card>

@@ -263,7 +263,9 @@ const IndividualEventContent = ({ user, eventId }: IndividualEventContentProps) 
             ) : null}
           </div>
 
-          <h1 className="text-3xl font-black text-[#1B5E4B] mb-2">{event.name}</h1>
+          <h1 className="font-display text-3xl sm:text-4xl font-bold uppercase leading-none tracking-tight text-brand-green mb-2">
+            {event.name}
+          </h1>
           <div className="flex items-center gap-4 text-gray-500 text-sm mb-4">
             <span className="flex items-center gap-1.5">
               <Calendar size={14} />

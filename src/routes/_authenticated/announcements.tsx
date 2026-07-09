@@ -4,7 +4,10 @@ import { UserInterface } from "@/models/users/interfaces/UserInterface";
 import SurveyPromptCard from "@/modules/surveys/components/SurveyPromptCard";
 import { SurveyService } from "@/models/surveys/services/SurveyService";
 import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
-import { SurveyInterface, UserSurveyStatusInterface } from "@/models/surveys/interfaces/SurveyInterface";
+import {
+  SurveyInterface,
+  UserSurveyStatusInterface,
+} from "@/models/surveys/interfaces/SurveyInterface";
 import { Megaphone } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/announcements")({
@@ -39,7 +42,14 @@ function Page() {
 
   return (
     <div className="p-4 sm:p-6 max-w-4xl mx-auto space-y-6 min-h-screen">
-      <h1 className="text-3xl font-black text-[#1B5E4B]">Announcements</h1>
+      <div>
+        <h1 className="font-display text-3xl sm:text-4xl font-bold uppercase leading-none tracking-tight text-brand-green">
+          Announcements
+        </h1>
+        <p className="mt-1 text-body text-brand-dark/70">
+          The latest from Sport Waikato and your school.
+        </p>
+      </div>
 
       {pendingSurveys.length > 0 ? (
         pendingSurveys.map((item) => (
@@ -55,7 +65,9 @@ function Page() {
             <Megaphone size={28} className="text-[#1B5E4B]" />
           </div>
           <h2 className="text-xl font-bold text-[#1B5E4B]">No announcements right now</h2>
-          <p className="text-gray-500">Survey prompts and school updates will appear here when available.</p>
+          <p className="text-gray-500">
+            Survey prompts and school updates will appear here when available.
+          </p>
         </div>
       )}
     </div>

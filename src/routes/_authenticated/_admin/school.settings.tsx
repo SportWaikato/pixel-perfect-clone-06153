@@ -36,7 +36,9 @@ function Page() {
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 min-h-screen">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">School Settings</h1>
+        <h1 className="font-display text-3xl sm:text-4xl font-bold uppercase leading-none tracking-tight text-brand-green">
+          School Settings
+        </h1>
         <p className="text-gray-600 mt-1">
           Manage your competition terms and reset the House leaderboard at the end of each term.
           Students always keep their own activity history and earned badges.

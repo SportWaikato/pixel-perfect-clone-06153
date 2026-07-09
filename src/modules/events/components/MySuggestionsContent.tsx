@@ -85,7 +85,7 @@ const MySuggestionsContent = ({ user }: MySuggestionsContentProps) => {
   }
 
   return (
-    <div className="p-6 space-y-6 min-h-screen" style={{ backgroundColor: "#f5faf8" }}>
+    <div className="p-6 space-y-6">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
           <Link to="/challenges">
@@ -93,7 +93,9 @@ const MySuggestionsContent = ({ user }: MySuggestionsContentProps) => {
           </Link>
         </Button>
         <div>
-          <h1 className="text-3xl font-black text-[#1B5E4B]">My Suggestions</h1>
+          <h1 className="font-display text-3xl sm:text-4xl font-bold uppercase leading-none tracking-tight text-brand-green">
+            My Suggestions
+          </h1>
           <p className="text-sm" style={{ color: "#357665" }}>
             Challenges you&apos;ve submitted for approval
           </p>
