@@ -171,7 +171,9 @@ const ActivityLogContent = ({ user, schools, initialSchoolId }: ActivityLogConte
             ← Back to dashboard
           </Link>
         </div>
-        <h1 className="text-3xl font-bold text-gray-900">Activity Log</h1>
+        <h1 className="font-display text-3xl sm:text-4xl font-bold uppercase leading-none tracking-tight text-brand-green">
+          Activity Log
+        </h1>
         <p className="text-gray-600">
           {loading ? "Loading…" : `All logged activities for ${subtitle}`}
         </p>

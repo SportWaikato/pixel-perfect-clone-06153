@@ -465,7 +465,9 @@ const EventApprovalContent = ({ user, schools, initialSchoolId }: EventApprovalC
             </Link>
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Challenge Management</h1>
+            <h1 className="font-display text-3xl sm:text-4xl font-bold uppercase leading-none tracking-tight text-brand-green">
+              Challenge Management
+            </h1>
             <p className="text-gray-600">
               {loading ? "Loading…" : `Managing challenges for ${subtitle}`}
             </p>

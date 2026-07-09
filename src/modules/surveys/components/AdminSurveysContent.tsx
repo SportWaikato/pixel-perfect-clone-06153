@@ -57,7 +57,9 @@ const AdminSurveysContent = ({ surveys, results }: AdminSurveysContentProps) => 
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Survey Results</h1>
+          <h1 className="font-display text-3xl sm:text-4xl font-bold uppercase leading-none tracking-tight text-brand-green">
+            Survey Results
+          </h1>
           <p className="text-gray-600 mt-2">View response rates and aggregated survey results.</p>
         </div>
         <Button

@@ -153,7 +153,9 @@ const ReportsContent = ({ user, schools, currentTerm }: ReportsContentProps) => 
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Reports</h1>
+        <h1 className="font-display text-3xl sm:text-4xl font-bold uppercase leading-none tracking-tight text-brand-green">
+          Reports
+        </h1>
         <p className="text-gray-600 mt-2">Unique user reporting and data verification</p>
       </div>
 

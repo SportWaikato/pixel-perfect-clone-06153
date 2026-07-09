@@ -261,7 +261,9 @@ const AssetManagementContent = () => {
             </Link>
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Manage Media</h1>
+            <h1 className="font-display text-3xl sm:text-4xl font-bold uppercase leading-none tracking-tight text-brand-green">
+              Manage Media
+            </h1>
             <p className="text-gray-600">Upload and manage promotional files for school admins</p>
           </div>
         </div>

@@ -295,7 +295,9 @@ const HouseManagementContent = ({
             </Link>
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">House Management</h1>
+            <h1 className="font-display text-3xl sm:text-4xl font-bold uppercase leading-none tracking-tight text-brand-green">
+              House Management
+            </h1>
             <p className="text-gray-600">
               {effectiveSchoolName
                 ? `Manage house teams for ${effectiveSchoolName}`

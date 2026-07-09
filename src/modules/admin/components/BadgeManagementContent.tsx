@@ -207,7 +207,9 @@ const BadgeManagementContent = ({ user }: BadgeManagementContentProps) => {
             </Link>
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Badge Management</h1>
+            <h1 className="font-display text-3xl sm:text-4xl font-bold uppercase leading-none tracking-tight text-brand-green">
+              Badge Management
+            </h1>
             <p className="text-gray-600">Create and manage achievement badges for students</p>
           </div>
         </div>

@@ -182,7 +182,9 @@ const SchoolUpdatesContent = ({
             </Link>
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Message Students</h1>
+            <h1 className="font-display text-3xl sm:text-4xl font-bold uppercase leading-none tracking-tight text-brand-green">
+              Message Students
+            </h1>
             <p className="text-gray-600">Select a school to manage updates</p>
           </div>
         </div>
@@ -231,7 +233,9 @@ const SchoolUpdatesContent = ({
           </Link>
         </Button>
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Message Students</h1>
+          <h1 className="font-display text-3xl sm:text-4xl font-bold uppercase leading-none tracking-tight text-brand-green">
+            Message Students
+          </h1>
           <p className="text-gray-600">{selectedSchoolName}</p>
         </div>
       </div>

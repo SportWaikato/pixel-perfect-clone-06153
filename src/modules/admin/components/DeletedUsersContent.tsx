@@ -63,7 +63,9 @@ const DeletedUsersContent = ({ initialUsers }: DeletedUsersContentProps) => {
           </Link>
         </Button>
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Deleted Users</h1>
+          <h1 className="font-display text-3xl sm:text-4xl font-bold uppercase leading-none tracking-tight text-brand-green">
+            Deleted Users
+          </h1>
           <p className="text-gray-600">
             Users removed from active lists — restore to make them active again
           </p>

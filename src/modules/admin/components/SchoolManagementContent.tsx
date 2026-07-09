@@ -130,7 +130,9 @@ const SchoolManagementContent = ({ user, initialSchools }: SchoolManagementConte
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">School Management</h1>
+          <h1 className="font-display text-3xl sm:text-4xl font-bold uppercase leading-none tracking-tight text-brand-green">
+            School Management
+          </h1>
           <p className="text-gray-600">Manage all schools in the platform</p>
         </div>
         <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2">

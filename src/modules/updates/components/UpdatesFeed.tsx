@@ -183,7 +183,9 @@ const UpdatesFeed = ({ user, initialUpdates = [], embedded = false }: UpdatesFee
               <ArrowLeft size={20} />
             </Link>
           </Button>
-          <h1 className="text-3xl font-bold text-gray-900">Updates &amp; alerts</h1>
+          <h1 className="font-display text-3xl sm:text-4xl font-bold uppercase leading-none tracking-tight text-brand-green">
+            Updates &amp; alerts
+          </h1>
         </div>
         {updatesList}
         <div className="bg-white rounded-xl p-6 space-y-4">

@@ -165,7 +165,9 @@ const AuditLogContent = ({ user, schools }: AuditLogContentProps) => {
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Audit Log</h1>
+        <h1 className="font-display text-3xl sm:text-4xl font-bold uppercase leading-none tracking-tight text-brand-green">
+          Audit Log
+        </h1>
         <p className="text-gray-600 mt-2">Track admin actions and changes across the platform</p>
       </div>
 
