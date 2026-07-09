@@ -194,8 +194,8 @@ const LogActivityWizard = ({
       onActivityAdded?.();
       router.invalidate();
     } catch (error) {
+      console.error("LogActivityWizard submit error:", error);
       notifyAboutError(error);
-    } finally {
       setIsSubmitting(false);
     }
   };
