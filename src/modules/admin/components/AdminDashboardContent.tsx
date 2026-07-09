@@ -37,6 +37,7 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import { getActivityIcon, getActivityColor } from "@/modules/activities/utils/activityIcons";
 import { m } from "framer-motion";
+import MovementDiscrepancyCard from "@/modules/reports/components/MovementDiscrepancyCard";
 import PageHeader from "@/modules/application/components/Layout/PageHeader";
 
 interface PlatformStats {
@@ -461,6 +462,9 @@ const AdminDashboardContent = ({
           </div>
         </CardContent>
       </Card>
+
+      {/* Survey vs Real Movement Discrepancy */}
+      <MovementDiscrepancyCard compact />
 
       {/* Recent Activity Feed */}
       <Card>
