@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   SurveyInterface,
   SurveyResultsInterface,
@@ -12,13 +13,15 @@ import {
   CardTitle,
 } from "@/modules/application/components/DesignSystem/ui/card";
 import { Badge } from "@/modules/application/components/DesignSystem/ui/badge";
+import { Button } from "@/modules/application/components/DesignSystem/ui/button";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@/modules/application/components/DesignSystem/ui/tabs";
-import { ClipboardList, Users, CheckCircle, XCircle } from "lucide-react";
+import { ClipboardList, Users, CheckCircle, XCircle, Sparkles, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface AdminSurveysContentProps {
   surveys: SurveyInterface[];
@@ -33,12 +36,56 @@ const SURVEY_TYPE_LABELS: Record<SurveyType, string> = {
 };
 
 const AdminSurveysContent = ({ surveys, results }: AdminSurveysContentProps) => {
+  const [aiReport, setAiReport] = useState<string | null>(null);
+  const [generating, setGenerating] = useState(false);
+
+  const handleGenerateReport = async () => {
+    setGenerating(true);
+    try {
+      const { generateSurveyReport } = await import("@/lib/ai.functions");
+      const result = await generateSurveyReport();
+      setAiReport(result.report || "No data available.");
+      toast.success("AI report generated");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to generate report");
+    } finally {
+      setGenerating(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Survey Results</h1>
-        <p className="text-gray-600 mt-2">View response rates and aggregated survey results.</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Survey Results</h1>
+          <p className="text-gray-600 mt-2">View response rates and aggregated survey results.</p>
+        </div>
+        <Button
+          onClick={handleGenerateReport}
+          disabled={generating}
+          className="gap-2"
+          style={{ backgroundColor: "#1B5E4B" }}
+        >
+          {generating ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
+          {generating ? "Analysing…" : "AI Report"}
+        </Button>
       </div>
+
+      {aiReport && (
+        <Card className="border-[#D103D1]/30 bg-[#f9f0f9]">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-[#D103D1]">
+              <Sparkles size={18} />
+              AI-Generated Anonymous Report
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="prose prose-sm max-w-none whitespace-pre-wrap text-gray-700">
+              {aiReport}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Tabs defaultValue={surveys[0]?.survey_type || "early_engagement"}>
         <TabsList className="flex flex-wrap gap-1 h-auto bg-gray-100 p-1 rounded-xl">

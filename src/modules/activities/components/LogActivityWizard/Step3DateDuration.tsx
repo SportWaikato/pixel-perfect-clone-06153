@@ -1,10 +1,12 @@
-import { Minus, Plus, Info } from "lucide-react";
+import { Minus, Plus, Info, Camera, Loader2 } from "lucide-react";
 import { Button } from "@/modules/application/components/DesignSystem/ui/button";
 import { WizardState } from "./types";
 import { format as formatTz, toZonedTime } from "date-fns-tz";
 import { subDays } from "date-fns";
 import { formatEventDate } from "@/modules/common/utils/dateUtils";
 import { EventInterface } from "@/models/events/interfaces/EventInterface";
+import { toast } from "sonner";
+import { useRef, useState } from "react";
 
 const NZ_TIMEZONE = "Pacific/Auckland";
 
@@ -22,6 +24,38 @@ interface Step3DateDurationProps {
 }
 
 const Step3DateDuration = ({ data, challenges, onChange }: Step3DateDurationProps) => {
+  const [scanning, setScanning] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleScanScreenshot = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setScanning(true);
+    try {
+      const reader = new FileReader();
+      const base64 = await new Promise<string>((resolve) => {
+        reader.onload = () => resolve(reader.result as string);
+        reader.readAsDataURL(file);
+      });
+
+      const { extractMinutesFromScreenshot } = await import("@/lib/ai.functions");
+      const result = await extractMinutesFromScreenshot({ data: { base64Image: base64 } } as any);
+
+      if (result.minutes && result.minutes > 0) {
+        onChange({ durationMinutes: result.minutes });
+        toast.success(`Detected ${result.minutes} minutes from screenshot`);
+      } else {
+        toast.error("Could not read duration from screenshot. Try entering manually.");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to scan screenshot");
+    } finally {
+      setScanning(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  };
+
   const selectedChallenge = challenges.find((c) => c.id === data.eventId);
   const basePoints = data.durationMinutes;
   const pointsDisplay = (() => {
@@ -103,6 +137,29 @@ const Step3DateDuration = ({ data, challenges, onChange }: Step3DateDurationProp
           >
             <Plus size={18} />
           </Button>
+        </div>
+        <div className="flex items-center gap-2 mt-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => fileRef.current?.click()}
+            disabled={scanning}
+            className="gap-1.5 text-xs border-dashed"
+          >
+            {scanning ? <Loader2 size={14} className="animate-spin" /> : <Camera size={14} />}
+            {scanning ? "Scanning…" : "Scan Screenshot for Minutes"}
+          </Button>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/jpeg,image/jpg,image/png,image/webp"
+            className="hidden"
+            onChange={handleScanScreenshot}
+          />
+          <span className="text-xs text-gray-400">
+            Upload a workout tracking screenshot to auto-fill minutes
+          </span>
         </div>
       </div>
 
