@@ -1,10 +1,11 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { LazyMotion, domAnimation } from "framer-motion";
+import { LazyMotion, domAnimation, m, AnimatePresence } from "framer-motion";
 import {
   Outlet,
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -89,7 +90,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       // iOS home-screen behavior — Safari ignores most of the manifest
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-status-bar-style", content: "default" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "apple-mobile-web-app-title", content: "Karawhiua" },
       { property: "og:title", content: "Karawhiua — Virtual Sports Day" },
       {
@@ -109,16 +110,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:image", content: "/KarawhiuaLogo.png" },
     ],
     links: [
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      {
-        rel: "preconnect",
-        href: "https://fonts.gstatic.com",
-        crossOrigin: "anonymous",
-      },
-      {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&family=Caveat+Brush&display=swap",
-      },
       {
         rel: "stylesheet",
         href: appCss,
@@ -151,6 +142,7 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   useEffect(() => {
     // Lazy import keeps the supabase client out of SSR paths.
@@ -169,14 +161,13 @@ function RootComponent() {
   }, [queryClient, router]);
 
   useEffect(() => {
-    if (import.meta.env.DEV) return; // avoid stale caches fighting HMR in dev
+    if (import.meta.env.DEV) return;
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("/sw.js").catch((err) => {
         console.error("Service worker registration failed:", err);
       });
     }
 
-    // PostHog analytics — publishable key, safe for client-side
     const posthogKey = import.meta.env.VITE_POSTHOG_KEY;
     if (!posthogKey) return;
     import("posthog-js").then(({ default: posthog }) => {
@@ -191,10 +182,18 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* App-wide LazyMotion so `m.*` components animate everywhere. */}
       <LazyMotion features={domAnimation}>
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
+        <AnimatePresence mode="wait">
+          <m.div
+            key={pathname}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
+          >
+            <Outlet />
+          </m.div>
+        </AnimatePresence>
       </LazyMotion>
     </QueryClientProvider>
   );

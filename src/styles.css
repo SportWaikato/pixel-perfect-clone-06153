@@ -181,6 +181,7 @@
   }
   body {
     background-color: var(--color-background);
+    background-image: radial-gradient(ellipse at 50% 0%, rgba(27, 94, 75, 0.03) 0%, transparent 60%);
     color: var(--color-foreground);
     font-family: var(--font-sans);
   }
