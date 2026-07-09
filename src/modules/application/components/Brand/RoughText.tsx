@@ -2,39 +2,31 @@ import { useId } from "react";
 
 interface RoughTextProps {
   children: string;
-  /** approximate rendered height in px (font-size) */
   size?: number;
   color?: string;
   className?: string;
-  /** roughness of the torn edge; 0 = clean, ~2.5 = gritty */
   grit?: number;
 }
 
 /**
- * Renders a fixed brand phrase ("GO FOR IT!", "SPORTS DAY", …) in the free Anton
- * condensed face with a torn/distressed edge, approximating the ZUUME Rough look
- * used in the print brand WITHOUT embedding the paid font. The rough edge is an
- * SVG turbulence displacement filter, so it stays crisp and scalable.
- *
- * Use ONLY for short, fixed hero phrases — dynamic headings use `font-display`.
+ * Bold display text for hero phrases ("GO FOR IT!", "EVERY MOVE COUNTS").
+ * Uses Bricolage Grotesque (self-hosted) — no proprietary fonts needed.
+ * The SVG turbulence filter adds a subtle grit/print texture without distortion.
  */
 const RoughText = ({
   children,
   size = 64,
   color = "#ffffff",
   className,
-  grit = 1.4,
+  grit = 1.2,
 }: RoughTextProps) => {
   const id = useId().replace(/:/g, "");
   const text = children.toUpperCase();
-  // Rough SVG height a touch taller than the cap height to fit the displacement.
-  const h = size * 1.28;
-  // Size the viewBox to the text's NATURAL width so glyphs are never stretched.
-  // Anton is condensed (~0.56em average advance); pad each side for the
-  // displacement bleed. A slight over-estimate leaves whitespace, never clips.
-  const padX = size * 0.35;
-  const textW = text.length * size * 0.56;
-  const vbW = Math.max(textW + padX * 2, size);
+  const h = size * 1.35;
+  const padX = size * 0.3;
+  const charW = size * 0.62;
+  const vbW = text.length * charW + padX * 2;
+
   return (
     <svg
       className={className}
@@ -46,38 +38,36 @@ const RoughText = ({
       style={{ maxWidth: "100%", overflow: "visible" }}
     >
       <defs>
-        <filter id={`rough-${id}`} x="-8%" y="-25%" width="116%" height="150%">
+        <filter id={`rough-${id}`} x="-4%" y="-15%" width="108%" height="130%">
           <feTurbulence
             type="fractalNoise"
-            baseFrequency="0.018 0.14"
-            numOctaves="2"
-            seed="7"
+            baseFrequency="0.025 0.18"
+            numOctaves="1"
+            seed="3"
             result="n"
           />
           <feDisplacementMap
             in="SourceGraphic"
             in2="n"
-            scale={grit * 3}
+            scale={grit * 2}
             xChannelSelector="R"
             yChannelSelector="G"
           />
         </filter>
       </defs>
       <text
-        x="500"
+        x={vbW / 2}
         y={h / 2}
         dominantBaseline="central"
         textAnchor="middle"
         fill={color}
         filter={`url(#rough-${id})`}
         style={{
-          fontFamily: '"Anton", "Antonio Variable", sans-serif',
+          fontFamily: "'Bricolage Grotesque Variable', 'Arial Black', sans-serif",
           fontSize: size,
-          letterSpacing: "0.01em",
+          fontWeight: 800,
+          letterSpacing: "-0.01em",
         }}
-        // shrink to fit the viewBox width so long phrases never clip
-        textLength="960"
-        lengthAdjust="spacingAndGlyphs"
       >
         {text}
       </text>
