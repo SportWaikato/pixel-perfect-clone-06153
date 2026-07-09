@@ -32,6 +32,7 @@ import {
   Building2,
   UserPlus,
   Target,
+  MapPin,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { getActivityIcon, getActivityColor } from "@/modules/activities/utils/activityIcons";
@@ -255,6 +256,46 @@ const AdminDashboardContent = ({
 
         {/* Right Column — Stats */}
         <div className="space-y-6">
+          {/* Regional Movement */}
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-sm">
+                <MapPin className="h-4 w-4 text-[#1B5E4B]" />
+                Movement by Region
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {(() => {
+                const regionData = new Map<string, { schools: number; students: number; minutes: number }>();
+                schools.forEach((s) => {
+                  const r = s.region || "Other";
+                  const e = regionData.get(r) || { schools: 0, students: 0, minutes: 0 };
+                  e.schools += 1;
+                  e.students += s.total_students || 0;
+                  e.minutes += (s as any).total_minutes || 0;
+                  regionData.set(r, e);
+                });
+                const regions = [...regionData.entries()].sort((a, b) => b[1].minutes - a[1].minutes);
+                const maxMins = Math.max(1, ...regions.map(([, d]) => d.minutes));
+                if (regions.length === 0) return <p className="text-sm text-gray-500 text-center py-2">No school data yet.</p>;
+                return (
+                  <div className="space-y-2.5">
+                    {regions.map(([region, data]) => (
+                      <div key={region} className="space-y-0.5">
+                        <div className="flex justify-between text-xs">
+                          <span className="font-medium text-gray-700">{region}</span>
+                          <span className="text-gray-400">{data.schools} school{data.schools !== 1 ? "s" : ""} · {Math.round(data.minutes / 60)}h</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-1.5">
+                          <m.div className="h-1.5 rounded-full" style={{ background: "linear-gradient(90deg, #1B5E4B, #118061)" }} initial={{ width: 0 }} animate={{ width: `${(data.minutes / maxMins) * 100}%` }} transition={{ duration: 0.6, delay: 0.1 }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+            </CardContent>
+          </Card>
           {/* Survey Completion */}
           <Card>
             <CardHeader className="pb-2">

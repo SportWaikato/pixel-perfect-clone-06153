@@ -74,7 +74,7 @@ const AchievementsGrid = ({ userAchievements, allAchievements }: AchievementsGri
   ];
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8 pb-24 md:pb-8">
       <PageHeader
         title="Badges"
         subtitle="Earn badges by logging activities, staying consistent, and hitting milestones"
@@ -232,9 +232,20 @@ const AchievementsGrid = ({ userAchievements, allAchievements }: AchievementsGri
                     </m.div>
                   </TooltipTrigger>
                   <TooltipContent side="top" className="max-w-xs">
-                    <div className="text-center">
-                      <div className="font-semibold text-sm mb-1">{achievement.name}</div>
+                    <div className="text-left space-y-1.5">
+                      <div className="font-semibold text-sm">{achievement.name}</div>
                       <div className="text-xs text-gray-300">{achievement.description}</div>
+                      {achievement.criteria && Object.keys(achievement.criteria).length > 0 && (
+                        <div className="border-t border-white/10 pt-1.5 mt-1">
+                          <p className="text-[10px] uppercase tracking-wider text-gray-400 mb-1">How to earn</p>
+                          {Object.entries(achievement.criteria).map(([key, val]) => (
+                            <p key={key} className="text-xs text-gray-300">
+                              <span className="text-gray-400 capitalize">{key.replace(/_/g, " ")}:</span>{" "}
+                              {String(val)}
+                            </p>
+                          ))}
+                        </div>
+                      )}
                       {isEarned && userAchievement && (
                         <div className="text-xs text-green-400 mt-1 font-medium">
                           ✓ Earned {new Date(userAchievement.earned_at).toLocaleDateString()}
