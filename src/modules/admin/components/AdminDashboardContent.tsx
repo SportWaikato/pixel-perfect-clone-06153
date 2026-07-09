@@ -417,6 +417,51 @@ const AdminDashboardContent = ({
         </div>
       </div>
 
+      {/* Movement Summary */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Activity className="h-5 w-5 text-[#1B5E4B]" />
+            Movement Summary — All Schools
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Real activity data from Karawhiua. Compare with survey responses at /admin/surveys.
+          </p>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {(() => {
+              const totalMinutes = schools.reduce((s, sc) => s + ((sc as any).total_minutes || 0), 0);
+              const totalStudents = schools.reduce((s, sc) => s + (sc.total_students || 0), 0);
+              const activeStudents = schools.reduce((s, sc) => s + (sc.total_students || 0), 0);
+              const avgMinPerStudent = activeStudents > 0 ? Math.round(totalMinutes / activeStudents) : 0;
+              const meets6hr = activeStudents > 0 ? Math.round((schools.filter((sc) => ((sc as any).total_minutes || 0) >= 360).length / schools.length) * 100) : 0;
+
+              return (
+                <>
+                  <div className="text-center p-4 rounded-xl bg-[#1B5E4B]/5">
+                    <div className="text-2xl font-black text-[#1B5E4B]">{Math.round(totalMinutes / 60).toLocaleString()}</div>
+                    <p className="text-xs text-gray-500 mt-1">Total Active Hours</p>
+                  </div>
+                  <div className="text-center p-4 rounded-xl bg-[#1B5E4B]/5">
+                    <div className="text-2xl font-black text-[#1B5E4B]">{activeStudents.toLocaleString()}</div>
+                    <p className="text-xs text-gray-500 mt-1">Active Students</p>
+                  </div>
+                  <div className="text-center p-4 rounded-xl bg-[#1B5E4B]/5">
+                    <div className="text-2xl font-black text-[#1B5E4B]">{avgMinPerStudent}</div>
+                    <p className="text-xs text-gray-500 mt-1">Avg Min/Student</p>
+                  </div>
+                  <div className="text-center p-4 rounded-xl bg-[#1B5E4B]/5">
+                    <div className="text-2xl font-black text-[#1B5E4B]">{meets6hr}%</div>
+                    <p className="text-xs text-gray-500 mt-1">Meet 6+ hrs/wk</p>
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Recent Activity Feed */}
       <Card>
         <CardHeader>
