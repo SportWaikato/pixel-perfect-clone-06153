@@ -22,6 +22,7 @@ import {
   Crown,
   QrCode,
   Monitor,
+  School,
 } from "lucide-react";
 import {
   Dialog,
@@ -40,6 +41,7 @@ import { LeaderboardService } from "@/models/leaderboards/services/LeaderboardSe
 import { toast } from "sonner";
 import ActivityLogPreview from "./ActivityLogPreview";
 import { regenerateJoinCode } from "@/lib/registration.functions";
+import PageHeader from "@/modules/application/components/Layout/PageHeader";
 
 interface SchoolAdminDashboardProps {
   user: UserInterface;
@@ -283,19 +285,18 @@ const SchoolAdminDashboard = ({
   ];
 
   return (
-    <div className="p-6 space-y-6 min-h-screen">
+    <div className="p-6 space-y-6">
       {/* Header */}
-      <div>
-        {viewingSchoolId && (
-          <div className="mb-3">
-            <Link to="/admin/schools" className="text-sm text-blue-600 hover:underline">
-              ← Back to all schools
-            </Link>
-          </div>
-        )}
-        <h1 className="text-3xl font-bold text-gray-900">School Admin Dashboard</h1>
-        <p className="text-gray-600">Managing {schoolName}</p>
-      </div>
+      {viewingSchoolId && (
+        <Link to="/admin/schools" className="text-sm text-blue-600 hover:underline">
+          ← Back to all schools
+        </Link>
+      )}
+      <PageHeader
+        title="School Admin Dashboard"
+        subtitle={`Managing ${schoolName}`}
+        icon={School}
+      />
 
       {/* School Join Link */}
       {!joinCodeLoading && joinCode && (
@@ -391,7 +392,11 @@ const SchoolAdminDashboard = ({
               <div className="text-2xl font-bold">{stats.messageCount}</div>
               <p className="text-xs text-muted-foreground">Unread messages</p>
             </div>
-            <Button asChild className="w-full mt-4" style={{ backgroundColor: "var(--brand-primary-green)" }}>
+            <Button
+              asChild
+              className="w-full mt-4"
+              style={{ backgroundColor: "var(--brand-primary-green)" }}
+            >
               <Link to="/school/updates">Manage messages</Link>
             </Button>
           </CardContent>

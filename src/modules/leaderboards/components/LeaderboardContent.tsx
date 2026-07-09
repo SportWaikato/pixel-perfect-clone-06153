@@ -28,6 +28,7 @@ import { Trophy, Crown, Award, Info, RefreshCw, Loader2 } from "lucide-react";
 import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
 import { formatTimeDisplay } from "@/models/application/constants/applicationConstants";
 import { squishyTap, cardSpring } from "@/modules/application/components/animations/tactile";
+import PageHeader from "@/modules/application/components/Layout/PageHeader";
 
 interface LeaderboardContentProps {
   user: UserInterface;
@@ -402,26 +403,25 @@ const LeaderboardContent = ({
   }
 
   return (
-    <div className="px-4 py-6 sm:p-8 space-y-8 min-h-screen">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="space-y-1">
-          <h1 className="text-3xl sm:text-4xl font-black text-gray-800">Leaderboard</h1>
-          <p className="text-gray-700 text-sm sm:text-base font-accent text-lg">
-            See how you and your school compare with others
-          </p>
-        </div>
-        <m.div {...squishyTap}>
-          <Button
-            onClick={loadLeaderboardData}
-            variant="outline"
-            className="gap-2 w-full sm:w-auto"
-            style={{ backgroundColor: "#1B5E4B", color: "white", borderColor: "#1B5E4B" }}
-          >
-            <RefreshCw className="w-4 h-4" />
-            Refresh
-          </Button>
-        </m.div>
-      </div>
+    <div className="px-4 py-6 sm:p-8 space-y-8">
+      <PageHeader
+        title="Leaderboard"
+        subtitle="See how you and your school compare with others"
+        icon={Trophy}
+        actions={
+          <m.div {...squishyTap}>
+            <Button
+              onClick={loadLeaderboardData}
+              variant="outline"
+              className="gap-2 w-full sm:w-auto"
+              style={{ backgroundColor: "#1B5E4B", color: "white", borderColor: "#1B5E4B" }}
+            >
+              <RefreshCw className="w-4 h-4" />
+              Refresh
+            </Button>
+          </m.div>
+        }
+      />
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
         <TabsList

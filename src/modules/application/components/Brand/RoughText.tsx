@@ -29,11 +29,17 @@ const RoughText = ({
   const text = children.toUpperCase();
   // Rough SVG height a touch taller than the cap height to fit the displacement.
   const h = size * 1.28;
+  // Size the viewBox to the text's NATURAL width so glyphs are never stretched.
+  // Anton is condensed (~0.56em average advance); pad each side for the
+  // displacement bleed. A slight over-estimate leaves whitespace, never clips.
+  const padX = size * 0.35;
+  const textW = text.length * size * 0.56;
+  const vbW = Math.max(textW + padX * 2, size);
   return (
     <svg
       className={className}
       height={h}
-      viewBox={`0 0 1000 ${h}`}
+      viewBox={`0 0 ${vbW} ${h}`}
       preserveAspectRatio="xMidYMid meet"
       role="img"
       aria-label={children}

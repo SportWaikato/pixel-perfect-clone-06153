@@ -25,6 +25,8 @@ import { toast } from "sonner";
 import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
 import { cn } from "@/modules/common/utils";
 import WearableSyncCard from "@/modules/wearables/components/WearableSyncCard";
+import PageHeader from "@/modules/application/components/Layout/PageHeader";
+import { UserCog } from "lucide-react";
 
 interface ProfileContentProps {
   user: UserInterface;
@@ -123,12 +125,13 @@ const ProfileContent = ({ user, initialSchools, initialHouses }: ProfileContentP
   };
 
   return (
-    <div className="p-6 min-h-screen">
+    <div className="p-6">
       <div className="max-w-2xl mx-auto space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Your Profile</h1>
-          <p className="text-gray-600">Manage your personal information and activity goals</p>
-        </div>
+        <PageHeader
+          title="Your Profile"
+          subtitle="Manage your personal information and activity goals"
+          icon={UserCog}
+        />
 
         {isStudent && (
           <div className="text-sm text-gray-500 bg-gray-50 border rounded p-3">

@@ -22,6 +22,7 @@ import {
 } from "@/modules/application/components/DesignSystem/ui/tooltip";
 import { Award, Lock, CheckCircle } from "lucide-react";
 import { BadgeImageHelper } from "@/models/achievements/helpers/BadgeImageHelper";
+import PageHeader from "@/modules/application/components/Layout/PageHeader";
 
 type FilterTab = "all" | "earned" | "unearned";
 
@@ -58,13 +59,12 @@ const AchievementsGrid = ({ userAchievements, allAchievements }: AchievementsGri
   ];
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8 min-h-screen">
-      <div>
-        <h1 className="text-4xl font-black text-[#1B5E4B]">Achievements</h1>
-        <p className="text-gray-700 mt-1 font-accent text-lg">
-          Earn badges by logging activities, staying consistent, and hitting milestones
-        </p>
-      </div>
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8">
+      <PageHeader
+        title="Badges"
+        subtitle="Earn badges by logging activities, staying consistent, and hitting milestones"
+        icon={Award}
+      />
 
       <div className="flex gap-2 mb-6">
         {filterTabs.map((tab) => (

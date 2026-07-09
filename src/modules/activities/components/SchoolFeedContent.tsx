@@ -12,6 +12,7 @@ import { Badge } from "@/modules/application/components/DesignSystem/ui/badge";
 import { Heart, Clock, User2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { usePullToRefresh } from "@/modules/common/hooks/usePullToRefresh";
+import PageHeader from "@/modules/application/components/Layout/PageHeader";
 
 interface SchoolFeedContentProps {
   schoolId: string;
@@ -98,12 +99,11 @@ const SchoolFeedContent = ({ schoolId, userId }: SchoolFeedContentProps) => {
           />
         </div>
       )}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">School Feed</h1>
-        <p className="text-gray-600 mt-1">
-          See what your school is up to. Share your proof photos to the feed when you log activity.
-        </p>
-      </div>
+      <PageHeader
+        title="School Feed"
+        subtitle="See what your school is up to. Share your proof photos to the feed when you log activity."
+        icon={Heart}
+      />
 
       {activities.length === 0 ? (
         <Card className="shadow-sm rounded-2xl border border-gray-200">
