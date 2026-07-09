@@ -24,10 +24,22 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/modules/application/components/DesignSystem/ui/tabs";
-import { Trophy, Crown, Award, Info, RefreshCw, Loader2 } from "lucide-react";
+import {
+  Trophy,
+  Crown,
+  Award,
+  Info,
+  RefreshCw,
+  Loader2,
+  School,
+  Home,
+  Calendar,
+  Globe,
+} from "lucide-react";
 import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
 import { formatTimeDisplay } from "@/models/application/constants/applicationConstants";
 import { squishyTap, cardSpring } from "@/modules/application/components/animations/tactile";
+import PageHeader from "@/modules/application/components/Layout/PageHeader";
 
 interface LeaderboardContentProps {
   user: UserInterface;
@@ -111,56 +123,61 @@ const LeaderboardContent = ({
         </CardHeader>
         <CardContent className="p-6 sm:p-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* School Ranking */}
-            <m.div
-              className="text-center p-5 sm:p-6 bg-[#1B5E4B]/5 border border-gray-200 rounded-2xl"
-              whileHover={{ y: -4, boxShadow: "0 8px 20px -6px rgba(0,0,0,0.1)" }}
-            >
-              <div className="text-5xl sm:text-6xl font-black text-[#1B5E4B] mb-1">
-                {userRankings?.school_rank != null
-                  ? getRankingEmoji(userRankings.school_rank)
-                  : "?"}
-              </div>
-              <div className="text-sm text-gray-600 font-accent">in your school</div>
-              <div className="text-xs text-gray-400 mt-1">{user.school?.name}</div>
-            </m.div>
-
-            {/* House Ranking */}
-            <m.div
-              className="text-center p-5 sm:p-6 bg-[#1B5E4B]/5 border border-gray-200 rounded-2xl"
-              whileHover={{ y: -4, boxShadow: "0 8px 20px -6px rgba(0,0,0,0.1)" }}
-            >
-              <div className="text-5xl sm:text-6xl font-black text-[#1B5E4B] mb-1">
-                {userRankings?.house_rank != null ? getRankingEmoji(userRankings.house_rank) : "?"}
-              </div>
-              <div className="text-sm text-gray-600 font-accent">in your house</div>
-              <div className="text-xs text-gray-400 mt-1">{user.house?.name || "—"}</div>
-            </m.div>
-
-            {/* Year Group Ranking */}
-            <m.div
-              className="text-center p-5 sm:p-6 bg-[#1B5E4B]/5 border border-gray-200 rounded-2xl"
-              whileHover={{ y: -4, boxShadow: "0 8px 20px -6px rgba(0,0,0,0.1)" }}
-            >
-              <div className="text-5xl sm:text-6xl font-black text-[#1B5E4B] mb-1">
-                {userRankings?.year_group_rank != null
-                  ? getRankingEmoji(userRankings.year_group_rank)
-                  : "?"}
-              </div>
-              <div className="text-sm text-gray-600 font-accent">in your year</div>
-              <div className="text-xs text-gray-400 mt-1">{user.year_group ?? "—"}</div>
-            </m.div>
-
-            {/* Overall Ranking */}
-            <m.div
-              className="text-center p-5 sm:p-6 bg-[#1B5E4B]/5 border border-gray-200 rounded-2xl"
-              whileHover={{ y: -4, boxShadow: "0 8px 20px -6px rgba(0,0,0,0.1)" }}
-            >
-              <div className="text-5xl sm:text-6xl font-black text-[#1B5E4B] mb-1">
-                {userRankings?.overall_rank != null ? `#${userRankings.overall_rank}` : "?"}
-              </div>
-              <div className="text-sm text-gray-600 font-accent">overall</div>
-            </m.div>
+            {[
+              {
+                icon: School,
+                rank: userRankings?.school_rank,
+                display:
+                  userRankings?.school_rank != null
+                    ? getRankingEmoji(userRankings.school_rank)
+                    : "?",
+                label: "in your school",
+                sub: user.school?.name,
+              },
+              {
+                icon: Home,
+                rank: userRankings?.house_rank,
+                display:
+                  userRankings?.house_rank != null ? getRankingEmoji(userRankings.house_rank) : "?",
+                label: "in your house",
+                sub: user.house?.name || "—",
+              },
+              {
+                icon: Calendar,
+                rank: userRankings?.year_group_rank,
+                display:
+                  userRankings?.year_group_rank != null
+                    ? getRankingEmoji(userRankings.year_group_rank)
+                    : "?",
+                label: "in your year",
+                sub: user.year_group ?? "—",
+              },
+              {
+                icon: Globe,
+                rank: userRankings?.overall_rank,
+                display: userRankings?.overall_rank != null ? `#${userRankings.overall_rank}` : "?",
+                label: "overall",
+                sub: undefined,
+              },
+            ].map((stat, i) => (
+              <m.div
+                key={stat.label}
+                className="relative text-center p-5 sm:p-6 bg-[#1B5E4B]/5 border border-gray-200 rounded-2xl"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: i * 0.06, ease: "easeOut" }}
+                whileHover={{ y: -4, boxShadow: "0 8px 20px -6px rgba(0,0,0,0.1)" }}
+              >
+                <span className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-lg bg-[#1B5E4B]/10">
+                  <stat.icon className="text-[#1B5E4B]" size={15} />
+                </span>
+                <div className="text-5xl sm:text-6xl font-black text-[#1B5E4B] mb-1">
+                  {stat.display}
+                </div>
+                <div className="text-sm text-gray-600 font-accent">{stat.label}</div>
+                {stat.sub && <div className="text-xs text-gray-400 mt-1 truncate">{stat.sub}</div>}
+              </m.div>
+            ))}
           </div>
 
           {/* Current Progress */}
@@ -402,26 +419,25 @@ const LeaderboardContent = ({
   }
 
   return (
-    <div className="px-4 py-6 sm:p-8 space-y-8 min-h-screen">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="space-y-1">
-          <h1 className="text-3xl sm:text-4xl font-black text-gray-800">Leaderboard</h1>
-          <p className="text-gray-700 text-sm sm:text-base font-accent text-lg">
-            See how you and your school compare with others
-          </p>
-        </div>
-        <m.div {...squishyTap}>
-          <Button
-            onClick={loadLeaderboardData}
-            variant="outline"
-            className="gap-2 w-full sm:w-auto"
-            style={{ backgroundColor: "#1B5E4B", color: "white", borderColor: "#1B5E4B" }}
-          >
-            <RefreshCw className="w-4 h-4" />
-            Refresh
-          </Button>
-        </m.div>
-      </div>
+    <div className="px-4 py-6 sm:p-8 space-y-8">
+      <PageHeader
+        title="Leaderboard"
+        subtitle="See how you and your school compare with others"
+        icon={Trophy}
+        actions={
+          <m.div {...squishyTap}>
+            <Button
+              onClick={loadLeaderboardData}
+              variant="outline"
+              className="gap-2 w-full sm:w-auto"
+              style={{ backgroundColor: "#1B5E4B", color: "white", borderColor: "#1B5E4B" }}
+            >
+              <RefreshCw className="w-4 h-4" />
+              Refresh
+            </Button>
+          </m.div>
+        }
+      />
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
         <TabsList

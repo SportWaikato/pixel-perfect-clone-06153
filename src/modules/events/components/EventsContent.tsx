@@ -26,6 +26,7 @@ import {
   resolveEventIconType,
 } from "@/modules/activities/utils/activityIcons";
 import { Link } from "@tanstack/react-router";
+import PageHeader from "@/modules/application/components/Layout/PageHeader";
 interface EventsContentProps {
   user: UserInterface;
   initialEvents: EventInterface[];
@@ -106,33 +107,26 @@ const EventsContent = ({
   };
 
   return (
-    <div className="px-4 py-6 sm:p-8 min-h-screen" style={{ backgroundColor: "#f5faf8" }}>
+    <div className="px-4 py-6 sm:p-8">
       {/* Header */}
       <div className="mb-6">
-        <div className="flex items-center justify-between gap-3 mb-2">
-          <div className="flex items-center gap-3 min-w-0">
-            <div
-              className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-              style={{ backgroundColor: "#0F806118", color: "#0F8061" }}
+        <PageHeader
+          title="Challenges"
+          subtitle="Join virtual sporting challenges and compete with students from other schools"
+          icon={Target}
+          actions={
+            <Button
+              onClick={() => setShowCreateDialog(true)}
+              size="sm"
+              className="gap-2 font-bold shrink-0"
+              style={{ backgroundColor: "#1B5E4B", color: "white" }}
             >
-              <Target size={22} />
-            </div>
-            <h1 className="text-3xl sm:text-4xl font-black text-[#1B5E4B]">Challenges</h1>
-          </div>
-          <Button
-            onClick={() => setShowCreateDialog(true)}
-            size="sm"
-            className="gap-2 font-bold shrink-0"
-            style={{ backgroundColor: "#1B5E4B", color: "white" }}
-          >
-            <Plus className="w-4 h-4" />
-            <span className="hidden sm:inline">Suggest a challenge</span>
-            <span className="sm:hidden">Suggest</span>
-          </Button>
-        </div>
-        <p className="text-sm sm:text-base" style={{ color: "#357665" }}>
-          Join virtual sporting challenges and compete with students from other schools
-        </p>
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">Suggest a challenge</span>
+              <span className="sm:hidden">Suggest</span>
+            </Button>
+          }
+        />
       </div>
 
       {/* Search */}

@@ -27,6 +27,7 @@ import {
 import { RefreshCw, Award, Zap } from "lucide-react";
 import { m } from "framer-motion";
 import StudentProgressionCard from "@/modules/dashboard/components/StudentProgressionCard";
+import PageHeader from "@/modules/application/components/Layout/PageHeader";
 import SurveyPromptCard from "@/modules/surveys/components/SurveyPromptCard";
 import { ActivityInterface } from "@/models/activities/interfaces/ActivityInterface";
 import {
@@ -161,33 +162,28 @@ const DashboardContent = ({
   };
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8 min-h-screen">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1
-            className="text-4xl font-black text-[#1B5E4B]"
-            style={{ fontFamily: "var(--font-heading)" }}
-          >
-            {greeting}
-          </h1>
-          <p className="text-gray-700 font-accent text-lg">Track your progress and achievements</p>
-        </div>
-        <m.div {...squishyTap}>
-          <Link
-            to="/activities"
-            className="flex flex-col items-center justify-center w-20 h-20 rounded-full transition-opacity hover:opacity-80 cursor-pointer"
-            style={{ backgroundColor: "#D103D1" }}
-          >
-            <Zap size={24} className="text-white" />
-            <span className="text-white text-xs font-semibold leading-tight text-center">
-              Log
-              <br />
-              Activity
-            </span>
-          </Link>
-        </m.div>
-      </div>
+      <PageHeader
+        title={greeting}
+        subtitle="Track your progress and achievements"
+        actions={
+          <m.div {...squishyTap}>
+            <Link
+              to="/activities"
+              className="flex flex-col items-center justify-center w-20 h-20 rounded-full shadow-lg transition-opacity hover:opacity-80 cursor-pointer"
+              style={{ backgroundColor: "#D103D1" }}
+            >
+              <Zap size={24} className="text-white" />
+              <span className="text-white text-xs font-semibold leading-tight text-center">
+                Log
+                <br />
+                Activity
+              </span>
+            </Link>
+          </m.div>
+        }
+      />
 
       {pendingSurvey && (
         <SurveyPromptCard
@@ -216,51 +212,51 @@ const DashboardContent = ({
           style={{ backgroundColor: "#f9fefd" }}
         >
           <CardHeader className="flex flex-row items-center justify-between px-8">
-          <div>
-            <CardTitle className="flex items-center gap-2 text-[#1B5E4B] text-2xl font-black">
-              Monthly Progress
-              <span className="text-sm font-normal text-gray-500">
-                {new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })}
-              </span>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-6 w-6 p-0 text-[#1B5E4B] hover:bg-[#1B5E4B]/10"
-                onClick={handleRecalculateTotals}
-                title="Refresh monthly progress"
-              >
-                <RefreshCw size={14} />
-              </Button>
-            </CardTitle>
-            <div className="text-6xl font-black mt-2 text-[#1B5E4B]">
-              {formatTimeDisplay(currentMonthMinutes)}
+            <div>
+              <CardTitle className="flex items-center gap-2 text-[#1B5E4B] text-2xl font-black">
+                Monthly Progress
+                <span className="text-sm font-normal text-gray-500">
+                  {new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 w-6 p-0 text-[#1B5E4B] hover:bg-[#1B5E4B]/10"
+                  onClick={handleRecalculateTotals}
+                  title="Refresh monthly progress"
+                >
+                  <RefreshCw size={14} />
+                </Button>
+              </CardTitle>
+              <div className="text-6xl font-black mt-2 text-[#1B5E4B]">
+                {formatTimeDisplay(currentMonthMinutes)}
+              </div>
+              <p className="text-lg font-semibold text-gray-600">
+                of {formatTimeDisplay(monthlyGoalMinutes)} goal
+              </p>
             </div>
-            <p className="text-lg font-semibold text-gray-600">
-              of {formatTimeDisplay(monthlyGoalMinutes)} goal
-            </p>
-          </div>
-          <div className="text-right">
-            <div className="text-4xl font-black" style={{ color: "#D103D1" }}>
-              {Math.round(progressPercentage)}%
+            <div className="text-right">
+              <div className="text-4xl font-black" style={{ color: "#D103D1" }}>
+                {Math.round(progressPercentage)}%
+              </div>
+              <p className="text-sm text-gray-500">completed</p>
             </div>
-            <p className="text-sm text-gray-500">completed</p>
-          </div>
-        </CardHeader>
-        <CardContent className="px-8">
-          <div className="mb-4">
-            <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-              <m.div
-                className="h-4 rounded-full"
-                initial={{ width: 0 }}
-                animate={{ width: `${Math.min(progressPercentage, 100)}%` }}
-                transition={{ type: "spring", stiffness: 60, damping: 18, delay: 0.2 }}
-                style={{
-                  background: "linear-gradient(90deg, #D103D1, #FF1493)",
-                }}
-              />
+          </CardHeader>
+          <CardContent className="px-8">
+            <div className="mb-4">
+              <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                <m.div
+                  className="h-4 rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${Math.min(progressPercentage, 100)}%` }}
+                  transition={{ type: "spring", stiffness: 60, damping: 18, delay: 0.2 }}
+                  style={{
+                    background: "linear-gradient(90deg, #D103D1, #FF1493)",
+                  }}
+                />
+              </div>
             </div>
-          </div>
-        </CardContent>
+          </CardContent>
           <CardContent className="px-8 pt-0">
             <div className="grid grid-cols-3 text-center">
               <div className="py-4 px-4 rounded-2xl">

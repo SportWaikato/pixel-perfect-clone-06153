@@ -9,6 +9,9 @@ import LogActivityWizard from "./LogActivityWizard/LogActivityWizard";
 import ActivityHistory from "./ActivityHistory";
 import { toast } from "sonner";
 import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
+import PageHeader from "@/modules/application/components/Layout/PageHeader";
+import Reveal from "@/modules/application/components/Layout/Reveal";
+import { Zap } from "lucide-react";
 
 interface ActivitiesContentProps {
   user: UserInterface;
@@ -84,12 +87,14 @@ const ActivitiesContent = ({
   };
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8 min-h-screen">
-      <div>
-        <h1 className="text-4xl font-black text-gray-800">Activities</h1>
-      </div>
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8">
+      <PageHeader
+        title="Log Activity"
+        subtitle="Every move counts — record what you did and earn points for your House."
+        icon={Zap}
+      />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+      <Reveal className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
         {editingActivity ? (
           <LogActivityForm
             user={user}
@@ -110,7 +115,7 @@ const ActivitiesContent = ({
           onEditActivity={handleEditActivity}
           onDeleteActivity={handleDeleteActivity}
         />
-      </div>
+      </Reveal>
     </div>
   );
 };

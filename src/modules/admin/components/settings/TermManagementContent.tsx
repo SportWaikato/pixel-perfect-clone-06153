@@ -297,9 +297,15 @@ const TermManagementContent = ({
           </p>
         </div>
         <Button asChild className="gap-2 bg-[#1B5E4B] hover:bg-[#0a3f30]">
-          <Link to="/admin/assembly" search={schoolId ? { schoolId } : {}}>
-            <Monitor className="h-4 w-4" /> Assembly Mode
-          </Link>
+          {currentUser.role === "super_admin" ? (
+            <Link to="/admin/assembly" search={schoolId ? { schoolId } : {}}>
+              <Monitor className="h-4 w-4" /> Assembly Mode
+            </Link>
+          ) : (
+            <Link to="/school/assembly">
+              <Monitor className="h-4 w-4" /> Assembly Mode
+            </Link>
+          )}
         </Button>
       </div>
 
@@ -322,9 +328,10 @@ const TermManagementContent = ({
                 <AlertDialogHeader>
                   <AlertDialogTitle>Reset term points?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This zeroes house and school leaderboard scores for the current term. Students
-                    keep their lifetime points, badges, and streaks on their dashboards. Only the
-                    competition leaderboard resets.
+                    This zeroes House and School leaderboard points so a new term can start fresh.
+                    Every student keeps their full activity log, minutes moved, earned badges, and
+                    streaks — nothing in their own history is deleted. Only the competition
+                    leaderboard resets.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

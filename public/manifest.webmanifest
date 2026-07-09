@@ -1,13 +1,14 @@
 {
-  "name": "Karawhiua — Virtual Sports Day",
+  "name": "Karawhiua — Go For It!",
   "short_name": "Karawhiua",
-  "description": "Sport Waikato's school physical activity competition. Log activities, earn points for your house, and climb the leaderboard.",
+  "description": "The new way to sports day. Log any movement, earn points for your House, and go head-to-head with schools across Aotearoa. Every move counts.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
   "theme_color": "#1b5e4b",
-  "background_color": "#f5f5f0",
+  "background_color": "#f2f0eb",
+  "categories": ["health", "education", "sports"],
   "icons": [
     {
       "src": "/icons/icon-192.png",

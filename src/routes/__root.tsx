@@ -79,11 +79,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Karawhiua — Virtual Sports Day" },
+      { title: "Karawhiua — Go For It!" },
       {
         name: "description",
         content:
-          "Karawhiua Virtual Sports Day — Sport Waikato's school physical activity competition. Log activities, earn points for your house, and climb the leaderboard.",
+          "The new way to sports day. Log any movement, earn points for your House, and go head-to-head with schools across Aotearoa. Every move counts.",
       },
       { name: "author", content: "Sport Waikato" },
       { name: "theme-color", content: "#1b5e4b" },
@@ -92,29 +92,31 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "apple-mobile-web-app-title", content: "Karawhiua" },
-      { property: "og:title", content: "Karawhiua — Virtual Sports Day" },
+      { property: "og:title", content: "Karawhiua — Go For It!" },
       {
         property: "og:description",
         content:
-          "Sport Waikato's school physical activity competition. Log activities, earn points for your house, and climb the leaderboard.",
+          "The new way to sports day. Log any movement, earn points for your House, and compete with schools across Aotearoa.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:image", content: "/KarawhiuaLogo.png" },
+      { property: "og:image", content: "/icons/icon-512.png" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:title", content: "Karawhiua — Virtual Sports Day" },
+      { name: "twitter:title", content: "Karawhiua — Go For It!" },
       {
         name: "twitter:description",
         content:
-          "Sport Waikato's school physical activity competition. Log activities, earn points for your house, and climb the leaderboard.",
+          "The new way to sports day. Every move counts.",
       },
-      { name: "twitter:image", content: "/KarawhiuaLogo.png" },
+      { name: "twitter:image", content: "/icons/icon-512.png" },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "icon", type: "image/png", href: "/KarawhiuaLogo.png" },
+      { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
+      { rel: "icon", type: "image/png", sizes: "32x32", href: "/icons/icon-32.png" },
+      { rel: "icon", type: "image/png", sizes: "192x192", href: "/icons/icon-192.png" },
       { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "apple-touch-icon", href: "/icons/apple-touch-icon.png" },
     ],
