@@ -131,10 +131,10 @@ ${responseText.slice(0, 50000)}`;
     return { report: text };
   });
 
-// Extracts activity duration in minutes from a workout tracking screenshot.
+// Extracts activity type and duration in minutes from a workout tracking screenshot.
 // Supports Apple Watch, Garmin, Strava, Fitbit, and generic fitness app screenshots.
-// Returns the parsed duration in minutes.
-export const extractMinutesFromScreenshot = createServerFn({ method: "POST" })
+// Returns activity_type (matching ACTIVITY_TYPES keys) and duration in minutes.
+export const scanWorkoutScreenshot = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((input: unknown) => {
     const { base64Image } = input as { base64Image: string };
@@ -148,32 +148,35 @@ export const extractMinutesFromScreenshot = createServerFn({ method: "POST" })
     const { GoogleGenerativeAI } = await import("@google/generative-ai");
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+      generationConfig: { maxOutputTokens: 200 },
+    });
 
     const base64Data = data.base64Image.replace(/^data:image\/\w+;base64,/, "");
-    const imagePart = {
-      inlineData: { data: base64Data, mimeType: "image/png" },
-    };
 
-    const prompt = `Look at this fitness/workout tracking screenshot. Extract the duration of the activity in minutes. Common formats:
-- Apple Watch: "30 min" or "30:00"
-- Strava: "Duration: 45 minutes" or moving time
-- Garmin: "Time: 1h 15m"
-- Generic: "45m" or "1 hour"
+    const prompt = `Look at this workout screenshot and return ONLY a JSON object. No other text.
 
-Return ONLY a JSON object like: {"minutes": 30, "confidence": "high"}
-If you cannot determine the duration, return: {"minutes": null, "confidence": "none"}
+Available activity types: run_jog, bike_cycle, walk_hike, skating, scootering, swim, dance, gym_workout, yoga, sport_game, crossfit, hiit, pilates, boxing, jump_rope, row, surf, climb, ski_snowboard, team_practice, something_else
 
-Do NOT include any other text — just the JSON.`;
+Detect:
+1. "activity_type": the best matching type from the list above
+2. "duration_minutes": the duration as a number (e.g. 30)
 
-    const result = await model.generateContent([prompt, imagePart]);
-    const text = result.response.text();
+Return JSON: {"activity_type": "run_jog", "duration_minutes": 30}
+If you cannot determine either, return: {"activity_type": null, "duration_minutes": null}`;
 
     try {
+      const result = await model.generateContent([
+        { text: prompt },
+        { inlineData: { mimeType: "image/png", data: base64Data } },
+      ]);
+      const text = result.response.text();
       const match = text.match(/\{[\s\S]*\}/);
       if (match) return JSON.parse(match[0]);
-      return { minutes: null, confidence: "none", raw: text };
-    } catch {
-      return { minutes: null, confidence: "none", raw: text };
+      return { activity_type: null, duration_minutes: null, raw: text };
+    } catch (err: any) {
+      console.error("scanWorkoutScreenshot error:", err.message);
+      return { activity_type: null, duration_minutes: null, error: err.message };
     }
   });
