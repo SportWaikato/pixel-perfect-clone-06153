@@ -200,7 +200,7 @@ const EventsContent = ({
                   : null;
 
               return (
-                <Link key={event.id} to="/events/$id" params={{ id: event.id }}>
+                <Link key={event.id} to="/challenges/$id" params={{ id: event.id }}>
                   <m.div
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -308,7 +308,7 @@ const EventsContent = ({
               const participating = userParticipation.includes(event.id);
 
               return (
-                <Link key={event.id} to="/events/$id" params={{ id: event.id }}>
+                <Link key={event.id} to="/challenges/$id" params={{ id: event.id }}>
                   <m.div
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}

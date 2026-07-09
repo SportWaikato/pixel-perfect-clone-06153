@@ -22,7 +22,6 @@ import {
 } from "@/modules/application/components/DesignSystem/ui/tooltip";
 import { Award, Lock, CheckCircle } from "lucide-react";
 import { BadgeImageHelper } from "@/models/achievements/helpers/BadgeImageHelper";
-import { m } from "framer-motion";
 
 type FilterTab = "all" | "earned" | "unearned";
 

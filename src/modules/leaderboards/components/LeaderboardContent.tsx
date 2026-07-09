@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { m } from "framer-motion";
 import { UserInterface } from "@/models/users/interfaces/UserInterface";
 import {
@@ -27,7 +27,6 @@ import {
 import { Trophy, Crown, Award, Info, RefreshCw, Loader2 } from "lucide-react";
 import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
 import { formatTimeDisplay } from "@/models/application/constants/applicationConstants";
-import { m } from "framer-motion";
 import { squishyTap, cardSpring } from "@/modules/application/components/animations/tactile";
 
 interface LeaderboardContentProps {

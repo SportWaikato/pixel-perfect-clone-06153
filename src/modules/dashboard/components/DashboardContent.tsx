@@ -46,7 +46,6 @@ import { useRouter } from "@tanstack/react-router";
 import { useState, useEffect, useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 import { BadgeImageHelper } from "@/models/achievements/helpers/BadgeImageHelper";
-import { m } from "framer-motion";
 import { squishyTap } from "@/modules/application/components/animations/tactile";
 
 interface DashboardContentProps {
@@ -212,7 +211,11 @@ const DashboardContent = ({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: "easeOut" }}
       >
-        <CardHeader className="flex flex-row items-center justify-between px-8">
+        <Card
+          className="shadow-sm rounded-2xl border border-gray-200"
+          style={{ backgroundColor: "#f9fefd" }}
+        >
+          <CardHeader className="flex flex-row items-center justify-between px-8">
           <div>
             <CardTitle className="flex items-center gap-2 text-[#1B5E4B] text-2xl font-black">
               Monthly Progress
@@ -257,42 +260,8 @@ const DashboardContent = ({
               />
             </div>
           </div>
-          <div className="grid grid-cols-3 text-center">
-            <div className="py-4 px-4 rounded-2xl">
-              <div className="text-3xl font-bold text-[#1B5E4B]">{totalPoints}</div>
-              <p className="text-sm text-gray-500">Total Points</p>
-            </div>
-            <div className="py-4 px-4 rounded-2xl">
-              <div className="text-3xl font-bold text-[#1B5E4B]">{earnedCount}</div>
-              <p className="text-sm text-gray-500">Badges Earned</p>
-            </div>
-            <div className="py-4 px-4 rounded-2xl">
-              <div className="text-3xl font-bold text-[#1B5E4B]">
-                {Math.max(0, Math.ceil((monthlyGoalMinutes - currentMonthMinutes) / 60))}
-              </div>
-              <p className="text-lg text-gray-600 font-accent">
-                of {formatTimeDisplay(monthlyGoalMinutes)} goal
-              </p>
-            </div>
-            <div className="text-right">
-              <div className="text-5xl font-black" style={{ color: "#D103D1" }}>
-                {Math.round(progressPercentage)}%
-              </div>
-              <p className="text-sm text-gray-500 font-accent text-lg">completed</p>
-            </div>
-          </CardHeader>
-          <CardContent className="px-8">
-            <div className="mb-4">
-              <div className="w-full bg-gray-200 rounded-full h-4">
-                <div
-                  className="h-4 rounded-full transition-all duration-300"
-                  style={{
-                    width: `${Math.min(progressPercentage, 100)}%`,
-                    background: "linear-gradient(90deg, #D103D1, #FF1493)",
-                  }}
-                />
-              </div>
-            </div>
+        </CardContent>
+          <CardContent className="px-8 pt-0">
             <div className="grid grid-cols-3 text-center">
               <div className="py-4 px-4 rounded-2xl">
                 <div className="text-4xl font-black text-[#1B5E4B]">{totalPoints}</div>
