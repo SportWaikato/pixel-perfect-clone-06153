@@ -20,7 +20,7 @@ import { SchoolMessageService } from "@/models/schoolMessages/services/SchoolMes
 const SCHOOL_ADMIN_TABS = [
   { href: "/school", label: "Dashboard", icon: LayoutDashboard },
   { href: "/school/users", label: "Users", icon: Users },
-  { href: "/school/updates", label: "Koorero", icon: MessageSquare },
+  { href: "/school/updates", label: "Announcements", icon: MessageSquare },
   { href: "/school/events", label: "Challenges", icon: Calendar },
   { href: "/school/activity", label: "Activity", icon: Award },
 ];
@@ -29,7 +29,7 @@ const SUPER_ADMIN_TABS = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/schools", label: "Schools", icon: Building },
   { href: "/admin/users", label: "Users", icon: Users },
-  { href: "/admin/events", label: "Events", icon: Calendar },
+  { href: "/admin/events", label: "Challenges", icon: Calendar },
   { href: "/admin/badges", label: "Badges", icon: Award },
 ];
 

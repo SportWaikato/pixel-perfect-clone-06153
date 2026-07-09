@@ -41,7 +41,7 @@ function AuthenticatedShell() {
       <ConditionalNavigation />
       <div
         key={pathname}
-        className="min-h-screen bg-brand-grey animate-in fade-in slide-in-from-bottom-1 duration-200"
+        className="min-h-screen bg-brand-grey pb-20 md:pb-0 animate-in fade-in slide-in-from-bottom-1 duration-200"
       >
         <Outlet />
       </div>
