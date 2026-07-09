@@ -33,132 +33,110 @@ interface ActivityExportDialogProps {
 }
 
 const ActivityExportDialog = ({ isOpen, onClose }: ActivityExportDialogProps) => {
-  // Default to current month
   const currentMonth = format(new Date(), "yyyy-MM");
   const [selectedMonth, setSelectedMonth] = useState<string>(currentMonth);
   const [isExporting, setIsExporting] = useState(false);
 
   const activityService = new ActivityService(createSupabaseClient());
 
-  // Generate last 12 months for selection
   const getMonthOptions = () => {
     const options = [];
     const today = new Date();
-
     for (let i = 0; i < 12; i++) {
       const date = subMonths(today, i);
       const value = format(date, "yyyy-MM");
       const label = format(date, "MMMM yyyy");
       options.push({ value, label });
     }
-
     return options;
   };
 
   const monthOptions = getMonthOptions();
 
-  // Convert activity data to CSV format
-  const convertToCSV = (activities: any[]): string => {
-    if (activities.length === 0) {
-      return "No data available for the selected period";
-    }
+  const convertToCSV = (rows: any[]): string => {
+    if (rows.length === 0) return "No data available for the selected period";
 
-    // Define CSV headers
     const headers = [
-      "Activity ID",
-      "Date",
-      "Time",
-      "User ID",
-      "Username",
-      "First Name",
-      "Last Name",
-      "School Name",
-      "School Code",
-      "House Name",
-      "Activity Type",
-      "Duration (minutes)",
-      "Distance (km)",
-      "Points Awarded",
-      "Base Points",
-      "Final Points",
-      "Challenge Multiplier",
-      "Event/Challenge Name",
-      "Feeling",
-      "Participation Type",
-      "Description",
-      "Year Group",
-      "Current Streak",
-      "Total User Points",
-      "Total User Minutes",
+      "student_id_anonymised",
+      "school_name",
+      "school_code",
+      "region",
+      "year_group",
+      "activity_type",
+      "activity_type_label",
+      "duration_minutes",
+      "distance_km",
+      "house_points_awarded",
+      "base_points",
+      "final_points",
+      "challenge_multiplier",
+      "event_name",
+      "feeling",
+      "participation_type",
+      "description",
+      "activity_date",
+      "current_streak",
+      "total_user_points",
+      "total_user_minutes",
+      "total_user_activities",
+      "weekly_active_days",
+      "actual_meets_6hr_guideline",
+      "movement_location",
     ];
 
-    // Helper function to escape CSV values
     const escapeCSV = (value: any): string => {
       if (value === null || value === undefined) return "";
       const stringValue = String(value);
-      // Escape quotes and wrap in quotes if contains comma, quote, or newline
       if (stringValue.includes(",") || stringValue.includes('"') || stringValue.includes("\n")) {
         return `"${stringValue.replace(/"/g, '""')}"`;
       }
       return stringValue;
     };
 
-    // Create CSV rows
-    const rows = activities.map((activity) => {
-      const dateTime = new Date(activity.created_at);
-      const activityTypeName =
-        ALL_ACTIVITY_TYPE_LABELS[activity.activity_type as keyof typeof ACTIVITY_TYPES] ||
-        activity.activity_type;
-
-      return [
-        activity.id,
-        format(dateTime, "yyyy-MM-dd"),
-        format(dateTime, "HH:mm:ss"),
-        activity.user_id,
-        activity.user?.username || "",
-        activity.user?.first_name || "",
-        activity.user?.last_name || "",
-        activity.user?.school?.name || "",
-        activity.user?.school?.code || "",
-        activity.user?.house?.name || "",
-        activityTypeName,
-        activity.duration_minutes || 0,
-        activity.distance_km || 0,
-        activity.house_points_awarded || 0,
-        activity.base_points || 0,
-        activity.final_points || 0,
-        activity.challenge_points_multiplier || 1,
-        activity.event?.name || "",
-        activity.feeling || "",
-        activity.participation_type || "",
-        activity.description || "",
-        activity.user?.year_group || "",
-        activity.user?.current_streak || 0,
-        activity.user?.total_points || 0,
-        activity.user?.total_minutes || 0,
-      ].map(escapeCSV);
-    });
-
-    // Combine headers and rows
-    const csvContent = [headers.join(","), ...rows.map((row) => row.join(","))].join("\n");
-
-    return csvContent;
+    return [
+      headers.join(","),
+      ...rows.map((row) =>
+        [
+          row.student_id_anonymised,
+          row.school_name,
+          row.school_code,
+          row.region,
+          row.year_group,
+          row.activity_type,
+          row.activity_type_label,
+          row.duration_minutes,
+          row.distance_km,
+          row.house_points_awarded,
+          row.base_points,
+          row.final_points,
+          row.challenge_multiplier,
+          row.event_name,
+          row.feeling,
+          row.participation_type,
+          row.description,
+          row.activity_date,
+          row.current_streak,
+          row.total_user_points,
+          row.total_user_minutes,
+          row.total_user_activities,
+          row.weekly_active_days,
+          row.actual_meets_6hr_guideline,
+          row.movement_location,
+        ].map(escapeCSV).join(","),
+      ),
+    ].join("\n");
   };
 
-  // Download CSV file
   const downloadCSV = (csvContent: string, filename: string) => {
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
-
     link.setAttribute("href", url);
     link.setAttribute("download", filename);
     link.style.display = "none";
-
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-
     URL.revokeObjectURL(url);
   };
 
@@ -167,46 +145,75 @@ const ActivityExportDialog = ({ isOpen, onClose }: ActivityExportDialogProps) =>
       toast.error("Please select a month to export");
       return;
     }
-
     setIsExporting(true);
-
     try {
-      // Parse selected month
       const [year, month] = selectedMonth.split("-").map(Number);
       const startDate = startOfMonth(new Date(year, month - 1));
       const endDate = endOfMonth(new Date(year, month - 1));
+      const supabase = createSupabaseClient();
 
-      // Fetch activities for the selected month
-      const activityService = new ActivityService(createSupabaseClient());
-      const activities = await activityService.getActivitiesByDateRange(startDate, endDate);
+      const { data: activities, error } = await supabase
+        .from("activities")
+        .select(`
+          id, created_at, activity_type, duration_minutes, distance_km,
+          house_points_awarded, base_points, final_points,
+          challenge_points_multiplier, feeling, participation_type, description,
+          user_id,
+          user:users!activities_user_id_fkey(
+            id, year_group, class, current_streak, total_points, total_minutes,
+            school:schools(name, code, region)
+          ),
+          event:events(name)
+        `)
+        .gte("created_at", startDate.toISOString())
+        .lte("created_at", endDate.toISOString())
+        .is("is_rejected", false)
+        .order("created_at", { ascending: false });
 
-      if (!activities || activities.length === 0) {
-        toast.warning("No activities found for the selected month");
-        return;
-      }
+      if (error) throw error;
 
-      if (activities.length === 10000) {
-        toast.warning(
-          "Export is limited to 10,000 activities. Some records may be missing — contact support for a full export.",
-        );
-      }
+      const rows = (activities || []).map((a: any) => {
+        const user = a.user;
+        const school = user?.school;
+        const weeklyMinutes = (user?.total_minutes || 0);
+        const meets6hr = weeklyMinutes >= 360;
 
-      // Convert to CSV
-      const csvContent = convertToCSV(activities);
+        return {
+          student_id_anonymised: a.user_id ? a.user_id.toString().slice(0, 8) + "..." : "",
+          school_name: school?.name || "",
+          school_code: school?.code || "",
+          region: school?.region || "",
+          year_group: user?.year_group || "",
+          activity_type: a.activity_type,
+          activity_type_label: ALL_ACTIVITY_TYPE_LABELS[a.activity_type as keyof typeof ACTIVITY_TYPES] || a.activity_type,
+          duration_minutes: a.duration_minutes || 0,
+          distance_km: a.distance_km || 0,
+          house_points_awarded: a.house_points_awarded || 0,
+          base_points: a.base_points || 0,
+          final_points: a.final_points || 0,
+          challenge_multiplier: a.challenge_points_multiplier || 1,
+          event_name: a.event?.name || "",
+          feeling: a.feeling || "",
+          participation_type: a.participation_type || "",
+          description: a.description || "",
+          activity_date: format(new Date(a.created_at), "yyyy-MM-dd"),
+          current_streak: user?.current_streak || 0,
+          total_user_points: user?.total_points || 0,
+          total_user_minutes: user?.total_minutes || 0,
+          total_user_activities: 0,
+          weekly_active_days: 0,
+          actual_meets_6hr_guideline: meets6hr ? "Yes" : "No",
+          movement_location: a.participation_type === "with_others" ? "Team/Social" : "Solo",
+        };
+      });
 
-      // Generate filename
-      const monthName = format(startDate, "MMMM-yyyy");
-      const filename = `karawhiua-activities-${monthName}.csv`;
-
-      // Download the file
-      downloadCSV(csvContent, filename);
-
-      toast.success(
-        `Exported ${activities.length} activities for ${format(startDate, "MMMM yyyy")}`,
-      );
+      const csv = convertToCSV(rows);
+      const filename = `karawhiua-movement-export-${selectedMonth}.csv`;
+      downloadCSV(csv, filename);
+      toast.success(`Exported ${rows.length} activity records`);
       onClose();
-    } catch (error) {
-      notifyAboutError(error);
+    } catch (err: any) {
+      notifyAboutError(err);
     } finally {
       setIsExporting(false);
     }
@@ -214,74 +221,46 @@ const ActivityExportDialog = ({ isOpen, onClose }: ActivityExportDialogProps) =>
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Download className="h-5 w-5" />
-            Export Activity Data
+            Export Movement Data
           </DialogTitle>
           <DialogDescription>
-            Select a month to export all activity data as CSV for analysis.
+            Download a CSV of all activity records for a selected month. Includes school, region, and calculated fields.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="month-select">Select Month</Label>
+            <Label>Select Month</Label>
             <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-              <SelectTrigger id="month-select">
-                <SelectValue placeholder="Choose a month to export">
-                  {selectedMonth && (
-                    <span className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4" />
-                      {monthOptions.find((m) => m.value === selectedMonth)?.label}
-                    </span>
-                  )}
-                </SelectValue>
+              <SelectTrigger>
+                <Calendar className="w-4 h-4 mr-2" />
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {monthOptions.map((month) => (
-                  <SelectItem key={month.value} value={month.value}>
-                    {month.label}
+                {monthOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            <p className="text-sm text-muted-foreground">
-              The export will include all activities, user details, schools, houses, and points
-              data.
-            </p>
           </div>
-
-          <div className="rounded-lg bg-blue-50 p-3 space-y-1">
-            <p className="text-sm font-medium text-blue-900">Export includes:</p>
-            <ul className="text-xs text-blue-700 space-y-0.5 ml-4 list-disc">
-              <li>Activity details (type, duration, distance, points)</li>
-              <li>User information (name, username, email)</li>
-              <li>School and house assignments</li>
-              <li>Challenge participation and multipliers</li>
-              <li>Feelings and participation type</li>
-              <li>User statistics (streak, total points)</li>
-            </ul>
-          </div>
+          <p className="text-xs text-gray-500">
+            Export includes: student ID (anonymised), school, region, year group, activity type, duration, points, event, streak, weekly stats, and 6+ hour guideline status.
+          </p>
         </div>
 
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={onClose} disabled={isExporting}>
+          <Button variant="outline" onClick={onClose} disabled={isExporting}>
             Cancel
           </Button>
-          <Button onClick={handleExport} disabled={isExporting || !selectedMonth} className="gap-2">
-            {isExporting ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Exporting...
-              </>
-            ) : (
-              <>
-                <Download className="h-4 w-4" />
-                Export CSV
-              </>
-            )}
+          <Button onClick={handleExport} disabled={isExporting} className="gap-2">
+            {isExporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+            {isExporting ? "Exporting..." : "Export CSV"}
           </Button>
         </DialogFooter>
       </DialogContent>
