@@ -42,6 +42,13 @@ import { toast } from "sonner";
 import ActivityLogPreview from "./ActivityLogPreview";
 import { regenerateJoinCode } from "@/lib/registration.functions";
 import PageHeader from "@/modules/application/components/Layout/PageHeader";
+import { m } from "framer-motion";
+
+const statCardSpring = {
+  initial: { opacity: 0, y: 12 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.25 },
+};
 
 interface SchoolAdminDashboardProps {
   user: UserInterface;
@@ -360,58 +367,74 @@ const SchoolAdminDashboard = ({
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Students</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalUsers}</div>
-            <p className="text-xs text-muted-foreground">{stats.activeUsers} active</p>
-          </CardContent>
-        </Card>
+        <m.div {...statCardSpring} transition={{ ...statCardSpring.transition, delay: 0 }}>
+          <Card className="h-full hover:shadow-md transition-shadow">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Students</CardTitle>
+              <div className="p-1.5 rounded-lg bg-blue-50">
+                <Users className="h-4 w-4 text-blue-600" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.totalUsers}</div>
+              <p className="text-xs text-muted-foreground">{stats.activeUsers} active</p>
+            </CardContent>
+          </Card>
+        </m.div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">School Total</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{Math.round(stats.totalMinutes)} minutes</div>
-            <p className="text-xs text-muted-foreground">All student activities</p>
-          </CardContent>
-        </Card>
+        <m.div {...statCardSpring} transition={{ ...statCardSpring.transition, delay: 0.05 }}>
+          <Card className="h-full hover:shadow-md transition-shadow">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">School Total</CardTitle>
+              <div className="p-1.5 rounded-lg bg-green-50">
+                <TrendingUp className="h-4 w-4 text-green-600" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{Math.round(stats.totalMinutes)} minutes</div>
+              <p className="text-xs text-muted-foreground">All student activities</p>
+            </CardContent>
+          </Card>
+        </m.div>
 
-        <Card className="flex flex-col">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Koorero</CardTitle>
-            <MessageSquare className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent className="flex flex-col flex-1 justify-between">
-            <div>
-              <div className="text-2xl font-bold">{stats.messageCount}</div>
-              <p className="text-xs text-muted-foreground">Unread messages</p>
-            </div>
-            <Button
-              asChild
-              className="w-full mt-4"
-              style={{ backgroundColor: "var(--brand-primary-green)" }}
-            >
-              <Link to="/school/updates">Manage messages</Link>
-            </Button>
-          </CardContent>
-        </Card>
+        <m.div {...statCardSpring} transition={{ ...statCardSpring.transition, delay: 0.1 }}>
+          <Card className="h-full flex flex-col hover:shadow-md transition-shadow">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Koorero</CardTitle>
+              <div className="p-1.5 rounded-lg bg-purple-50">
+                <MessageSquare className="h-4 w-4 text-purple-600" />
+              </div>
+            </CardHeader>
+            <CardContent className="flex flex-col flex-1 justify-between">
+              <div>
+                <div className="text-2xl font-bold">{stats.messageCount}</div>
+                <p className="text-xs text-muted-foreground">Unread messages</p>
+              </div>
+              <Button
+                asChild
+                className="w-full mt-4"
+                style={{ backgroundColor: "var(--brand-primary-green)" }}
+              >
+                <Link to="/school/updates">Manage messages</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </m.div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">School Rank</CardTitle>
-            <Award className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">#{stats.schoolRank}</div>
-            <p className="text-xs text-muted-foreground">In district</p>
-          </CardContent>
-        </Card>
+        <m.div {...statCardSpring} transition={{ ...statCardSpring.transition, delay: 0.15 }}>
+          <Card className="h-full hover:shadow-md transition-shadow">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">School Rank</CardTitle>
+              <div className="p-1.5 rounded-lg bg-orange-50">
+                <Award className="h-4 w-4 text-orange-600" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">#{stats.schoolRank}</div>
+              <p className="text-xs text-muted-foreground">In district</p>
+            </CardContent>
+          </Card>
+        </m.div>
       </div>
 
       {/* Quick Actions */}

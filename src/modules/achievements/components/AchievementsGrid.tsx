@@ -20,7 +20,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/modules/application/components/DesignSystem/ui/tooltip";
-import { Award, Lock, CheckCircle } from "lucide-react";
+import { Award, Lock, CheckCircle, Trophy, Sparkles } from "lucide-react";
 import { BadgeImageHelper } from "@/models/achievements/helpers/BadgeImageHelper";
 import PageHeader from "@/modules/application/components/Layout/PageHeader";
 
@@ -51,6 +51,21 @@ const AchievementsGrid = ({ userAchievements, allAchievements }: AchievementsGri
   }, [allAchievements, filter, earnedAchievementIds]);
 
   const earnedCount = userAchievements.length;
+  const totalCount = allAchievements.length;
+  const completionPct = totalCount > 0 ? Math.round((earnedCount / totalCount) * 100) : 0;
+  const badgePoints = useMemo(
+    () =>
+      allAchievements
+        .filter((a) => earnedAchievementIds.has(a.id))
+        .reduce((sum, a) => sum + (a.points_reward || 0), 0),
+    [allAchievements, earnedAchievementIds],
+  );
+
+  const summaryStats = [
+    { icon: Award, value: `${earnedCount}/${totalCount}`, label: "Badges Earned" },
+    { icon: Trophy, value: `${completionPct}%`, label: "Collection Complete" },
+    { icon: Sparkles, value: badgePoints, label: "Badge Points" },
+  ];
 
   const filterTabs: { key: FilterTab; label: string; count?: number }[] = [
     { key: "all", label: "All", count: allAchievements.length },
@@ -65,6 +80,31 @@ const AchievementsGrid = ({ userAchievements, allAchievements }: AchievementsGri
         subtitle="Earn badges by logging activities, staying consistent, and hitting milestones"
         icon={Award}
       />
+
+      {/* Summary stat strip */}
+      <div className="grid grid-cols-3 gap-2 sm:gap-4">
+        {summaryStats.map((stat, i) => (
+          <m.div
+            key={stat.label}
+            className="flex flex-col items-center rounded-2xl border border-[#1B5E4B]/10 bg-white py-3 px-2 text-center shadow-sm sm:flex-row sm:items-center sm:gap-3 sm:py-4 sm:px-5 sm:text-left"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: i * 0.06, ease: "easeOut" }}
+          >
+            <span className="mb-1.5 flex h-8 w-8 items-center justify-center rounded-lg bg-[#1B5E4B]/10 sm:mb-0 sm:h-10 sm:w-10">
+              <stat.icon className="text-[#1B5E4B]" size={18} />
+            </span>
+            <div>
+              <div className="text-xl font-black leading-none text-[#1B5E4B] sm:text-2xl">
+                {stat.value}
+              </div>
+              <p className="mt-1 text-[11px] leading-tight text-gray-500 font-accent sm:mt-0.5 sm:text-sm">
+                {stat.label}
+              </p>
+            </div>
+          </m.div>
+        ))}
+      </div>
 
       <div className="flex gap-2 mb-6">
         {filterTabs.map((tab) => (
