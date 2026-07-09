@@ -299,11 +299,14 @@ const SchoolAdminDashboard = ({
           ← Back to all schools
         </Link>
       )}
-      <PageHeader
-        title="School Admin Dashboard"
-        subtitle={`Managing ${schoolName}`}
-        icon={School}
-      />
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="font-display text-3xl sm:text-4xl font-bold uppercase leading-none tracking-tight text-brand-green">
+            School Admin Dashboard
+          </h1>
+          <p className="text-gray-600 mt-1">Managing {schoolName}</p>
+        </div>
+      </div>
 
       {/* School Join Link */}
       {!joinCodeLoading && joinCode && (
