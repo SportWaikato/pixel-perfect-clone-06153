@@ -101,11 +101,10 @@ export class LeaderboardService {
 
     const leaderboard: SchoolLeaderboardEntry[] = schools.map((school, index) => {
       const termScore = school.term_points || school.total_points || 0;
-      const proRataScore =
-        school.total_students > 0 ? (termScore / school.total_students) * 100 : 0;
+      const divisor = school.roll_number || school.total_students;
+      const proRataScore = divisor > 0 ? (termScore / divisor) * 100 : 0;
 
-      const averagePointsPerStudent =
-        school.total_students > 0 ? termScore / school.total_students : 0;
+      const averagePointsPerStudent = divisor > 0 ? termScore / divisor : 0;
 
       // Keep km calculations commented for now (focusing on points)
       // const averageKmPerStudent = school.total_students > 0
@@ -228,13 +227,14 @@ export class LeaderboardService {
   async calculateProRataScore(schoolId: string): Promise<number> {
     const { data: school, error } = await this.supabaseClient
       .from("schools")
-      .select("total_points, total_students")
+      .select("total_points, total_students, roll_number")
       .eq("id", schoolId)
       .single();
 
     if (error || !school) return 0;
 
-    return school.total_students > 0 ? (school.total_points / school.total_students) * 100 : 0;
+    const divisor = school.roll_number || school.total_students;
+    return divisor > 0 ? (school.total_points / divisor) * 100 : 0;
   }
 
   async getAdminSchoolLeaderboard(): Promise<SchoolLeaderboardEntry[]> {
@@ -248,11 +248,10 @@ export class LeaderboardService {
     if (error || !schools) return [];
 
     const leaderboard: SchoolLeaderboardEntry[] = schools.map((school, index) => {
-      const proRataScore =
-        school.total_students > 0 ? (school.total_points / school.total_students) * 100 : 0;
+      const divisor = school.roll_number || school.total_students;
+      const proRataScore = divisor > 0 ? (school.total_points / divisor) * 100 : 0;
 
-      const averagePointsPerStudent =
-        school.total_students > 0 ? school.total_points / school.total_students : 0;
+      const averagePointsPerStudent = divisor > 0 ? school.total_points / divisor : 0;
 
       return {
         ...school,

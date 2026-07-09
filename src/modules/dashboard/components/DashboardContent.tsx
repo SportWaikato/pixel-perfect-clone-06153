@@ -45,6 +45,8 @@ import { useRouter } from "@tanstack/react-router";
 import { useState, useEffect, useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 import { BadgeImageHelper } from "@/models/achievements/helpers/BadgeImageHelper";
+import { m } from "framer-motion";
+import { squishyTap } from "@/modules/application/components/animations/tactile";
 
 interface DashboardContentProps {
   user: UserInterface;
@@ -163,21 +165,28 @@ const DashboardContent = ({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-black text-gray-800">{greeting}</h1>
-          <p className="text-gray-700">Track your progress and achievements</p>
+          <h1
+            className="text-4xl font-black text-[#1B5E4B]"
+            style={{ fontFamily: "var(--font-heading)" }}
+          >
+            {greeting}
+          </h1>
+          <p className="text-gray-700 font-accent text-lg">Track your progress and achievements</p>
         </div>
-        <Link
-          to="/activities"
-          className="flex flex-col items-center justify-center w-20 h-20 rounded-full transition-opacity hover:opacity-80"
-          style={{ backgroundColor: "#D103D1" }}
-        >
-          <Zap size={24} className="text-white" />
-          <span className="text-white text-xs font-semibold leading-tight text-center">
-            Log
-            <br />
-            Activity
-          </span>
-        </Link>
+        <m.div {...squishyTap}>
+          <Link
+            to="/activities"
+            className="flex flex-col items-center justify-center w-20 h-20 rounded-full transition-opacity hover:opacity-80 cursor-pointer"
+            style={{ backgroundColor: "#D103D1" }}
+          >
+            <Zap size={24} className="text-white" />
+            <span className="text-white text-xs font-semibold leading-tight text-center">
+              Log
+              <br />
+              Activity
+            </span>
+          </Link>
+        </m.div>
       </div>
 
       {pendingSurvey && (
@@ -197,76 +206,86 @@ const DashboardContent = ({
       )}
 
       {/* Monthly Progress - Full Width */}
-      <Card
-        className="shadow-sm rounded-2xl border border-gray-200"
-        style={{ backgroundColor: "#f9fefd" }}
+      <m.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, ease: "easeOut" }}
       >
-        <CardHeader className="flex flex-row items-center justify-between px-8">
-          <div>
-            <CardTitle className="flex items-center gap-2 text-[#1B5E4B] text-2xl font-black">
-              Monthly Progress
-              <span className="text-sm font-normal text-gray-500">
-                {new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })}
-              </span>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-6 w-6 p-0 text-[#1B5E4B] hover:bg-[#1B5E4B]/10"
-                onClick={handleRecalculateTotals}
-                title="Refresh monthly progress"
-              >
-                <RefreshCw size={14} />
-              </Button>
-            </CardTitle>
-            <div className="text-6xl font-black mt-2 text-[#1B5E4B]">
-              {formatTimeDisplay(currentMonthMinutes)}
-            </div>
-            <p className="text-lg font-semibold text-gray-600">
-              of {formatTimeDisplay(monthlyGoalMinutes)} goal
-            </p>
-          </div>
-          <div className="text-right">
-            <div className="text-4xl font-black" style={{ color: "#D103D1" }}>
-              {Math.round(progressPercentage)}%
-            </div>
-            <p className="text-sm text-gray-500">completed</p>
-          </div>
-        </CardHeader>
-        <CardContent className="px-8">
-          <div className="mb-4">
-            <div className="w-full bg-gray-200 rounded-full h-4">
-              <div
-                className="h-4 rounded-full transition-all duration-300"
-                style={{
-                  width: `${Math.min(progressPercentage, 100)}%`,
-                  background: "linear-gradient(90deg, #D103D1, #FF1493)",
-                }}
-              />
-            </div>
-          </div>
-          <div className="grid grid-cols-3 text-center">
-            <div className="py-4 px-4 rounded-2xl">
-              <div className="text-3xl font-bold text-[#1B5E4B]">{totalPoints}</div>
-              <p className="text-sm text-gray-500">Total Points</p>
-            </div>
-            <div className="py-4 px-4 rounded-2xl">
-              <div className="text-3xl font-bold text-[#1B5E4B]">{earnedCount}</div>
-              <p className="text-sm text-gray-500">Badges Earned</p>
-            </div>
-            <div className="py-4 px-4 rounded-2xl">
-              <div className="text-3xl font-bold text-[#1B5E4B]">
-                {Math.max(0, Math.ceil((monthlyGoalMinutes - currentMonthMinutes) / 60))}
+        <Card
+          className="shadow-sm rounded-2xl border border-gray-200"
+          style={{ backgroundColor: "#f9fefd" }}
+        >
+          <CardHeader className="flex flex-row items-center justify-between px-8">
+            <div>
+              <CardTitle className="flex items-center gap-2 text-[#1B5E4B] text-2xl font-black">
+                Monthly Progress
+                <span className="text-sm font-normal text-gray-500">
+                  {new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 w-6 p-0 text-[#1B5E4B] hover:bg-[#1B5E4B]/10"
+                  onClick={handleRecalculateTotals}
+                  title="Refresh monthly progress"
+                >
+                  <RefreshCw size={14} />
+                </Button>
+              </CardTitle>
+              <div className="text-7xl font-black mt-2 text-[#1B5E4B] tracking-tight">
+                {formatTimeDisplay(currentMonthMinutes)}
               </div>
-              <p className="text-sm text-gray-500">Hours to Goal</p>
+              <p className="text-lg text-gray-600 font-accent">
+                of {formatTimeDisplay(monthlyGoalMinutes)} goal
+              </p>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+            <div className="text-right">
+              <div className="text-5xl font-black" style={{ color: "#D103D1" }}>
+                {Math.round(progressPercentage)}%
+              </div>
+              <p className="text-sm text-gray-500 font-accent text-lg">completed</p>
+            </div>
+          </CardHeader>
+          <CardContent className="px-8">
+            <div className="mb-4">
+              <div className="w-full bg-gray-200 rounded-full h-4">
+                <div
+                  className="h-4 rounded-full transition-all duration-300"
+                  style={{
+                    width: `${Math.min(progressPercentage, 100)}%`,
+                    background: "linear-gradient(90deg, #D103D1, #FF1493)",
+                  }}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-3 text-center">
+              <div className="py-4 px-4 rounded-2xl">
+                <div className="text-4xl font-black text-[#1B5E4B]">{totalPoints}</div>
+                <p className="text-sm text-gray-500 font-accent">Total Points</p>
+              </div>
+              <div className="py-4 px-4 rounded-2xl">
+                <div className="text-4xl font-black text-[#1B5E4B]">{earnedCount}</div>
+                <p className="text-sm text-gray-500 font-accent">Badges Earned</p>
+              </div>
+              <div className="py-4 px-4 rounded-2xl">
+                <div className="text-4xl font-black text-[#1B5E4B]">
+                  {Math.max(0, Math.ceil((monthlyGoalMinutes - currentMonthMinutes) / 60))}
+                </div>
+                <p className="text-sm text-gray-500 font-accent">Hours to Goal</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </m.div>
 
       {/* Achievements and Streak Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Streak Card - 1/3 width */}
-        <div>
+        <m.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: "easeOut", delay: 0.1 }}
+        >
           <Card
             className="h-full shadow-sm rounded-2xl border border-gray-200"
             style={{ backgroundColor: "#f9fefd" }}
@@ -296,17 +315,17 @@ const DashboardContent = ({
               </div>
 
               {/* Streak number */}
-              <div className="text-7xl font-black leading-none text-[#1B5E4B] mb-2">
+              <div className="text-8xl font-black leading-none text-[#1B5E4B] mb-2 tracking-tight">
                 {currentStreak}
               </div>
-              <p className="text-lg font-bold text-[#1B5E4B] mb-1">Day Streak</p>
+              <p className="text-lg text-[#1B5E4B] mb-1 font-accent text-xl">Day Streak</p>
               <p className="text-sm text-gray-400 mb-6">
                 Best Streak: {longestStreak} days in a row
               </p>
 
               {/* Next Milestone box */}
               <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4">
-                <p className="text-sm font-bold text-[#1B5E4B] mb-3">Next Milestone</p>
+                <p className="text-sm text-[#1B5E4B] mb-3 font-accent text-lg">Next Milestone</p>
                 <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
                   <div
                     className="h-2 rounded-full transition-all duration-300"
@@ -322,10 +341,15 @@ const DashboardContent = ({
               </div>
             </CardContent>
           </Card>
-        </div>
+        </m.div>
 
         {/* Achievements - 2/3 width */}
-        <div className="lg:col-span-2">
+        <m.div
+          className="lg:col-span-2"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: "easeOut", delay: 0.15 }}
+        >
           <Card
             className="h-full shadow-sm rounded-2xl border border-gray-200"
             style={{ backgroundColor: "#f9fefd" }}
@@ -378,12 +402,13 @@ const DashboardContent = ({
                             return (
                               <Tooltip key={achievement.id}>
                                 <TooltipTrigger asChild>
-                                  <div
+                                  <m.div
                                     className={`p-2 rounded-2xl border transition-all duration-150 cursor-pointer ${
                                       isEarned
-                                        ? "bg-white border-gray-200 shadow-sm hover:scale-105 hover:shadow-md"
-                                        : "bg-gray-100 border-gray-200 opacity-60 hover:scale-105"
+                                        ? "bg-white border-gray-200 shadow-sm"
+                                        : "bg-gray-100 border-gray-200 opacity-60"
                                     }`}
+                                    whileHover={{ scale: 1.06, y: -2 }}
                                   >
                                     <div className="text-center">
                                       {BadgeImageHelper.hasBadgeImage(achievement) ? (
@@ -420,7 +445,7 @@ const DashboardContent = ({
                                         </Badge>
                                       )}
                                     </div>
-                                  </div>
+                                  </m.div>
                                 </TooltipTrigger>
                                 <TooltipContent side="top" className="max-w-xs">
                                   <div className="text-center">
@@ -451,7 +476,9 @@ const DashboardContent = ({
                     </TooltipProvider>
                   ) : (
                     <div className="text-center py-8">
-                      <div className="text-gray-500">No achievements available yet.</div>
+                      <div className="text-gray-500 font-accent text-lg">
+                        No achievements available yet.
+                      </div>
                       <div className="text-gray-400 text-sm mt-2">
                         New achievement challenges coming soon!
                       </div>
@@ -461,54 +488,70 @@ const DashboardContent = ({
               )}
             </CardContent>
           </Card>
-        </div>
+        </m.div>
       </div>
 
       {/* Recent Activities */}
       {recentActivities.length > 0 && (
-        <Card className="shadow-sm rounded-2xl border border-gray-100">
-          <CardHeader className="flex flex-row items-center justify-between pb-3">
-            <CardTitle className="text-lg font-bold text-gray-800">Recent Activities</CardTitle>
-            <Link to="/activities" className="text-sm text-[#1B5E4B] font-medium hover:underline">
-              View all
-            </Link>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {recentActivities.map((activity) => {
-              const actType = activity.activity_type;
-              const color = getActivityColor(actType);
-              const displayName =
-                actType === "something_else" && activity.custom_activity_name
-                  ? activity.custom_activity_name
-                  : (activity.activity_type as string).replace(/_/g, " ");
-              return (
-                <div
-                  key={activity.id}
-                  className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl"
-                >
-                  <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                    style={{ backgroundColor: `${color}18`, color }}
+        <m.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: "easeOut", delay: 0.2 }}
+        >
+          <Card className="shadow-sm rounded-2xl border border-gray-100">
+            <CardHeader className="flex flex-row items-center justify-between pb-3">
+              <CardTitle className="text-lg text-gray-800 font-accent text-xl">
+                Recent Activities
+              </CardTitle>
+              <Link to="/activities" className="text-sm text-[#1B5E4B] font-medium hover:underline">
+                View all
+              </Link>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {recentActivities.map((activity, i) => {
+                const actType = activity.activity_type;
+                const color = getActivityColor(actType);
+                const displayName =
+                  actType === "something_else" && activity.custom_activity_name
+                    ? activity.custom_activity_name
+                    : (activity.activity_type as string).replace(/_/g, " ");
+                return (
+                  <m.div
+                    key={activity.id}
+                    className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl"
+                    initial={{ opacity: 0, x: -12 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.2, delay: i * 0.05 }}
+                    whileHover={{ x: 4 }}
                   >
-                    {getActivityIcon(actType, 30)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-800 capitalize truncate">{displayName}</p>
-                    <p className="text-xs text-gray-500">
-                      {activity.duration_minutes} min · {getFeelingEmoji(activity.feeling)} ·{" "}
-                      {formatTz(toZonedTime(new Date(activity.created_at), NZ_TIMEZONE), "MMM d", {
-                        timeZone: NZ_TIMEZONE,
-                      })}
-                    </p>
-                  </div>
-                  <div className="text-sm font-bold shrink-0" style={{ color: "#19AA4B" }}>
-                    +{activity.final_points || activity.house_points_awarded}
-                  </div>
-                </div>
-              );
-            })}
-          </CardContent>
-        </Card>
+                    <div
+                      className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                      style={{ backgroundColor: `${color}18`, color }}
+                    >
+                      {getActivityIcon(actType, 30)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-gray-800 capitalize truncate">{displayName}</p>
+                      <p className="text-xs text-gray-500">
+                        {activity.duration_minutes} min · {getFeelingEmoji(activity.feeling)} ·{" "}
+                        {formatTz(
+                          toZonedTime(new Date(activity.created_at), NZ_TIMEZONE),
+                          "MMM d",
+                          {
+                            timeZone: NZ_TIMEZONE,
+                          },
+                        )}
+                      </p>
+                    </div>
+                    <div className="text-sm font-bold shrink-0" style={{ color: "#19AA4B" }}>
+                      +{activity.final_points || activity.house_points_awarded}
+                    </div>
+                  </m.div>
+                );
+              })}
+            </CardContent>
+          </Card>
+        </m.div>
       )}
     </div>
   );

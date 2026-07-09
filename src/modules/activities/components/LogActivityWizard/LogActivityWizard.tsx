@@ -23,6 +23,8 @@ import Step3DateDuration from "./Step3DateDuration";
 import Step4Feedback from "./Step4Feedback";
 import Step5Confirm from "./Step5Confirm";
 import Step6Success from "./Step6Success";
+import { m, AnimatePresence } from "framer-motion";
+import { squishyTap } from "@/modules/application/components/animations/tactile";
 
 const NZ_TIMEZONE = "Pacific/Auckland";
 
@@ -212,37 +214,51 @@ const LogActivityWizard = ({
         <>
           <StepProgress currentStep={step} />
 
-          {step === 1 && <Step1Challenge data={data} challenges={challenges} onChange={update} />}
-          {step === 2 && (
-            <Step2ActivityType data={data} challenges={challenges} onChange={update} />
-          )}
-          {step === 3 && (
-            <Step3DateDuration data={data} challenges={challenges} onChange={update} />
-          )}
-          {step === 4 && <Step4Feedback data={data} onChange={update} />}
-          {step === 5 && (
-            <Step5Confirm
-              data={data}
-              challenges={challenges}
-              user={user}
-              isSubmitting={isSubmitting}
-              onSubmit={handleSubmit}
-              onUpdate={update}
-            />
-          )}
+          <AnimatePresence mode="wait">
+            <m.div
+              key={step}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+            >
+              {step === 1 && (
+                <Step1Challenge data={data} challenges={challenges} onChange={update} />
+              )}
+              {step === 2 && (
+                <Step2ActivityType data={data} challenges={challenges} onChange={update} />
+              )}
+              {step === 3 && (
+                <Step3DateDuration data={data} challenges={challenges} onChange={update} />
+              )}
+              {step === 4 && <Step4Feedback data={data} onChange={update} />}
+              {step === 5 && (
+                <Step5Confirm
+                  data={data}
+                  challenges={challenges}
+                  user={user}
+                  isSubmitting={isSubmitting}
+                  onSubmit={handleSubmit}
+                  onUpdate={update}
+                />
+              )}
+            </m.div>
+          </AnimatePresence>
 
           {/* Navigation buttons */}
           <div className="flex flex-col gap-3 mt-8">
             {step < 5 && (
-              <Button
-                type="button"
-                onClick={handleNext}
-                disabled={!canAdvance()}
-                className="w-full rounded-xl py-3 font-bold"
-                style={{ backgroundColor: "#1B5E4B", color: "white" }}
-              >
-                Next
-              </Button>
+              <m.div {...squishyTap}>
+                <Button
+                  type="button"
+                  onClick={handleNext}
+                  disabled={!canAdvance()}
+                  className="w-full rounded-xl py-3 font-bold"
+                  style={{ backgroundColor: "#1B5E4B", color: "white" }}
+                >
+                  Next
+                </Button>
+              </m.div>
             )}
             {step > 1 && (
               <Button

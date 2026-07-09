@@ -27,7 +27,7 @@ const ChallengeSlide = ({ assemblyEvent, onBack }: ChallengeSlideProps) => {
 
       <div className="mb-8 text-center">
         <img
-          src="/assembly/this-week-challenge-Icon.svg"
+          src="/assembly/icon-challenge.png"
           alt=""
           width={64}
           height={64}

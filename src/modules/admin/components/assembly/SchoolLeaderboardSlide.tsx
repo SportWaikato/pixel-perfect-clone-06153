@@ -96,7 +96,10 @@ const SchoolLeaderboardSlide = ({ schoolId, onBack }: SchoolLeaderboardSlideProp
                       )}
                     </p>
                     <p className="text-xs text-white/40">
-                      {school.total_students.toLocaleString()} students &#183;{" "}
+                      {school.roll_number
+                        ? `${school.roll_number.toLocaleString()} on roll · `
+                        : ""}
+                      {school.total_students.toLocaleString()} registered ·{" "}
                       {school.total_points.toLocaleString()} total pts
                     </p>
                   </div>

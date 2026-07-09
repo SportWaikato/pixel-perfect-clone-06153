@@ -19,12 +19,12 @@ const Step4Feedback = ({ data, onChange }: Step4FeedbackProps) => {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-black text-[#1B5E4B] mb-0.5">One more thing&hellip;</h2>
-        <p className="text-gray-500 text-sm">Takes 10 seconds.</p>
+        <p className="text-gray-500 text-sm font-accent">Takes 10 seconds.</p>
       </div>
 
       {/* Mood */}
       <div className="space-y-2">
-        <label className="text-sm font-semibold text-gray-700">
+        <label className="text-sm text-gray-700 font-accent text-base">
           How did it feel? <span className="text-red-500">*</span>
         </label>
         <div className="flex gap-2">

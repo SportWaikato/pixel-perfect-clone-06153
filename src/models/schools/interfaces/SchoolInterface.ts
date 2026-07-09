@@ -7,6 +7,7 @@ export interface SchoolInterface {
   email_domain: string | null;
   secondary_email_domain?: string | null;
   total_students: number;
+  roll_number?: number | null;
   total_kilometers: number;
   total_points: number;
   is_active: boolean;

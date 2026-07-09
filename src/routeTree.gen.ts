@@ -35,6 +35,7 @@ import { Route as AuthenticatedEventsIdRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedChallengesMySuggestionsRouteImport } from './routes/_authenticated/challenges.my-suggestions'
 import { Route as AuthenticatedSuperadminAdminRouteImport } from './routes/_authenticated/_superadmin/admin'
 import { Route as AuthenticatedAdminSchoolRouteImport } from './routes/_authenticated/_admin/school'
+import { Route as AuthenticatedSuperadminAdminIndexRouteImport } from './routes/_authenticated/_superadmin/admin.index'
 import { Route as AuthenticatedSuperadminAdminUsersRouteImport } from './routes/_authenticated/_superadmin/admin.users'
 import { Route as AuthenticatedSuperadminAdminUpdatesRouteImport } from './routes/_authenticated/_superadmin/admin.updates'
 import { Route as AuthenticatedSuperadminAdminSurveysRouteImport } from './routes/_authenticated/_superadmin/admin.surveys'
@@ -59,6 +60,7 @@ import { Route as AuthenticatedAdminSchoolFeedRouteImport } from './routes/_auth
 import { Route as AuthenticatedAdminSchoolEventsRouteImport } from './routes/_authenticated/_admin/school.events'
 import { Route as AuthenticatedAdminSchoolAssemblyRouteImport } from './routes/_authenticated/_admin/school.assembly'
 import { Route as AuthenticatedAdminSchoolActivityRouteImport } from './routes/_authenticated/_admin/school.activity'
+import { Route as AuthenticatedSuperadminAdminSchoolsIndexRouteImport } from './routes/_authenticated/_superadmin/admin.schools.index'
 import { Route as AuthenticatedSuperadminAdminSchoolsPendingRouteImport } from './routes/_authenticated/_superadmin/admin.schools.pending'
 import { Route as AuthenticatedAdminAdminAssemblyPresentRouteImport } from './routes/_authenticated/_admin/admin_.assembly_.present'
 
@@ -193,6 +195,12 @@ const AuthenticatedAdminSchoolRoute =
     id: '/school',
     path: '/school',
     getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedSuperadminAdminIndexRoute =
+  AuthenticatedSuperadminAdminIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedSuperadminAdminRoute,
   } as any)
 const AuthenticatedSuperadminAdminUsersRoute =
   AuthenticatedSuperadminAdminUsersRouteImport.update({
@@ -338,6 +346,12 @@ const AuthenticatedAdminSchoolActivityRoute =
     path: '/activity',
     getParentRoute: () => AuthenticatedAdminSchoolRoute,
   } as any)
+const AuthenticatedSuperadminAdminSchoolsIndexRoute =
+  AuthenticatedSuperadminAdminSchoolsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedSuperadminAdminSchoolsRoute,
+  } as any)
 const AuthenticatedSuperadminAdminSchoolsPendingRoute =
   AuthenticatedSuperadminAdminSchoolsPendingRouteImport.update({
     id: '/pending',
@@ -399,8 +413,10 @@ export interface FileRoutesByFullPath {
   '/admin/surveys': typeof AuthenticatedSuperadminAdminSurveysRoute
   '/admin/updates': typeof AuthenticatedSuperadminAdminUpdatesRoute
   '/admin/users': typeof AuthenticatedSuperadminAdminUsersRoute
+  '/admin/': typeof AuthenticatedSuperadminAdminIndexRoute
   '/admin/assembly/present': typeof AuthenticatedAdminAdminAssemblyPresentRoute
   '/admin/schools/pending': typeof AuthenticatedSuperadminAdminSchoolsPendingRoute
+  '/admin/schools/': typeof AuthenticatedSuperadminAdminSchoolsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -422,7 +438,6 @@ export interface FileRoutesByTo {
   '/invite/$token': typeof InviteTokenRoute
   '/join/$code': typeof JoinCodeRoute
   '/school': typeof AuthenticatedAdminSchoolRouteWithChildren
-  '/admin': typeof AuthenticatedSuperadminAdminRouteWithChildren
   '/challenges/my-suggestions': typeof AuthenticatedChallengesMySuggestionsRoute
   '/events/$id': typeof AuthenticatedEventsIdRoute
   '/schools/$schoolId/signup': typeof SchoolsSchoolIdSignupRoute
@@ -445,13 +460,14 @@ export interface FileRoutesByTo {
   '/admin/invites': typeof AuthenticatedSuperadminAdminInvitesRoute
   '/admin/media': typeof AuthenticatedSuperadminAdminMediaRoute
   '/admin/reports': typeof AuthenticatedSuperadminAdminReportsRoute
-  '/admin/schools': typeof AuthenticatedSuperadminAdminSchoolsRouteWithChildren
   '/admin/settings': typeof AuthenticatedSuperadminAdminSettingsRoute
   '/admin/surveys': typeof AuthenticatedSuperadminAdminSurveysRoute
   '/admin/updates': typeof AuthenticatedSuperadminAdminUpdatesRoute
   '/admin/users': typeof AuthenticatedSuperadminAdminUsersRoute
+  '/admin': typeof AuthenticatedSuperadminAdminIndexRoute
   '/admin/assembly/present': typeof AuthenticatedAdminAdminAssemblyPresentRoute
   '/admin/schools/pending': typeof AuthenticatedSuperadminAdminSchoolsPendingRoute
+  '/admin/schools': typeof AuthenticatedSuperadminAdminSchoolsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -505,8 +521,10 @@ export interface FileRoutesById {
   '/_authenticated/_superadmin/admin/surveys': typeof AuthenticatedSuperadminAdminSurveysRoute
   '/_authenticated/_superadmin/admin/updates': typeof AuthenticatedSuperadminAdminUpdatesRoute
   '/_authenticated/_superadmin/admin/users': typeof AuthenticatedSuperadminAdminUsersRoute
+  '/_authenticated/_superadmin/admin/': typeof AuthenticatedSuperadminAdminIndexRoute
   '/_authenticated/_admin/admin_/assembly_/present': typeof AuthenticatedAdminAdminAssemblyPresentRoute
   '/_authenticated/_superadmin/admin/schools/pending': typeof AuthenticatedSuperadminAdminSchoolsPendingRoute
+  '/_authenticated/_superadmin/admin/schools/': typeof AuthenticatedSuperadminAdminSchoolsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -558,8 +576,10 @@ export interface FileRouteTypes {
     | '/admin/surveys'
     | '/admin/updates'
     | '/admin/users'
+    | '/admin/'
     | '/admin/assembly/present'
     | '/admin/schools/pending'
+    | '/admin/schools/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -581,7 +601,6 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/join/$code'
     | '/school'
-    | '/admin'
     | '/challenges/my-suggestions'
     | '/events/$id'
     | '/schools/$schoolId/signup'
@@ -604,13 +623,14 @@ export interface FileRouteTypes {
     | '/admin/invites'
     | '/admin/media'
     | '/admin/reports'
-    | '/admin/schools'
     | '/admin/settings'
     | '/admin/surveys'
     | '/admin/updates'
     | '/admin/users'
+    | '/admin'
     | '/admin/assembly/present'
     | '/admin/schools/pending'
+    | '/admin/schools'
   id:
     | '__root__'
     | '/'
@@ -663,8 +683,10 @@ export interface FileRouteTypes {
     | '/_authenticated/_superadmin/admin/surveys'
     | '/_authenticated/_superadmin/admin/updates'
     | '/_authenticated/_superadmin/admin/users'
+    | '/_authenticated/_superadmin/admin/'
     | '/_authenticated/_admin/admin_/assembly_/present'
     | '/_authenticated/_superadmin/admin/schools/pending'
+    | '/_authenticated/_superadmin/admin/schools/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -864,6 +886,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSchoolRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/_superadmin/admin/': {
+      id: '/_authenticated/_superadmin/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedSuperadminAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedSuperadminAdminRoute
+    }
     '/_authenticated/_superadmin/admin/users': {
       id: '/_authenticated/_superadmin/admin/users'
       path: '/users'
@@ -1032,6 +1061,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSchoolActivityRouteImport
       parentRoute: typeof AuthenticatedAdminSchoolRoute
     }
+    '/_authenticated/_superadmin/admin/schools/': {
+      id: '/_authenticated/_superadmin/admin/schools/'
+      path: '/'
+      fullPath: '/admin/schools/'
+      preLoaderRoute: typeof AuthenticatedSuperadminAdminSchoolsIndexRouteImport
+      parentRoute: typeof AuthenticatedSuperadminAdminSchoolsRoute
+    }
     '/_authenticated/_superadmin/admin/schools/pending': {
       id: '/_authenticated/_superadmin/admin/schools/pending'
       path: '/pending'
@@ -1097,12 +1133,15 @@ const AuthenticatedAdminRouteWithChildren =
 
 interface AuthenticatedSuperadminAdminSchoolsRouteChildren {
   AuthenticatedSuperadminAdminSchoolsPendingRoute: typeof AuthenticatedSuperadminAdminSchoolsPendingRoute
+  AuthenticatedSuperadminAdminSchoolsIndexRoute: typeof AuthenticatedSuperadminAdminSchoolsIndexRoute
 }
 
 const AuthenticatedSuperadminAdminSchoolsRouteChildren: AuthenticatedSuperadminAdminSchoolsRouteChildren =
   {
     AuthenticatedSuperadminAdminSchoolsPendingRoute:
       AuthenticatedSuperadminAdminSchoolsPendingRoute,
+    AuthenticatedSuperadminAdminSchoolsIndexRoute:
+      AuthenticatedSuperadminAdminSchoolsIndexRoute,
   }
 
 const AuthenticatedSuperadminAdminSchoolsRouteWithChildren =
@@ -1127,6 +1166,7 @@ interface AuthenticatedSuperadminAdminRouteChildren {
   AuthenticatedSuperadminAdminSurveysRoute: typeof AuthenticatedSuperadminAdminSurveysRoute
   AuthenticatedSuperadminAdminUpdatesRoute: typeof AuthenticatedSuperadminAdminUpdatesRoute
   AuthenticatedSuperadminAdminUsersRoute: typeof AuthenticatedSuperadminAdminUsersRoute
+  AuthenticatedSuperadminAdminIndexRoute: typeof AuthenticatedSuperadminAdminIndexRoute
 }
 
 const AuthenticatedSuperadminAdminRouteChildren: AuthenticatedSuperadminAdminRouteChildren =
@@ -1163,6 +1203,8 @@ const AuthenticatedSuperadminAdminRouteChildren: AuthenticatedSuperadminAdminRou
       AuthenticatedSuperadminAdminUpdatesRoute,
     AuthenticatedSuperadminAdminUsersRoute:
       AuthenticatedSuperadminAdminUsersRoute,
+    AuthenticatedSuperadminAdminIndexRoute:
+      AuthenticatedSuperadminAdminIndexRoute,
   }
 
 const AuthenticatedSuperadminAdminRouteWithChildren =

@@ -21,6 +21,7 @@ import {
 } from "@/modules/application/components/DesignSystem/ui/tooltip";
 import { Award, Lock, CheckCircle } from "lucide-react";
 import { BadgeImageHelper } from "@/models/achievements/helpers/BadgeImageHelper";
+import { m } from "framer-motion";
 
 type FilterTab = "all" | "earned" | "unearned";
 
@@ -60,7 +61,7 @@ const AchievementsGrid = ({ userAchievements, allAchievements }: AchievementsGri
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8 min-h-screen">
       <div>
         <h1 className="text-4xl font-black text-[#1B5E4B]">Achievements</h1>
-        <p className="text-gray-700 mt-1">
+        <p className="text-gray-700 mt-1 font-accent text-lg">
           Earn badges by logging activities, staying consistent, and hitting milestones
         </p>
       </div>
@@ -99,7 +100,7 @@ const AchievementsGrid = ({ userAchievements, allAchievements }: AchievementsGri
         >
           <CardContent className="py-12 text-center">
             <Award className="w-12 h-12 mx-auto text-gray-300 mb-4" />
-            <p className="text-lg font-bold text-[#1B5E4B]">
+            <p className="text-lg font-bold text-[#1B5E4B] font-accent">
               {filter === "earned" ? "No badges earned yet" : "No achievements found"}
             </p>
             <p className="text-sm text-gray-500 mt-2">
@@ -123,12 +124,13 @@ const AchievementsGrid = ({ userAchievements, allAchievements }: AchievementsGri
               return (
                 <Tooltip key={achievement.id}>
                   <TooltipTrigger asChild>
-                    <div
-                      className={`p-3 rounded-2xl border transition-all duration-150 cursor-pointer ${
+                    <m.div
+                      className={`p-3 rounded-2xl border cursor-pointer ${
                         isEarned
-                          ? "bg-white border-gray-200 shadow-sm hover:scale-105 hover:shadow-md"
-                          : "bg-gray-100 border-gray-200 opacity-60 hover:scale-105"
+                          ? "bg-white border-gray-200 shadow-sm"
+                          : "bg-gray-100 border-gray-200 opacity-60"
                       }`}
+                      whileHover={{ scale: 1.06, y: -2 }}
                     >
                       <div className="text-center">
                         {BadgeImageHelper.hasBadgeImage(achievement) ? (
@@ -178,13 +180,13 @@ const AchievementsGrid = ({ userAchievements, allAchievements }: AchievementsGri
                         {isEarned && userAchievement && (
                           <Badge
                             variant="secondary"
-                            className="mt-2 text-xs bg-green-100 text-green-700 border-green-200"
+                            className="mt-2 text-xs bg-green-100 text-green-700 border-green-200 font-accent"
                           >
                             Earned
                           </Badge>
                         )}
                       </div>
-                    </div>
+                    </m.div>
                   </TooltipTrigger>
                   <TooltipContent side="top" className="max-w-xs">
                     <div className="text-center">

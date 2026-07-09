@@ -259,17 +259,17 @@ const StudentProgressionCard = ({
             <div className="text-3xl font-black" style={{ color: "#D103D1" }}>
               {termPoints}
             </div>
-            <p className="text-xs text-gray-500 mt-1">{termName || "Current Term"}</p>
+            <p className="text-xs text-gray-500 mt-1 font-accent">{termName || "Current Term"}</p>
           </div>
           <div className="py-4 px-3 rounded-2xl bg-white border border-gray-100">
             <div className="text-3xl font-black text-[#1B5E4B]">{yearPoints}</div>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 mt-1 font-accent">
               {currentTerm ? `${currentTerm.year} Year` : "2026 Year"}
             </p>
           </div>
           <div className="py-4 px-3 rounded-2xl bg-white border border-gray-100">
             <div className="text-3xl font-black text-[#1B5E4B]">{lifetimePoints}</div>
-            <p className="text-xs text-gray-500 mt-1">Lifetime</p>
+            <p className="text-xs text-gray-500 mt-1 font-accent">Lifetime</p>
           </div>
         </div>
       </CardContent>

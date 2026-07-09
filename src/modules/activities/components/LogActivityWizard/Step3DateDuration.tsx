@@ -47,7 +47,7 @@ const Step3DateDuration = ({ data, challenges, onChange }: Step3DateDurationProp
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-black text-[#1B5E4B] mb-1">When and how long?</h2>
-        <p className="text-gray-500 text-sm">
+        <p className="text-gray-500 text-sm font-accent">
           Tell us when you did this activity and for how long.
         </p>
       </div>

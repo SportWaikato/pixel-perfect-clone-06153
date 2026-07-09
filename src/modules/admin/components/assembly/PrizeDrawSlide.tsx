@@ -106,7 +106,7 @@ const PrizeDrawSlide = ({ schoolId, drawnByUserId, students, onBack }: PrizeDraw
 
       <div className="mb-8 text-center">
         <img
-          src="/assembly/spot-prize-draw-icon.svg"
+          src="/assembly/icon-prize-draw.png"
           alt=""
           width={64}
           height={64}
@@ -129,7 +129,7 @@ const PrizeDrawSlide = ({ schoolId, drawnByUserId, students, onBack }: PrizeDraw
                 className="space-y-6"
               >
                 <img
-                  src="/assembly/read-to-draw.svg"
+                  src="/assembly/icon-ready-to-draw.png"
                   alt=""
                   width={80}
                   height={80}

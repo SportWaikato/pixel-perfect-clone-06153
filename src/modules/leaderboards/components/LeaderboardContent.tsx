@@ -26,6 +26,8 @@ import {
 import { Trophy, Crown, Award, Info, RefreshCw, Loader2 } from "lucide-react";
 import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
 import { formatTimeDisplay } from "@/models/application/constants/applicationConstants";
+import { m } from "framer-motion";
+import { squishyTap, cardSpring } from "@/modules/application/components/animations/tactile";
 
 interface LeaderboardContentProps {
   user: UserInterface;
@@ -91,7 +93,7 @@ const LeaderboardContent = ({
   };
 
   const PersonalDashboard = () => (
-    <div className="space-y-8">
+    <m.div className="space-y-8" {...cardSpring}>
       {/* Personal Rankings Summary */}
       <Card
         className="shadow-sm rounded-2xl border border-gray-200"
@@ -106,51 +108,63 @@ const LeaderboardContent = ({
         <CardContent className="p-6 sm:p-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {/* School Ranking */}
-            <div className="text-center p-5 sm:p-6 bg-[#1B5E4B]/5 border border-gray-200 rounded-2xl">
-              <div className="text-4xl sm:text-5xl font-bold text-[#1B5E4B] mb-1">
+            <m.div
+              className="text-center p-5 sm:p-6 bg-[#1B5E4B]/5 border border-gray-200 rounded-2xl"
+              whileHover={{ y: -4, boxShadow: "0 8px 20px -6px rgba(0,0,0,0.1)" }}
+            >
+              <div className="text-5xl sm:text-6xl font-black text-[#1B5E4B] mb-1">
                 {userRankings?.school_rank != null
                   ? getRankingEmoji(userRankings.school_rank)
                   : "?"}
               </div>
-              <div className="text-sm text-gray-600">in your school</div>
+              <div className="text-sm text-gray-600 font-accent">in your school</div>
               <div className="text-xs text-gray-400 mt-1">{user.school?.name}</div>
-            </div>
+            </m.div>
 
             {/* House Ranking */}
-            <div className="text-center p-5 sm:p-6 bg-[#1B5E4B]/5 border border-gray-200 rounded-2xl">
-              <div className="text-4xl sm:text-5xl font-bold text-[#1B5E4B] mb-1">
+            <m.div
+              className="text-center p-5 sm:p-6 bg-[#1B5E4B]/5 border border-gray-200 rounded-2xl"
+              whileHover={{ y: -4, boxShadow: "0 8px 20px -6px rgba(0,0,0,0.1)" }}
+            >
+              <div className="text-5xl sm:text-6xl font-black text-[#1B5E4B] mb-1">
                 {userRankings?.house_rank != null ? getRankingEmoji(userRankings.house_rank) : "?"}
               </div>
-              <div className="text-sm text-gray-600">in your house</div>
+              <div className="text-sm text-gray-600 font-accent">in your house</div>
               <div className="text-xs text-gray-400 mt-1">{user.house?.name || "—"}</div>
-            </div>
+            </m.div>
 
             {/* Year Group Ranking */}
-            <div className="text-center p-5 sm:p-6 bg-[#1B5E4B]/5 border border-gray-200 rounded-2xl">
-              <div className="text-4xl sm:text-5xl font-bold text-[#1B5E4B] mb-1">
+            <m.div
+              className="text-center p-5 sm:p-6 bg-[#1B5E4B]/5 border border-gray-200 rounded-2xl"
+              whileHover={{ y: -4, boxShadow: "0 8px 20px -6px rgba(0,0,0,0.1)" }}
+            >
+              <div className="text-5xl sm:text-6xl font-black text-[#1B5E4B] mb-1">
                 {userRankings?.year_group_rank != null
                   ? getRankingEmoji(userRankings.year_group_rank)
                   : "?"}
               </div>
-              <div className="text-sm text-gray-600">in your year</div>
+              <div className="text-sm text-gray-600 font-accent">in your year</div>
               <div className="text-xs text-gray-400 mt-1">{user.year_group ?? "—"}</div>
-            </div>
+            </m.div>
 
             {/* Overall Ranking */}
-            <div className="text-center p-5 sm:p-6 bg-[#1B5E4B]/5 border border-gray-200 rounded-2xl">
-              <div className="text-4xl sm:text-5xl font-bold text-[#1B5E4B] mb-1">
+            <m.div
+              className="text-center p-5 sm:p-6 bg-[#1B5E4B]/5 border border-gray-200 rounded-2xl"
+              whileHover={{ y: -4, boxShadow: "0 8px 20px -6px rgba(0,0,0,0.1)" }}
+            >
+              <div className="text-5xl sm:text-6xl font-black text-[#1B5E4B] mb-1">
                 {userRankings?.overall_rank != null ? `#${userRankings.overall_rank}` : "?"}
               </div>
-              <div className="text-sm text-gray-600">overall</div>
-            </div>
+              <div className="text-sm text-gray-600 font-accent">overall</div>
+            </m.div>
           </div>
 
           {/* Current Progress */}
           <div className="mt-16 text-center">
-            <div className="text-3xl sm:text-4xl font-bold text-[#1B5E4B] mb-3">
+            <div className="text-4xl sm:text-5xl font-black text-[#1B5E4B] mb-3 tracking-tight">
               {formatTimeDisplay(user.total_minutes || 0)}
             </div>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 mb-6 font-accent text-lg">
               {getMotivationalMessage(
                 userRankings?.school_rank ?? null,
                 userRankings?.school_total_users || 0,
@@ -159,7 +173,7 @@ const LeaderboardContent = ({
           </div>
         </CardContent>
       </Card>
-    </div>
+    </m.div>
   );
 
   const SchoolCompetition = () => (
@@ -175,7 +189,7 @@ const LeaderboardContent = ({
               School Competition
             </CardTitle>
             <p className="text-sm text-gray-600 mt-1">
-              Fair comparison based on points per student
+              Fair comparison based on points per student on school roll
             </p>
           </div>
           <Badge
@@ -191,13 +205,14 @@ const LeaderboardContent = ({
             {schoolLeaderboard.slice(0, 10).map((school, index) => {
               const isUserSchool = school.id === user.school_id;
               return (
-                <div
+                <m.div
                   key={school.id}
                   className={`flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between p-4 sm:p-5 rounded-2xl transition-all ${
                     isUserSchool
                       ? "bg-[#1B5E4B]/10 border-2 border-[#1B5E4B]/30 shadow-md"
                       : "bg-[#1B5E4B]/5 border border-gray-200 hover:bg-[#1B5E4B]/10"
                   }`}
+                  whileHover={{ x: 4 }}
                 >
                   <div className="flex items-center gap-4">
                     <div className="text-3xl sm:text-4xl font-bold w-14 sm:w-16 text-[#1B5E4B]">
@@ -227,18 +242,16 @@ const LeaderboardContent = ({
                     </div>
                     <div className="text-xs text-gray-400">pro-rata score</div>
                   </div>
-                </div>
+                </m.div>
               );
             })}
-          </div>
-
-          <div className="mt-6 p-4 bg-[#1B5E4B]/5 border border-gray-200 rounded-2xl">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-[#1B5E4B] mt-0.5" />
               <div className="text-sm text-gray-600">
                 <strong className="text-[#1B5E4B]">Fair Competition:</strong> Pro-rata scoring
-                calculates (total points ÷ student count) × 100 to ensure fair comparison between
-                schools of different sizes.
+                calculates (total points ÷ school roll number) × 100 to compare schools of different
+                sizes. Schools with higher roll enrolment must encourage more students to register
+                and log activities.
               </div>
             </div>
           </div>
@@ -274,13 +287,14 @@ const LeaderboardContent = ({
                 const progressPercent = maxPoints > 0 ? (house.total_points / maxPoints) * 100 : 0;
 
                 return (
-                  <div
+                  <m.div
                     key={house.id}
                     className={`p-4 rounded-2xl space-y-3 ${
                       isUserHouse
                         ? "bg-[#1B5E4B]/10 border-2 border-[#1B5E4B]/30"
                         : "bg-[#1B5E4B]/5 border border-gray-200"
                     }`}
+                    whileHover={{ x: 4 }}
                   >
                     {/* Mobile Layout: Stacked */}
                     <div className="flex items-start justify-between gap-3">
@@ -339,7 +353,7 @@ const LeaderboardContent = ({
                         </div>
                       )}
                     </div>
-                  </div>
+                  </m.div>
                 );
               })}
             </div>
@@ -362,19 +376,21 @@ const LeaderboardContent = ({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
           <h1 className="text-3xl sm:text-4xl font-black text-gray-800">Leaderboard</h1>
-          <p className="text-gray-700 text-sm sm:text-base">
+          <p className="text-gray-700 text-sm sm:text-base font-accent text-lg">
             See how you and your school compare with others
           </p>
         </div>
-        <Button
-          onClick={loadLeaderboardData}
-          variant="outline"
-          className="gap-2 w-full sm:w-auto"
-          style={{ backgroundColor: "#1B5E4B", color: "white", borderColor: "#1B5E4B" }}
-        >
-          <RefreshCw className="w-4 h-4" />
-          Refresh
-        </Button>
+        <m.div {...squishyTap}>
+          <Button
+            onClick={loadLeaderboardData}
+            variant="outline"
+            className="gap-2 w-full sm:w-auto"
+            style={{ backgroundColor: "#1B5E4B", color: "white", borderColor: "#1B5E4B" }}
+          >
+            <RefreshCw className="w-4 h-4" />
+            Refresh
+          </Button>
+        </m.div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">

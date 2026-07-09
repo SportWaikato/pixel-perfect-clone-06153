@@ -34,7 +34,7 @@ const Step1Challenge = ({ data, challenges, onChange }: Step1ChallengeProps) => 
     <div className="space-y-4">
       <div>
         <h2 className="text-2xl font-black text-[#1B5E4B] mb-1">Link to a challenge?</h2>
-        <p className="text-gray-500 text-sm">
+        <p className="text-gray-500 text-sm font-accent">
           Link your activity to earn bonus points or challenge rewards.
         </p>
       </div>

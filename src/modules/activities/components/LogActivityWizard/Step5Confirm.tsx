@@ -14,6 +14,8 @@ import { WizardState, EVENT_TYPE_TO_ACTIVITY_TYPE } from "./types";
 import { Button } from "@/modules/application/components/DesignSystem/ui/button";
 import { Zap, Users, User, Camera, X } from "lucide-react";
 import { format } from "date-fns";
+import { m } from "framer-motion";
+import { squishyTap } from "@/modules/application/components/animations/tactile";
 
 interface Step5ConfirmProps {
   data: WizardState;
@@ -74,7 +76,7 @@ const Step5Confirm = ({
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-black text-[#1B5E4B] mb-1">Confirm and log it</h2>
-        <p className="text-gray-500 text-sm">
+        <p className="text-gray-500 text-sm font-accent">
           Everything look good? Hit &quot;Log it&quot; to record your activity.
         </p>
       </div>
@@ -122,7 +124,7 @@ const Step5Confirm = ({
         <div className="text-5xl font-black" style={{ color: "#19AA4B" }}>
           +{pointsEarned}
         </div>
-        <p className="text-gray-500 text-sm mt-1">points earned</p>
+        <p className="text-gray-500 text-sm mt-1 font-accent text-lg">points earned</p>
         {user.house_id && (
           <p className="text-xs text-gray-400 mt-0.5">Contributing to your house</p>
         )}
@@ -178,15 +180,17 @@ const Step5Confirm = ({
         </label>
       )}
 
-      <Button
-        onClick={onSubmit}
-        disabled={isSubmitting}
-        className="w-full py-4 text-base font-bold rounded-2xl gap-2"
-        style={{ backgroundColor: "#1B5E4B", color: "white" }}
-      >
-        <Zap size={18} />
-        {isSubmitting ? "Logging…" : "Log it"}
-      </Button>
+      <m.div {...squishyTap}>
+        <Button
+          onClick={onSubmit}
+          disabled={isSubmitting}
+          className="w-full py-4 text-base font-bold rounded-2xl gap-2"
+          style={{ backgroundColor: "#1B5E4B", color: "white" }}
+        >
+          <Zap size={18} />
+          {isSubmitting ? "Logging…" : "Log it"}
+        </Button>
+      </m.div>
     </div>
   );
 };

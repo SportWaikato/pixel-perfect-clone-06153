@@ -10,6 +10,8 @@ import {
   SelectValue,
 } from "@/modules/application/components/DesignSystem/ui/select";
 import { Input } from "@/modules/application/components/DesignSystem/ui/input";
+import { m } from "framer-motion";
+import { squishyTap } from "@/modules/application/components/animations/tactile";
 
 const FEATURED_TYPES = ["run_jog", "bike_cycle", "walk_hike", "skating"] as const;
 
@@ -41,7 +43,7 @@ const Step2ActivityType = ({ data, challenges, onChange }: Step2ActivityTypeProp
     <div className="space-y-4">
       <div>
         <h2 className="text-2xl font-black text-[#1B5E4B] mb-1">What did you do?</h2>
-        <p className="text-gray-500 text-sm">
+        <p className="text-gray-500 text-sm font-accent">
           Choose the activity that best describes what you did.
         </p>
       </div>
@@ -70,15 +72,16 @@ const Step2ActivityType = ({ data, challenges, onChange }: Step2ActivityTypeProp
               const isSelected = data.activityType === type;
               const color = getActivityColor(type);
               return (
-                <button
+                <m.button
                   key={type}
                   type="button"
                   onClick={() => handleSelect(type)}
-                  className={`p-4 rounded-2xl border flex flex-col items-center gap-2 transition-all duration-150 ${
+                  className={`p-4 rounded-2xl border flex flex-col items-center gap-2 ${
                     isSelected
                       ? "border-[#cf04d2] bg-[#1B5E4B]/5 shadow-sm"
                       : "border-gray-200 bg-white hover:border-gray-300"
                   }`}
+                  {...squishyTap}
                 >
                   <div
                     className="w-12 h-12 rounded-xl flex items-center justify-center"
@@ -89,7 +92,7 @@ const Step2ActivityType = ({ data, challenges, onChange }: Step2ActivityTypeProp
                   <span className="text-sm font-medium text-gray-800">
                     {ACTIVITY_TYPES[type as keyof typeof ACTIVITY_TYPES]}
                   </span>
-                </button>
+                </m.button>
               );
             })}
           </div>

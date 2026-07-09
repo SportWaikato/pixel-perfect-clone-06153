@@ -14,9 +14,9 @@ import { Input } from "@/modules/application/components/DesignSystem/ui/input";
 import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
 import { SchoolService } from "@/models/schools/services/SchoolService";
 import { Formik, Form, Field, useFormikContext } from "formik";
-import { object, string } from "yup";
+import { object, string, number } from "yup";
 import { FormikInputField } from "@/modules/common/components/Formik";
-import { School, Save, Loader2, Globe, ShieldCheck } from "lucide-react";
+import { School, Save, Loader2, Globe, ShieldCheck, Users } from "lucide-react";
 import { toast } from "sonner";
 import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
 import { cn } from "@/modules/common/utils";
@@ -77,6 +77,11 @@ const validationSchema = object().shape({
           )
           .max(255, "Domains must be less than 255 characters"),
     }),
+  roll_number: number()
+    .nullable()
+    .transform((value, original) => (original === "" ? null : value))
+    .min(0, "Roll number must be a positive number")
+    .max(99999, "Roll number is too large"),
 });
 
 type FormValues = {
@@ -85,6 +90,7 @@ type FormValues = {
   registration_method: string;
   email_domain: string;
   secondary_email_domain: string;
+  roll_number: string;
 };
 
 const registrationOptions = [
@@ -227,6 +233,7 @@ const SchoolCreateEditDialog = ({
     registration_method: school?.registration_method || "domain_blocklist",
     email_domain: school?.email_domain || "",
     secondary_email_domain: (school as any)?.secondary_email_domain || "",
+    roll_number: school?.roll_number != null ? String(school.roll_number) : "",
   };
 
   const handleSubmit = async (values: FormValues, { setSubmitting }: any) => {
@@ -247,6 +254,7 @@ const SchoolCreateEditDialog = ({
           values.registration_method === "domain_blocklist" && values.secondary_email_domain?.trim()
             ? values.secondary_email_domain.trim().toLowerCase() || null
             : null,
+        roll_number: values.roll_number ? parseInt(values.roll_number, 10) : null,
         is_active: isActive,
         is_internal: isInternal,
       };
@@ -317,6 +325,34 @@ const SchoolCreateEditDialog = ({
                             form.setFieldValue("code", e.target.value.toUpperCase());
                           }}
                         />
+                        {meta.touched && meta.error && (
+                          <div className="text-red-500 text-sm">{meta.error}</div>
+                        )}
+                      </>
+                    )}
+                  </Field>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="roll_number" className="flex items-center gap-1.5">
+                    <Users size={14} className="text-[#1B5E4B]" />
+                    School Roll Number
+                  </Label>
+                  <Field name="roll_number">
+                    {({ field, meta }: any) => (
+                      <>
+                        <Input
+                          {...field}
+                          id="roll_number"
+                          type="number"
+                          placeholder="e.g. 450"
+                          disabled={isSubmitting}
+                          className={meta.touched && meta.error ? "border-red-500" : ""}
+                          min={0}
+                        />
+                        <p className="text-xs text-gray-400 mt-1">
+                          Total enrolled students at this school. Used for fair leaderboard scoring.
+                        </p>
                         {meta.touched && meta.error && (
                           <div className="text-red-500 text-sm">{meta.error}</div>
                         )}

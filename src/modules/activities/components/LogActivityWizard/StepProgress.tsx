@@ -7,7 +7,7 @@ interface StepProgressProps {
 const StepProgress = ({ currentStep }: StepProgressProps) => {
   return (
     <div className="mb-6">
-      <p className="text-xs font-semibold tracking-widest text-[#1B5E4B] mb-3">
+      <p className="text-xs tracking-widest text-[#1B5E4B] mb-3 font-accent text-sm">
         STEP {currentStep} OF {TOTAL_STEPS} — {STEP_LABELS[currentStep]}
       </p>
       <div className="flex gap-1.5">

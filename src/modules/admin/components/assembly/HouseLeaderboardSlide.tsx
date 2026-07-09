@@ -126,7 +126,7 @@ const HouseLeaderboardSlide = ({
 
       <div className="mb-8 text-center">
         <img
-          src="/assembly/house-leaderboard-icon.svg"
+          src="/assembly/icon-house-leaderboard.png"
           alt=""
           width={64}
           height={64}
