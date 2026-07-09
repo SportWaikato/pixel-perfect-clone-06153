@@ -24,6 +24,7 @@ import { TIME_GOALS } from "@/models/application/constants/applicationConstants"
 import { toast } from "sonner";
 import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
 import { cn } from "@/modules/common/utils";
+import WearableSyncCard from "@/modules/wearables/components/WearableSyncCard";
 
 interface ProfileContentProps {
   user: UserInterface;
@@ -347,6 +348,8 @@ const ProfileContent = ({ user, initialSchools, initialHouses }: ProfileContentP
             </Formik>
           </CardContent>
         </Card>
+
+        <WearableSyncCard />
       </div>
     </div>
   );
