@@ -53,6 +53,7 @@ function RegisterSchoolPage() {
   const [schoolName, setSchoolName] = useState("");
   const [region, setRegion] = useState("");
   const [schoolType, setSchoolType] = useState("");
+  const [rollNumber, setRollNumber] = useState("");
 
   // Step 2 — Email domains
   const [primaryDomain, setPrimaryDomain] = useState("");
@@ -356,6 +357,7 @@ function RegisterSchoolPage() {
           school_type: schoolType,
           email_domain: primaryDomain,
           secondary_email_domain: secondaryDomain || null,
+          roll_number: rollNumber ? parseInt(rollNumber, 10) : null,
           registration_method: "self",
         } as any)
         .select("id")
@@ -814,9 +816,21 @@ function RegisterSchoolPage() {
                         I confirm that I am authorised to register this school and agree to the
                         terms of service.
                       </Label>
-                    </div>
-                  </>
-                )}
+                </div>
+                <div>
+                  <Label htmlFor="rollNumber">School roll number</Label>
+                  <Input
+                    id="rollNumber"
+                    type="number"
+                    value={rollNumber}
+                    onChange={(e) => setRollNumber(e.target.value)}
+                    placeholder="e.g. 450"
+                    min={0}
+                  />
+                  <p className="text-xs text-gray-400 mt-1">Total enrolled students. Used for fair leaderboard scoring.</p>
+                </div>
+              </>
+            )}
               </>
             )}
           </CardContent>
