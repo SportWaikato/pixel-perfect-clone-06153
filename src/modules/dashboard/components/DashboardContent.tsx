@@ -25,6 +25,7 @@ import {
   TooltipTrigger,
 } from "@/modules/application/components/DesignSystem/ui/tooltip";
 import { RefreshCw, Award, Zap } from "lucide-react";
+import { m } from "framer-motion";
 import StudentProgressionCard from "@/modules/dashboard/components/StudentProgressionCard";
 import SurveyPromptCard from "@/modules/surveys/components/SurveyPromptCard";
 import { ActivityInterface } from "@/models/activities/interfaces/ActivityInterface";
@@ -234,11 +235,13 @@ const DashboardContent = ({
         </CardHeader>
         <CardContent className="px-8">
           <div className="mb-4">
-            <div className="w-full bg-gray-200 rounded-full h-4">
-              <div
-                className="h-4 rounded-full transition-all duration-300"
+            <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+              <m.div
+                className="h-4 rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${Math.min(progressPercentage, 100)}%` }}
+                transition={{ type: "spring", stiffness: 60, damping: 18, delay: 0.2 }}
                 style={{
-                  width: `${Math.min(progressPercentage, 100)}%`,
                   background: "linear-gradient(90deg, #D103D1, #FF1493)",
                 }}
               />

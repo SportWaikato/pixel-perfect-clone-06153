@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { m } from "framer-motion";
 import { UserInterface } from "@/models/users/interfaces/UserInterface";
 import {
   SchoolLeaderboardEntry,
@@ -191,8 +192,16 @@ const LeaderboardContent = ({
             {schoolLeaderboard.slice(0, 10).map((school, index) => {
               const isUserSchool = school.id === user.school_id;
               return (
-                <div
+                <m.div
                   key={school.id}
+                  layout
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    layout: { type: "spring", stiffness: 350, damping: 30 },
+                    delay: Math.min(index * 0.05, 0.4),
+                    duration: 0.25,
+                  }}
                   className={`flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between p-4 sm:p-5 rounded-2xl transition-all ${
                     isUserSchool
                       ? "bg-[#1B5E4B]/10 border-2 border-[#1B5E4B]/30 shadow-md"
@@ -227,7 +236,7 @@ const LeaderboardContent = ({
                     </div>
                     <div className="text-xs text-gray-400">pro-rata score</div>
                   </div>
-                </div>
+                </m.div>
               );
             })}
           </div>

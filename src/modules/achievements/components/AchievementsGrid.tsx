@@ -1,5 +1,6 @@
 "use client";
 
+import { m } from "framer-motion";
 import { useState, useMemo } from "react";
 import {
   AchievementInterface,
@@ -114,7 +115,7 @@ const AchievementsGrid = ({ userAchievements, allAchievements }: AchievementsGri
       ) : (
         <TooltipProvider>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
-            {filteredAchievements.map((achievement) => {
+            {filteredAchievements.map((achievement, cardIndex) => {
               const isEarned = earnedAchievementIds.has(achievement.id);
               const userAchievement = userAchievements.find(
                 (ua) => ua.achievement_id === achievement.id,
@@ -123,7 +124,10 @@ const AchievementsGrid = ({ userAchievements, allAchievements }: AchievementsGri
               return (
                 <Tooltip key={achievement.id}>
                   <TooltipTrigger asChild>
-                    <div
+                    <m.div
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: Math.min(cardIndex * 0.04, 0.5), duration: 0.25 }}
                       className={`p-3 rounded-2xl border transition-all duration-150 cursor-pointer ${
                         isEarned
                           ? "bg-white border-gray-200 shadow-sm hover:scale-105 hover:shadow-md"
@@ -184,7 +188,7 @@ const AchievementsGrid = ({ userAchievements, allAchievements }: AchievementsGri
                           </Badge>
                         )}
                       </div>
-                    </div>
+                    </m.div>
                   </TooltipTrigger>
                   <TooltipContent side="top" className="max-w-xs">
                     <div className="text-center">
