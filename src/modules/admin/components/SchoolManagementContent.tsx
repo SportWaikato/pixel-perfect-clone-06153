@@ -55,10 +55,12 @@ import {
   XCircle,
   Building2,
   LayoutDashboard,
+  BarChart3,
 } from "lucide-react";
 import { toast } from "sonner";
 import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
 import { useRouter, useNavigate } from "@tanstack/react-router";
+import { m } from "framer-motion";
 interface SchoolManagementContentProps {
   user: UserInterface;
   initialSchools: SchoolInterface[];
@@ -142,52 +144,28 @@ const SchoolManagementContent = ({ user, initialSchools }: SchoolManagementConte
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Schools</CardTitle>
-            <Building2 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalSchools}</div>
-            <p className="text-xs text-muted-foreground">{activeSchools} active</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Students</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalStudents.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">Across all schools</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Points</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalPoints.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">Combined score</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg Students/School</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {totalSchools > 0 ? Math.round(totalStudents / totalSchools) : 0}
-            </div>
-            <p className="text-xs text-muted-foreground">Average enrollment</p>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { label: "Total Schools", value: totalSchools, sub: `${activeSchools} active`, icon: Building2, color: "text-blue-600", bg: "bg-blue-50" },
+          { label: "Total Students", value: totalStudents.toLocaleString(), sub: "Across all schools", icon: Users, color: "text-green-600", bg: "bg-green-50" },
+          { label: "Total Points", value: totalPoints.toLocaleString(), sub: "Platform-wide", icon: TrendingUp, color: "text-purple-600", bg: "bg-purple-50" },
+          { label: "Avg Students", value: totalSchools > 0 ? Math.round(totalStudents / totalSchools) : 0, sub: "Per school", icon: BarChart3, color: "text-pink-600", bg: "bg-pink-50" },
+        ].map((stat, i) => (
+          <m.div key={stat.label} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25, delay: i * 0.05 }}>
+            <Card className="hover:shadow-md transition-shadow">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{stat.label}</CardTitle>
+                <div className={`p-1.5 rounded-lg ${stat.bg}`}>
+                  <stat.icon className={`h-4 w-4 ${stat.color}`} />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stat.value}</div>
+                <p className="text-xs text-muted-foreground mt-1">{stat.sub}</p>
+              </CardContent>
+            </Card>
+          </m.div>
+        ))}
       </div>
 
       {/* Search Bar */}
