@@ -162,11 +162,6 @@ const UserManagementContent = ({
   });
 
   useEffect(() => {
-    if (isSuperAdmin && selectedSchoolId === "all") {
-      allSchoolsDataLoadedRef.current = false;
-      setUsers([]);
-      return;
-    }
     if (isSuperAdmin || selectedSchoolId) {
       refresh();
     }
@@ -179,11 +174,8 @@ const UserManagementContent = ({
         allSchoolsDataLoadedRef.current = true;
         refresh();
       }
-    } else {
-      allSchoolsDataLoadedRef.current = false;
-      setUsers([]);
     }
-  }, [searchTerm, selectedSchoolId, isSuperAdmin, refresh]);
+  }, [searchTerm, isSuperAdmin, selectedSchoolId, refresh]);
 
   useEffect(() => {
     if (selectedSchoolId && selectedSchoolId !== "all") {
@@ -824,17 +816,7 @@ const UserManagementContent = ({
       </AlertDialog>
 
       {/* Users Table */}
-      {isSuperAdmin && selectedSchoolId === "all" && !searchTerm ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-16 text-center gap-3">
-            <Building2 size={40} className="text-gray-300" />
-            <p className="font-medium text-gray-700">Search to find users across all schools</p>
-            <p className="text-sm text-gray-500">
-              Enter a name or username above, or select a specific school.
-            </p>
-          </CardContent>
-        </Card>
-      ) : loading ? (
+      {loading ? (
         <Card>
           <CardContent className="flex items-center justify-center py-16 gap-3">
             <Loader2 className="h-6 w-6 animate-spin text-[#00ACEF]" />
