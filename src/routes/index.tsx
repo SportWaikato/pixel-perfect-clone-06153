@@ -9,11 +9,14 @@ export const Route = createFileRoute("/")({
 
     const { data: profile } = await supabase
       .from("users")
-      .select("school_id, house_id")
+      .select("school_id, house_id, role")
       .eq("id", data.user.id)
       .maybeSingle();
 
-    if (!profile || !profile.school_id) throw redirect({ to: "/onboarding" });
+    if (!profile) throw redirect({ to: "/onboarding" });
+
+    if (profile.role === "super_admin") throw redirect({ to: "/admin" });
+    if (!profile.school_id) throw redirect({ to: "/onboarding" });
     throw redirect({ to: "/dashboard" });
   },
   component: () => null,
