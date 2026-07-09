@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { m } from "framer-motion";
 import { useRouterState, Link } from "@tanstack/react-router";
 import {
   LayoutDashboard,
@@ -84,13 +85,21 @@ const AdminMobileBottomNav = () => {
             <Link
               key={tab.href}
               to={tab.href}
-              className="flex flex-col items-center gap-1 px-2 relative"
+              className="flex flex-col items-center gap-1 px-2 pt-1 relative"
               aria-label={tab.label}
             >
-              <div className="relative">
+              {isActive && (
+                <m.span
+                  layoutId="admin-bottom-nav-pill"
+                  transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                  className="absolute -top-2 h-1 w-8 rounded-full bg-brand-green"
+                />
+              )}
+              <m.div className="relative" whileTap={{ scale: 0.85 }}>
                 <IconComponent
                   size={22}
-                  className={cn(isActive ? "text-[#1B5E4B]" : "text-gray-400")}
+                  strokeWidth={isActive ? 2.5 : 2}
+                  className={cn(isActive ? "text-brand-green" : "text-gray-400")}
                 />
                 {tab.href === "/school/events" && pendingEventsCount > 0 && (
                   <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-400 rounded-full" />
@@ -98,9 +107,12 @@ const AdminMobileBottomNav = () => {
                 {tab.href === "/school/updates" && unreadMessagesCount > 0 && (
                   <span className="absolute -top-1 -right-1 w-2 h-2 bg-blue-400 rounded-full" />
                 )}
-              </div>
+              </m.div>
               <span
-                className={cn("text-xs font-medium", isActive ? "text-[#1B5E4B]" : "text-gray-400")}
+                className={cn(
+                  "text-xs",
+                  isActive ? "font-semibold text-brand-green" : "font-medium text-gray-400",
+                )}
               >
                 {tab.label}
               </span>
