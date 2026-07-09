@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useSearch, Outlet, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
@@ -82,6 +82,11 @@ const YEAR_GROUPS = [
 ];
 
 function AuthPage() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  // /auth/callback — let the callback handler mount to process OAuth redirects
+  if (pathname === "/auth/callback") return <Outlet />;
+
   const navigate = useNavigate();
   const search = useSearch({ from: "/auth" });
   const [tab, setTab] = useState<"signin" | "signup">("signin");

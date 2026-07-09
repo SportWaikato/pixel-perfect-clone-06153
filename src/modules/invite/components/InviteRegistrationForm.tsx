@@ -1,4 +1,5 @@
 import { Formik, Form } from "formik";
+import { useNavigate } from "@tanstack/react-router";
 import { inviteRegistrationSchema } from "@/models/forms/schemas/authSchemas";
 import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
 import { Button } from "@/modules/application/components/DesignSystem/ui/button";
@@ -15,6 +16,7 @@ interface InviteRegistrationFormProps {
 }
 
 const InviteRegistrationForm = ({ email, token }: InviteRegistrationFormProps) => {
+  const navigate = useNavigate();
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
     try {
       const supabase = createSupabaseClient();
@@ -37,7 +39,7 @@ const InviteRegistrationForm = ({ email, token }: InviteRegistrationFormProps) =
       });
 
       toast.success("Account created! Welcome.");
-      window.location.href = "/admin";
+      navigate({ to: "/admin" });
     } catch (error) {
       notifyAboutError(error);
     } finally {

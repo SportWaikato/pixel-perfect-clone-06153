@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { UserInterface } from "@/models/users/interfaces/UserInterface";
 import { Button } from "@/modules/application/components/DesignSystem/ui/button";
 import UserAvatar from "@/modules/application/components/DesignSystem/ui/user-avatar";
@@ -20,7 +20,7 @@ import {
   UserX,
   Monitor,
 } from "lucide-react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useRouter } from "@tanstack/react-router";
 import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
 import { EventService } from "@/models/events/services/EventService";
@@ -36,6 +36,7 @@ const AdminLayout = ({ user, children }: AdminLayoutProps) => {
   const [pendingEventsCount, setPendingEventsCount] = useState(0);
   const router = useRouter();
   const navigate = useNavigate();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   useEffect(() => {
     const supabase = createSupabaseClient();
@@ -46,9 +47,9 @@ const AdminLayout = ({ user, children }: AdminLayoutProps) => {
       .catch(() => {});
   }, [user.id]);
 
-  const adminNavItems = [
-    { name: "Dashboard", href: "/admin", icon: LayoutDashboard, current: true },
-    { name: "User Management", href: "/admin/users", icon: Users, current: false },
+  const adminNavItems = useMemo(() => [
+    { name: "Dashboard", href: "/admin", icon: LayoutDashboard, current: pathname === "/admin" },
+    { name: "User Management", href: "/admin/users", icon: Users, current: pathname === "/admin/users" },
     {
       name: "Deleted Users",
       href: "/admin/deleted-users",
@@ -82,7 +83,8 @@ const AdminLayout = ({ user, children }: AdminLayoutProps) => {
       current: false,
       roles: ["super_admin", "school_admin"],
     },
-  ].filter((item) => !item.roles || item.roles.includes(user.role));
+  ].filter((item) => !item.roles || item.roles.includes(user.role))
+    .map((item) => ({ ...item, current: pathname === item.href })), [pathname, user.role]);
 
   const handleLogout = async () => {
     try {
