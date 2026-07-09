@@ -205,17 +205,21 @@ const AdminDashboardContent = ({
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm">Platform Health</span>
-                <Badge className="bg-green-100 text-green-800">Operational</Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Data Sync</span>
-                <Badge className="bg-green-100 text-green-800">Up to date</Badge>
+                <span className="text-sm">PostHog Analytics</span>
+                <Badge className="bg-green-100 text-green-800">
+                  {import.meta.env.VITE_POSTHOG_KEY ? "Connected" : "Not configured"}
+                </Badge>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm">Active Challenges</span>
                 <Badge className="bg-blue-100 text-blue-800">
                   {events.filter((e) => e.is_active).length} Running
+                </Badge>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm">Total Registered Schools</span>
+                <Badge className="bg-blue-100 text-blue-800">
+                  {schools.filter((s) => s.is_active).length} Active
                 </Badge>
               </div>
             </CardContent>

@@ -175,6 +175,18 @@ function RootComponent() {
         console.error("Service worker registration failed:", err);
       });
     }
+
+    // PostHog analytics — publishable key, safe for client-side
+    const posthogKey = import.meta.env.VITE_POSTHOG_KEY;
+    if (!posthogKey) return;
+    import("posthog-js").then(({ default: posthog }) => {
+      posthog.init(posthogKey, {
+        api_host: import.meta.env.VITE_POSTHOG_HOST || "https://us.posthog.com",
+        capture_pageview: true,
+        capture_pageleave: true,
+        autocapture: true,
+      });
+    });
   }, []);
 
   return (
