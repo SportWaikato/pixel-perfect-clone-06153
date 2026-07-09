@@ -63,6 +63,7 @@ const MainNavigation = () => {
         { href: "/school/feed", label: "Feed", icon: Heart },
         { href: "/school/leaderboard", label: "Leaderboard", icon: Trophy },
         { href: "/school/activity", label: "Activity Log", icon: Zap },
+        { href: "/school/settings", label: "Settings", icon: Settings },
       ];
     } else if (userRole === Role.SUPER_ADMIN) {
       return [

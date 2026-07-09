@@ -109,3 +109,12 @@ Then share the three logins with Claude via env/secrets (not in chat, not in git
   `badges` storage bucket and its DB `image_filename` values stay as-is.
 - After steps 1–2, ask Claude to re-run the security review against the live
   schema (advisors + policy audit) — that's when 🟡 items can start moving to ✅.
+
+## Term reset — archive standings (optional enhancement, 2026-07-09)
+
+`supabase/migrations/20260709120000_term_reset_archive.sql` upgrades the
+existing `reset_term_points` RPC so that, before it zeroes House/School term
+points, it snapshots the final House standings + who reset it into a new
+`term_points_history` table. Student activity history and badges remain
+untouched (they always were). The shipped UI works with or without this — apply
+it when you want past-term results preserved for a "past terms" view.
