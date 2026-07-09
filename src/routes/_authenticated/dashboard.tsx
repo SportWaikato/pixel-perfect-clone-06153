@@ -63,11 +63,15 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
       userService.getCurrentMonthProgress(profile.id),
       activityService.getByUserId(profile.id, 3),
       surveyService.shouldShowSurvey(profile.id),
-      activityService.getByUserId(profile.id, 20).then((acts) =>
-        (acts || []).filter(
-          (a) => a.proof_image_url && a.is_shared_to_feed,
-        ),
-      ),
+      activityService.getByUserId(profile.id, 20).then((acts) => {
+        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+        return (acts || []).filter(
+          (a) =>
+            a.proof_image_url &&
+            a.is_shared_to_feed &&
+            a.created_at >= sevenDaysAgo,
+        );
+      }),
     ]);
 
     return {

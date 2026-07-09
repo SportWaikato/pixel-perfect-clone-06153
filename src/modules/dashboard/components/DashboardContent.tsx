@@ -204,6 +204,53 @@ const DashboardContent = ({
         />
       )}
 
+      {/* Recent Activity Trend */}
+      <m.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, delay: 0.1, ease: "easeOut" }}
+      >
+        <Card className="shadow-sm rounded-2xl border border-gray-200" style={{ backgroundColor: "#f9fefd" }}>
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-sm font-semibold text-gray-700">Last 7 Days</span>
+              <span className="text-xs text-gray-400">{currentMonthMinutes} min this month</span>
+            </div>
+            <div className="flex items-end gap-2 h-20">
+              {(() => {
+                const days: { label: string; mins: number }[] = [];
+                for (let i = 6; i >= 0; i--) {
+                  const d = new Date();
+                  d.setDate(d.getDate() - i);
+                  const dateStr = d.toISOString().split("T")[0];
+                  const dayMins = recentActivities
+                    .filter((a) => a.created_at.startsWith(dateStr))
+                    .reduce((s, a) => s + (a.duration_minutes || 0), 0);
+                  days.push({
+                    label: ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d.getDay()],
+                    mins: dayMins,
+                  });
+                }
+                const maxMins = Math.max(1, ...days.map((d) => d.mins));
+                return days.map((day) => (
+                  <div key={day.label} className="flex-1 flex flex-col items-center gap-1">
+                    <span className="text-[10px] font-semibold text-gray-500">{day.mins > 0 ? day.mins : ""}</span>
+                    <m.div
+                      className="w-full rounded-t-md"
+                      style={{ minHeight: 4, backgroundColor: day.mins > 0 ? "#1B5E4B" : "#E5E7EB" }}
+                      initial={{ height: 0 }}
+                      animate={{ height: `${Math.max(4, (day.mins / maxMins) * 100)}%` }}
+                      transition={{ type: "spring", stiffness: 100, damping: 20 }}
+                    />
+                    <span className="text-[10px] text-gray-400">{day.label}</span>
+                  </div>
+                ));
+              })()}
+            </div>
+          </CardContent>
+        </Card>
+      </m.div>
+
       {/* Student Photo Feed */}
       {photoActivities.length > 0 && (
         <StudentPhotoFeed
