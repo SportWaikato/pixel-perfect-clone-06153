@@ -24,7 +24,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/modules/application/components/DesignSystem/ui/tooltip";
-import { RefreshCw, Award, Zap } from "lucide-react";
+import { RefreshCw, Award, Zap, Target } from "lucide-react";
 import { m } from "framer-motion";
 import StudentProgressionCard from "@/modules/dashboard/components/StudentProgressionCard";
 import PageHeader from "@/modules/application/components/Layout/PageHeader";
@@ -211,11 +211,11 @@ const DashboardContent = ({
           className="shadow-sm rounded-2xl border border-gray-200"
           style={{ backgroundColor: "#f9fefd" }}
         >
-          <CardHeader className="flex flex-row items-center justify-between px-8">
-            <div>
-              <CardTitle className="flex items-center gap-2 text-[#1B5E4B] text-2xl font-black">
+          <CardHeader className="flex flex-row items-start justify-between gap-3 px-4 sm:px-8">
+            <div className="min-w-0">
+              <CardTitle className="flex flex-wrap items-center gap-2 text-[#1B5E4B] text-xl sm:text-2xl font-black">
                 Monthly Progress
-                <span className="text-sm font-normal text-gray-500">
+                <span className="text-xs sm:text-sm font-normal text-gray-500">
                   {new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })}
                 </span>
                 <Button
@@ -228,21 +228,21 @@ const DashboardContent = ({
                   <RefreshCw size={14} />
                 </Button>
               </CardTitle>
-              <div className="text-6xl font-black mt-2 text-[#1B5E4B]">
+              <div className="text-4xl sm:text-6xl font-black mt-2 text-[#1B5E4B]">
                 {formatTimeDisplay(currentMonthMinutes)}
               </div>
-              <p className="text-lg font-semibold text-gray-600">
+              <p className="text-base sm:text-lg font-semibold text-gray-600">
                 of {formatTimeDisplay(monthlyGoalMinutes)} goal
               </p>
             </div>
-            <div className="text-right">
-              <div className="text-4xl font-black" style={{ color: "#D103D1" }}>
+            <div className="text-right shrink-0">
+              <div className="text-3xl sm:text-4xl font-black" style={{ color: "#D103D1" }}>
                 {Math.round(progressPercentage)}%
               </div>
-              <p className="text-sm text-gray-500">completed</p>
+              <p className="text-xs sm:text-sm text-gray-500">completed</p>
             </div>
           </CardHeader>
-          <CardContent className="px-8">
+          <CardContent className="px-4 sm:px-8">
             <div className="mb-4">
               <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
                 <m.div
@@ -257,22 +257,35 @@ const DashboardContent = ({
               </div>
             </div>
           </CardContent>
-          <CardContent className="px-8 pt-0">
-            <div className="grid grid-cols-3 text-center">
-              <div className="py-4 px-4 rounded-2xl">
-                <div className="text-4xl font-black text-[#1B5E4B]">{totalPoints}</div>
-                <p className="text-sm text-gray-500 font-accent">Total Points</p>
-              </div>
-              <div className="py-4 px-4 rounded-2xl">
-                <div className="text-4xl font-black text-[#1B5E4B]">{earnedCount}</div>
-                <p className="text-sm text-gray-500 font-accent">Badges Earned</p>
-              </div>
-              <div className="py-4 px-4 rounded-2xl">
-                <div className="text-4xl font-black text-[#1B5E4B]">
-                  {Math.max(0, Math.ceil((monthlyGoalMinutes - currentMonthMinutes) / 60))}
-                </div>
-                <p className="text-sm text-gray-500 font-accent">Hours to Goal</p>
-              </div>
+          <CardContent className="px-4 sm:px-8 pt-0">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
+              {[
+                { icon: Zap, value: totalPoints, label: "Total Points" },
+                { icon: Award, value: earnedCount, label: "Badges Earned" },
+                {
+                  icon: Target,
+                  value: Math.max(0, Math.ceil((monthlyGoalMinutes - currentMonthMinutes) / 60)),
+                  label: "Hours to Goal",
+                },
+              ].map((tile, i) => (
+                <m.div
+                  key={tile.label}
+                  className="flex flex-col items-center rounded-2xl border border-[#1B5E4B]/10 bg-[#1B5E4B]/5 py-3 px-2 text-center sm:py-4 sm:px-4"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.25 + i * 0.06, ease: "easeOut" }}
+                >
+                  <span className="mb-1.5 flex h-7 w-7 items-center justify-center rounded-lg bg-[#1B5E4B]/10 sm:h-8 sm:w-8">
+                    <tile.icon className="text-[#1B5E4B]" size={16} />
+                  </span>
+                  <div className="text-2xl font-black leading-none text-[#1B5E4B] sm:text-4xl">
+                    {tile.value}
+                  </div>
+                  <p className="mt-1 text-[11px] leading-tight text-gray-500 font-accent sm:text-sm">
+                    {tile.label}
+                  </p>
+                </m.div>
+              ))}
             </div>
           </CardContent>
         </Card>
