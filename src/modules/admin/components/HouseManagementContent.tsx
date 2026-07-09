@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { m } from "framer-motion";
 import { UserInterface } from "@/models/users/interfaces/UserInterface";
 import { HouseInterface } from "@/models/houses/interfaces/HouseInterface";
 import { SchoolInterface } from "@/models/schools/interfaces/SchoolInterface";
@@ -426,9 +427,10 @@ const HouseManagementContent = ({
           ) : (
             <div className="space-y-2">
               {filteredHouses.map((house) => (
-                <div
+                <m.div
                   key={house.id}
                   className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                  whileHover={{ x: 4 }}
                 >
                   <div className="flex items-center gap-4">
                     <div
@@ -510,7 +512,7 @@ const HouseManagementContent = ({
                       </AlertDialogContent>
                     </AlertDialog>
                   </div>
-                </div>
+                </m.div>
               ))}
             </div>
           )}
