@@ -1,4 +1,5 @@
 import { useRouterState, Link } from "@tanstack/react-router";
+import { m } from "framer-motion";
 import { LayoutDashboard, Trophy, Zap, Calendar, Heart } from "lucide-react";
 import { cn } from "@/modules/common/utils";
 
@@ -10,12 +11,14 @@ const tabs = [
   { href: "/challenges", label: "Challenges", icon: Calendar },
 ];
 
+const spring = { type: "spring", stiffness: 500, damping: 32 } as const;
+
 const MobileBottomNav = () => {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
     <nav
-      className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white/95 backdrop-blur"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <div className="flex items-end justify-around px-2 pt-2 pb-3">
@@ -36,18 +39,20 @@ const MobileBottomNav = () => {
                 className="flex flex-col items-center gap-1 -mt-5"
                 aria-label={tab.label}
               >
-                <span
+                <m.span
+                  whileTap={{ scale: 0.88 }}
+                  transition={spring}
                   className={cn(
-                    "w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-transform active:scale-95",
-                    isActive ? "bg-[#1B5E4B]" : "bg-[#D103D1]",
+                    "w-14 h-14 rounded-full flex items-center justify-center shadow-lg",
+                    isActive ? "bg-brand-green" : "bg-brand-magenta",
                   )}
                 >
                   <IconComponent size={24} color="white" />
-                </span>
+                </m.span>
                 <span
                   className={cn(
-                    "text-xs font-medium",
-                    isActive ? "text-[#1B5E4B]" : "text-gray-400",
+                    "text-caption font-medium",
+                    isActive ? "text-brand-green" : "text-gray-400",
                   )}
                 >
                   {tab.label}
@@ -60,15 +65,35 @@ const MobileBottomNav = () => {
             <Link
               key={tab.href}
               to={tab.href}
-              className="flex flex-col items-center gap-1 px-2"
+              className="relative flex flex-col items-center gap-1 px-3 pt-1"
               aria-label={tab.label}
             >
-              <IconComponent
-                size={22}
-                className={cn(isActive ? "text-[#1B5E4B]" : "text-gray-400")}
-              />
+              {isActive && (
+                <m.span
+                  layoutId="bottom-nav-pill"
+                  transition={spring}
+                  className="absolute -top-2 h-1 w-8 rounded-full bg-brand-green"
+                />
+              )}
+              <m.span
+                whileTap={{ scale: 0.85 }}
+                animate={{ scale: isActive ? 1.12 : 1 }}
+                transition={spring}
+                className="flex"
+              >
+                <IconComponent
+                  size={22}
+                  strokeWidth={isActive ? 2.5 : 2}
+                  className={cn(isActive ? "text-brand-green" : "text-gray-400")}
+                  fill={isActive ? "currentColor" : "none"}
+                  fillOpacity={isActive ? 0.15 : 0}
+                />
+              </m.span>
               <span
-                className={cn("text-xs font-medium", isActive ? "text-[#1B5E4B]" : "text-gray-400")}
+                className={cn(
+                  "text-caption",
+                  isActive ? "font-semibold text-brand-green" : "font-medium text-gray-400",
+                )}
               >
                 {tab.label}
               </span>

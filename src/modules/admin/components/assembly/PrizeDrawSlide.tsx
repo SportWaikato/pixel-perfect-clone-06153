@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
 import { UserInterface } from "@/models/users/interfaces/UserInterface";
@@ -15,84 +15,107 @@ interface PrizeDrawSlideProps {
 
 type DrawState = "ready" | "spinning" | "winner";
 
+// Name-board geometry (a raffle-style name draw, NOT a slot machine — no
+// gambling iconography, just names scrolling to a highlighted winner). Large
+// for projector legibility. VISIBLE must be odd so one row sits dead-centre.
+const ROW = 84;
+const VISIBLE = 5;
+const CENTER_OFFSET = ((VISIBLE - 1) / 2) * ROW;
+const NAME_COUNT = 52; // names that scroll past before landing
+const WINNER_INDEX = NAME_COUNT - 5; // leave a few rows below so neighbours show at rest
+
+type Row = { key: string; label: string };
+
 const PrizeDrawSlide = ({ schoolId, drawnByUserId, students, onBack }: PrizeDrawSlideProps) => {
   const [state, setState] = useState<DrawState>("ready");
-  const [displayName, setDisplayName] = useState("");
   const [winner, setWinner] = useState<UserInterface | null>(null);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [names, setNames] = useState<Row[]>([]);
 
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-  const eligibleStudents = students.filter(
-    (s) =>
-      s.is_active !== false &&
-      s.role === "student" &&
-      s.last_activity_date != null &&
-      new Date(s.last_activity_date) >= sevenDaysAgo,
+  const eligibleStudents = useMemo(
+    () => students.filter((s) => s.is_active !== false && s.role === "student"),
+    [students],
   );
 
-  const clearSpin = useCallback(() => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-  }, []);
+  const nameOf = (s: UserInterface) => `${s.first_name} ${s.last_name}`;
 
-  useEffect(() => () => clearSpin(), [clearSpin]);
+  const finalY = CENTER_OFFSET - WINNER_INDEX * ROW;
+  // Start a few rows "back" so there is always travel even with tiny pools.
+  const startY = CENTER_OFFSET;
 
-  const handleDraw = useCallback(async () => {
-    if (eligibleStudents.length === 0) return;
-    setState("spinning");
+  const saveAndCelebrate = useCallback(
+    async (picked: UserInterface) => {
+      try {
+        const confetti = (await import("canvas-confetti")).default;
+        confetti({
+          particleCount: 250,
+          spread: 180,
+          origin: { y: 0.5 },
+          colors: ["#FFD700", "#F6C031", "#ffffff", "#00ACEF", "#E019C3"],
+        });
 
-    const picked = eligibleStudents[Math.floor(Math.random() * eligibleStudents.length)];
-    let tick = 0;
-    const totalTicks = 30;
-
-    intervalRef.current = setInterval(() => {
-      const random = eligibleStudents[Math.floor(Math.random() * eligibleStudents.length)];
-      setDisplayName(`${random.first_name} ${random.last_name}`);
-      tick++;
-
-      if (tick >= totalTicks) {
-        clearSpin();
-        setWinner(picked);
-        setDisplayName(`${picked.first_name} ${picked.last_name}`);
-        setState("winner");
-
-        (async () => {
-          try {
-            const confetti = (await import("canvas-confetti")).default;
-            confetti({
-              particleCount: 250,
-              spread: 180,
-              origin: { y: 0.5 },
-              colors: ["#FFD700", "#F6C031", "#ffffff", "#00ACEF"],
-            });
-
-            const service = new AssemblyService(createSupabaseClient());
-            await service.saveWinner({
-              school_id: schoolId,
-              drawn_by: drawnByUserId,
-              user_id: picked.id,
-              user_first_name: picked.first_name,
-              user_last_name: picked.last_name,
-              user_username: picked.username,
-              house_name: (picked as any).house?.name || null,
-              house_color: (picked as any).house?.color || null,
-            });
-          } catch (err) {
-            notifyAboutError(err);
-          }
-        })();
+        const service = new AssemblyService(createSupabaseClient());
+        await service.saveWinner({
+          school_id: schoolId,
+          drawn_by: drawnByUserId,
+          user_id: picked.id,
+          user_first_name: picked.first_name,
+          user_last_name: picked.last_name,
+          user_username: picked.username,
+          house_name: (picked as unknown as { house?: { name?: string } }).house?.name || null,
+          house_color: (picked as unknown as { house?: { color?: string } }).house?.color || null,
+        });
+      } catch (err) {
+        notifyAboutError(err);
       }
-    }, 80);
-  }, [eligibleStudents, schoolId, drawnByUserId, clearSpin]);
+    },
+    [schoolId, drawnByUserId],
+  );
+
+  const handleDraw = useCallback(() => {
+    if (eligibleStudents.length === 0) return;
+
+    // Fairness/RNG unchanged: uniform random pick from the eligible pool.
+    const picked = eligibleStudents[Math.floor(Math.random() * eligibleStudents.length)];
+
+    // Build the scrolling name list: random filler sampled from the pool, with
+    // the winner planted at WINNER_INDEX. Works identically for 20 or 200+ students.
+    const rows: Row[] = [];
+    for (let i = 0; i < NAME_COUNT; i++) {
+      if (i === WINNER_INDEX) {
+        rows.push({ key: `w-${i}`, label: nameOf(picked) });
+      } else {
+        const rnd = eligibleStudents[Math.floor(Math.random() * eligibleStudents.length)];
+        rows.push({ key: `${rnd.id}-${i}`, label: nameOf(rnd) });
+      }
+    }
+
+    setWinner(picked);
+    setNames(rows);
+    setState("spinning");
+  }, [eligibleStudents]);
 
   const handleDrawAgain = () => {
     setWinner(null);
-    setDisplayName("");
+    setNames([]);
     setState("ready");
   };
+
+  const onDrawSettled = useCallback(() => {
+    if (state !== "spinning" || !winner) return;
+    setState("winner");
+    void saveAndCelebrate(winner);
+  }, [state, winner, saveAndCelebrate]);
+
+  useEffect(() => {
+    // Keyboard: Enter/Space to draw from the back of the hall via a clicker.
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.key === "Enter" || e.key === " ") && state === "ready") handleDraw();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [state, handleDraw]);
+
+  const showDraw = state === "spinning" || state === "winner";
 
   return (
     <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-8 py-12">
@@ -117,102 +140,134 @@ const PrizeDrawSlide = ({ schoolId, drawnByUserId, students, onBack }: PrizeDraw
         </h2>
       </div>
 
-      <div className="w-full max-w-lg">
-        <div className="rounded-2xl border border-white/10 bg-white/5 px-10 py-12 text-center backdrop-blur-sm">
-          <AnimatePresence mode="wait">
-            {state === "ready" && (
-              <m.div
-                key="ready"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="space-y-6"
+      <div className="w-full max-w-2xl">
+        <AnimatePresence mode="wait">
+          {state === "ready" && (
+            <m.div
+              key="ready"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="space-y-6 rounded-2xl border border-white/10 bg-white/5 px-10 py-12 text-center backdrop-blur-sm"
+            >
+              <img
+                src="/assembly/read-to-draw.svg"
+                alt=""
+                width={80}
+                height={80}
+                className="mx-auto"
+              />
+              <p className="text-xl font-semibold text-white">Ready to draw the winner?</p>
+              <p className="text-sm text-white/40">
+                {eligibleStudents.length === 0
+                  ? "No eligible students found. Make sure students are registered to this school."
+                  : `${eligibleStudents.length} eligible student${eligibleStudents.length === 1 ? "" : "s"} in the pool`}
+              </p>
+              <button
+                onClick={handleDraw}
+                disabled={eligibleStudents.length === 0}
+                className="rounded-xl bg-white px-8 py-3 text-lg font-bold transition-transform hover:scale-105 active:scale-95 disabled:opacity-40"
+                style={{ color: "#357565" }}
               >
-                <img
-                  src="/assembly/icon-ready-to-draw.png"
-                  alt=""
-                  width={80}
-                  height={80}
-                  className="mx-auto"
+                Draw Winner Now
+              </button>
+            </m.div>
+          )}
+
+          {showDraw && (
+            <m.div
+              key="draw"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex flex-col items-center gap-6"
+            >
+              {/* Name-draw board — names scroll and decelerate to the winner */}
+              <div
+                className="relative w-full overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm"
+                style={{ height: VISIBLE * ROW }}
+              >
+                {/* fade top/bottom */}
+                <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-24 bg-gradient-to-b from-[#0C4036] to-transparent" />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-24 bg-gradient-to-t from-[#0C4036] to-transparent" />
+
+                {/* centre highlight band + pointer */}
+                <div
+                  className="pointer-events-none absolute inset-x-0 z-10 border-y-2 border-amber-400/70 bg-amber-400/10"
+                  style={{ top: CENTER_OFFSET, height: ROW }}
                 />
-                <p className="text-xl font-semibold text-white">Ready to draw the winner?</p>
-                <p className="text-sm text-white/40">
-                  {eligibleStudents.length === 0
-                    ? "No eligible students found. Make sure students have logged activity in the last 7 days."
-                    : `${eligibleStudents.length} active student${eligibleStudents.length === 1 ? "" : "s"} in the pool`}
-                </p>
-                <button
-                  onClick={handleDraw}
-                  disabled={eligibleStudents.length === 0}
-                  className="rounded-xl bg-white px-8 py-3 font-bold transition-colors hover:bg-white/90 disabled:opacity-40"
-                  style={{ color: "#357565" }}
-                >
-                  Draw Winner Now
-                </button>
-              </m.div>
-            )}
+                <div
+                  className="pointer-events-none absolute right-2 z-30 h-0 w-0 border-y-[12px] border-r-[16px] border-y-transparent border-r-amber-400"
+                  style={{ top: CENTER_OFFSET + ROW / 2 - 12 }}
+                />
 
-            {state === "spinning" && (
-              <m.div
-                key="spinning"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="space-y-4"
-              >
-                <div className="text-6xl animate-bounce">🎲</div>
-                <p className="text-2xl font-extrabold text-white min-h-[2rem]">{displayName}</p>
-              </m.div>
-            )}
-
-            {state === "winner" && winner && (
-              <m.div
-                key="winner"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ type: "spring", stiffness: 200, damping: 18 }}
-                className="space-y-4"
-              >
                 <m.div
-                  className="relative mx-auto h-20 w-20"
-                  animate={{ rotate: [0, -8, 8, -4, 4, 0] }}
-                  transition={{ duration: 0.6, delay: 0.2 }}
+                  initial={{ y: startY }}
+                  animate={{ y: state === "winner" ? finalY : finalY }}
+                  transition={
+                    state === "winner"
+                      ? { duration: 0 }
+                      : { duration: 3.4, ease: [0.12, 0.7, 0.2, 1] }
+                  }
+                  onAnimationComplete={onDrawSettled}
                 >
-                  <div className="flex h-full w-full items-center justify-center rounded-full bg-amber-500/20 text-5xl">
-                    🏆
-                  </div>
-                  {[...Array(3)].map((_, i) => (
-                    <m.div
-                      key={i}
-                      className="absolute inset-0 rounded-full border-2 border-amber-400/40"
-                      initial={{ scale: 1, opacity: 0.6 }}
-                      animate={{ scale: 2.5 + i * 0.6, opacity: 0 }}
-                      transition={{
-                        duration: 1.2,
-                        delay: i * 0.2,
-                        repeat: Infinity,
-                        repeatDelay: 1,
-                      }}
-                    />
-                  ))}
+                  {names.map((row, i) => {
+                    const isWinnerRow = state === "winner" && i === WINNER_INDEX;
+                    return (
+                      <div
+                        key={row.key}
+                        className="flex items-center justify-center px-6 text-center"
+                        style={{ height: ROW }}
+                      >
+                        <span
+                          className={
+                            isWinnerRow
+                              ? "text-4xl font-black text-amber-300 drop-shadow"
+                              : "text-3xl font-bold text-white/85"
+                          }
+                        >
+                          {row.label}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </m.div>
+              </div>
 
-                <div>
-                  <p className="text-3xl font-extrabold text-white">{displayName}</p>
-                  <p className="mt-1 text-lg font-bold text-amber-400">Congratulations!</p>
-                </div>
-
-                <button
-                  onClick={handleDrawAgain}
-                  className="mt-4 rounded-xl bg-white px-8 py-3 font-bold transition-colors hover:bg-white/90"
-                  style={{ color: "#357565" }}
-                >
-                  Draw Again
-                </button>
-              </m.div>
-            )}
-          </AnimatePresence>
-        </div>
+              {/* Winner reveal */}
+              <AnimatePresence>
+                {state === "winner" && winner && (
+                  <m.div
+                    key="win"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ type: "spring", stiffness: 200, damping: 18 }}
+                    className="flex flex-col items-center gap-3 text-center"
+                  >
+                    <m.div
+                      className="text-5xl"
+                      animate={{ rotate: [0, -8, 8, -4, 4, 0] }}
+                      transition={{ duration: 0.6 }}
+                    >
+                      🏆
+                    </m.div>
+                    <p className="text-lg font-bold text-amber-400">
+                      {(winner as unknown as { house?: { name?: string } }).house?.name
+                        ? `${(winner as unknown as { house?: { name?: string } }).house?.name} — Congratulations!`
+                        : "Congratulations!"}
+                    </p>
+                    <button
+                      onClick={handleDrawAgain}
+                      className="mt-1 rounded-xl bg-white px-8 py-3 font-bold transition-transform hover:scale-105 active:scale-95"
+                      style={{ color: "#357565" }}
+                    >
+                      Draw Again
+                    </button>
+                  </m.div>
+                )}
+              </AnimatePresence>
+            </m.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

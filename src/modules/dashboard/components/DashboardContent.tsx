@@ -25,6 +25,7 @@ import {
   TooltipTrigger,
 } from "@/modules/application/components/DesignSystem/ui/tooltip";
 import { RefreshCw, Award, Zap } from "lucide-react";
+import { m } from "framer-motion";
 import StudentProgressionCard from "@/modules/dashboard/components/StudentProgressionCard";
 import SurveyPromptCard from "@/modules/surveys/components/SurveyPromptCard";
 import { ActivityInterface } from "@/models/activities/interfaces/ActivityInterface";
@@ -211,29 +212,63 @@ const DashboardContent = ({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: "easeOut" }}
       >
-        <Card
-          className="shadow-sm rounded-2xl border border-gray-200"
-          style={{ backgroundColor: "#f9fefd" }}
-        >
-          <CardHeader className="flex flex-row items-center justify-between px-8">
-            <div>
-              <CardTitle className="flex items-center gap-2 text-[#1B5E4B] text-2xl font-black">
-                Monthly Progress
-                <span className="text-sm font-normal text-gray-500">
-                  {new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })}
-                </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-6 w-6 p-0 text-[#1B5E4B] hover:bg-[#1B5E4B]/10"
-                  onClick={handleRecalculateTotals}
-                  title="Refresh monthly progress"
-                >
-                  <RefreshCw size={14} />
-                </Button>
-              </CardTitle>
-              <div className="text-7xl font-black mt-2 text-[#1B5E4B] tracking-tight">
-                {formatTimeDisplay(currentMonthMinutes)}
+        <CardHeader className="flex flex-row items-center justify-between px-8">
+          <div>
+            <CardTitle className="flex items-center gap-2 text-[#1B5E4B] text-2xl font-black">
+              Monthly Progress
+              <span className="text-sm font-normal text-gray-500">
+                {new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })}
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 w-6 p-0 text-[#1B5E4B] hover:bg-[#1B5E4B]/10"
+                onClick={handleRecalculateTotals}
+                title="Refresh monthly progress"
+              >
+                <RefreshCw size={14} />
+              </Button>
+            </CardTitle>
+            <div className="text-6xl font-black mt-2 text-[#1B5E4B]">
+              {formatTimeDisplay(currentMonthMinutes)}
+            </div>
+            <p className="text-lg font-semibold text-gray-600">
+              of {formatTimeDisplay(monthlyGoalMinutes)} goal
+            </p>
+          </div>
+          <div className="text-right">
+            <div className="text-4xl font-black" style={{ color: "#D103D1" }}>
+              {Math.round(progressPercentage)}%
+            </div>
+            <p className="text-sm text-gray-500">completed</p>
+          </div>
+        </CardHeader>
+        <CardContent className="px-8">
+          <div className="mb-4">
+            <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+              <m.div
+                className="h-4 rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${Math.min(progressPercentage, 100)}%` }}
+                transition={{ type: "spring", stiffness: 60, damping: 18, delay: 0.2 }}
+                style={{
+                  background: "linear-gradient(90deg, #D103D1, #FF1493)",
+                }}
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-3 text-center">
+            <div className="py-4 px-4 rounded-2xl">
+              <div className="text-3xl font-bold text-[#1B5E4B]">{totalPoints}</div>
+              <p className="text-sm text-gray-500">Total Points</p>
+            </div>
+            <div className="py-4 px-4 rounded-2xl">
+              <div className="text-3xl font-bold text-[#1B5E4B]">{earnedCount}</div>
+              <p className="text-sm text-gray-500">Badges Earned</p>
+            </div>
+            <div className="py-4 px-4 rounded-2xl">
+              <div className="text-3xl font-bold text-[#1B5E4B]">
+                {Math.max(0, Math.ceil((monthlyGoalMinutes - currentMonthMinutes) / 60))}
               </div>
               <p className="text-lg text-gray-600 font-accent">
                 of {formatTimeDisplay(monthlyGoalMinutes)} goal

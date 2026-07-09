@@ -1,4 +1,5 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
+import { m } from "framer-motion";
 import { UserInterface } from "@/models/users/interfaces/UserInterface";
 import {
   SchoolLeaderboardEntry,
@@ -211,6 +212,14 @@ const LeaderboardContent = ({
               return (
                 <m.div
                   key={school.id}
+                  layout
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    layout: { type: "spring", stiffness: 350, damping: 30 },
+                    delay: Math.min(index * 0.05, 0.4),
+                    duration: 0.25,
+                  }}
                   className={`flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between p-4 sm:p-5 rounded-2xl transition-all ${
                     isUserSchool
                       ? "bg-[#1B5E4B]/10 border-2 border-[#1B5E4B]/30 shadow-md"
@@ -368,9 +377,27 @@ const LeaderboardContent = ({
   );
 
   if (loading) {
+    // Skeleton of the page shape (header + podium + ranked rows) instead of a
+    // spinner, so the layout doesn't jump when data lands.
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-[#00ACEF]" />
+      <div className="px-4 py-6 sm:p-8 space-y-8 min-h-screen">
+        <div className="space-y-2 animate-pulse">
+          <div className="h-9 w-56 bg-gray-200 rounded-lg" />
+          <div className="h-4 w-72 bg-gray-200 rounded" />
+        </div>
+        <div className="grid grid-cols-3 gap-3 animate-pulse">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="h-32 bg-gray-200 rounded-2xl" />
+          ))}
+        </div>
+        <div className="space-y-3 animate-pulse">
+          {[0, 1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-gray-200 rounded-full shrink-0" />
+              <div className="h-12 flex-1 bg-gray-200 rounded-xl" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }

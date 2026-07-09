@@ -9,8 +9,9 @@ import {
   CardTitle,
 } from "@/modules/application/components/DesignSystem/ui/card";
 import { Badge } from "@/modules/application/components/DesignSystem/ui/badge";
-import { Heart, Clock, User2 } from "lucide-react";
+import { Heart, Clock, User2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
+import { usePullToRefresh } from "@/modules/common/hooks/usePullToRefresh";
 
 interface SchoolFeedContentProps {
   schoolId: string;
@@ -38,6 +39,8 @@ const SchoolFeedContent = ({ schoolId, userId }: SchoolFeedContentProps) => {
   useEffect(() => {
     fetchFeed();
   }, [fetchFeed]);
+
+  const { ref: pullRef, refreshing, pullProgress } = usePullToRefresh<HTMLDivElement>(fetchFeed);
 
   const handleLike = async (activityId: string) => {
     setLikingId(activityId);
@@ -81,7 +84,20 @@ const SchoolFeedContent = ({ schoolId, userId }: SchoolFeedContentProps) => {
   }
 
   return (
-    <div className="p-4 sm:p-6 space-y-4 max-w-2xl mx-auto">
+    <div ref={pullRef} className="p-4 sm:p-6 space-y-4 max-w-2xl mx-auto">
+      {/* pull-to-refresh indicator */}
+      {(pullProgress > 0 || refreshing) && (
+        <div className="flex justify-center py-1">
+          <RefreshCw
+            className={`h-5 w-5 text-brand-green ${refreshing ? "animate-spin" : ""}`}
+            style={
+              refreshing
+                ? undefined
+                : { transform: `rotate(${pullProgress * 360}deg)`, opacity: pullProgress }
+            }
+          />
+        </div>
+      )}
       <div>
         <h1 className="text-3xl font-bold text-gray-900">School Feed</h1>
         <p className="text-gray-600 mt-1">

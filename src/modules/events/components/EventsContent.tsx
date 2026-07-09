@@ -1,3 +1,4 @@
+import { m } from "framer-motion";
 import { useState, useMemo } from "react";
 import { UserInterface } from "@/models/users/interfaces/UserInterface";
 import { EventInterface } from "@/models/events/interfaces/EventInterface";
@@ -184,7 +185,7 @@ const EventsContent = ({
             Current Challenges
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {currentEvents.map((event) => {
+            {currentEvents.map((event, cardIndex) => {
               const iconType = resolveEventIconType(event);
               const color = getActivityColor(iconType);
               const pointsLabel = getPointsLabel(event);
@@ -199,8 +200,14 @@ const EventsContent = ({
                   : null;
 
               return (
-                <Link key={event.id} to="/challenges/$id" params={{ id: event.id }}>
-                  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow p-4 flex items-start gap-3 cursor-pointer">
+                <Link key={event.id} to="/events/$id" params={{ id: event.id }}>
+                  <m.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: Math.min(cardIndex * 0.05, 0.4), duration: 0.25 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow p-4 flex items-start gap-3 cursor-pointer"
+                  >
                     <div
                       className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
                       style={{ backgroundColor: `${color}18`, color }}
@@ -276,7 +283,7 @@ const EventsContent = ({
                         )}
                       </div>
                     </div>
-                  </div>
+                  </m.div>
                 </Link>
               );
             })}
@@ -291,7 +298,7 @@ const EventsContent = ({
             Challenges Coming Soon
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {comingSoonEvents.map((event) => {
+            {comingSoonEvents.map((event, cardIndex) => {
               const iconType = resolveEventIconType(event);
               const color = getActivityColor(iconType);
               const pointsLabel = getPointsLabel(event);
@@ -301,8 +308,14 @@ const EventsContent = ({
               const participating = userParticipation.includes(event.id);
 
               return (
-                <Link key={event.id} to="/challenges/$id" params={{ id: event.id }}>
-                  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow p-4 flex items-start gap-3 cursor-pointer opacity-80">
+                <Link key={event.id} to="/events/$id" params={{ id: event.id }}>
+                  <m.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: Math.min(cardIndex * 0.05, 0.4), duration: 0.25 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow p-4 flex items-start gap-3 cursor-pointer opacity-80"
+                  >
                     <div
                       className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
                       style={{ backgroundColor: `${color}18`, color }}
@@ -370,7 +383,7 @@ const EventsContent = ({
                         )}
                       </div>
                     </div>
-                  </div>
+                  </m.div>
                 </Link>
               );
             })}

@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect, useRouterState } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import type { UserInterface } from "@/models/users/interfaces/UserInterface";
 import ConditionalNavigation from "@/modules/application/components/Navigation/ConditionalNavigation";
@@ -28,10 +28,20 @@ export const Route = createFileRoute("/_authenticated")({
       profile: (profile ?? null) as unknown as UserInterface | null,
     };
   },
-  component: () => (
+  component: AuthenticatedShell,
+});
+
+function AuthenticatedShell() {
+  // Keyed by pathname so route changes get a quick native-feeling fade+rise.
+  // Route components already remount on path change, so this adds no extra
+  // refetching — it only animates the mount that was happening anyway.
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  return (
     <>
       <ConditionalNavigation />
-      <Outlet />
+      <div key={pathname} className="animate-in fade-in slide-in-from-bottom-1 duration-200">
+        <Outlet />
+      </div>
     </>
-  ),
-});
+  );
+}
