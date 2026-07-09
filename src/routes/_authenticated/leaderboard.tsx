@@ -10,6 +10,5 @@ export const Route = createFileRoute("/_authenticated/leaderboard")({
 function Page() {
   const { profile } = Route.useRouteContext();
   if (!profile) return null;
-  // @ts-expect-error — component takes more initial data; passing minimal until next pass
   return <LeaderboardContent user={profile as UserInterface} />;
 }

@@ -7,7 +7,7 @@ const tabs = [
   { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
   { href: "/activities", label: "Log Activity", icon: Zap, isFab: true },
   { href: "/feed", label: "Feed", icon: Heart },
-  { href: "/events", label: "Events", icon: Calendar },
+  { href: "/challenges", label: "Challenges", icon: Calendar },
 ];
 
 const MobileBottomNav = () => {
@@ -24,7 +24,7 @@ const MobileBottomNav = () => {
           const isActive =
             pathname === tab.href ||
             (tab.href === "/activities" && pathname?.startsWith("/activities")) ||
-            (tab.href === "/events" && pathname?.startsWith("/events")) ||
+            (tab.href === "/challenges" && pathname?.startsWith("/challenges")) ||
             (tab.href === "/achievements" && pathname?.startsWith("/achievements")) ||
             (tab.href === "/feed" && pathname?.startsWith("/feed"));
 

@@ -79,7 +79,7 @@ const MainNavigation = () => {
       return [
         ...baseItems,
         { href: "/activities", label: "Log Activity", icon: Zap },
-        { href: "/events", label: "Challenges", icon: Calendar },
+        { href: "/challenges", label: "Challenges", icon: Calendar },
         { href: "/feed", label: "Feed", icon: Heart },
         { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
         { href: "/achievements", label: "Badges", icon: Award },
@@ -206,7 +206,8 @@ const MainNavigation = () => {
           <div className="hidden lg:flex items-center gap-1 overflow-x-auto scrollbar-hide">
             {navItems.map((item) => {
               const IconComponent = item.icon;
-              const isSchoolDashboard = pathname === "/admin" && !!(searchParams as { schoolId?: string }).schoolId;
+              const isSchoolDashboard =
+                pathname === "/admin" && !!(searchParams as { schoolId?: string }).schoolId;
               const isActive =
                 pathname === item.href || (item.href === "/admin/schools" && isSchoolDashboard);
 
@@ -306,7 +307,8 @@ const MainNavigation = () => {
           <div className="space-y-1">
             {navItems.map((item) => {
               const IconComponent = item.icon;
-              const isSchoolDashboard = pathname === "/admin" && !!(searchParams as { schoolId?: string }).schoolId;
+              const isSchoolDashboard =
+                pathname === "/admin" && !!(searchParams as { schoolId?: string }).schoolId;
               const isActive =
                 pathname === item.href || (item.href === "/admin/schools" && isSchoolDashboard);
 

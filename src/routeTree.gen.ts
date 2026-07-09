@@ -24,15 +24,15 @@ import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedLeaderboardRouteImport } from './routes/_authenticated/leaderboard'
 import { Route as AuthenticatedKoreroRouteImport } from './routes/_authenticated/korero'
 import { Route as AuthenticatedFeedRouteImport } from './routes/_authenticated/feed'
-import { Route as AuthenticatedEventsRouteImport } from './routes/_authenticated/events'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedChallengesRouteImport } from './routes/_authenticated/challenges'
 import { Route as AuthenticatedActivitiesRouteImport } from './routes/_authenticated/activities'
 import { Route as AuthenticatedAchievementsRouteImport } from './routes/_authenticated/achievements'
 import { Route as AuthenticatedSuperadminRouteImport } from './routes/_authenticated/_superadmin'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/_admin'
 import { Route as SchoolsSchoolIdSignupRouteImport } from './routes/schools.$schoolId.signup'
-import { Route as AuthenticatedEventsIdRouteImport } from './routes/_authenticated/events.$id'
 import { Route as AuthenticatedChallengesMySuggestionsRouteImport } from './routes/_authenticated/challenges.my-suggestions'
+import { Route as AuthenticatedChallengesIdRouteImport } from './routes/_authenticated/challenges.$id'
 import { Route as AuthenticatedSuperadminAdminRouteImport } from './routes/_authenticated/_superadmin/admin'
 import { Route as AuthenticatedAdminSchoolRouteImport } from './routes/_authenticated/_admin/school'
 import { Route as AuthenticatedSuperadminAdminIndexRouteImport } from './routes/_authenticated/_superadmin/admin.index'
@@ -139,14 +139,14 @@ const AuthenticatedFeedRoute = AuthenticatedFeedRouteImport.update({
   path: '/feed',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedEventsRoute = AuthenticatedEventsRouteImport.update({
-  id: '/events',
-  path: '/events',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedChallengesRoute = AuthenticatedChallengesRouteImport.update({
+  id: '/challenges',
+  path: '/challenges',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedActivitiesRoute = AuthenticatedActivitiesRouteImport.update({
@@ -173,16 +173,17 @@ const SchoolsSchoolIdSignupRoute = SchoolsSchoolIdSignupRouteImport.update({
   path: '/schools/$schoolId/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedEventsIdRoute = AuthenticatedEventsIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => AuthenticatedEventsRoute,
-} as any)
 const AuthenticatedChallengesMySuggestionsRoute =
   AuthenticatedChallengesMySuggestionsRouteImport.update({
-    id: '/challenges/my-suggestions',
-    path: '/challenges/my-suggestions',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/my-suggestions',
+    path: '/my-suggestions',
+    getParentRoute: () => AuthenticatedChallengesRoute,
+  } as any)
+const AuthenticatedChallengesIdRoute =
+  AuthenticatedChallengesIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedChallengesRoute,
   } as any)
 const AuthenticatedSuperadminAdminRoute =
   AuthenticatedSuperadminAdminRouteImport.update({
@@ -374,8 +375,8 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/achievements': typeof AuthenticatedAchievementsRoute
   '/activities': typeof AuthenticatedActivitiesRoute
+  '/challenges': typeof AuthenticatedChallengesRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/events': typeof AuthenticatedEventsRouteWithChildren
   '/feed': typeof AuthenticatedFeedRoute
   '/korero': typeof AuthenticatedKoreroRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
@@ -386,8 +387,8 @@ export interface FileRoutesByFullPath {
   '/join/$code': typeof JoinCodeRoute
   '/school': typeof AuthenticatedAdminSchoolRouteWithChildren
   '/admin': typeof AuthenticatedSuperadminAdminRouteWithChildren
+  '/challenges/$id': typeof AuthenticatedChallengesIdRoute
   '/challenges/my-suggestions': typeof AuthenticatedChallengesMySuggestionsRoute
-  '/events/$id': typeof AuthenticatedEventsIdRoute
   '/schools/$schoolId/signup': typeof SchoolsSchoolIdSignupRoute
   '/school/activity': typeof AuthenticatedAdminSchoolActivityRoute
   '/school/assembly': typeof AuthenticatedAdminSchoolAssemblyRoute
@@ -427,8 +428,8 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/achievements': typeof AuthenticatedAchievementsRoute
   '/activities': typeof AuthenticatedActivitiesRoute
+  '/challenges': typeof AuthenticatedChallengesRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/events': typeof AuthenticatedEventsRouteWithChildren
   '/feed': typeof AuthenticatedFeedRoute
   '/korero': typeof AuthenticatedKoreroRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
@@ -438,8 +439,8 @@ export interface FileRoutesByTo {
   '/invite/$token': typeof InviteTokenRoute
   '/join/$code': typeof JoinCodeRoute
   '/school': typeof AuthenticatedAdminSchoolRouteWithChildren
+  '/challenges/$id': typeof AuthenticatedChallengesIdRoute
   '/challenges/my-suggestions': typeof AuthenticatedChallengesMySuggestionsRoute
-  '/events/$id': typeof AuthenticatedEventsIdRoute
   '/schools/$schoolId/signup': typeof SchoolsSchoolIdSignupRoute
   '/school/activity': typeof AuthenticatedAdminSchoolActivityRoute
   '/school/assembly': typeof AuthenticatedAdminSchoolAssemblyRoute
@@ -482,8 +483,8 @@ export interface FileRoutesById {
   '/_authenticated/_superadmin': typeof AuthenticatedSuperadminRouteWithChildren
   '/_authenticated/achievements': typeof AuthenticatedAchievementsRoute
   '/_authenticated/activities': typeof AuthenticatedActivitiesRoute
+  '/_authenticated/challenges': typeof AuthenticatedChallengesRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
-  '/_authenticated/events': typeof AuthenticatedEventsRouteWithChildren
   '/_authenticated/feed': typeof AuthenticatedFeedRoute
   '/_authenticated/korero': typeof AuthenticatedKoreroRoute
   '/_authenticated/leaderboard': typeof AuthenticatedLeaderboardRoute
@@ -494,8 +495,8 @@ export interface FileRoutesById {
   '/join/$code': typeof JoinCodeRoute
   '/_authenticated/_admin/school': typeof AuthenticatedAdminSchoolRouteWithChildren
   '/_authenticated/_superadmin/admin': typeof AuthenticatedSuperadminAdminRouteWithChildren
+  '/_authenticated/challenges/$id': typeof AuthenticatedChallengesIdRoute
   '/_authenticated/challenges/my-suggestions': typeof AuthenticatedChallengesMySuggestionsRoute
-  '/_authenticated/events/$id': typeof AuthenticatedEventsIdRoute
   '/schools/$schoolId/signup': typeof SchoolsSchoolIdSignupRoute
   '/_authenticated/_admin/school/activity': typeof AuthenticatedAdminSchoolActivityRoute
   '/_authenticated/_admin/school/assembly': typeof AuthenticatedAdminSchoolAssemblyRoute
@@ -537,8 +538,8 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/achievements'
     | '/activities'
+    | '/challenges'
     | '/dashboard'
-    | '/events'
     | '/feed'
     | '/korero'
     | '/leaderboard'
@@ -549,8 +550,8 @@ export interface FileRouteTypes {
     | '/join/$code'
     | '/school'
     | '/admin'
+    | '/challenges/$id'
     | '/challenges/my-suggestions'
-    | '/events/$id'
     | '/schools/$schoolId/signup'
     | '/school/activity'
     | '/school/assembly'
@@ -590,8 +591,8 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/achievements'
     | '/activities'
+    | '/challenges'
     | '/dashboard'
-    | '/events'
     | '/feed'
     | '/korero'
     | '/leaderboard'
@@ -601,8 +602,8 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/join/$code'
     | '/school'
+    | '/challenges/$id'
     | '/challenges/my-suggestions'
-    | '/events/$id'
     | '/schools/$schoolId/signup'
     | '/school/activity'
     | '/school/assembly'
@@ -644,8 +645,8 @@ export interface FileRouteTypes {
     | '/_authenticated/_superadmin'
     | '/_authenticated/achievements'
     | '/_authenticated/activities'
+    | '/_authenticated/challenges'
     | '/_authenticated/dashboard'
-    | '/_authenticated/events'
     | '/_authenticated/feed'
     | '/_authenticated/korero'
     | '/_authenticated/leaderboard'
@@ -656,8 +657,8 @@ export interface FileRouteTypes {
     | '/join/$code'
     | '/_authenticated/_admin/school'
     | '/_authenticated/_superadmin/admin'
+    | '/_authenticated/challenges/$id'
     | '/_authenticated/challenges/my-suggestions'
-    | '/_authenticated/events/$id'
     | '/schools/$schoolId/signup'
     | '/_authenticated/_admin/school/activity'
     | '/_authenticated/_admin/school/assembly'
@@ -809,18 +810,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedFeedRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/events': {
-      id: '/_authenticated/events'
-      path: '/events'
-      fullPath: '/events'
-      preLoaderRoute: typeof AuthenticatedEventsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/challenges': {
+      id: '/_authenticated/challenges'
+      path: '/challenges'
+      fullPath: '/challenges'
+      preLoaderRoute: typeof AuthenticatedChallengesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/activities': {
@@ -858,19 +859,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SchoolsSchoolIdSignupRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/events/$id': {
-      id: '/_authenticated/events/$id'
-      path: '/$id'
-      fullPath: '/events/$id'
-      preLoaderRoute: typeof AuthenticatedEventsIdRouteImport
-      parentRoute: typeof AuthenticatedEventsRoute
-    }
     '/_authenticated/challenges/my-suggestions': {
       id: '/_authenticated/challenges/my-suggestions'
-      path: '/challenges/my-suggestions'
+      path: '/my-suggestions'
       fullPath: '/challenges/my-suggestions'
       preLoaderRoute: typeof AuthenticatedChallengesMySuggestionsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedChallengesRoute
+    }
+    '/_authenticated/challenges/$id': {
+      id: '/_authenticated/challenges/$id'
+      path: '/$id'
+      fullPath: '/challenges/$id'
+      preLoaderRoute: typeof AuthenticatedChallengesIdRouteImport
+      parentRoute: typeof AuthenticatedChallengesRoute
     }
     '/_authenticated/_superadmin/admin': {
       id: '/_authenticated/_superadmin/admin'
@@ -1227,30 +1228,35 @@ const AuthenticatedSuperadminRouteWithChildren =
     AuthenticatedSuperadminRouteChildren,
   )
 
-interface AuthenticatedEventsRouteChildren {
-  AuthenticatedEventsIdRoute: typeof AuthenticatedEventsIdRoute
+interface AuthenticatedChallengesRouteChildren {
+  AuthenticatedChallengesIdRoute: typeof AuthenticatedChallengesIdRoute
+  AuthenticatedChallengesMySuggestionsRoute: typeof AuthenticatedChallengesMySuggestionsRoute
 }
 
-const AuthenticatedEventsRouteChildren: AuthenticatedEventsRouteChildren = {
-  AuthenticatedEventsIdRoute: AuthenticatedEventsIdRoute,
-}
+const AuthenticatedChallengesRouteChildren: AuthenticatedChallengesRouteChildren =
+  {
+    AuthenticatedChallengesIdRoute: AuthenticatedChallengesIdRoute,
+    AuthenticatedChallengesMySuggestionsRoute:
+      AuthenticatedChallengesMySuggestionsRoute,
+  }
 
-const AuthenticatedEventsRouteWithChildren =
-  AuthenticatedEventsRoute._addFileChildren(AuthenticatedEventsRouteChildren)
+const AuthenticatedChallengesRouteWithChildren =
+  AuthenticatedChallengesRoute._addFileChildren(
+    AuthenticatedChallengesRouteChildren,
+  )
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedSuperadminRoute: typeof AuthenticatedSuperadminRouteWithChildren
   AuthenticatedAchievementsRoute: typeof AuthenticatedAchievementsRoute
   AuthenticatedActivitiesRoute: typeof AuthenticatedActivitiesRoute
+  AuthenticatedChallengesRoute: typeof AuthenticatedChallengesRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedEventsRoute: typeof AuthenticatedEventsRouteWithChildren
   AuthenticatedFeedRoute: typeof AuthenticatedFeedRoute
   AuthenticatedKoreroRoute: typeof AuthenticatedKoreroRoute
   AuthenticatedLeaderboardRoute: typeof AuthenticatedLeaderboardRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedSurveyRoute: typeof AuthenticatedSurveyRoute
-  AuthenticatedChallengesMySuggestionsRoute: typeof AuthenticatedChallengesMySuggestionsRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -1258,15 +1264,13 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSuperadminRoute: AuthenticatedSuperadminRouteWithChildren,
   AuthenticatedAchievementsRoute: AuthenticatedAchievementsRoute,
   AuthenticatedActivitiesRoute: AuthenticatedActivitiesRoute,
+  AuthenticatedChallengesRoute: AuthenticatedChallengesRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
-  AuthenticatedEventsRoute: AuthenticatedEventsRouteWithChildren,
   AuthenticatedFeedRoute: AuthenticatedFeedRoute,
   AuthenticatedKoreroRoute: AuthenticatedKoreroRoute,
   AuthenticatedLeaderboardRoute: AuthenticatedLeaderboardRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedSurveyRoute: AuthenticatedSurveyRoute,
-  AuthenticatedChallengesMySuggestionsRoute:
-    AuthenticatedChallengesMySuggestionsRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

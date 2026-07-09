@@ -207,6 +207,7 @@ function OnboardingPage() {
       first_name: firstName.trim(),
       last_name: lastName.trim(),
       username: email.split("@")[0],
+      email: email,
       school_id: selectedSchool!.id,
       house_id: selectedHouse,
       year_group: yearGroup,
@@ -215,7 +216,7 @@ function OnboardingPage() {
       is_admin: false,
       is_active: true,
       is_public: true,
-    });
+    } as any);
 
     if (error) {
       toast.error(error.message);

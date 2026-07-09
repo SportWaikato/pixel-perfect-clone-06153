@@ -28,6 +28,7 @@ export interface EventInterface {
   participant_count: number;
   created_by?: string;
   suggested_by_user_id?: string | null;
+  is_student_suggested?: boolean;
   approved_by_user_id?: string | null;
   approved_at?: string | null;
   approval_status: "draft" | "pending" | "approved" | "rejected" | "published";
@@ -38,8 +39,8 @@ export interface EventInterface {
   youtube_video_url?: string | null;
   event_image_url?: string | null;
   event_image_storage_path?: string | null;
-  is_student_suggested?: boolean;
   suggestion_image_url?: string | null;
+  suggestion_image_path?: string | null;
   rejection_reason?: string | null;
   icon_type?: string | null;
   is_published: boolean;

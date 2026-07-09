@@ -9,7 +9,7 @@ export interface UserInterface {
   social_handle?: string;
   first_name: string;
   last_name: string;
-  email?: string; // From Supabase auth
+  email?: string; // Stored on users table (backfilled from auth.users)
   profile_icon_url?: string;
   school_id: string;
   house_id?: string | null;

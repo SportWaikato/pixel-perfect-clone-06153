@@ -26,7 +26,7 @@ const ALLOWED_REDIRECTS = new Set([
   "/admin",
   "/activities",
   "/register-school",
-  "/events",
+  "/challenges",
   "/profile",
   "/survey",
   "/school",
@@ -48,9 +48,7 @@ export const Route = createFileRoute("/auth")({
   validateSearch: (search: Record<string, unknown>): SearchParams => ({
     // Allowlist of same-app destinations so the redirect param can't send
     // users off-site (or to arbitrary internal states) after sign-in.
-    redirect: validateRedirect(
-      typeof search.redirect === "string" ? search.redirect : undefined,
-    ),
+    redirect: validateRedirect(typeof search.redirect === "string" ? search.redirect : undefined),
   }),
   head: () => ({
     meta: [

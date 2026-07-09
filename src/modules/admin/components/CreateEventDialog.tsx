@@ -524,9 +524,16 @@ const CreateEventDialog = ({
         challenge_points: values.challenge_points ? Number(values.challenge_points) : null,
         target_schools: normalizedTargetSchools,
         youtube_video_url: values.youtube_video_url || undefined,
-        event_image_url: selectedEventImage?.url || null,
-        event_image_storage_path: selectedEventImage?.path || null,
         is_assembly: values.is_assembly,
+        ...(isAdmin
+          ? {
+              event_image_url: selectedEventImage?.url || null,
+              event_image_storage_path: selectedEventImage?.path || null,
+            }
+          : {
+              suggestion_image_url: selectedEventImage?.url || null,
+              suggestion_image_path: selectedEventImage?.path || null,
+            }),
       };
 
       const createdEvent = isAdmin

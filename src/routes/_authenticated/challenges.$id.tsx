@@ -2,8 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { UserInterface } from "@/models/users/interfaces/UserInterface";
 import IndividualEventContent from "@/modules/events/components/IndividualEventContent";
 
-export const Route = createFileRoute("/_authenticated/events/$id")({
-  head: () => ({ meta: [{ title: "Event — Karawhiua" }] }),
+export const Route = createFileRoute("/_authenticated/challenges/$id")({
+  head: () => ({ meta: [{ title: "Challenge — Karawhiua" }] }),
   component: Page,
 });
 

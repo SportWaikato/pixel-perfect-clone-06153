@@ -88,7 +88,7 @@ const MySuggestionsContent = ({ user }: MySuggestionsContentProps) => {
     <div className="p-6 space-y-6 min-h-screen" style={{ backgroundColor: "#f5faf8" }}>
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
-          <Link to="/events">
+          <Link to="/challenges">
             <ArrowLeft size={20} />
           </Link>
         </Button>
@@ -109,7 +109,7 @@ const MySuggestionsContent = ({ user }: MySuggestionsContentProps) => {
               You haven&apos;t submitted any challenge suggestions. Share your ideas!
             </p>
             <Button asChild style={{ backgroundColor: "#1B5E4B", color: "white" }}>
-              <Link to="/events">Browse Challenges</Link>
+              <Link to="/challenges">Browse Challenges</Link>
             </Button>
           </CardContent>
         </Card>

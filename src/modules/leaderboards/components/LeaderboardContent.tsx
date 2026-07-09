@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { UserInterface } from "@/models/users/interfaces/UserInterface";
 import {
   SchoolLeaderboardEntry,
@@ -31,18 +31,18 @@ import { squishyTap, cardSpring } from "@/modules/application/components/animati
 
 interface LeaderboardContentProps {
   user: UserInterface;
-  initialRankings: UserRankingSummary | null;
-  initialSchoolLeaderboard: SchoolLeaderboardEntry[];
-  initialHouseLeaderboard: HouseLeaderboardEntry[];
-  initialOverallLeaderboard: IndividualLeaderboardEntry[];
+  initialRankings?: UserRankingSummary | null;
+  initialSchoolLeaderboard?: SchoolLeaderboardEntry[];
+  initialHouseLeaderboard?: HouseLeaderboardEntry[];
+  initialOverallLeaderboard?: IndividualLeaderboardEntry[];
 }
 
 const LeaderboardContent = ({
   user,
-  initialRankings,
-  initialSchoolLeaderboard,
-  initialHouseLeaderboard,
-  initialOverallLeaderboard,
+  initialRankings = null,
+  initialSchoolLeaderboard = [],
+  initialHouseLeaderboard = [],
+  initialOverallLeaderboard = [],
 }: LeaderboardContentProps) => {
   const [userRankings, setUserRankings] = useState(initialRankings);
   const [schoolLeaderboard, setSchoolLeaderboard] = useState(initialSchoolLeaderboard);
@@ -52,6 +52,10 @@ const LeaderboardContent = ({
   const [activeTab, setActiveTab] = useState("personal");
 
   const leaderboardService = useMemo(() => new LeaderboardService(createSupabaseClient()), []);
+
+  useEffect(() => {
+    loadLeaderboardData();
+  }, []);
 
   const loadLeaderboardData = async () => {
     try {

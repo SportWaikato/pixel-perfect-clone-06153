@@ -13,7 +13,7 @@ import { loginSchema } from "@/models/forms/schemas/authSchemas";
 type LoginValues = { email: string; password: string };
 
 const ROUTES_BY_ROLE: Record<string, string[]> = {
-  student: ["/dashboard", "/activities", "/events", "/leaderboard", "/korero"],
+  student: ["/dashboard", "/activities", "/challenges", "/leaderboard", "/korero"],
   school_admin: ["/school", "/dashboard", "/school/users", "/school/events", "/leaderboard"],
   super_admin: [
     "/admin",

@@ -10,6 +10,5 @@ export const Route = createFileRoute("/_authenticated/_admin/school/leaderboard"
 function Page() {
   const { profile } = Route.useRouteContext();
   if (!profile) return null;
-  // @ts-expect-error — minimal props until next pass
   return <LeaderboardContent user={profile as UserInterface} />;
 }
