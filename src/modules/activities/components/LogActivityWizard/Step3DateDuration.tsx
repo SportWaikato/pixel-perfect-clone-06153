@@ -1,6 +1,7 @@
 import { Minus, Plus, Info, Camera, Loader2 } from "lucide-react";
 import { Button } from "@/modules/application/components/DesignSystem/ui/button";
 import { WizardState } from "./types";
+import { ACTIVITY_TYPES } from "@/models/activities/interfaces/ActivityInterface";
 import { format as formatTz, toZonedTime } from "date-fns-tz";
 import { subDays } from "date-fns";
 import { formatEventDate } from "@/modules/common/utils/dateUtils";
@@ -42,11 +43,21 @@ const Step3DateDuration = ({ data, challenges, onChange }: Step3DateDurationProp
       const { extractMinutesFromScreenshot } = await import("@/lib/ai.functions");
       const result = await extractMinutesFromScreenshot({ data: { base64Image: base64 } } as any);
 
-      if (result.minutes && result.minutes > 0) {
-        onChange({ durationMinutes: result.minutes });
-        toast.success(`Detected ${result.minutes} minutes from screenshot`);
+      // A challenge fixes the activity type — never override that.
+      const challengeLocksType = Boolean(challenges.find((c) => c.id === data.eventId)?.event_type);
+      const updates: Partial<WizardState> = {};
+      if (result.minutes && result.minutes > 0) updates.durationMinutes = result.minutes;
+      if (result.activityType && !challengeLocksType) updates.activityType = result.activityType;
+
+      if (Object.keys(updates).length > 0) {
+        onChange(updates);
+        const bits: string[] = [];
+        if (updates.durationMinutes) bits.push(`${updates.durationMinutes} min`);
+        if (updates.activityType)
+          bits.push(ACTIVITY_TYPES[updates.activityType as keyof typeof ACTIVITY_TYPES]);
+        toast.success(`Detected ${bits.join(" · ")} from your screenshot`);
       } else {
-        toast.error("Could not read duration from screenshot. Try entering manually.");
+        toast.error("Could not read that screenshot. Try entering the details manually.");
       }
     } catch (err: any) {
       toast.error(err.message || "Failed to scan screenshot");
@@ -148,7 +159,7 @@ const Step3DateDuration = ({ data, challenges, onChange }: Step3DateDurationProp
             className="gap-1.5 text-xs border-dashed"
           >
             {scanning ? <Loader2 size={14} className="animate-spin" /> : <Camera size={14} />}
-            {scanning ? "Scanning…" : "Scan Screenshot for Minutes"}
+            {scanning ? "Scanning…" : "Scan a workout screenshot"}
           </Button>
           <input
             ref={fileRef}
@@ -157,9 +168,7 @@ const Step3DateDuration = ({ data, challenges, onChange }: Step3DateDurationProp
             className="hidden"
             onChange={handleScanScreenshot}
           />
-          <span className="text-xs text-gray-400">
-            Upload a workout tracking screenshot to auto-fill minutes
-          </span>
+          <span className="text-xs text-gray-400">Auto-fills your minutes and activity type</span>
         </div>
       </div>
 

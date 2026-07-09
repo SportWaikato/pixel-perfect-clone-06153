@@ -131,9 +131,44 @@ ${responseText.slice(0, 50000)}`;
     return { report: text };
   });
 
-// Extracts activity duration in minutes from a workout tracking screenshot.
-// Supports Apple Watch, Garmin, Strava, Fitbit, and generic fitness app screenshots.
-// Returns the parsed duration in minutes.
+// Valid activity-type keys the screenshot scan may auto-select. Kept in sync
+// with ACTIVITY_TYPES; legacy/custom keys ("something_else") are intentionally
+// excluded so the scan never picks the catch-all.
+const SCANNABLE_ACTIVITY_TYPES: Record<string, string> = {
+  run_jog: "running / jogging",
+  walk_hike: "walking / hiking / steps",
+  bike_cycle: "cycling / bike ride",
+  swimming: "swimming",
+  workout_gym: "gym / strength / HIIT workout",
+  team_sport: "team sport (rugby, football, netball, basketball, hockey…)",
+  training_practice: "sports training or practice",
+  game_day_competition: "game day / competition",
+  solo_sport: "solo sport (tennis, golf, athletics…)",
+  skating: "skateboarding / rollerblading / ice skating",
+  scootering: "scootering",
+  bmx: "BMX",
+  dance: "dance",
+  kapa_haka: "kapa haka",
+  yoga: "yoga / pilates",
+  ballet: "ballet",
+  rock_climbing: "rock climbing / bouldering",
+  watersports: "surfing / paddleboarding / water sports",
+  kayaking: "kayaking / rowing / waka ama",
+  snowsports: "skiing",
+  snowboarding: "snowboarding",
+  tramping: "tramping / bushwalking",
+  hunting_diving: "hunting / diving",
+  active_games: "active games / playground",
+  cricket: "cricket",
+  pickleball: "pickleball",
+  tae_kwon_do: "taekwondo / martial arts",
+  gamefit_vr: "VR fitness / active gaming",
+};
+
+// Extracts activity duration in minutes AND the activity type from a workout
+// tracking screenshot (Apple Watch, Garmin, Strava, Fitbit, generic apps).
+// Returns { minutes, activityType, confidence } — activityType is one of the
+// app's activity keys or null. Callers reading only `.minutes` keep working.
 export const extractMinutesFromScreenshot = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((input: unknown) => {
@@ -155,25 +190,40 @@ export const extractMinutesFromScreenshot = createServerFn({ method: "POST" })
       inlineData: { data: base64Data, mimeType: "image/png" },
     };
 
-    const prompt = `Look at this fitness/workout tracking screenshot. Extract the duration of the activity in minutes. Common formats:
-- Apple Watch: "30 min" or "30:00"
-- Strava: "Duration: 45 minutes" or moving time
-- Garmin: "Time: 1h 15m"
-- Generic: "45m" or "1 hour"
+    const typeList = Object.entries(SCANNABLE_ACTIVITY_TYPES)
+      .map(([key, desc]) => `- ${key}: ${desc}`)
+      .join("\n");
 
-Return ONLY a JSON object like: {"minutes": 30, "confidence": "high"}
-If you cannot determine the duration, return: {"minutes": null, "confidence": "none"}
+    const prompt = `Look at this fitness/workout tracking screenshot (e.g. Apple Watch, Strava, Garmin, Fitbit, Nike Run Club).
 
-Do NOT include any other text — just the JSON.`;
+1. DURATION — extract the activity duration in minutes. Formats vary:
+   Apple Watch "30 min" / "30:00"; Strava "Duration: 45 minutes" / moving time;
+   Garmin "Time: 1h 15m"; generic "45m" / "1 hour".
+
+2. ACTIVITY TYPE — decide which of these best matches the activity shown, using
+   the title, sport icon, or metrics (pace/distance ⇒ run or ride, laps ⇒ swim):
+${typeList}
+
+Return ONLY this JSON, no other text:
+{"minutes": 30, "activityType": "run_jog", "confidence": "high"}
+Use null for anything you cannot determine, e.g.
+{"minutes": null, "activityType": null, "confidence": "none"}`;
 
     const result = await model.generateContent([prompt, imagePart]);
     const text = result.response.text();
 
     try {
       const match = text.match(/\{[\s\S]*\}/);
-      if (match) return JSON.parse(match[0]);
-      return { minutes: null, confidence: "none", raw: text };
+      const parsed = match ? JSON.parse(match[0]) : {};
+      const minutes =
+        typeof parsed.minutes === "number" && parsed.minutes > 0 ? parsed.minutes : null;
+      // Only return an activity type the app actually knows about.
+      const activityType =
+        typeof parsed.activityType === "string" && SCANNABLE_ACTIVITY_TYPES[parsed.activityType]
+          ? parsed.activityType
+          : null;
+      return { minutes, activityType, confidence: parsed.confidence ?? "none" };
     } catch {
-      return { minutes: null, confidence: "none", raw: text };
+      return { minutes: null, activityType: null, confidence: "none", raw: text };
     }
   });
