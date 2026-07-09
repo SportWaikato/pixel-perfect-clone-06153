@@ -18,6 +18,7 @@ dist-ssr
 .output
 .vercel
 .vinxi
+supabase/.temp
 .tanstack/**
 .nitro
 *.local
