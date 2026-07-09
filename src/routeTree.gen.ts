@@ -22,10 +22,10 @@ import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as AuthenticatedSurveyRouteImport } from './routes/_authenticated/survey'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedLeaderboardRouteImport } from './routes/_authenticated/leaderboard'
-import { Route as AuthenticatedKoreroRouteImport } from './routes/_authenticated/korero'
 import { Route as AuthenticatedFeedRouteImport } from './routes/_authenticated/feed'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedChallengesRouteImport } from './routes/_authenticated/challenges'
+import { Route as AuthenticatedAnnouncementsRouteImport } from './routes/_authenticated/announcements'
 import { Route as AuthenticatedActivitiesRouteImport } from './routes/_authenticated/activities'
 import { Route as AuthenticatedAchievementsRouteImport } from './routes/_authenticated/achievements'
 import { Route as AuthenticatedSuperadminRouteImport } from './routes/_authenticated/_superadmin'
@@ -129,11 +129,6 @@ const AuthenticatedLeaderboardRoute =
     path: '/leaderboard',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedKoreroRoute = AuthenticatedKoreroRouteImport.update({
-  id: '/korero',
-  path: '/korero',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedFeedRoute = AuthenticatedFeedRouteImport.update({
   id: '/feed',
   path: '/feed',
@@ -149,6 +144,12 @@ const AuthenticatedChallengesRoute = AuthenticatedChallengesRouteImport.update({
   path: '/challenges',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAnnouncementsRoute =
+  AuthenticatedAnnouncementsRouteImport.update({
+    id: '/announcements',
+    path: '/announcements',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedActivitiesRoute = AuthenticatedActivitiesRouteImport.update({
   id: '/activities',
   path: '/activities',
@@ -375,10 +376,10 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/achievements': typeof AuthenticatedAchievementsRoute
   '/activities': typeof AuthenticatedActivitiesRoute
+  '/announcements': typeof AuthenticatedAnnouncementsRoute
   '/challenges': typeof AuthenticatedChallengesRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/feed': typeof AuthenticatedFeedRoute
-  '/korero': typeof AuthenticatedKoreroRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/survey': typeof AuthenticatedSurveyRoute
@@ -428,10 +429,10 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/achievements': typeof AuthenticatedAchievementsRoute
   '/activities': typeof AuthenticatedActivitiesRoute
+  '/announcements': typeof AuthenticatedAnnouncementsRoute
   '/challenges': typeof AuthenticatedChallengesRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/feed': typeof AuthenticatedFeedRoute
-  '/korero': typeof AuthenticatedKoreroRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/survey': typeof AuthenticatedSurveyRoute
@@ -483,10 +484,10 @@ export interface FileRoutesById {
   '/_authenticated/_superadmin': typeof AuthenticatedSuperadminRouteWithChildren
   '/_authenticated/achievements': typeof AuthenticatedAchievementsRoute
   '/_authenticated/activities': typeof AuthenticatedActivitiesRoute
+  '/_authenticated/announcements': typeof AuthenticatedAnnouncementsRoute
   '/_authenticated/challenges': typeof AuthenticatedChallengesRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/feed': typeof AuthenticatedFeedRoute
-  '/_authenticated/korero': typeof AuthenticatedKoreroRoute
   '/_authenticated/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/survey': typeof AuthenticatedSurveyRoute
@@ -538,10 +539,10 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/achievements'
     | '/activities'
+    | '/announcements'
     | '/challenges'
     | '/dashboard'
     | '/feed'
-    | '/korero'
     | '/leaderboard'
     | '/profile'
     | '/survey'
@@ -591,10 +592,10 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/achievements'
     | '/activities'
+    | '/announcements'
     | '/challenges'
     | '/dashboard'
     | '/feed'
-    | '/korero'
     | '/leaderboard'
     | '/profile'
     | '/survey'
@@ -645,10 +646,10 @@ export interface FileRouteTypes {
     | '/_authenticated/_superadmin'
     | '/_authenticated/achievements'
     | '/_authenticated/activities'
+    | '/_authenticated/announcements'
     | '/_authenticated/challenges'
     | '/_authenticated/dashboard'
     | '/_authenticated/feed'
-    | '/_authenticated/korero'
     | '/_authenticated/leaderboard'
     | '/_authenticated/profile'
     | '/_authenticated/survey'
@@ -796,13 +797,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLeaderboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/korero': {
-      id: '/_authenticated/korero'
-      path: '/korero'
-      fullPath: '/korero'
-      preLoaderRoute: typeof AuthenticatedKoreroRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/feed': {
       id: '/_authenticated/feed'
       path: '/feed'
@@ -822,6 +816,13 @@ declare module '@tanstack/react-router' {
       path: '/challenges'
       fullPath: '/challenges'
       preLoaderRoute: typeof AuthenticatedChallengesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/announcements': {
+      id: '/_authenticated/announcements'
+      path: '/announcements'
+      fullPath: '/announcements'
+      preLoaderRoute: typeof AuthenticatedAnnouncementsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/activities': {
@@ -1250,10 +1251,10 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSuperadminRoute: typeof AuthenticatedSuperadminRouteWithChildren
   AuthenticatedAchievementsRoute: typeof AuthenticatedAchievementsRoute
   AuthenticatedActivitiesRoute: typeof AuthenticatedActivitiesRoute
+  AuthenticatedAnnouncementsRoute: typeof AuthenticatedAnnouncementsRoute
   AuthenticatedChallengesRoute: typeof AuthenticatedChallengesRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedFeedRoute: typeof AuthenticatedFeedRoute
-  AuthenticatedKoreroRoute: typeof AuthenticatedKoreroRoute
   AuthenticatedLeaderboardRoute: typeof AuthenticatedLeaderboardRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedSurveyRoute: typeof AuthenticatedSurveyRoute
@@ -1264,10 +1265,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSuperadminRoute: AuthenticatedSuperadminRouteWithChildren,
   AuthenticatedAchievementsRoute: AuthenticatedAchievementsRoute,
   AuthenticatedActivitiesRoute: AuthenticatedActivitiesRoute,
+  AuthenticatedAnnouncementsRoute: AuthenticatedAnnouncementsRoute,
   AuthenticatedChallengesRoute: AuthenticatedChallengesRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedFeedRoute: AuthenticatedFeedRoute,
-  AuthenticatedKoreroRoute: AuthenticatedKoreroRoute,
   AuthenticatedLeaderboardRoute: AuthenticatedLeaderboardRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedSurveyRoute: AuthenticatedSurveyRoute,

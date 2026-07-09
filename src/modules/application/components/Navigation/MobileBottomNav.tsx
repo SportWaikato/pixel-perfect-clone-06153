@@ -1,6 +1,6 @@
 import { useRouterState, Link } from "@tanstack/react-router";
 import { m } from "framer-motion";
-import { LayoutDashboard, Trophy, Zap, Calendar, Heart } from "lucide-react";
+import { LayoutDashboard, Trophy, Zap, Calendar, Heart, MessageCircle } from "lucide-react";
 import { cn } from "@/modules/common/utils";
 
 const tabs = [
@@ -9,6 +9,7 @@ const tabs = [
   { href: "/activities", label: "Log Activity", icon: Zap, isFab: true },
   { href: "/feed", label: "Feed", icon: Heart },
   { href: "/challenges", label: "Challenges", icon: Calendar },
+  { href: "/announcements", label: "Alerts", icon: MessageCircle },
 ];
 
 const spring = { type: "spring", stiffness: 500, damping: 32 } as const;
@@ -29,7 +30,8 @@ const MobileBottomNav = () => {
             (tab.href === "/activities" && pathname?.startsWith("/activities")) ||
             (tab.href === "/challenges" && pathname?.startsWith("/challenges")) ||
             (tab.href === "/achievements" && pathname?.startsWith("/achievements")) ||
-            (tab.href === "/feed" && pathname?.startsWith("/feed"));
+            (tab.href === "/feed" && pathname?.startsWith("/feed")) ||
+            (tab.href === "/announcements" && pathname?.startsWith("/announcements"));
 
           if (tab.isFab) {
             return (

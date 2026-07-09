@@ -59,7 +59,7 @@ const MainNavigation = () => {
         { href: "/dashboard", label: "Student Dashboard", icon: LayoutDashboard },
         { href: "/school/users", label: "Manage Users", icon: Users },
         { href: "/school/events", label: "Challenges", icon: Calendar },
-        { href: "/school/updates", label: "Koorero", icon: MessageSquare },
+        { href: "/school/updates", label: "Announcements", icon: MessageSquare },
         { href: "/school/feed", label: "Feed", icon: Heart },
         { href: "/school/leaderboard", label: "Leaderboard", icon: Trophy },
         { href: "/school/activity", label: "Activity Log", icon: Zap },
@@ -74,6 +74,7 @@ const MainNavigation = () => {
         { href: "/admin/badges", label: "Badges", icon: Award },
         { href: "/admin/media", label: "Media", icon: Download },
         { href: "/admin/surveys", label: "Surveys", icon: MessageSquare },
+        { href: "/announcements", label: "Announcements", icon: MessageCircle },
       ];
     } else {
       return [
@@ -83,6 +84,7 @@ const MainNavigation = () => {
         { href: "/feed", label: "Feed", icon: Heart },
         { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
         { href: "/achievements", label: "Badges", icon: Award },
+        { href: "/announcements", label: "Announcements", icon: MessageCircle },
       ];
     }
   };
