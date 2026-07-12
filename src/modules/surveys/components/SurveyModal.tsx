@@ -61,7 +61,8 @@ const SurveyModal = ({ survey, status }: SurveyModalProps) => {
       } else {
         toast.error(result.message);
       }
-    } catch {
+    } catch (err) {
+      console.error("Survey submission failed:", err);
       toast.error("Failed to submit survey");
     } finally {
       setIsSubmitting(false);

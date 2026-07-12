@@ -202,6 +202,7 @@ export class SurveyService {
 
     if (statusError) {
       console.error("Error updating survey status:", statusError);
+      throw new Error(statusError.message);
     }
   }
 
