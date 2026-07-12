@@ -67,6 +67,7 @@ export const ACTIVITY_TYPES = {
   tae_kwon_do: "Tae Kwon Do",
   tramping: "Tramping",
   something_else: "Something else?",
+  survey_completion: "Survey Completed",
 } as const;
 
 // Retired activity types kept only so historical records still resolve to a

@@ -204,6 +204,31 @@ export class SurveyService {
       console.error("Error updating survey status:", statusError);
       throw new Error(statusError.message);
     }
+
+    const SURVEY_POINTS = 50;
+    const { error: activityError } = await this.supabaseClient.from("activities").insert({
+      user_id: userId,
+      activity_type: "survey_completion",
+      duration_minutes: null,
+      distance_km: 0,
+      feeling: "happy",
+      participation_type: "solo",
+      description: `Completed "${survey.name}" survey`,
+      base_points: SURVEY_POINTS,
+      final_points: SURVEY_POINTS,
+      house_points_awarded: SURVEY_POINTS,
+      challenge_points_multiplier: 1.0,
+      is_verified: true,
+    });
+
+    if (activityError) {
+      console.error("Error logging survey activity:", activityError);
+    }
+
+    await this.supabaseClient.rpc("update_user_streak_for_date", {
+      p_user_id: userId,
+      p_activity_date: new Date().toISOString().split("T")[0],
+    });
   }
 
   async dismissSurvey(userId: string, surveyType: SurveyType): Promise<void> {
