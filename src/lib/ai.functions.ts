@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { checkRateLimit, rateLimitExceededMessage, RATE_LIMITS } from "./rate-limit";
 
 // Server-side badge generation. The Gemini API key must stay server-only
 // (GOOGLE_AI_API_KEY, NOT VITE_-prefixed) — a client-side key ships to every
@@ -22,6 +23,9 @@ export const generateBadgeImage = createServerFn({ method: "POST" })
     };
   })
   .handler(async ({ data, context }) => {
+    const rl = checkRateLimit(context.userId, RATE_LIMITS.generateBadgeImage);
+    if (!rl.allowed) throw new Error(rateLimitExceededMessage("generateBadgeImage", rl.resetInMs));
+
     // Badge management is a super-admin feature.
     const { data: caller, error: callerError } = await context.supabase
       .from("users")
@@ -74,6 +78,10 @@ Create exactly one badge for "${data.badgeName}".`;
 export const generateSurveyReport = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    const rl = checkRateLimit(context.userId, RATE_LIMITS.generateSurveyReport);
+    if (!rl.allowed)
+      throw new Error(rateLimitExceededMessage("generateSurveyReport", rl.resetInMs));
+
     const { data: caller, error: callerError } = await context.supabase
       .from("users")
       .select("role")
@@ -141,7 +149,10 @@ export const scanWorkoutScreenshot = createServerFn({ method: "POST" })
     if (!base64Image) throw new Error("base64Image is required");
     return { base64Image };
   })
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
+    const rl = checkRateLimit(context.userId, RATE_LIMITS.scanWorkoutScreenshot);
+    if (!rl.allowed)
+      throw new Error(rateLimitExceededMessage("scanWorkoutScreenshot", rl.resetInMs));
     const apiKey = process.env.GOOGLE_AI_API_KEY;
     if (!apiKey) throw new Error("GOOGLE_AI_API_KEY is not configured");
 

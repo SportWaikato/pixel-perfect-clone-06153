@@ -47,7 +47,8 @@ export const listHousesBySchool = createServerFn({ method: "GET" })
       throw new Error("schoolId required");
     }
     const { schoolId } = input as { schoolId: string };
-    if (typeof schoolId !== "string" || schoolId.length === 0) throw new Error("schoolId required");
+    if (typeof schoolId !== "string" || !/^[0-9a-f-]{36}$/i.test(schoolId))
+      throw new Error("schoolId required");
     return { schoolId };
   })
   .handler(async ({ data }) => {

@@ -104,8 +104,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:title", content: "Karawhiua — Go For It!" },
       {
         name: "twitter:description",
-        content:
-          "The new way to sports day. Every move counts.",
+        content: "The new way to sports day. Every move counts.",
       },
       { name: "twitter:image", content: "/icons/icon-512.png" },
     ],
@@ -171,15 +170,27 @@ function RootComponent() {
     }
 
     const posthogKey = import.meta.env.VITE_POSTHOG_KEY;
-    if (!posthogKey) return;
-    import("posthog-js").then(({ default: posthog }) => {
-      posthog.init(posthogKey, {
-        api_host: import.meta.env.VITE_POSTHOG_HOST || "https://us.posthog.com",
-        capture_pageview: true,
-        capture_pageleave: true,
-        autocapture: true,
+    if (posthogKey) {
+      import("posthog-js").then(({ default: posthog }) => {
+        posthog.init(posthogKey, {
+          api_host: import.meta.env.VITE_POSTHOG_HOST || "https://us.posthog.com",
+          capture_pageview: true,
+          capture_pageleave: true,
+          autocapture: true,
+        });
       });
-    });
+    }
+
+    const sentryDsn = import.meta.env.VITE_SENTRY_DSN;
+    if (sentryDsn) {
+      import("@sentry/react").then((Sentry) => {
+        Sentry.init({
+          dsn: sentryDsn,
+          environment: import.meta.env.PROD ? "production" : "development",
+          tracesSampleRate: 0.1,
+        });
+      });
+    }
   }, []);
 
   return (

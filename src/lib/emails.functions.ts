@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { checkRateLimit, rateLimitExceededMessage, RATE_LIMITS } from "./rate-limit";
 
 // Sends the student welcome email to the authenticated caller. All content is
 // derived server-side from the caller's own profile row, and the recipient is
@@ -7,6 +8,9 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 export const sendStudentWelcomeEmail = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    const rl = checkRateLimit(context.userId, RATE_LIMITS.sendStudentWelcomeEmail);
+    if (!rl.allowed)
+      throw new Error(rateLimitExceededMessage("sendStudentWelcomeEmail", rl.resetInMs));
     const email = typeof context.claims.email === "string" ? context.claims.email : "";
     if (!email) return { ok: false, error: "No email on account" };
 
@@ -57,6 +61,9 @@ export const sendStudentWelcomeEmail = createServerFn({ method: "POST" })
 export const notifySchoolRegistrationPending = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    const rl = checkRateLimit(context.userId, RATE_LIMITS.notifySchoolRegistrationPending);
+    if (!rl.allowed)
+      throw new Error(rateLimitExceededMessage("notifySchoolRegistrationPending", rl.resetInMs));
     const email = typeof context.claims.email === "string" ? context.claims.email : "";
     if (!email) return { ok: false, error: "No email on account" };
 
