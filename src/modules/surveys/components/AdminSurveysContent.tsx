@@ -33,6 +33,7 @@ const SURVEY_TYPE_LABELS: Record<SurveyType, string> = {
   behaviour_change: "Behaviour Change",
   challenge_completion: "Challenge Completion",
   end_of_year: "End of Year",
+  movement_measures: "Movement Measures",
 };
 
 const AdminSurveysContent = ({ surveys, results }: AdminSurveysContentProps) => {
@@ -93,7 +94,7 @@ const AdminSurveysContent = ({ surveys, results }: AdminSurveysContentProps) => 
         <TabsList className="flex flex-wrap gap-1 h-auto bg-gray-100 p-1 rounded-xl">
           {surveys.map((survey) => (
             <TabsTrigger key={survey.survey_type} value={survey.survey_type} className="text-sm">
-              {SURVEY_TYPE_LABELS[survey.survey_type]}
+              {SURVEY_TYPE_LABELS[survey.survey_type] ?? survey.name}
             </TabsTrigger>
           ))}
         </TabsList>

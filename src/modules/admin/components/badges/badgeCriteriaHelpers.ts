@@ -71,6 +71,7 @@ export const HOUSE_CHALLENGE_METRICS = [
   { value: "challenge_completions", label: "Total challenge completions" },
   { value: "challenge_completion_rate", label: "Challenge completion rate" },
   { value: "unique_active_students", label: "Unique active students" },
+  { value: "weekly_growth", label: "Most improved — Weekly growth" },
 ] as const;
 
 export const PARTICIPATION_OPTIONS = [

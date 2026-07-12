@@ -30,6 +30,7 @@ export function makeSupabaseMock(fromOverrides: ChainOverrides = {}) {
       signUp: vi.fn().mockResolvedValue({ data: null, error: null }),
       signOut: vi.fn().mockResolvedValue({ error: null }),
       getSession: vi.fn().mockResolvedValue({ data: { session: null }, error: null }),
+      getUser: vi.fn().mockResolvedValue({ data: { user: null }, error: null }),
     },
     _chain: chain,
   };

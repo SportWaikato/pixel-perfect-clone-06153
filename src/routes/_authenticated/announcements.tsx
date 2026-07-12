@@ -55,8 +55,10 @@ function Page() {
         pendingSurveys.map((item) => (
           <SurveyPromptCard
             key={item.survey.id}
+            surveyId={item.survey.id}
             surveyType={item.survey.survey_type}
             surveyName={item.survey.name}
+            description={item.survey.description}
           />
         ))
       ) : (

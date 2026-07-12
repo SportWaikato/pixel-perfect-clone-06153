@@ -931,6 +931,10 @@ export class AchievementService {
     const activeStart = new Date();
     activeStart.setMonth(activeStart.getMonth() - 3);
 
+    const now = new Date();
+    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+
     const results: HouseChallengeResult[] = [];
 
     for (const house of houses) {
@@ -1027,6 +1031,38 @@ export class AchievementService {
             .gte("created_at", activeStart.toISOString());
           const uniqueUsers = new Set((activeUsers || []).map((a) => a.user_id));
           score = uniqueUsers.size;
+          break;
+        }
+        case "weekly_growth": {
+          // Reward the house that grew its movement the most: this week's total
+          // minutes compared with the previous week's.
+          if (memberIds.length === 0) {
+            score = 0;
+            break;
+          }
+          const { data: recentActs } = await this.supabaseClient
+            .from("activities")
+            .select("duration_minutes, created_at")
+            .in("user_id", memberIds)
+            .eq("is_rejected", false)
+            .gte("created_at", twoWeeksAgo.toISOString());
+
+          let thisWeekMinutes = 0;
+          let lastWeekMinutes = 0;
+          for (const act of recentActs || []) {
+            const when = new Date(act.created_at as string);
+            if (when >= oneWeekAgo) {
+              thisWeekMinutes += act.duration_minutes || 0;
+            } else {
+              lastWeekMinutes += act.duration_minutes || 0;
+            }
+          }
+          // Percentage growth so houses of different sizes compete fairly. When
+          // there was no activity last week, treat any new movement as growth.
+          score =
+            lastWeekMinutes > 0
+              ? ((thisWeekMinutes - lastWeekMinutes) / lastWeekMinutes) * 100
+              : thisWeekMinutes;
           break;
         }
         default:
