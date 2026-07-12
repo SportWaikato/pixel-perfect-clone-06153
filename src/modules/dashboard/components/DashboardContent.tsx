@@ -190,6 +190,7 @@ const DashboardContent = ({
 
       {pendingSurvey && (
         <SurveyPromptCard
+          surveyId={pendingSurvey.survey.id}
           surveyType={pendingSurvey.status.survey_type}
           surveyName={pendingSurvey.survey.name}
         />

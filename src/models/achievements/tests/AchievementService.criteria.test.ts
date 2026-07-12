@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { AchievementService } from "../services/AchievementService";
 import { makeSupabaseMock } from "@/models/__tests__/utils/supabaseMock";
 
@@ -19,6 +20,9 @@ describe("AchievementService.checkAndAwardAchievements", () => {
 
   beforeEach(() => {
     supabase = makeSupabaseMock();
+    supabase.auth.getUser = vi
+      .fn()
+      .mockResolvedValue({ data: { user: { id: userId } }, error: null });
     insertSpy = vi.fn().mockReturnThis();
     supabase._chain.insert = insertSpy;
     service = new AchievementService(supabase as any);
@@ -116,6 +120,9 @@ describe("AchievementService.checkHistoricalAchievements", () => {
     userActivities?: object[];
   }) {
     supabase = makeSupabaseMock();
+    supabase.auth.getUser = vi
+      .fn()
+      .mockResolvedValue({ data: { user: { id: userId } }, error: null });
     supabase.from = vi.fn().mockImplementation((table: string) => {
       const chain = { ...supabase._chain };
       chain.select = vi.fn().mockReturnThis();
@@ -190,6 +197,9 @@ describe("AchievementService.checkHistoricalAchievements", () => {
   it("returns empty array when achievements fetch fails", async () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
     supabase = makeSupabaseMock();
+    supabase.auth.getUser = vi
+      .fn()
+      .mockResolvedValue({ data: { user: { id: userId } }, error: null });
     supabase.from = vi.fn().mockImplementation((table: string) => {
       const chain = { ...supabase._chain };
       chain.select = vi.fn().mockReturnThis();
@@ -345,5 +355,95 @@ describe("AchievementService.checkHistoricalAchievements", () => {
     });
     const results = await service.checkHistoricalAchievements(userId);
     expect(results).toEqual([]);
+  });
+});
+
+describe("AchievementService.calculateHouseMetric — weekly_growth", () => {
+  const daysAgo = (n: number) => new Date(Date.now() - n * 24 * 60 * 60 * 1000).toISOString();
+
+  // Filter-aware, thenable Supabase mock so each per-house activities query only
+  // sees that house's members.
+  function makeHouseMock(datasets: {
+    houses: object[];
+    users: { id: string; house_id: string; current_streak: number; longest_streak: number }[];
+    activities: { user_id: string; duration_minutes: number; created_at: string }[];
+  }) {
+    const makeChain = (table: string) => {
+      const state: { userIn?: string[]; gte?: string } = {};
+      const chain: Record<string, unknown> = {};
+      const passthrough = ["select", "eq", "neq", "lte", "gt", "lt", "not", "order", "limit"];
+      for (const m of passthrough) chain[m] = vi.fn(() => chain);
+      chain.in = vi.fn((col: string, vals: string[]) => {
+        if (col === "user_id") state.userIn = vals;
+        return chain;
+      });
+      chain.gte = vi.fn((_col: string, val: string) => {
+        state.gte = val;
+        return chain;
+      });
+      chain.then = (resolve: (v: { data: unknown; error: null }) => void) => {
+        let data: unknown = [];
+        if (table === "houses") data = datasets.houses;
+        else if (table === "users") data = datasets.users;
+        else if (table === "activities") {
+          data = datasets.activities.filter(
+            (a) =>
+              (!state.userIn || state.userIn.includes(a.user_id)) &&
+              (!state.gte || a.created_at >= state.gte),
+          );
+        }
+        return resolve({ data, error: null });
+      };
+      return chain;
+    };
+    return { from: vi.fn((table: string) => makeChain(table)) } as unknown as SupabaseClient;
+  }
+
+  it("ranks the house with the largest percentage growth first", async () => {
+    const supabase = makeHouseMock({
+      houses: [
+        { id: "h1", name: "Red", color: "#f00" },
+        { id: "h2", name: "Blue", color: "#00f" },
+      ],
+      users: [
+        { id: "u1", house_id: "h1", current_streak: 0, longest_streak: 0 },
+        { id: "u2", house_id: "h2", current_streak: 0, longest_streak: 0 },
+      ],
+      activities: [
+        // Red: 50 last week -> 100 this week = +100%
+        { user_id: "u1", duration_minutes: 50, created_at: daysAgo(10) },
+        { user_id: "u1", duration_minutes: 100, created_at: daysAgo(1) },
+        // Blue: 20 last week -> 60 this week = +200%
+        { user_id: "u2", duration_minutes: 20, created_at: daysAgo(10) },
+        { user_id: "u2", duration_minutes: 60, created_at: daysAgo(1) },
+      ],
+    });
+
+    const service = new AchievementService(supabase);
+    const results = await service.calculateHouseMetric("school-1", "weekly_growth", {
+      winner_rule: "highest_total",
+      award_top_n: 1,
+    });
+
+    expect(results.map((r) => r.house_id)).toEqual(["h2", "h1"]);
+    expect(results[0].score).toBeCloseTo(200);
+    expect(results[0].rank).toBe(1);
+    expect(results[1].score).toBeCloseTo(100);
+  });
+
+  it("treats new movement as growth when there was none the previous week", async () => {
+    const supabase = makeHouseMock({
+      houses: [{ id: "h1", name: "Red", color: "#f00" }],
+      users: [{ id: "u1", house_id: "h1", current_streak: 0, longest_streak: 0 }],
+      activities: [{ user_id: "u1", duration_minutes: 45, created_at: daysAgo(1) }],
+    });
+
+    const service = new AchievementService(supabase);
+    const results = await service.calculateHouseMetric("school-1", "weekly_growth", {
+      winner_rule: "highest_total",
+      award_top_n: 1,
+    });
+
+    expect(results[0].score).toBeCloseTo(45);
   });
 });
