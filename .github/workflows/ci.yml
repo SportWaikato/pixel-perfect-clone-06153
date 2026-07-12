@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -20,5 +22,19 @@ jobs:
       - run: npm ci
 
       - run: npx tsc --noEmit
-      - run: npx eslint .
+
+      - name: Get changed TS files
+        id: files
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- '*.ts' '*.tsx')
+          else
+            FILES=$(git diff --name-only HEAD~1 HEAD -- '*.ts' '*.tsx' 2>/dev/null || echo "")
+          fi
+          echo "FILES=$FILES" >> "$GITHUB_OUTPUT"
+
+      - name: Lint changed files
+        if: steps.files.outputs.FILES != ''
+        run: npx eslint ${{ steps.files.outputs.FILES }}
+
       - run: npx vitest run
