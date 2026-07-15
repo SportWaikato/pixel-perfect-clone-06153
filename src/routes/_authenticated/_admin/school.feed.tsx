@@ -13,5 +13,5 @@ function Page() {
   const user = profile as UserInterface;
   if (!user.school_id) return null;
 
-  return <SchoolFeedContent schoolId={user.school_id} userId={user.id} />;
+  return <SchoolFeedContent schoolId={user.school_id} userId={user.id} isAdmin />;
 }

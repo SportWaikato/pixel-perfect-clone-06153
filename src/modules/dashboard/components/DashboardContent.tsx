@@ -28,6 +28,7 @@ import { RefreshCw, Award, Zap, Target } from "lucide-react";
 import { m } from "framer-motion";
 import StudentProgressionCard from "@/modules/dashboard/components/StudentProgressionCard";
 import StudentPhotoFeed from "@/modules/dashboard/components/StudentPhotoFeed";
+import PhotoWallCarousel from "@/modules/activities/components/PhotoWallCarousel";
 import PageHeader from "@/modules/application/components/Layout/PageHeader";
 import SurveyPromptCard from "@/modules/surveys/components/SurveyPromptCard";
 import { ActivityInterface } from "@/models/activities/interfaces/ActivityInterface";
@@ -205,13 +206,18 @@ const DashboardContent = ({
         />
       )}
 
+      {user.school_id && <PhotoWallCarousel schoolId={user.school_id} />}
+
       {/* Recent Activity Trend */}
       <m.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, delay: 0.1, ease: "easeOut" }}
       >
-        <Card className="shadow-sm rounded-2xl border border-gray-200" style={{ backgroundColor: "#f9fefd" }}>
+        <Card
+          className="shadow-sm rounded-2xl border border-gray-200"
+          style={{ backgroundColor: "#f9fefd" }}
+        >
           <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between mb-4">
               <span className="text-sm font-semibold text-gray-700">Last 7 Days</span>
@@ -228,17 +234,22 @@ const DashboardContent = ({
                     .filter((a) => a.created_at.startsWith(dateStr))
                     .reduce((s, a) => s + (a.duration_minutes || 0), 0);
                   days.push({
-                    label: ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d.getDay()],
+                    label: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][d.getDay()],
                     mins: dayMins,
                   });
                 }
                 const maxMins = Math.max(1, ...days.map((d) => d.mins));
                 return days.map((day) => (
                   <div key={day.label} className="flex-1 flex flex-col items-center gap-1">
-                    <span className="text-[10px] font-semibold text-gray-500">{day.mins > 0 ? day.mins : ""}</span>
+                    <span className="text-[10px] font-semibold text-gray-500">
+                      {day.mins > 0 ? day.mins : ""}
+                    </span>
                     <m.div
                       className="w-full rounded-t-md"
-                      style={{ minHeight: 4, backgroundColor: day.mins > 0 ? "#1B5E4B" : "#E5E7EB" }}
+                      style={{
+                        minHeight: 4,
+                        backgroundColor: day.mins > 0 ? "#1B5E4B" : "#E5E7EB",
+                      }}
                       initial={{ height: 0 }}
                       animate={{ height: `${Math.max(4, (day.mins / maxMins) * 100)}%` }}
                       transition={{ type: "spring", stiffness: 100, damping: 20 }}
@@ -254,10 +265,7 @@ const DashboardContent = ({
 
       {/* Student Photo Feed */}
       {photoActivities.length > 0 && (
-        <StudentPhotoFeed
-          activities={photoActivities}
-          userId={user.id}
-        />
+        <StudentPhotoFeed activities={photoActivities} userId={user.id} />
       )}
 
       {/* Activity Snapshot */}
@@ -272,7 +280,11 @@ const DashboardContent = ({
         >
           <CardContent className="grid grid-cols-3 gap-2 sm:gap-4 p-4 sm:p-6">
             {[
-              { value: totalPoints, label: "Total Points", sub: `${currentMonthMinutes} min this month` },
+              {
+                value: totalPoints,
+                label: "Total Points",
+                sub: `${currentMonthMinutes} min this month`,
+              },
               { value: earnedCount, label: "Badges", sub: `${currentStreak} day streak` },
               { value: recentActivities.length, label: "Activities", sub: "This week" },
             ].map((tile, i) => (
