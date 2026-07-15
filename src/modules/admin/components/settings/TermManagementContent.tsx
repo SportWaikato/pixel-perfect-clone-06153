@@ -81,11 +81,14 @@ const TermManagementContent = ({
 
   const termByNumber = (n: 1 | 2 | 3 | 4) => termsForYear.find((t) => t.term_number === n) ?? null;
 
-  const handleSubmit = async (values: {
-    term_number: number;
-    start_date: string;
-    end_date: string;
-  }) => {
+  const handleSubmit = async (
+    values: {
+      term_number: number;
+      start_date: string;
+      end_date: string;
+    },
+    { setSubmitting }: any,
+  ) => {
     const supabase = createSupabaseClient();
     const service = new SchoolTermService(supabase);
 
@@ -114,6 +117,8 @@ const TermManagementContent = ({
       setEditingTerm(null);
     } catch (error) {
       notifyAboutError(error);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -236,10 +241,12 @@ const TermManagementContent = ({
                 <Button
                   size="sm"
                   variant="outline"
-                  className="text-blue-600 hover:text-blue-700 hover:border-blue-300"
+                  title="Set as current term"
+                  className="w-full gap-1 border-blue-200 text-blue-600 hover:text-blue-700 hover:bg-blue-50 hover:border-blue-300"
                   onClick={() => handleSetCurrentTerm(term)}
                 >
                   <CheckCircle2 className="h-3.5 w-3.5" />
+                  Set as Current
                 </Button>
               )}
               <AlertDialog>

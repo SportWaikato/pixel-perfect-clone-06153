@@ -110,8 +110,17 @@ const SchoolUpdatesContent = ({
     setImagePreview(null);
   };
 
-  const handlePost = async (values: { title: string; body: string }, { resetForm }: any) => {
+  const handlePost = async (
+    values: { title: string; body: string },
+    { resetForm, setSubmitting }: any,
+  ) => {
     try {
+      if (!selectedSchoolId) {
+        toast.error("No school selected");
+        setSubmitting(false);
+        return;
+      }
+
       let imageUrl: string | undefined;
       let imageStoragePath: string | undefined;
 
@@ -132,8 +141,10 @@ const SchoolUpdatesContent = ({
       setUpdates((prev) => [created, ...prev]);
       resetForm();
       clearImage();
+      setSubmitting(false);
       toast.success("Update posted to all students");
     } catch (error) {
+      setSubmitting(false);
       notifyAboutError(error);
     }
   };

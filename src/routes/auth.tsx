@@ -1,4 +1,11 @@
-import { createFileRoute, Link, useNavigate, useSearch, Outlet, useRouterState } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Link,
+  useNavigate,
+  useSearch,
+  Outlet,
+  useRouterState,
+} from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
@@ -156,6 +163,7 @@ function AuthPage() {
 
 function SignInForm({ redirectTo }: { redirectTo: string }) {
   const navigate = useNavigate();
+  const [formError, setFormError] = useState<string | null>(null);
   return (
     <Formik
       initialValues={{ email: "", password: "" }}
@@ -164,13 +172,18 @@ function SignInForm({ redirectTo }: { redirectTo: string }) {
         password: Yup.string().min(6, "At least 6 characters").required("Required"),
       })}
       onSubmit={async (values, { setSubmitting }) => {
+        setFormError(null);
         const { error } = await supabase.auth.signInWithPassword({
           email: values.email,
           password: values.password,
         });
         setSubmitting(false);
         if (error) {
-          toast.error(error.message);
+          const message =
+            error.message === "Invalid login credentials"
+              ? "Incorrect email or password, please try again."
+              : error.message;
+          setFormError(message);
           return;
         }
         toast.success("Welcome back");
@@ -207,6 +220,9 @@ function SignInForm({ redirectTo }: { redirectTo: string }) {
             />
             {touched.password && errors.password && (
               <p className="mt-1 text-xs text-destructive">{errors.password}</p>
+            )}
+            {formError && !touched.password && (
+              <p className="mt-1 text-xs text-destructive">{formError}</p>
             )}
           </div>
           <Button
