@@ -9,39 +9,24 @@ import { Button } from "@/modules/application/components/DesignSystem/ui/button"
 import { Badge } from "@/modules/application/components/DesignSystem/ui/badge";
 import {
   Users,
+  Clock,
   Calendar,
   TrendingUp,
   Award,
-  Copy,
-  Check,
-  Link as LinkIcon,
-  Clock,
-  ShieldAlert,
-  Activity,
   MessageSquare,
   Crown,
-  QrCode,
   Monitor,
-  School,
+  ShieldAlert,
+  Activity,
 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/modules/application/components/DesignSystem/ui/dialog";
 import { Link } from "@tanstack/react-router";
-import { useState, useEffect, useRef, useCallback } from "react";
-import QRCode from "qrcode";
+import { useState, useEffect } from "react";
 import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
 import { UserService } from "@/models/users/services/UserService";
 import { EventService } from "@/models/events/services/EventService";
 import { SchoolMessageService } from "@/models/schoolMessages/services/SchoolMessageService";
 import { LeaderboardService } from "@/models/leaderboards/services/LeaderboardService";
-import { toast } from "sonner";
 import ActivityLogPreview from "./ActivityLogPreview";
-import { regenerateJoinCode } from "@/lib/registration.functions";
-import PageHeader from "@/modules/application/components/Layout/PageHeader";
 import { m } from "framer-motion";
 
 const statCardSpring = {
@@ -86,18 +71,6 @@ const SchoolAdminDashboard = ({
     totalMinutes: 0,
   });
   const [loading, setLoading] = useState(true);
-  const [copied, setCopied] = useState(false);
-  const [qrModalOpen, setQrModalOpen] = useState(false);
-  const [qrCopied, setQrCopied] = useState(false);
-  const [joinCode, setJoinCode] = useState<string | null>(null);
-  const [joinCopied, setJoinCopied] = useState(false);
-  const [joinCodeLoading, setJoinCodeLoading] = useState(true);
-  const [regenerating, setRegenerating] = useState(false);
-  const [regenerateModal, setRegenerateModal] = useState(false);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  const signUpUrl =
-    typeof window !== "undefined" ? `${window.location.origin}/schools/${schoolId}/signup` : "";
 
   useEffect(() => {
     if (!schoolId) return;
@@ -137,96 +110,7 @@ const SchoolAdminDashboard = ({
     fetchAllStats();
   }, [schoolId]);
 
-  // Fetch join code
-  useEffect(() => {
-    if (!schoolId) {
-      setJoinCodeLoading(false);
-      return;
-    }
-    const loadJoinCode = async () => {
-      try {
-        const sb = createSupabaseClient();
-        const { data } = await sb.rpc("get_school_join_code", {
-          p_school_id: schoolId,
-        });
-        const codeData = data as unknown as { join_code: string } | null;
-        setJoinCode(codeData?.join_code || null);
-      } catch {
-        setJoinCode(null);
-      } finally {
-        setJoinCodeLoading(false);
-      }
-    };
-    loadJoinCode();
-  }, [schoolId]);
-
-  const handleCopyJoinLink = async () => {
-    const url = `${window.location.origin}/join/${joinCode}`;
-    try {
-      await navigator.clipboard.writeText(url);
-      setJoinCopied(true);
-      toast.success("Join link copied to clipboard!");
-      setTimeout(() => setJoinCopied(false), 2000);
-    } catch {
-      toast.error("Failed to copy");
-    }
-  };
-
-  const handleRegenerateJoinCode = async () => {
-    if (!schoolId) return;
-    setRegenerating(true);
-    try {
-      const { regenerateJoinCode } = await import("@/lib/registration.functions");
-      const result = await regenerateJoinCode({ data: { schoolId } });
-      setJoinCode(result.joinCode);
-      toast.success("New join link generated!");
-    } catch (err: any) {
-      toast.error(err.message || "Failed to regenerate link");
-    }
-    setRegenerating(false);
-    setRegenerateModal(false);
-  };
-
-  const handleCopySignUpUrl = async () => {
-    const url = `${window.location.origin}/schools/${schoolId}/signup`;
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      toast.success("Sign up URL copied to clipboard!");
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      toast.error("Failed to copy URL to clipboard");
-    }
-  };
-
-  const renderQrCode = useCallback(async () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const url = `${window.location.origin}/schools/${schoolId}/signup`;
-    await QRCode.toCanvas(canvas, url, { width: 280, margin: 2 });
-  }, [schoolId]);
-
-  useEffect(() => {
-    if (qrModalOpen) {
-      setTimeout(renderQrCode, 50);
-    }
-  }, [qrModalOpen, renderQrCode]);
-
-  const handleCopyQrCode = async () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    try {
-      canvas.toBlob(async (blob) => {
-        if (!blob) return;
-        await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
-        setQrCopied(true);
-        toast.success("QR code copied to clipboard!");
-        setTimeout(() => setQrCopied(false), 2000);
-      });
-    } catch {
-      toast.error("Failed to copy QR code to clipboard");
-    }
-  };
+  const isSuperAdmin = user.role === "super_admin";
 
   if (loading) {
     return (
@@ -244,7 +128,6 @@ const SchoolAdminDashboard = ({
     );
   }
 
-  const isSuperAdmin = user.role === "super_admin";
   const quickActions = [
     // Houses management only exists as a super-admin page; hide it for school
     // admins rather than bouncing them off the _superadmin route gate.
@@ -308,135 +191,66 @@ const SchoolAdminDashboard = ({
         </div>
       </div>
 
-      {/* School Join Link */}
-      {!joinCodeLoading && joinCode && (
-        <Card className="border-brand-green/30 bg-green-50">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <LinkIcon size={18} className="text-brand-green" />
-              Your School Join Link
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-2 mb-2">
-              <code className="flex-1 text-sm bg-white px-3 py-2 rounded border border-brand-green/20 break-all">
-                {typeof window !== "undefined" && `${window.location.origin}/join/${joinCode}`}
-              </code>
-              <Button
-                size="sm"
-                onClick={handleCopyJoinLink}
-                className="bg-brand-green text-white hover:bg-brand-green-soft shrink-0"
-              >
-                {joinCopied ? <Check size={14} /> : <Copy size={14} />}
-                {joinCopied ? "Copied" : "Copy"}
-              </Button>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Share this link with students so they can join {schoolName}.{" "}
-              <button
-                type="button"
-                onClick={() => setRegenerateModal(true)}
-                className="underline text-brand-green cursor-pointer"
-              >
-                Regenerate link
-              </button>
-            </p>
-          </CardContent>
-        </Card>
-      )}
-
-      <Dialog open={regenerateModal} onOpenChange={setRegenerateModal}>
-        <DialogContent className="sm:max-w-sm">
-          <DialogHeader>
-            <DialogTitle>Regenerate join link?</DialogTitle>
-            <p className="text-sm text-gray-500">
-              This will invalidate the current link. Students with the old link cannot use it.
-            </p>
-          </DialogHeader>
-          <div className="flex gap-2 justify-end">
-            <Button variant="outline" onClick={() => setRegenerateModal(false)}>
-              Cancel
-            </Button>
-            <Button
-              onClick={handleRegenerateJoinCode}
-              disabled={regenerating}
-              className="bg-brand-green text-white hover:bg-brand-green-soft"
-            >
-              {regenerating ? "Regenerating…" : "Confirm"}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <m.div {...statCardSpring} transition={{ ...statCardSpring.transition, delay: 0 }}>
-          <Card className="h-full hover:shadow-md transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Students</CardTitle>
-              <div className="p-1.5 rounded-lg bg-blue-50">
-                <Users className="h-4 w-4 text-blue-600" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.totalUsers}</div>
-              <p className="text-xs text-muted-foreground">{stats.activeUsers} active</p>
-            </CardContent>
-          </Card>
+          <Link to="/school/users" className="block">
+            <Card className="h-full hover:shadow-md transition-shadow cursor-pointer">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-3">
+                <CardTitle className="text-xs font-medium">Total Students</CardTitle>
+                <Users className="h-3.5 w-3.5 text-blue-600" />
+              </CardHeader>
+              <CardContent className="pb-3 px-3">
+                <div className="text-xl font-bold">{stats.totalUsers}</div>
+                <p className="text-[10px] text-muted-foreground">{stats.activeUsers} active</p>
+              </CardContent>
+            </Card>
+          </Link>
         </m.div>
 
         <m.div {...statCardSpring} transition={{ ...statCardSpring.transition, delay: 0.05 }}>
-          <Card className="h-full hover:shadow-md transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">School Total</CardTitle>
-              <div className="p-1.5 rounded-lg bg-green-50">
-                <TrendingUp className="h-4 w-4 text-green-600" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{Math.round(stats.totalMinutes)} minutes</div>
-              <p className="text-xs text-muted-foreground">All student activities</p>
-            </CardContent>
-          </Card>
+          <Link to="/leaderboard" className="block">
+            <Card className="h-full hover:shadow-md transition-shadow cursor-pointer">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-3">
+                <CardTitle className="text-xs font-medium">School Total</CardTitle>
+                <TrendingUp className="h-3.5 w-3.5 text-green-600" />
+              </CardHeader>
+              <CardContent className="pb-3 px-3">
+                <div className="text-xl font-bold">{Math.round(stats.totalMinutes)}m</div>
+                <p className="text-[10px] text-muted-foreground">All activities</p>
+              </CardContent>
+            </Card>
+          </Link>
         </m.div>
 
         <m.div {...statCardSpring} transition={{ ...statCardSpring.transition, delay: 0.1 }}>
-          <Card className="h-full flex flex-col hover:shadow-md transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Koorero</CardTitle>
-              <div className="p-1.5 rounded-lg bg-purple-50">
-                <MessageSquare className="h-4 w-4 text-purple-600" />
-              </div>
-            </CardHeader>
-            <CardContent className="flex flex-col flex-1 justify-between">
-              <div>
-                <div className="text-2xl font-bold">{stats.messageCount}</div>
-                <p className="text-xs text-muted-foreground">Unread messages</p>
-              </div>
-              <Button
-                asChild
-                className="w-full mt-4"
-                style={{ backgroundColor: "var(--brand-primary-green)" }}
-              >
-                <Link to="/school/updates">Manage messages</Link>
-              </Button>
-            </CardContent>
-          </Card>
+          <Link to="/school/updates" className="block">
+            <Card className="h-full hover:shadow-md transition-shadow cursor-pointer">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-3">
+                <CardTitle className="text-xs font-medium">Announcements</CardTitle>
+                <MessageSquare className="h-3.5 w-3.5 text-purple-600" />
+              </CardHeader>
+              <CardContent className="pb-3 px-3">
+                <div className="text-xl font-bold">{stats.messageCount}</div>
+                <p className="text-[10px] text-muted-foreground">Unread messages</p>
+              </CardContent>
+            </Card>
+          </Link>
         </m.div>
 
         <m.div {...statCardSpring} transition={{ ...statCardSpring.transition, delay: 0.15 }}>
-          <Card className="h-full hover:shadow-md transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">School Rank</CardTitle>
-              <div className="p-1.5 rounded-lg bg-orange-50">
-                <Award className="h-4 w-4 text-orange-600" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">#{stats.schoolRank}</div>
-              <p className="text-xs text-muted-foreground">In district</p>
-            </CardContent>
-          </Card>
+          <Link to="/leaderboard" className="block">
+            <Card className="h-full hover:shadow-md transition-shadow cursor-pointer">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-3">
+                <CardTitle className="text-xs font-medium">School Rank</CardTitle>
+                <Award className="h-3.5 w-3.5 text-orange-600" />
+              </CardHeader>
+              <CardContent className="pb-3 px-3">
+                <div className="text-xl font-bold">#{stats.schoolRank}</div>
+                <p className="text-[10px] text-muted-foreground">In district</p>
+              </CardContent>
+            </Card>
+          </Link>
         </m.div>
       </div>
 
@@ -483,79 +297,6 @@ const SchoolAdminDashboard = ({
               </Card>
             );
           })}
-
-          {/* Copy Sign Up URL Card */}
-          <Card className="hover:shadow-md transition-shadow">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-green-500 text-white">
-                    <LinkIcon size={20} />
-                  </div>
-                  <span>Sign Up URL</span>
-                </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600 mb-4">Share the sign up link with new students</p>
-              <Button
-                onClick={handleCopySignUpUrl}
-                className="w-full gap-2"
-                style={{ backgroundColor: "#1B5E4B" }}
-              >
-                {copied ? (
-                  <>
-                    <Check size={16} className="text-green-400" />
-                    Copied!
-                  </>
-                ) : (
-                  <>
-                    <Copy size={16} />
-                    Copy Sign Up URL
-                  </>
-                )}
-              </Button>
-              <Button
-                onClick={() => setQrModalOpen(true)}
-                className="w-full gap-2 mt-2"
-                style={{ backgroundColor: "#1B5E4B" }}
-              >
-                <QrCode size={16} />
-                Generate QR Code
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Dialog open={qrModalOpen} onOpenChange={setQrModalOpen}>
-            <DialogContent className="sm:max-w-sm">
-              <DialogHeader>
-                <DialogTitle className="text-xl font-bold">Print or share invite</DialogTitle>
-                <p className="text-sm text-gray-500">
-                  Share this QR code with your students to help them register with Karawhiua
-                </p>
-              </DialogHeader>
-              <div className="flex justify-center py-2">
-                <canvas ref={canvasRef} className="rounded-lg" />
-              </div>
-              <Button
-                onClick={handleCopyQrCode}
-                className="w-full gap-2"
-                style={{ backgroundColor: "#1B5E4B" }}
-              >
-                {qrCopied ? (
-                  <>
-                    <Check size={16} className="text-green-400" />
-                    Copied!
-                  </>
-                ) : (
-                  <>
-                    <Copy size={16} />
-                    Copy QR Code to Clipboard
-                  </>
-                )}
-              </Button>
-            </DialogContent>
-          </Dialog>
         </div>
       </div>
 

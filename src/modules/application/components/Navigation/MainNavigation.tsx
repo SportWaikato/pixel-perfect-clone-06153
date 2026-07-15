@@ -57,12 +57,12 @@ const MainNavigation = () => {
       return [
         { href: "/school", label: "Admin Dashboard", icon: Settings },
         { href: "/dashboard", label: "Student Dashboard", icon: LayoutDashboard },
+        { href: "/activities", label: "Log Activity", icon: Zap },
         { href: "/school/users", label: "Manage Users", icon: Users },
         { href: "/school/events", label: "Challenges", icon: Calendar },
         { href: "/school/updates", label: "Announcements", icon: MessageSquare },
         { href: "/school/feed", label: "Feed", icon: Heart },
         { href: "/school/leaderboard", label: "Leaderboard", icon: Trophy },
-        { href: "/school/activity", label: "Activity Log", icon: Zap },
         { href: "/school/settings", label: "Settings", icon: Settings },
       ];
     } else if (userRole === Role.SUPER_ADMIN) {

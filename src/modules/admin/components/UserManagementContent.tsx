@@ -117,7 +117,6 @@ const UserManagementContent = ({
     class: string;
     school_id: string;
     house_id: string;
-    monthly_goal_minutes: number;
     is_public: boolean;
   }>({
     first_name: "",
@@ -128,7 +127,6 @@ const UserManagementContent = ({
     class: "",
     school_id: "",
     house_id: "",
-    monthly_goal_minutes: 0,
     is_public: false,
   });
   const [housesForEdit, setHousesForEdit] = useState<HouseInterface[]>([]);
@@ -328,7 +326,6 @@ const UserManagementContent = ({
       class: targetUser.class || "",
       school_id: targetUser.school_id,
       house_id: targetUser.house_id || "",
-      monthly_goal_minutes: targetUser.monthly_goal_minutes,
       is_public: targetUser.is_public,
     });
     if (targetUser.school_id) {
@@ -355,7 +352,6 @@ const UserManagementContent = ({
         class: editForm.class.trim() || undefined,
         school_id: editForm.school_id,
         house_id: editForm.house_id || null,
-        monthly_goal_minutes: editForm.monthly_goal_minutes,
         is_public: editForm.is_public,
       };
       await userService.update(editUser.id, updates);
@@ -678,28 +674,13 @@ const UserManagementContent = ({
                 </Select>
               </div>
               <div className="space-y-1">
-                <p className="text-sm font-medium text-gray-700">Monthly Goal (min)</p>
+                <p className="text-sm font-medium text-gray-700">Class</p>
                 <Input
-                  type="number"
-                  min={0}
-                  step={30}
-                  value={editForm.monthly_goal_minutes}
-                  onChange={(e) =>
-                    setEditForm((prev) => ({
-                      ...prev,
-                      monthly_goal_minutes: parseInt(e.target.value) || 0,
-                    }))
-                  }
+                  value={editForm.class}
+                  onChange={(e) => setEditForm((prev) => ({ ...prev, class: e.target.value }))}
+                  placeholder="e.g. 10B (optional)"
                 />
               </div>
-            </div>
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-gray-700">Class</p>
-              <Input
-                value={editForm.class}
-                onChange={(e) => setEditForm((prev) => ({ ...prev, class: e.target.value }))}
-                placeholder="e.g. 10B (optional)"
-              />
             </div>
             {isSuperAdmin ? (
               <div className="space-y-1">
