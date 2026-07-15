@@ -6,7 +6,11 @@ import {
   HouseChallengeResult,
 } from "../interfaces/AchievementInterface";
 import { StorageService } from "@/models/storage/services/StorageService";
-import { activityTypesMatch, filterActivitiesByType } from "../constants/activityTypeAliases";
+import {
+  activityTypesMatch,
+  filterActivitiesByType,
+  NATURE_ACTIVITY_TYPES,
+} from "../constants/activityTypeAliases";
 
 const ACHIEVEMENTS_TABLE = "achievements";
 const USER_ACHIEVEMENTS_TABLE = "user_achievements";
@@ -185,18 +189,8 @@ export class AchievementService {
       // Check specific criteria
       switch (criteria.type) {
         case "time_in_nature": {
-          const natureActivityTypes = [
-            "walking",
-            "running",
-            "walk_hike",
-            "hunting_diving",
-            "run_jog",
-            "solo_sport",
-            "cycling",
-            "bike_cycle",
-          ];
           shouldAward =
-            natureActivityTypes.includes(activityData.activity_type) &&
+            NATURE_ACTIVITY_TYPES.includes(activityData.activity_type as any) &&
             activityData.duration_minutes >= criteria.duration_minutes;
           break;
         }
@@ -396,6 +390,9 @@ export class AchievementService {
     const uniqueActivityTypes = new Set(userActivities.map((a) => a.activity_type));
     const activityCount = userActivities.length;
 
+    // Cache leaderboard data for leaderboard_entry badges
+    let leaderboardCache: Map<number, Set<string>> | null = null;
+
     for (const achievement of achievements) {
       // Skip if already earned
       if (earnedAchievementIds.includes(achievement.id)) continue;
@@ -454,10 +451,23 @@ export class AchievementService {
           shouldAward = (userActivities || []).some((a) => a.event_id !== null);
           break;
 
-        case "leaderboard_entry":
-          // Check if user has any points to be on leaderboard
-          shouldAward = (userData.total_points || 0) > 0;
+        case "leaderboard_entry": {
+          const requiredRank = (criteria.rank as number) || 10;
+          if (!leaderboardCache) {
+            leaderboardCache = new Map();
+          }
+          if (!leaderboardCache.has(requiredRank)) {
+            const { data: topUsers } = await this.supabaseClient
+              .from("users")
+              .select("id, total_points")
+              .eq("is_deleted", false)
+              .order("total_points", { ascending: false })
+              .limit(requiredRank);
+            leaderboardCache.set(requiredRank, new Set((topUsers || []).map((u) => u.id)));
+          }
+          shouldAward = leaderboardCache.get(requiredRank)?.has(userId) ?? false;
           break;
+        }
       }
 
       if (shouldAward) {
@@ -560,6 +570,10 @@ export class AchievementService {
 
         if (criteria.type === "specific_activity" && criteria.activity_type) {
           relevantActivities = filterActivitiesByType(activities, criteria.activity_type);
+        } else if (criteria.type === "time_in_nature") {
+          relevantActivities = activities.filter((activity: any) =>
+            NATURE_ACTIVITY_TYPES.includes(activity.activity_type),
+          );
         }
 
         const totalMinutes = relevantActivities.reduce(

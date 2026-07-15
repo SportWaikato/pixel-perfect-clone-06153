@@ -7,6 +7,22 @@
  * Legacy types (from PDF system): cycling, walking, running, swimming, team_sports, gym_fitness, dance, vr_gaming
  * Current types (NZ system): bike_cycle, walk_hike, run_jog, team_sport, workout_gym, kapa_haka, gamefit_vr, etc.
  */
+
+export const NATURE_ACTIVITY_TYPES = [
+  "walking",
+  "walk_hike",
+  "running",
+  "run_jog",
+  "cycling",
+  "bike_cycle",
+  "hunting_diving",
+  "solo_sport",
+  "swimming",
+  "waka_ama",
+  "paddle_board",
+  "surfing",
+  "mountain_biking",
+] as const;
 export const ACTIVITY_TYPE_ALIASES: Record<string, string[]> = {
   // Cycling variations
   cycling: ["bike_cycle", "cycling"],

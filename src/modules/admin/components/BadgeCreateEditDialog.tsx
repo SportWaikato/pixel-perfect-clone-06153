@@ -29,6 +29,8 @@ import {
   buildBadgeCriteriaFromValues,
   getInitialBadgeFormValues,
   parseBadgeNumberField,
+  SCOPE_OPTIONS,
+  HOUSE_CHALLENGE_METRICS,
 } from "@/modules/admin/components/badges/badgeCriteriaHelpers";
 
 interface BadgeCreateEditDialogProps {
@@ -207,6 +209,49 @@ const BadgeCreateEditDialog = ({
                     <SelectItem value="false">Inactive</SelectItem>
                   </FormikSelectField>
                 </div>
+              </div>
+
+              <div className="space-y-4 border-t pt-4">
+                <h3 className="text-lg font-medium">Badge Scope</h3>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <FormikSelectField name="scope" label="Scope" placeholder="Select badge scope">
+                    {SCOPE_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </FormikSelectField>
+                </div>
+
+                {values.scope === "house" && (
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <FormikSelectField
+                      name="houseMetric"
+                      label="House Challenge Metric"
+                      placeholder="Select metric"
+                    >
+                      {HOUSE_CHALLENGE_METRICS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </FormikSelectField>
+                    <FormikInputField
+                      name="awardTopN"
+                      type="number"
+                      label="Award Top N Houses"
+                      placeholder="1"
+                    />
+                    {values.houseMetric === "participation_rate" && (
+                      <FormikInputField
+                        name="activeMinutesThreshold"
+                        type="number"
+                        label="Minimum Active Minutes"
+                        placeholder="30"
+                      />
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="space-y-4 border-t pt-4">

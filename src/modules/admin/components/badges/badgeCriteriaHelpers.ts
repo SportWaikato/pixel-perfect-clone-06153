@@ -52,7 +52,7 @@ export const CRITERIA_TYPE_OPTIONS = [
   {
     value: "leaderboard_entry",
     label: "Leaderboard Entry",
-    description: "Awarded when a user reaches the leaderboard based on earned points.",
+    description: "Awarded when a user reaches the top of the leaderboard based on earned points.",
   },
 ] as const;
 
@@ -108,12 +108,14 @@ export interface BadgeFormValues {
   awardTopN: string;
   activeMinutesThreshold: string;
   activityType: string | null;
+  customActivityName: string | null;
   durationMinutes: string | null;
   participationType: string;
   count: string | null;
   totalMinutes: string | null;
   streakDays: string | null;
   varietyCount: string | null;
+  leaderboardRank: string | null;
   includesDateRange: boolean;
   dateRangeStart: string | null;
   dateRangeEnd: string | null;
@@ -149,17 +151,21 @@ export const CRITERIA_FIELD_DEFAULTS: Record<CriteriaType, Partial<BadgeFormValu
     varietyCount: "5",
   },
   first_challenge: {},
-  leaderboard_entry: {},
+  leaderboard_entry: {
+    leaderboardRank: "10",
+  },
 };
 
 export const CRITERIA_STRING_FIELDS: Array<keyof BadgeFormValues> = [
   "activityType",
+  "customActivityName",
   "durationMinutes",
   "participationType",
   "count",
   "totalMinutes",
   "streakDays",
   "varietyCount",
+  "leaderboardRank",
   "dateRangeStart",
   "dateRangeEnd",
 ];
@@ -208,9 +214,35 @@ export const badgeFormValidationSchema = object().shape({
     .test("is-number", "Enter a valid number", (value) => !Number.isNaN(Number(value)))
     .test("non-negative", "Points must be 0 or greater", (value) => Number(value ?? 0) >= 0),
   is_active: string().oneOf(["true", "false"]).required(),
+  scope: string()
+    .oneOf(SCOPE_OPTIONS.map((o) => o.value))
+    .required("Select a badge scope"),
   criteriaType: mixed<CriteriaType>()
     .oneOf(CRITERIA_TYPE_OPTIONS.map((option) => option.value))
-    .required("Select a criteria type"),
+    .when("scope", {
+      is: "house" as Scope,
+      then: (schema) => schema.optional(),
+      otherwise: (schema) => schema.required("Select a criteria type"),
+    }),
+  houseMetric: string().when("scope", {
+    is: "house" as Scope,
+    then: (schema) =>
+      schema
+        .oneOf(HOUSE_CHALLENGE_METRICS.map((m) => m.value))
+        .required("Select a house challenge metric"),
+    otherwise: (schema) => schema.optional(),
+  }),
+  awardTopN: badgeNumberStringSchema().when("scope", {
+    is: "house" as Scope,
+    then: (schema) => schema.required("Enter number of houses to award"),
+    otherwise: (schema) => schema.optional(),
+  }),
+  activeMinutesThreshold: badgeNumberStringSchema().when(["scope", "houseMetric"], {
+    is: (scope: Scope, houseMetric: string) =>
+      scope === "house" && houseMetric === "participation_rate",
+    then: (schema) => schema.required("Enter minimum active minutes"),
+    otherwise: (schema) => schema.optional(),
+  }),
   activityType: string()
     .nullable()
     .default(null)
@@ -258,6 +290,11 @@ export const badgeFormValidationSchema = object().shape({
   varietyCount: badgeNumberStringSchema().when("criteriaType", {
     is: (criteriaType: CriteriaType) => criteriaType === "activity_variety",
     then: (schema) => schema.required("Enter number of activity types"),
+    otherwise: (schema) => schema.optional(),
+  }),
+  leaderboardRank: badgeNumberStringSchema().when("criteriaType", {
+    is: (criteriaType: CriteriaType) => criteriaType === "leaderboard_entry",
+    then: (schema) => schema.required("Enter number of top positions"),
     otherwise: (schema) => schema.optional(),
   }),
   includesDateRange: boolean().default(false),
@@ -332,15 +369,23 @@ export const getInitialBadgeFormValues = (badge: AchievementInterface | null): B
     scope,
     criteriaType,
     houseMetric: (rawCriteria?.metric as string) || "total_minutes",
-    awardTopN: ensureStringValue(rawCriteria?.award_top_n || 1),
-    activeMinutesThreshold: ensureStringValue(rawCriteria?.active_minutes_threshold || 30),
+    awardTopN: ensureStringValue(
+      rawCriteria?.award_config?.award_top_n || rawCriteria?.award_top_n || 1,
+    ),
+    activeMinutesThreshold: ensureStringValue(
+      rawCriteria?.award_config?.active_definition?.min_total_minutes ||
+        rawCriteria?.active_minutes_threshold ||
+        30,
+    ),
     activityType: "",
+    customActivityName: "",
     durationMinutes: "",
     participationType: "",
     count: "",
     totalMinutes: "",
     streakDays: "",
     varietyCount: "",
+    leaderboardRank: "",
     includesDateRange: Boolean(rawCriteria?.date_range),
     dateRangeStart: (rawCriteria?.date_range as Record<string, string> | undefined)?.start || "",
     dateRangeEnd: (rawCriteria?.date_range as Record<string, string> | undefined)?.end || "",
@@ -348,7 +393,14 @@ export const getInitialBadgeFormValues = (badge: AchievementInterface | null): B
 
   switch (criteriaType) {
     case "specific_activity":
-      baseValues.activityType = rawCriteria?.activity_type || "walking";
+      baseValues.activityType =
+        rawCriteria?.activity_type &&
+        ACTIVITY_OPTION_LABELS[rawCriteria.activity_type as string] === undefined
+          ? "something_else"
+          : (rawCriteria?.activity_type as string) || "walking";
+      if (baseValues.activityType === "something_else") {
+        baseValues.customActivityName = (rawCriteria?.activity_type as string) || "";
+      }
       baseValues.durationMinutes = ensureStringValue(rawCriteria?.duration_minutes);
       break;
     case "social_activity":
@@ -359,7 +411,14 @@ export const getInitialBadgeFormValues = (badge: AchievementInterface | null): B
       baseValues.durationMinutes = ensureStringValue(rawCriteria?.duration_minutes);
       break;
     case "walk_and_talk":
-      baseValues.activityType = rawCriteria?.activity_type || "walking";
+      baseValues.activityType =
+        rawCriteria?.activity_type &&
+        ACTIVITY_OPTION_LABELS[rawCriteria.activity_type as string] === undefined
+          ? "something_else"
+          : (rawCriteria?.activity_type as string) || "walking";
+      if (baseValues.activityType === "something_else") {
+        baseValues.customActivityName = (rawCriteria?.activity_type as string) || "";
+      }
       baseValues.participationType = rawCriteria?.participation_type || "with_others";
       baseValues.durationMinutes = ensureStringValue(rawCriteria?.duration_minutes);
       break;
@@ -376,7 +435,10 @@ export const getInitialBadgeFormValues = (badge: AchievementInterface | null): B
       baseValues.varietyCount = ensureStringValue(rawCriteria?.count);
       break;
     case "first_challenge":
+      break;
     case "leaderboard_entry":
+      baseValues.leaderboardRank = ensureStringValue(rawCriteria?.rank || 10);
+      break;
     default:
       break;
   }
@@ -414,12 +476,23 @@ export const buildBadgeCriteriaFromValues = (values: BadgeFormValues) => {
         : {}),
       ...(values.houseMetric === "average_streak" ? { min_minutes_per_streak_day: 1 } : {}),
     };
+
+    if (values.includesDateRange && values.dateRangeStart && values.dateRangeEnd) {
+      criteria.date_range = {
+        start: values.dateRangeStart,
+        end: values.dateRangeEnd,
+      };
+    }
+
     return criteria;
   }
 
   switch (values.criteriaType) {
     case "specific_activity":
-      criteria.activity_type = values.activityType;
+      criteria.activity_type =
+        values.activityType === "something_else" && values.customActivityName
+          ? values.customActivityName
+          : values.activityType;
       criteria.duration_minutes = parseBadgeNumberField(values.durationMinutes) ?? 0;
       break;
     case "social_activity":
@@ -430,7 +503,10 @@ export const buildBadgeCriteriaFromValues = (values: BadgeFormValues) => {
       criteria.duration_minutes = parseBadgeNumberField(values.durationMinutes) ?? 0;
       break;
     case "walk_and_talk":
-      criteria.activity_type = values.activityType;
+      criteria.activity_type =
+        values.activityType === "something_else" && values.customActivityName
+          ? values.customActivityName
+          : values.activityType;
       criteria.participation_type = values.participationType;
       criteria.duration_minutes = parseBadgeNumberField(values.durationMinutes) ?? 0;
       break;
@@ -447,7 +523,10 @@ export const buildBadgeCriteriaFromValues = (values: BadgeFormValues) => {
       criteria.count = parseBadgeNumberField(values.varietyCount || values.count) ?? 0;
       break;
     case "first_challenge":
+      break;
     case "leaderboard_entry":
+      criteria.rank = parseBadgeNumberField(values.leaderboardRank) ?? 10;
+      break;
     default:
       break;
   }
@@ -470,42 +549,41 @@ export const getBadgeCriteriaSummary = (values: BadgeFormValues) => {
       HOUSE_CHALLENGE_METRICS.find((m) => m.value === values.houseMetric)?.label ||
       values.houseMetric;
     summary = `House Challenge — ${metricLabel} (award top ${values.awardTopN || "1"} house${values.awardTopN && values.awardTopN !== "1" ? "s" : ""})`;
-    return summary;
-  }
-
-  switch (values.criteriaType) {
-    case "specific_activity":
-      summary = `${values.durationMinutes || "0"} minutes of ${getActivityLabel(values.activityType ?? undefined)}`;
-      break;
-    case "social_activity":
-      summary = `${values.durationMinutes || "0"} minutes being active ${values.participationType === "with_others" ? "with others" : "solo"}`;
-      break;
-    case "time_in_nature":
-      summary = `${values.durationMinutes || "0"} minutes spent in nature-based activities`;
-      break;
-    case "walk_and_talk":
-      summary = `${values.durationMinutes || "0"} minutes of ${getActivityLabel(values.activityType ?? undefined)} ${values.participationType === "with_others" ? "with others" : "solo"}`;
-      break;
-    case "entry_count":
-      summary = `Log ${values.count || "0"} activities`;
-      break;
-    case "total_time":
-      summary = `Accumulate ${values.totalMinutes || "0"} total activity minutes`;
-      break;
-    case "streak":
-      summary = `Maintain a ${values.streakDays || "0"} day activity streak`;
-      break;
-    case "activity_variety":
-      summary = `Participate in ${values.varietyCount || values.count || "0"} different activity types`;
-      break;
-    case "first_challenge":
-      summary = "Complete your first challenge activity";
-      break;
-    case "leaderboard_entry":
-      summary = "Reach the activity leaderboard through earned points";
-      break;
-    default:
-      summary = "Configure the achievement criteria";
+  } else {
+    switch (values.criteriaType) {
+      case "specific_activity":
+        summary = `${values.durationMinutes || "0"} minutes of ${getActivityLabel(values.activityType === "something_else" ? (values.customActivityName ?? undefined) : (values.activityType ?? undefined))}`;
+        break;
+      case "social_activity":
+        summary = `${values.durationMinutes || "0"} minutes being active ${values.participationType === "with_others" ? "with others" : "solo"}`;
+        break;
+      case "time_in_nature":
+        summary = `${values.durationMinutes || "0"} minutes spent in nature-based activities`;
+        break;
+      case "walk_and_talk":
+        summary = `${values.durationMinutes || "0"} minutes of ${getActivityLabel(values.activityType === "something_else" ? (values.customActivityName ?? undefined) : (values.activityType ?? undefined))} ${values.participationType === "with_others" ? "with others" : "solo"}`;
+        break;
+      case "entry_count":
+        summary = `Log ${values.count || "0"} activities`;
+        break;
+      case "total_time":
+        summary = `Accumulate ${values.totalMinutes || "0"} total activity minutes`;
+        break;
+      case "streak":
+        summary = `Maintain a ${values.streakDays || "0"} day activity streak`;
+        break;
+      case "activity_variety":
+        summary = `Participate in ${values.varietyCount || values.count || "0"} different activity types`;
+        break;
+      case "first_challenge":
+        summary = "Complete your first challenge activity";
+        break;
+      case "leaderboard_entry":
+        summary = `Reach the top ${values.leaderboardRank || "10"} on the activity leaderboard through earned points`;
+        break;
+      default:
+        summary = "Configure the achievement criteria";
+    }
   }
 
   if (values.includesDateRange && values.dateRangeStart && values.dateRangeEnd) {

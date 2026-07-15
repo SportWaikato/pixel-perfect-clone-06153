@@ -382,25 +382,39 @@ const AdminDashboardContent = ({
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
+              <a
+                href={import.meta.env.VITE_POSTHOG_HOST || "https://us.posthog.com"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between text-sm hover:bg-gray-50 rounded px-2 py-1 -mx-2 cursor-pointer transition-colors"
+              >
                 <span>PostHog Analytics</span>
                 <Badge className="bg-green-100 text-green-800 text-xs">
                   {import.meta.env.VITE_POSTHOG_KEY ? "Connected" : "Off"}
                 </Badge>
-              </div>
-              <div className="flex items-center justify-between text-sm">
+              </a>
+              <Link
+                to="/admin/events"
+                className="flex items-center justify-between text-sm hover:bg-gray-50 rounded px-2 py-1 -mx-2 cursor-pointer transition-colors"
+              >
                 <span>Active Challenges</span>
                 <Badge className="bg-blue-100 text-blue-800 text-xs">
                   {events.filter((e) => e.is_active).length} running
                 </Badge>
-              </div>
-              <div className="flex items-center justify-between text-sm">
+              </Link>
+              <Link
+                to="/admin/schools"
+                className="flex items-center justify-between text-sm hover:bg-gray-50 rounded px-2 py-1 -mx-2 cursor-pointer transition-colors"
+              >
                 <span>Active Schools</span>
                 <Badge className="bg-blue-100 text-blue-800 text-xs">
                   {schools.filter((s) => s.is_active).length} of {schools.length}
                 </Badge>
-              </div>
-              <div className="flex items-center justify-between text-sm">
+              </Link>
+              <Link
+                to="/admin/events"
+                className="flex items-center justify-between text-sm hover:bg-gray-50 rounded px-2 py-1 -mx-2 cursor-pointer transition-colors"
+              >
                 <span>Pending Approval</span>
                 {pendingEventCount > 0 ? (
                   <Badge className="bg-red-100 text-red-800 text-xs">
@@ -412,7 +426,7 @@ const AdminDashboardContent = ({
                     Clear
                   </Badge>
                 )}
-              </div>
+              </Link>
             </CardContent>
           </Card>
         </div>

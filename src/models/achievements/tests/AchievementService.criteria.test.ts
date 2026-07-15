@@ -113,11 +113,13 @@ describe("AchievementService.checkHistoricalAchievements", () => {
     earnedIds = [],
     userData = { total_minutes: 0, current_streak: 0, longest_streak: 0, total_points: 0 },
     userActivities = [],
+    leaderboardUsers = [],
   }: {
     achievements?: object[];
     earnedIds?: string[];
     userData?: object;
     userActivities?: object[];
+    leaderboardUsers?: object[];
   }) {
     supabase = makeSupabaseMock();
     supabase.auth.getUser = vi
@@ -143,6 +145,7 @@ describe("AchievementService.checkHistoricalAchievements", () => {
         }
       } else if (table === "users") {
         chain.single = vi.fn().mockResolvedValue({ data: userData, error: null });
+        chain.limit = vi.fn().mockResolvedValue({ data: leaderboardUsers, error: null });
       } else if (table === "activities") {
         chain.eq = vi.fn().mockResolvedValue({ data: userActivities, error: null });
       }
@@ -284,23 +287,32 @@ describe("AchievementService.checkHistoricalAchievements", () => {
     expect(results).toEqual([]);
   });
 
-  it("leaderboard_entry: awards when total_points > 0", async () => {
+  it("leaderboard_entry: awards when user is in top N by total_points", async () => {
     makeHistoricalSetup({
       achievements: [
-        { id: achievementId, is_active: true, criteria: { type: "leaderboard_entry" } },
+        { id: achievementId, is_active: true, criteria: { type: "leaderboard_entry", rank: 10 } },
       ],
-      userData: { total_minutes: 0, current_streak: 0, longest_streak: 0, total_points: 1 },
+      userData: { total_minutes: 0, current_streak: 0, longest_streak: 0, total_points: 50 },
+      leaderboardUsers: [
+        { id: "other-user-1", total_points: 100 },
+        { id: "other-user-2", total_points: 80 },
+        { id: userId, total_points: 50 },
+      ],
     });
     const results = await service.checkHistoricalAchievements(userId);
     expect(results.length).toBeGreaterThan(0);
   });
 
-  it("leaderboard_entry: does NOT award when total_points is 0", async () => {
+  it("leaderboard_entry: does NOT award when user is outside top N", async () => {
     makeHistoricalSetup({
       achievements: [
-        { id: achievementId, is_active: true, criteria: { type: "leaderboard_entry" } },
+        { id: achievementId, is_active: true, criteria: { type: "leaderboard_entry", rank: 2 } },
       ],
-      userData: { total_minutes: 0, current_streak: 0, longest_streak: 0, total_points: 0 },
+      userData: { total_minutes: 0, current_streak: 0, longest_streak: 0, total_points: 10 },
+      leaderboardUsers: [
+        { id: "other-user-1", total_points: 100 },
+        { id: "other-user-2", total_points: 80 },
+      ],
     });
     const results = await service.checkHistoricalAchievements(userId);
     expect(results).toEqual([]);
