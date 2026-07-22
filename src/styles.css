@@ -198,3 +198,23 @@
     font-family: var(--font-display);
   }
 }
+
+/* Landing-page marquee — continuous horizontal scroll of activity words.
+   Duplicated track technique: the inner element holds two copies of the
+   content and translates by exactly half its own width per loop. */
+@keyframes landing-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.animate-landing-marquee {
+  animation: landing-marquee 28s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-landing-marquee {
+    animation: none;
+  }
+}

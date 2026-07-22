@@ -1,3 +1,4 @@
+import { ASSEMBLY_ICONS } from "./assemblyIcons";
 import { m } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
 import { EventInterface } from "@/models/events/interfaces/EventInterface";
@@ -27,7 +28,7 @@ const ChallengeSlide = ({ assemblyEvent, onBack }: ChallengeSlideProps) => {
 
       <div className="mb-8 text-center">
         <img
-          src="/assembly/icon-challenge.png"
+          src={ASSEMBLY_ICONS.challenge}
           alt=""
           width={64}
           height={64}

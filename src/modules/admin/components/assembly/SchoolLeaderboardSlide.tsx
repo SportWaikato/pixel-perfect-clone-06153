@@ -1,5 +1,6 @@
 "use client";
 
+import { ASSEMBLY_ICONS } from "./assemblyIcons";
 import { useEffect, useState } from "react";
 import { m } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
@@ -53,13 +54,17 @@ const SchoolLeaderboardSlide = ({ schoolId, onBack }: SchoolLeaderboardSlideProp
       </button>
 
       <div className="mb-8 text-center">
-        <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10">
-          <span className="text-3xl">&#x1F3EB;</span>
-        </div>
+        <img
+          src={ASSEMBLY_ICONS["school-leaderboard"]}
+          alt=""
+          width={64}
+          height={64}
+          className="mx-auto mb-3"
+        />
         <h2 className="text-4xl font-extrabold uppercase tracking-widest text-white">
           Interschool Leaderboard
         </h2>
-        <p className="mt-1 text-sm uppercase tracking-wider" style={{ color: "#FF6B2B" }}>
+        <p className="mt-1 text-sm uppercase tracking-wider" style={{ color: "#DB4FDB" }}>
           Ranked by pro-rata score
         </p>
       </div>

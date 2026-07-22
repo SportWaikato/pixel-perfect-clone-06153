@@ -1,3 +1,4 @@
+import { ASSEMBLY_ICONS } from "./assemblyIcons";
 import { m } from "framer-motion";
 import { X } from "lucide-react";
 import { useRouter, useNavigate } from "@tanstack/react-router";
@@ -24,43 +25,43 @@ const cards = [
     id: "top-scorers" as Slide,
     title: "TOP SCORERS BY HOUSE",
     subtitle: "Shout out to top contributors",
-    icon: "/assembly/icon-top-scorers.svg",
+    icon: ASSEMBLY_ICONS["top-scorers"],
   },
   {
     id: "leaderboard" as Slide,
     title: "HOUSE LEADERBOARD",
     subtitle: "Top houses",
-    icon: "/assembly/icon-house-leaderboard.svg",
+    icon: ASSEMBLY_ICONS.leaderboard,
   },
   {
     id: "house-stats" as Slide,
     title: "HOUSE STATISTICS",
     subtitle: "Weekly, term & lifetime",
-    icon: "/assembly/icon-house-stats.svg",
+    icon: ASSEMBLY_ICONS["house-stats"],
   },
   {
     id: "house-badges" as Slide,
     title: "HOUSE BADGES",
     subtitle: "This term's achievements",
-    icon: "/assembly/icon-house-badges.svg",
+    icon: ASSEMBLY_ICONS["house-badges"],
   },
   {
     id: "school-leaderboard" as Slide,
     title: "SCHOOL LEADERBOARD",
     subtitle: "Inter-school rankings",
-    icon: "/assembly/icon-school-leaderboard.svg",
+    icon: ASSEMBLY_ICONS["school-leaderboard"],
   },
   {
     id: "challenge" as Slide,
     title: "YOUR NEXT CHALLENGE",
     subtitle: null,
-    icon: "/assembly/icon-this-week-challenge.svg",
+    icon: ASSEMBLY_ICONS.challenge,
   },
   {
     id: "prize-draw" as Slide,
     title: "SPOT PRIZE DRAW",
     subtitle: "Who will be the winner?",
-    icon: "/assembly/icon-prize-draw.svg",
+    icon: ASSEMBLY_ICONS["prize-draw"],
   },
 ];
 

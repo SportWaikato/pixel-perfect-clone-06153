@@ -33,6 +33,13 @@ import { HouseLeaderboardEntry } from "@/models/leaderboards/interfaces/Leaderbo
 import { SchoolTermInterface } from "@/models/terms/interfaces/SchoolTermInterface";
 import { SchoolTermService } from "@/models/terms/services/SchoolTermService";
 import ActivityLogPreview from "./ActivityLogPreview";
+import TermManagementContent from "./settings/TermManagementContent";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/modules/application/components/DesignSystem/ui/dialog";
 import { m } from "framer-motion";
 
 const statCardSpring = {
@@ -80,8 +87,11 @@ const SchoolAdminDashboard = ({
     totalMinutes: 0,
   });
   const [houses, setHouses] = useState<HouseLeaderboardEntry[]>([]);
+  const [allTerms, setAllTerms] = useState<SchoolTermInterface[]>([]);
   const [currentTerm, setCurrentTerm] = useState<SchoolTermInterface | null>(null);
+  const [termDialogOpen, setTermDialogOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [termsVersion, setTermsVersion] = useState(0);
 
   useEffect(() => {
     if (!schoolId) return;
@@ -117,6 +127,7 @@ const SchoolAdminDashboard = ({
           totalMinutes: userStats.totalMinutes,
         });
         setHouses(houseBoard);
+        setAllTerms(terms);
         setCurrentTerm(terms.find((t) => t.start_date <= today && today <= t.end_date) ?? null);
       } catch (error) {
         console.error("Error fetching admin stats:", error);
@@ -126,7 +137,7 @@ const SchoolAdminDashboard = ({
     };
 
     fetchAllStats();
-  }, [schoolId]);
+  }, [schoolId, termsVersion]);
 
   const isSuperAdmin = user.role === "super_admin";
 
@@ -205,15 +216,6 @@ const SchoolAdminDashboard = ({
       needsAttention: false,
     },
     {
-      title: "Term Dates",
-      description: "Set terms & leaderboard resets",
-      href: "/school/settings",
-      icon: CalendarClock,
-      color: "bg-teal-600",
-      badge: 0,
-      needsAttention: !currentTerm,
-    },
-    {
       title: "Assembly Mode",
       description: "Present live updates to the school",
       href: "/school/assembly",
@@ -251,12 +253,12 @@ const SchoolAdminDashboard = ({
                 {currentTerm.year}
               </Badge>
             ) : (
-              <Link to="/school/settings">
+              <button type="button" onClick={() => setTermDialogOpen(true)}>
                 <Badge className="bg-brand-magenta text-white border-0 px-3 py-1.5 cursor-pointer hover:opacity-90">
                   <ShieldAlert size={14} className="mr-1.5" />
                   No term set — configure term dates
                 </Badge>
-              </Link>
+              </button>
             )}
           </div>
         </div>
@@ -421,10 +423,13 @@ const SchoolAdminDashboard = ({
                   House and school term points reset at term end and are archived to term history.
                   Students always keep their lifetime points, streaks and badges.
                 </p>
-                <Button asChild variant="outline" size="sm" className="w-full gap-2">
-                  <Link to="/school/settings">
-                    <Settings className="h-4 w-4" /> Manage term dates
-                  </Link>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full gap-2"
+                  onClick={() => setTermDialogOpen(true)}
+                >
+                  <Settings className="h-4 w-4" /> Manage term dates
                 </Button>
               </div>
             ) : (
@@ -433,10 +438,12 @@ const SchoolAdminDashboard = ({
                   No current term configured. Term dates power weekly assembly scores and
                   leaderboard resets.
                 </p>
-                <Button asChild size="sm" className="gap-2 bg-brand-magenta hover:opacity-90">
-                  <Link to="/school/settings">
-                    <Calendar className="h-4 w-4" /> Set term dates
-                  </Link>
+                <Button
+                  size="sm"
+                  className="gap-2 bg-brand-magenta hover:opacity-90"
+                  onClick={() => setTermDialogOpen(true)}
+                >
+                  <Calendar className="h-4 w-4" /> Set term dates
                 </Button>
               </div>
             )}
@@ -489,6 +496,26 @@ const SchoolAdminDashboard = ({
           })}
         </div>
       </div>
+
+      {/* Term management lives here now — the old /school/settings page is
+          gone; personal settings are on the profile page. Refetch dashboard
+          data when the dialog closes so the term tracker stays current. */}
+      <Dialog
+        open={termDialogOpen}
+        onOpenChange={(open) => {
+          setTermDialogOpen(open);
+          if (!open) setTermsVersion((v) => v + 1);
+        }}
+      >
+        <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Term Dates & Leaderboard Resets</DialogTitle>
+          </DialogHeader>
+          {schoolId && (
+            <TermManagementContent terms={allTerms} schoolId={schoolId} currentUser={user} />
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Recent Activity Preview */}
       <ActivityLogPreview schoolId={schoolId} />

@@ -1,3 +1,4 @@
+import { ASSEMBLY_ICONS } from "./assemblyIcons";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
@@ -129,7 +130,7 @@ const PrizeDrawSlide = ({ schoolId, drawnByUserId, students, onBack }: PrizeDraw
 
       <div className="mb-8 text-center">
         <img
-          src="/assembly/icon-prize-draw.png"
+          src={ASSEMBLY_ICONS["prize-draw"]}
           alt=""
           width={64}
           height={64}

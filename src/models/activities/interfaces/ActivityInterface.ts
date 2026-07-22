@@ -25,6 +25,9 @@ export interface ActivityInterface {
   // admins for verification. Never surfaced in any public/shared UI.
   proof_image_url?: string | null;
   proof_image_storage_path?: string | null;
+  // Stable id from a health platform (Apple Health / Health Connect) so
+  // wearable re-syncs never import the same workout twice.
+  external_id?: string | null;
 
   // Relationships
   user?: UserInterface;

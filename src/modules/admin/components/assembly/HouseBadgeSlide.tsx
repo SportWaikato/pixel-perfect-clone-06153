@@ -1,5 +1,6 @@
 "use client";
 
+import { ASSEMBLY_ICONS } from "./assemblyIcons";
 import { useEffect, useState } from "react";
 import { m } from "framer-motion";
 import { ChevronLeft, Trophy, Flame, Target, Users } from "lucide-react";
@@ -83,11 +84,17 @@ const HouseBadgeSlide = ({ schoolId, onBack }: HouseBadgeSlideProps) => {
       </button>
 
       <div className="mb-8 text-center">
-        <Trophy className="mx-auto mb-3 h-16 w-16 text-yellow-400" />
+        <img
+          src={ASSEMBLY_ICONS["house-badges"]}
+          alt=""
+          width={64}
+          height={64}
+          className="mx-auto mb-3"
+        />
         <h2 className="text-4xl font-extrabold uppercase tracking-widest text-white">
           House Badges
         </h2>
-        <p className="mt-1 text-sm uppercase tracking-wider" style={{ color: "#FF6B2B" }}>
+        <p className="mt-1 text-sm uppercase tracking-wider" style={{ color: "#DB4FDB" }}>
           This term&apos;s house achievements
         </p>
       </div>
