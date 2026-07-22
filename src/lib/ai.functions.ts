@@ -142,11 +142,15 @@ ${responseText.slice(0, 50000)}`;
 // Extracts activity type and duration in minutes from a workout tracking screenshot.
 // Supports Apple Watch, Garmin, Strava, Fitbit, and generic fitness app screenshots.
 // Returns activity_type (matching ACTIVITY_TYPES keys) and duration in minutes.
+const MAX_SCAN_IMAGE_BASE64_CHARS = 10 * 1024 * 1024; // ~7.5MB decoded
+
 export const scanWorkoutScreenshot = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input: unknown) => {
+  .inputValidator((input: unknown) => {
     const { base64Image } = input as { base64Image: string };
-    if (!base64Image) throw new Error("base64Image is required");
+    if (!base64Image || typeof base64Image !== "string") throw new Error("base64Image is required");
+    if (base64Image.length > MAX_SCAN_IMAGE_BASE64_CHARS)
+      throw new Error("Image too large — please upload a screenshot under 7MB");
     return { base64Image };
   })
   .handler(async ({ data, context }) => {
@@ -157,22 +161,36 @@ export const scanWorkoutScreenshot = createServerFn({ method: "POST" })
     if (!apiKey) throw new Error("GOOGLE_AI_API_KEY is not configured");
 
     const { GoogleGenerativeAI } = await import("@google/generative-ai");
+    const { ALL_ACTIVITY_TYPE_LABELS } =
+      await import("@/models/activities/interfaces/ActivityInterface");
+    const { normalizeWorkoutScan, SCANNABLE_ACTIVITY_TYPES } =
+      await import("@/models/ai/utils/normalizeWorkoutScan");
 
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
+      model: "gemini-2.0-flash",
       generationConfig: { maxOutputTokens: 200 },
     });
 
+    const mimeMatch = data.base64Image.match(/^data:(image\/(?:png|jpeg|jpg|webp));base64,/);
+    const mimeType =
+      mimeMatch?.[1] === "image/jpg" ? "image/jpeg" : (mimeMatch?.[1] ?? "image/png");
     const base64Data = data.base64Image.replace(/^data:image\/\w+;base64,/, "");
 
-    const prompt = `Look at this workout screenshot and return ONLY a JSON object. No other text.
+    // The type list is built from the canonical ACTIVITY_TYPES keys so the
+    // model can only answer with values the rest of the app understands.
+    const typeList = SCANNABLE_ACTIVITY_TYPES.map(
+      (key) => `${key} (${ALL_ACTIVITY_TYPE_LABELS[key]})`,
+    ).join(", ");
 
-Available activity types: run_jog, bike_cycle, walk_hike, skating, scootering, swim, dance, gym_workout, yoga, sport_game, crossfit, hiit, pilates, boxing, jump_rope, row, surf, climb, ski_snowboard, team_practice, something_else
+    const prompt = `Look at this workout/fitness-app screenshot and return ONLY a JSON object. No other text.
+
+Available activity types (use the key before the parentheses, exactly as written):
+${typeList}
 
 Detect:
-1. "activity_type": the best matching type from the list above
-2. "duration_minutes": the duration as a number (e.g. 30)
+1. "activity_type": the best matching key from the list above
+2. "duration_minutes": the total workout duration in minutes as a number (e.g. 30)
 
 Return JSON: {"activity_type": "run_jog", "duration_minutes": 30}
 If you cannot determine either, return: {"activity_type": null, "duration_minutes": null}`;
@@ -180,14 +198,14 @@ If you cannot determine either, return: {"activity_type": null, "duration_minute
     try {
       const result = await model.generateContent([
         { text: prompt },
-        { inlineData: { mimeType: "image/png", data: base64Data } },
+        { inlineData: { mimeType, data: base64Data } },
       ]);
       const text = result.response.text();
       const match = text.match(/\{[\s\S]*\}/);
-      if (match) return JSON.parse(match[0]);
-      return { activity_type: null, duration_minutes: null, raw: text };
-    } catch (err: any) {
-      console.error("scanWorkoutScreenshot error:", err.message);
-      return { activity_type: null, duration_minutes: null, error: err.message };
+      if (match) return normalizeWorkoutScan(JSON.parse(match[0]));
+      return { activity_type: null, duration_minutes: null };
+    } catch (err) {
+      console.error("scanWorkoutScreenshot error:", (err as Error).message);
+      return { activity_type: null, duration_minutes: null };
     }
   });

@@ -158,12 +158,13 @@ const LogActivityWizard = ({
       })();
       setPointsEarned(pts);
 
-      let proofUrl: string | undefined;
       let proofPath: string | undefined;
       if (data.proofImageFile) {
         const storageService = new StorageService(supabase);
-        const uploaded = await storageService.uploadActivityProofImage(data.proofImageFile);
-        proofUrl = uploaded.storage_url;
+        const uploaded = await storageService.uploadActivityProofImage(
+          data.proofImageFile,
+          user.id,
+        );
         proofPath = uploaded.storage_path;
       }
 
@@ -183,7 +184,6 @@ const LogActivityWizard = ({
             : undefined,
         created_at:
           data.activityDate !== getNZDateString() ? createNZDate(data.activityDate) : undefined,
-        proof_image_url: proofUrl,
         proof_image_storage_path: proofPath,
       });
 

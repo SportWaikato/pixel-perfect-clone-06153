@@ -303,12 +303,35 @@ const LogActivityForm = ({
   const [challenges, setChallenges] = useState<EventInterface[]>([]);
   const [preselectedChallengeId, setPreselectedChallengeId] = useState<string | null>(null);
   // Proof photo — parity with the create wizard so editing an activity
-  // doesn't silently drop this capability. Proof is private evidence only.
+  // doesn't silently drop this capability. Proof is private evidence only:
+  // stored in the private activity-proofs bucket and viewed via signed URL.
   const [proofFile, setProofFile] = useState<File | null>(null);
   const [proofPreview, setProofPreview] = useState<string | null>(
     editingActivity?.proof_image_url ?? null,
   );
   const [proofRemoved, setProofRemoved] = useState(false);
+
+  useEffect(() => {
+    // Legacy rows carry a public proof_image_url; new rows only a storage
+    // path that needs signing before it can render.
+    if (
+      editingActivity?.proof_image_storage_path &&
+      !editingActivity.proof_image_url &&
+      !proofFile &&
+      !proofRemoved
+    ) {
+      const storageService = new StorageService(createSupabaseClient());
+      storageService
+        .getActivityProofSignedUrl(editingActivity.proof_image_storage_path)
+        .then(setProofPreview)
+        .catch(() => {});
+    }
+  }, [
+    editingActivity?.proof_image_storage_path,
+    editingActivity?.proof_image_url,
+    proofFile,
+    proofRemoved,
+  ]);
 
   const handleProofSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -388,8 +411,8 @@ const LogActivityForm = ({
         let proofPath = editingActivity.proof_image_storage_path ?? undefined;
         if (proofFile) {
           const storageService = new StorageService(supabase);
-          const uploaded = await storageService.uploadActivityProofImage(proofFile);
-          proofUrl = uploaded.storage_url;
+          const uploaded = await storageService.uploadActivityProofImage(proofFile, user.id);
+          proofUrl = undefined;
           proofPath = uploaded.storage_path;
         } else if (proofRemoved) {
           proofUrl = undefined;

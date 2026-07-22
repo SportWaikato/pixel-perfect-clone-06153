@@ -13,15 +13,16 @@ export class StorageService {
     return this.uploadBadgeBlob(fileName, file);
   }
 
-  async uploadActivityProofImage(
-    file: File,
-  ): Promise<{ storage_url: string; storage_path: string }> {
-    const fileExt = file.name.split(".").pop();
-    const fileName = `proofs/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-    const filePath = `proofs/${fileName}`;
+  // Proof images are children's screenshots/photos — they go to the PRIVATE
+  // activity-proofs bucket, never a public one. Path is prefixed with the
+  // owner's user id so storage RLS can scope reads to the owner + their
+  // school's admins. Display always goes through getActivityProofSignedUrl.
+  async uploadActivityProofImage(file: File, userId: string): Promise<{ storage_path: string }> {
+    const fileExt = (file.name.split(".").pop() || "jpg").toLowerCase();
+    const filePath = `${userId}/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
 
     const { error: uploadError } = await this.supabaseClient.storage
-      .from("event-images")
+      .from("activity-proofs")
       .upload(filePath, file, {
         cacheControl: "3600",
         upsert: false,
@@ -29,11 +30,17 @@ export class StorageService {
 
     if (uploadError) throw new Error(`Upload failed: ${uploadError.message}`);
 
-    const {
-      data: { publicUrl },
-    } = this.supabaseClient.storage.from("event-images").getPublicUrl(filePath);
+    return { storage_path: filePath };
+  }
 
-    return { storage_url: publicUrl, storage_path: filePath };
+  // Short-lived signed URL for viewing a private proof image. Storage RLS
+  // decides whether the caller may sign this path (owner / school admin).
+  async getActivityProofSignedUrl(storagePath: string, expiresInSeconds = 600): Promise<string> {
+    const { data, error } = await this.supabaseClient.storage
+      .from("activity-proofs")
+      .createSignedUrl(storagePath, expiresInSeconds);
+    if (error) throw new Error(`Could not load proof image: ${error.message}`);
+    return data.signedUrl;
   }
 
   async uploadBadgeImageFromBlob(
