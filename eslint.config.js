@@ -6,7 +6,10 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist", ".output", ".vinxi"] },
+  // `native/` holds the future Expo React Native app (react-native-health,
+  // react-native-health-connect). It's a separate build target with its own
+  // toolchain — not compiled, typechecked, or linted by this web project.
+  { ignores: ["dist", ".output", ".vinxi", "native"] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],
