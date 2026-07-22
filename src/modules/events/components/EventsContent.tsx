@@ -118,8 +118,7 @@ const EventsContent = ({
             <Button
               onClick={() => setShowCreateDialog(true)}
               size="sm"
-              className="gap-2 font-bold shrink-0"
-              style={{ backgroundColor: "#1B5E4B", color: "white" }}
+              className="gap-2 font-bold shrink-0 bg-white text-brand-green hover:bg-white/90"
             >
               <Plus className="w-4 h-4" />
               <span className="hidden sm:inline">Suggest a challenge</span>

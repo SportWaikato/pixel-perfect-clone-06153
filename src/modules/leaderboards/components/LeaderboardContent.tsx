@@ -429,8 +429,7 @@ const LeaderboardContent = ({
             <Button
               onClick={loadLeaderboardData}
               variant="outline"
-              className="gap-2 w-full sm:w-auto"
-              style={{ backgroundColor: "#1B5E4B", color: "white", borderColor: "#1B5E4B" }}
+              className="gap-2 w-full border-0 bg-white text-brand-green hover:bg-white/90 sm:w-auto"
             >
               <RefreshCw className="w-4 h-4" />
               Refresh
