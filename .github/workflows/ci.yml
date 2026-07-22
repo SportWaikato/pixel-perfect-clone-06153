@@ -26,10 +26,13 @@ jobs:
       - name: Get changed TS files
         id: files
         run: |
+          # --diff-filter=d excludes deleted files so eslint never gets a
+          # missing path; tr flattens to one line because GITHUB_OUTPUT is
+          # line-oriented and a multi-line value breaks parsing.
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- '*.ts' '*.tsx')
+            FILES=$(git diff --name-only --diff-filter=d origin/${{ github.base_ref }}...HEAD -- '*.ts' '*.tsx' | tr '\n' ' ')
           else
-            FILES=$(git diff --name-only HEAD~1 HEAD -- '*.ts' '*.tsx' 2>/dev/null || echo "")
+            FILES=$(git diff --name-only --diff-filter=d HEAD~1 HEAD -- '*.ts' '*.tsx' 2>/dev/null | tr '\n' ' ' || echo "")
           fi
           echo "FILES=$FILES" >> "$GITHUB_OUTPUT"
 
