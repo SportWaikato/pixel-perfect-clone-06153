@@ -128,7 +128,7 @@ const TopScorersSlide = ({
                         {scorer.user_first_name} {scorer.user_last_name}
                       </p>
                     </div>
-                    <span className="text-xl font-extrabold text-amber-400">
+                    <span className="text-xl font-extrabold text-brand-pink">
                       {scorer.total_points.toLocaleString()}
                     </span>
                   </div>

@@ -27,8 +27,7 @@ import {
 import { RefreshCw, Award, Zap, Target } from "lucide-react";
 import { m } from "framer-motion";
 import StudentProgressionCard from "@/modules/dashboard/components/StudentProgressionCard";
-import StudentPhotoFeed from "@/modules/dashboard/components/StudentPhotoFeed";
-import PhotoWallCarousel from "@/modules/activities/components/PhotoWallCarousel";
+import SchoolPulseWall from "@/modules/dashboard/components/SchoolPulseWall";
 import PageHeader from "@/modules/application/components/Layout/PageHeader";
 import SurveyPromptCard from "@/modules/surveys/components/SurveyPromptCard";
 import { ActivityInterface } from "@/models/activities/interfaces/ActivityInterface";
@@ -58,7 +57,6 @@ interface DashboardContentProps {
   initialTotalPoints: number;
   initialCurrentMonthMinutes: number;
   recentActivities: ActivityInterface[];
-  photoActivities?: ActivityInterface[];
   pendingSurvey: { survey: SurveyInterface; status: UserSurveyStatusInterface } | null;
 }
 
@@ -69,7 +67,6 @@ const DashboardContent = ({
   initialTotalPoints,
   initialCurrentMonthMinutes,
   recentActivities,
-  photoActivities = [],
   pendingSurvey,
 }: DashboardContentProps) => {
   const router = useRouter();
@@ -206,7 +203,7 @@ const DashboardContent = ({
         />
       )}
 
-      {user.school_id && <PhotoWallCarousel schoolId={user.school_id} />}
+      {user.school_id && <SchoolPulseWall schoolId={user.school_id} />}
 
       {/* Recent Activity Trend */}
       <m.div
@@ -262,11 +259,6 @@ const DashboardContent = ({
           </CardContent>
         </Card>
       </m.div>
-
-      {/* Student Photo Feed */}
-      {photoActivities.length > 0 && (
-        <StudentPhotoFeed activities={photoActivities} userId={user.id} />
-      )}
 
       {/* Activity Snapshot */}
       <m.div

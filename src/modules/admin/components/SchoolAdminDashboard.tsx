@@ -18,6 +18,9 @@ import {
   Monitor,
   ShieldAlert,
   Activity,
+  Settings,
+  CalendarClock,
+  Trophy,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
@@ -26,6 +29,9 @@ import { UserService } from "@/models/users/services/UserService";
 import { EventService } from "@/models/events/services/EventService";
 import { SchoolMessageService } from "@/models/schoolMessages/services/SchoolMessageService";
 import { LeaderboardService } from "@/models/leaderboards/services/LeaderboardService";
+import { HouseLeaderboardEntry } from "@/models/leaderboards/interfaces/LeaderboardInterface";
+import { SchoolTermInterface } from "@/models/terms/interfaces/SchoolTermInterface";
+import { SchoolTermService } from "@/models/terms/services/SchoolTermService";
 import ActivityLogPreview from "./ActivityLogPreview";
 import { m } from "framer-motion";
 
@@ -34,6 +40,9 @@ const statCardSpring = {
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.25 },
 };
+
+const nzDateString = (date: Date = new Date()) =>
+  new Intl.DateTimeFormat("en-CA", { timeZone: "Pacific/Auckland" }).format(date);
 
 interface SchoolAdminDashboardProps {
   user: UserInterface;
@@ -70,6 +79,8 @@ const SchoolAdminDashboard = ({
     schoolRank: 0,
     totalMinutes: 0,
   });
+  const [houses, setHouses] = useState<HouseLeaderboardEntry[]>([]);
+  const [currentTerm, setCurrentTerm] = useState<SchoolTermInterface | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -82,15 +93,20 @@ const SchoolAdminDashboard = ({
         const eventService = new EventService(supabase);
         const leaderboardService = new LeaderboardService(supabase);
         const messageService = new SchoolMessageService(supabase);
+        const termService = new SchoolTermService(supabase);
 
-        const [userStats, pendingCount, leaderboard, messageCount] = await Promise.all([
-          userService.getSchoolUserStats(schoolId),
-          eventService.getPendingCountForSchool(schoolId),
-          leaderboardService.getSchoolLeaderboard(schoolId),
-          messageService.countUnreadBySchoolId(schoolId),
-        ]);
+        const [userStats, pendingCount, leaderboard, messageCount, houseBoard, terms] =
+          await Promise.all([
+            userService.getSchoolUserStats(schoolId),
+            eventService.getPendingCountForSchool(schoolId),
+            leaderboardService.getSchoolLeaderboard(schoolId),
+            messageService.countUnreadBySchoolId(schoolId),
+            leaderboardService.getHouseLeaderboard(schoolId),
+            termService.getBySchoolId(schoolId),
+          ]);
 
         const schoolEntry = leaderboard.find((entry) => entry.id === schoolId);
+        const today = nzDateString();
 
         setStats({
           totalUsers: userStats.total,
@@ -100,6 +116,8 @@ const SchoolAdminDashboard = ({
           schoolRank: schoolEntry?.rank ?? 0,
           totalMinutes: userStats.totalMinutes,
         });
+        setHouses(houseBoard);
+        setCurrentTerm(terms.find((t) => t.start_date <= today && today <= t.end_date) ?? null);
       } catch (error) {
         console.error("Error fetching admin stats:", error);
       } finally {
@@ -128,6 +146,20 @@ const SchoolAdminDashboard = ({
     );
   }
 
+  const engagementRate =
+    stats.totalUsers > 0 ? Math.round((stats.activeUsers / stats.totalUsers) * 100) : 0;
+  const maxHousePoints = Math.max(1, ...houses.map((h) => h.term_points || h.total_points || 0));
+  const currentWeek = currentTerm ? SchoolTermService.getCurrentWeekNumber(currentTerm) : 0;
+  const totalWeeks = currentTerm ? SchoolTermService.getTotalWeeks(currentTerm) : 0;
+  const daysUntilReset = currentTerm
+    ? Math.max(
+        0,
+        Math.ceil(
+          (new Date(`${currentTerm.end_date}T23:59:59+12:00`).getTime() - Date.now()) / 86400000,
+        ),
+      )
+    : 0;
+
   const quickActions = [
     // Houses management only exists as a super-admin page; hide it for school
     // admins rather than bouncing them off the _superadmin route gate.
@@ -144,11 +176,20 @@ const SchoolAdminDashboard = ({
         ]
       : []),
     {
+      title: "Manage Students",
+      description: "Edit profiles, houses, year groups",
+      href: "/school/users",
+      icon: Users,
+      color: "bg-blue-600",
+      badge: 0,
+      needsAttention: false,
+    },
+    {
       title: "Manage Challenges",
       description: "Review pending challenges",
       href: "/school/events",
       icon: Clock,
-      color: "bg-orange-500",
+      color: "bg-brand-magenta",
       badge: stats.pendingEvents,
       needsAttention: stats.pendingEvents > 0,
       secondaryHref: "/challenges",
@@ -162,6 +203,15 @@ const SchoolAdminDashboard = ({
       color: "bg-red-500",
       badge: 0,
       needsAttention: false,
+    },
+    {
+      title: "Term Dates",
+      description: "Set terms & leaderboard resets",
+      href: "/school/settings",
+      icon: CalendarClock,
+      color: "bg-teal-600",
+      badge: 0,
+      needsAttention: !currentTerm,
     },
     {
       title: "Assembly Mode",
@@ -182,12 +232,33 @@ const SchoolAdminDashboard = ({
           ← Back to all schools
         </Link>
       )}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-display text-3xl sm:text-4xl font-bold uppercase leading-none tracking-tight text-brand-green">
-            School Admin Dashboard
-          </h1>
-          <p className="text-gray-600 mt-1">Managing {schoolName}</p>
+      <div
+        className="rounded-2xl px-6 py-6 text-white"
+        style={{ background: "linear-gradient(110deg, #0c4036 0%, #1B5E4B 55%, #118061 100%)" }}
+      >
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h1 className="font-display text-3xl sm:text-4xl font-bold uppercase leading-none tracking-tight">
+              School Admin Dashboard
+            </h1>
+            <p className="text-white/70 mt-1">Managing {schoolName}</p>
+          </div>
+          <div className="flex items-center gap-3 text-sm">
+            {currentTerm ? (
+              <Badge className="bg-white/15 text-white border-white/20 backdrop-blur px-3 py-1.5">
+                <CalendarClock size={14} className="mr-1.5" />
+                Week {currentWeek} of {totalWeeks} · Term {currentTerm.term_number}{" "}
+                {currentTerm.year}
+              </Badge>
+            ) : (
+              <Link to="/school/settings">
+                <Badge className="bg-brand-magenta text-white border-0 px-3 py-1.5 cursor-pointer hover:opacity-90">
+                  <ShieldAlert size={14} className="mr-1.5" />
+                  No term set — configure term dates
+                </Badge>
+              </Link>
+            )}
+          </div>
         </div>
       </div>
 
@@ -202,7 +273,9 @@ const SchoolAdminDashboard = ({
               </CardHeader>
               <CardContent className="pb-3 px-3">
                 <div className="text-xl font-bold">{stats.totalUsers}</div>
-                <p className="text-[10px] text-muted-foreground">{stats.activeUsers} active</p>
+                <p className="text-[10px] text-muted-foreground">
+                  {stats.activeUsers} active · {engagementRate}% engaged
+                </p>
               </CardContent>
             </Card>
           </Link>
@@ -243,21 +316,138 @@ const SchoolAdminDashboard = ({
             <Card className="h-full hover:shadow-md transition-shadow cursor-pointer">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-3">
                 <CardTitle className="text-xs font-medium">School Rank</CardTitle>
-                <Award className="h-3.5 w-3.5 text-orange-600" />
+                <Award className="h-3.5 w-3.5 text-brand-magenta" />
               </CardHeader>
               <CardContent className="pb-3 px-3">
                 <div className="text-xl font-bold">#{stats.schoolRank}</div>
-                <p className="text-[10px] text-muted-foreground">In district</p>
+                <p className="text-[10px] text-muted-foreground">Inter-school ladder</p>
               </CardContent>
             </Card>
           </Link>
         </m.div>
       </div>
 
+      {/* House standings + term tracker */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="lg:col-span-2">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <Trophy className="h-4 w-4 text-brand-magenta" />
+              House Standings — this term
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {houses.length === 0 ? (
+              <p className="text-sm text-gray-400 py-4 text-center">
+                No houses yet. Houses are set up during onboarding.
+              </p>
+            ) : (
+              houses.map((house, i) => {
+                const points = house.term_points || house.total_points || 0;
+                return (
+                  <div key={house.id} className="space-y-1">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="flex items-center gap-2 font-semibold text-gray-700">
+                        <span className="text-xs text-gray-400 w-4">#{i + 1}</span>
+                        <span
+                          className="inline-block h-3 w-3 rounded-full"
+                          style={{ backgroundColor: house.color || "#1B5E4B" }}
+                        />
+                        {house.name}
+                      </span>
+                      <span className="font-bold text-gray-800">
+                        {points.toLocaleString()} pts
+                        <span className="ml-2 text-xs font-normal text-gray-400">
+                          {house.member_count} members
+                        </span>
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                      <m.div
+                        className="h-full rounded-full"
+                        style={{ backgroundColor: house.color || "#1B5E4B" }}
+                        initial={{ width: 0 }}
+                        animate={{ width: `${Math.max(2, (points / maxHousePoints) * 100)}%` }}
+                        transition={{ duration: 0.6, delay: i * 0.08, ease: "easeOut" }}
+                      />
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <CalendarClock className="h-4 w-4 text-[#1B5E4B]" />
+              Term Tracker
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {currentTerm ? (
+              <div className="space-y-4">
+                <div className="text-center">
+                  <div className="text-4xl font-black text-[#1B5E4B]">{daysUntilReset}</div>
+                  <p className="text-xs text-gray-500 mt-1">days until the leaderboard resets</p>
+                </div>
+                <div>
+                  <div className="flex justify-between text-xs text-gray-500 mb-1">
+                    <span>
+                      Week {currentWeek} of {totalWeeks}
+                    </span>
+                    <span>
+                      Ends{" "}
+                      {new Date(`${currentTerm.end_date}T12:00:00+12:00`).toLocaleDateString(
+                        "en-NZ",
+                        { day: "numeric", month: "short" },
+                      )}
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-100 rounded-full h-2">
+                    <m.div
+                      className="h-2 rounded-full"
+                      style={{ background: "linear-gradient(90deg, #1B5E4B, #D103D1)" }}
+                      initial={{ width: 0 }}
+                      animate={{
+                        width: `${totalWeeks > 0 ? Math.min(100, (currentWeek / totalWeeks) * 100) : 0}%`,
+                      }}
+                      transition={{ duration: 0.8, ease: "easeOut" }}
+                    />
+                  </div>
+                </div>
+                <p className="text-xs text-gray-400">
+                  House and school term points reset at term end and are archived to term history.
+                  Students always keep their lifetime points, streaks and badges.
+                </p>
+                <Button asChild variant="outline" size="sm" className="w-full gap-2">
+                  <Link to="/school/settings">
+                    <Settings className="h-4 w-4" /> Manage term dates
+                  </Link>
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-3 text-center py-2">
+                <p className="text-sm text-gray-500">
+                  No current term configured. Term dates power weekly assembly scores and
+                  leaderboard resets.
+                </p>
+                <Button asChild size="sm" className="gap-2 bg-brand-magenta hover:opacity-90">
+                  <Link to="/school/settings">
+                    <Calendar className="h-4 w-4" /> Set term dates
+                  </Link>
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Quick Actions */}
       <div>
         <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {quickActions.map((action) => {
             const IconComponent = action.icon;
             return (
@@ -271,7 +461,7 @@ const SchoolAdminDashboard = ({
                       <span>{action.title}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      {action.badge > 0 && (
+                      {(action.badge ?? 0) > 0 && (
                         <Badge
                           variant={action.needsAttention ? "default" : "secondary"}
                           className={`flex items-center gap-1 ${action.needsAttention ? "bg-blue-500 hover:bg-blue-600" : ""}`}

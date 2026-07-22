@@ -192,11 +192,11 @@ const PrizeDrawSlide = ({ schoolId, drawnByUserId, students, onBack }: PrizeDraw
 
                 {/* centre highlight band + pointer */}
                 <div
-                  className="pointer-events-none absolute inset-x-0 z-10 border-y-2 border-amber-400/70 bg-amber-400/10"
+                  className="pointer-events-none absolute inset-x-0 z-10 border-y-2 border-brand-pink/70 bg-brand-magenta-bright/10"
                   style={{ top: CENTER_OFFSET, height: ROW }}
                 />
                 <div
-                  className="pointer-events-none absolute right-2 z-30 h-0 w-0 border-y-[12px] border-r-[16px] border-y-transparent border-r-amber-400"
+                  className="pointer-events-none absolute right-2 z-30 h-0 w-0 border-y-[12px] border-r-[16px] border-y-transparent border-r-brand-pink"
                   style={{ top: CENTER_OFFSET + ROW / 2 - 12 }}
                 />
 
@@ -221,7 +221,7 @@ const PrizeDrawSlide = ({ schoolId, drawnByUserId, students, onBack }: PrizeDraw
                         <span
                           className={
                             isWinnerRow
-                              ? "text-4xl font-black text-amber-300 drop-shadow"
+                              ? "text-4xl font-black text-brand-pink drop-shadow"
                               : "text-3xl font-bold text-white/85"
                           }
                         >
@@ -250,7 +250,7 @@ const PrizeDrawSlide = ({ schoolId, drawnByUserId, students, onBack }: PrizeDraw
                     >
                       🏆
                     </m.div>
-                    <p className="text-lg font-bold text-amber-400">
+                    <p className="text-lg font-bold text-brand-pink">
                       {(winner as unknown as { house?: { name?: string } }).house?.name
                         ? `${(winner as unknown as { house?: { name?: string } }).house?.name} — Congratulations!`
                         : "Congratulations!"}

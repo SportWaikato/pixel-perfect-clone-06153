@@ -10,6 +10,10 @@ export interface SchoolInterface {
   roll_number?: number | null;
   current_term_id?: string | null;
   region?: string | null;
+  // ISO-3166 alpha-2 (NZ, AU, ...) — drives international scoping.
+  country?: string | null;
+  // IANA timezone for term/date logic (defaults to Pacific/Auckland).
+  timezone?: string | null;
   school_type?: string | null;
   total_kilometers: number;
   total_points: number;

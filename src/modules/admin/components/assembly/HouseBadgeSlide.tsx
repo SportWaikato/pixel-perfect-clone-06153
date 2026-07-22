@@ -15,7 +15,7 @@ interface HouseBadgeSlideProps {
 
 const ICON_MAP: Record<string, React.ReactNode> = {
   Trophy: <Trophy className="w-6 h-6 text-yellow-400" />,
-  Flame: <Flame className="w-6 h-6 text-orange-400" />,
+  Flame: <Flame className="w-6 h-6 text-brand-pink" />,
   Target: <Target className="w-6 h-6 text-blue-400" />,
   Users: <Users className="w-6 h-6 text-green-400" />,
 };

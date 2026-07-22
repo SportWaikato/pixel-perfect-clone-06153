@@ -161,7 +161,7 @@ const HouseStatisticsSlide = ({ schoolId, onBack }: HouseStatisticsSlideProps) =
                 <p className="text-center text-lg font-extrabold text-white">
                   {house.weekly_points.toLocaleString()}
                 </p>
-                <p className="text-center text-lg font-extrabold text-amber-400">
+                <p className="text-center text-lg font-extrabold text-brand-pink">
                   {house.term_points.toLocaleString()}
                 </p>
                 <div>

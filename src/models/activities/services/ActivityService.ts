@@ -624,103 +624,21 @@ export class ActivityService {
     return count || 0;
   }
 
-  async getFeedActivities(schoolId: string, limit = 50): Promise<ActivityInterface[]> {
+  // Photo-free replacement for the old school feed: recent activity entries
+  // with only first name, house colour, activity type, minutes and points.
+  // No proof images are ever exposed here.
+  async getSchoolPulse(schoolId: string, limit = 25): Promise<ActivityInterface[]> {
     const { data, error } = await this.supabaseClient
       .from(TABLE_NAME)
-      .select(`*, user:users(first_name, last_name, username, house:houses(name, color))`)
-      .eq("is_shared_to_feed", true)
-      .eq("feed_approved", true)
-      .not("proof_image_url", "is", null)
+      .select(
+        `id, activity_type, custom_activity_name, duration_minutes, final_points, house_points_awarded, created_at,
+         user:users!inner(first_name, school_id, house:houses(name, color))`,
+      )
+      .eq("user.school_id", schoolId)
       .order("created_at", { ascending: false })
       .limit(limit);
 
     if (error) throw new Error(error.message);
-
-    return ((data || []) as ActivityInterface[]).filter((a) => {
-      const user = a.user as Record<string, unknown> | undefined;
-      const house = user?.house as Record<string, unknown> | undefined;
-      return house?.school_id === schoolId;
-    });
-  }
-
-  async getTopFeedPhotos(schoolId: string, days = 7, limit = 3): Promise<ActivityInterface[]> {
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - days);
-
-    const { data, error } = await this.supabaseClient
-      .from(TABLE_NAME)
-      .select(`*, user:users(first_name, last_name, username, house:houses(name, color))`)
-      .eq("is_shared_to_feed", true)
-      .eq("feed_approved", true)
-      .not("proof_image_url", "is", null)
-      .gte("created_at", cutoff.toISOString())
-      .order("feed_likes", { ascending: false })
-      .limit(limit);
-
-    if (error) throw new Error(error.message);
-
-    return ((data || []) as ActivityInterface[]).filter((a) => {
-      const user = a.user as Record<string, unknown> | undefined;
-      const house = user?.house as Record<string, unknown> | undefined;
-      return house?.school_id === schoolId;
-    });
-  }
-
-  async toggleFeedSharing(activityId: string, userId: string): Promise<void> {
-    const existing = await this.getById(activityId);
-    if (!existing || existing.user_id !== userId) {
-      throw new Error("Not your activity to share");
-    }
-    const { error } = await this.supabaseClient
-      .from(TABLE_NAME)
-      .update({
-        is_shared_to_feed: !existing.is_shared_to_feed,
-        feed_approved: existing.feed_approved,
-      })
-      .eq("id", activityId);
-    if (error) throw new Error(error.message);
-  }
-
-  async approveFeedPost(activityId: string): Promise<void> {
-    const { error } = await this.supabaseClient
-      .from(TABLE_NAME)
-      .update({ feed_approved: true })
-      .eq("id", activityId);
-    if (error) throw new Error(error.message);
-  }
-
-  async rejectFeedPost(activityId: string): Promise<void> {
-    const { error } = await this.supabaseClient
-      .from(TABLE_NAME)
-      .update({ feed_approved: false, is_shared_to_feed: false })
-      .eq("id", activityId);
-    if (error) throw new Error(error.message);
-  }
-
-  async likeFeedPost(activityId: string): Promise<void> {
-    const { error } = await this.supabaseClient.rpc("increment_feed_like", {
-      p_activity_id: activityId,
-    });
-    if (error) throw new Error(error.message);
-  }
-
-  async getPendingFeedPosts(schoolId: string): Promise<ActivityInterface[]> {
-    const { data, error } = await this.supabaseClient
-      .from(TABLE_NAME)
-      .select(
-        `*, user:users(first_name, last_name, username, house:houses(name, color, school_id))`,
-      )
-      .eq("is_shared_to_feed", true)
-      .eq("feed_approved", false)
-      .not("proof_image_url", "is", null)
-      .order("created_at", { ascending: false });
-
-    if (error) throw new Error(error.message);
-
-    return ((data || []) as ActivityInterface[]).filter((a) => {
-      const user = a.user as Record<string, unknown> | undefined;
-      const house = user?.house as Record<string, unknown> | undefined;
-      return house?.school_id === schoolId;
-    });
+    return (data || []) as unknown as ActivityInterface[];
   }
 }

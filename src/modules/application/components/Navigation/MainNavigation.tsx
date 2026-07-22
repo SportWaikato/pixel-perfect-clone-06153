@@ -28,7 +28,6 @@ import {
   Award,
   Download,
   Zap,
-  Heart,
 } from "lucide-react";
 import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
 import { useUser } from "@/modules/auth/hooks/useUser";
@@ -61,7 +60,6 @@ const MainNavigation = () => {
         { href: "/school/users", label: "Manage Users", icon: Users },
         { href: "/school/events", label: "Challenges", icon: Calendar },
         { href: "/school/updates", label: "Announcements", icon: MessageSquare },
-        { href: "/school/feed", label: "Feed", icon: Heart },
         { href: "/school/leaderboard", label: "Leaderboard", icon: Trophy },
         { href: "/school/settings", label: "Settings", icon: Settings },
       ];
@@ -82,7 +80,6 @@ const MainNavigation = () => {
         ...baseItems,
         { href: "/activities", label: "Log Activity", icon: Zap },
         { href: "/challenges", label: "Challenges", icon: Calendar },
-        { href: "/feed", label: "Feed", icon: Heart },
         { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
         { href: "/achievements", label: "Badges", icon: Award },
         { href: "/announcements", label: "Announcements", icon: MessageCircle },

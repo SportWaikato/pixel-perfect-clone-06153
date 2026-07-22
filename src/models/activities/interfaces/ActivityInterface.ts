@@ -21,12 +21,10 @@ export interface ActivityInterface {
   challenge_points_multiplier?: number;
   base_points?: number;
   final_points?: number;
+  // Proof images are private evidence — visible only to the owner and school
+  // admins for verification. Never surfaced in any public/shared UI.
   proof_image_url?: string | null;
   proof_image_storage_path?: string | null;
-  is_shared_to_feed?: boolean;
-  feed_approved?: boolean;
-  feed_likes?: number;
-  feed_caption?: string | null;
 
   // Relationships
   user?: UserInterface;
