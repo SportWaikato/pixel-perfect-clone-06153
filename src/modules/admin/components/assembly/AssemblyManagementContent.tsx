@@ -174,10 +174,18 @@ const AssemblyManagementContent = ({
               </div>
             )}
           </div>
+          {/* Super admins configure terms in admin settings; school admins do
+              it from their dashboard's Term Tracker (no /school/settings). */}
           <Button asChild variant="outline" size="sm" className="gap-2">
-            <Link to="/admin/settings" search={{ schoolId }}>
-              <Settings className="h-4 w-4" /> Configure Terms
-            </Link>
+            {schools ? (
+              <Link to="/admin/settings" search={{ schoolId }}>
+                <Settings className="h-4 w-4" /> Configure Terms
+              </Link>
+            ) : (
+              <Link to="/school">
+                <Settings className="h-4 w-4" /> Configure Terms
+              </Link>
+            )}
           </Button>
         </div>
 
@@ -199,9 +207,19 @@ const AssemblyManagementContent = ({
               <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" />
               <span>
                 No school terms configured.{" "}
-                <Link to="/admin/settings" search={{ schoolId }} className="font-medium underline">
-                  Set up terms in Settings
-                </Link>{" "}
+                {schools ? (
+                  <Link
+                    to="/admin/settings"
+                    search={{ schoolId }}
+                    className="font-medium underline"
+                  >
+                    Set up terms in Settings
+                  </Link>
+                ) : (
+                  <Link to="/school" className="font-medium underline">
+                    Set up terms from your dashboard
+                  </Link>
+                )}{" "}
                 to use term-based weekly scoring.
               </span>
             </div>

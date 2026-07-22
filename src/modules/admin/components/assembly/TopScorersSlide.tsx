@@ -1,3 +1,4 @@
+import { ASSEMBLY_ICONS } from "./assemblyIcons";
 import { useEffect, useState } from "react";
 import { m } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
@@ -75,7 +76,7 @@ const TopScorersSlide = ({
 
       <div className="mb-8 text-center">
         <img
-          src="/assembly/icon-top-scorers.png"
+          src={ASSEMBLY_ICONS["top-scorers"]}
           alt=""
           width={64}
           height={64}
@@ -84,7 +85,7 @@ const TopScorersSlide = ({
         <h2 className="text-4xl font-extrabold uppercase tracking-widest text-white">
           Top Scorers by House
         </h2>
-        <p className="mt-1 text-sm uppercase tracking-wider" style={{ color: "#FF6B2B" }}>
+        <p className="mt-1 text-sm uppercase tracking-wider" style={{ color: "#DB4FDB" }}>
           {periodLabel ?? "Shout out to the top contributors this week"}
         </p>
       </div>

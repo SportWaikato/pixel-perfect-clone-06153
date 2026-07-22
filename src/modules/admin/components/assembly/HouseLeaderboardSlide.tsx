@@ -1,3 +1,4 @@
+import { ASSEMBLY_ICONS } from "./assemblyIcons";
 import { useEffect, useState } from "react";
 import { m } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
@@ -126,7 +127,7 @@ const HouseLeaderboardSlide = ({
 
       <div className="mb-8 text-center">
         <img
-          src="/assembly/icon-house-leaderboard.png"
+          src={ASSEMBLY_ICONS.leaderboard}
           alt=""
           width={64}
           height={64}
@@ -135,7 +136,7 @@ const HouseLeaderboardSlide = ({
         <h2 className="text-4xl font-extrabold uppercase tracking-widest text-white">
           House Leaderboard
         </h2>
-        <p className="mt-1 text-sm uppercase tracking-wider" style={{ color: "#FF6B2B" }}>
+        <p className="mt-1 text-sm uppercase tracking-wider" style={{ color: "#DB4FDB" }}>
           {periodLabel ?? "Points earned this week"}
         </p>
       </div>

@@ -53,7 +53,6 @@ import { Route as AuthenticatedSuperadminAdminAnalyticsRouteImport } from './rou
 import { Route as AuthenticatedSuperadminAdminAllowlistRouteImport } from './routes/_authenticated/_superadmin/admin.allowlist'
 import { Route as AuthenticatedAdminSchoolUsersRouteImport } from './routes/_authenticated/_admin/school.users'
 import { Route as AuthenticatedAdminSchoolUpdatesRouteImport } from './routes/_authenticated/_admin/school.updates'
-import { Route as AuthenticatedAdminSchoolSettingsRouteImport } from './routes/_authenticated/_admin/school.settings'
 import { Route as AuthenticatedAdminSchoolMessagesRouteImport } from './routes/_authenticated/_admin/school.messages'
 import { Route as AuthenticatedAdminSchoolLeaderboardRouteImport } from './routes/_authenticated/_admin/school.leaderboard'
 import { Route as AuthenticatedAdminSchoolEventsRouteImport } from './routes/_authenticated/_admin/school.events'
@@ -306,12 +305,6 @@ const AuthenticatedAdminSchoolUpdatesRoute =
     path: '/updates',
     getParentRoute: () => AuthenticatedAdminSchoolRoute,
   } as any)
-const AuthenticatedAdminSchoolSettingsRoute =
-  AuthenticatedAdminSchoolSettingsRouteImport.update({
-    id: '/settings',
-    path: '/settings',
-    getParentRoute: () => AuthenticatedAdminSchoolRoute,
-  } as any)
 const AuthenticatedAdminSchoolMessagesRoute =
   AuthenticatedAdminSchoolMessagesRouteImport.update({
     id: '/messages',
@@ -389,7 +382,6 @@ export interface FileRoutesByFullPath {
   '/school/events': typeof AuthenticatedAdminSchoolEventsRoute
   '/school/leaderboard': typeof AuthenticatedAdminSchoolLeaderboardRoute
   '/school/messages': typeof AuthenticatedAdminSchoolMessagesRoute
-  '/school/settings': typeof AuthenticatedAdminSchoolSettingsRoute
   '/school/updates': typeof AuthenticatedAdminSchoolUpdatesRoute
   '/school/users': typeof AuthenticatedAdminSchoolUsersRoute
   '/admin/allowlist': typeof AuthenticatedSuperadminAdminAllowlistRoute
@@ -440,7 +432,6 @@ export interface FileRoutesByTo {
   '/school/events': typeof AuthenticatedAdminSchoolEventsRoute
   '/school/leaderboard': typeof AuthenticatedAdminSchoolLeaderboardRoute
   '/school/messages': typeof AuthenticatedAdminSchoolMessagesRoute
-  '/school/settings': typeof AuthenticatedAdminSchoolSettingsRoute
   '/school/updates': typeof AuthenticatedAdminSchoolUpdatesRoute
   '/school/users': typeof AuthenticatedAdminSchoolUsersRoute
   '/admin/allowlist': typeof AuthenticatedSuperadminAdminAllowlistRoute
@@ -495,7 +486,6 @@ export interface FileRoutesById {
   '/_authenticated/_admin/school/events': typeof AuthenticatedAdminSchoolEventsRoute
   '/_authenticated/_admin/school/leaderboard': typeof AuthenticatedAdminSchoolLeaderboardRoute
   '/_authenticated/_admin/school/messages': typeof AuthenticatedAdminSchoolMessagesRoute
-  '/_authenticated/_admin/school/settings': typeof AuthenticatedAdminSchoolSettingsRoute
   '/_authenticated/_admin/school/updates': typeof AuthenticatedAdminSchoolUpdatesRoute
   '/_authenticated/_admin/school/users': typeof AuthenticatedAdminSchoolUsersRoute
   '/_authenticated/_superadmin/admin/allowlist': typeof AuthenticatedSuperadminAdminAllowlistRoute
@@ -549,7 +539,6 @@ export interface FileRouteTypes {
     | '/school/events'
     | '/school/leaderboard'
     | '/school/messages'
-    | '/school/settings'
     | '/school/updates'
     | '/school/users'
     | '/admin/allowlist'
@@ -600,7 +589,6 @@ export interface FileRouteTypes {
     | '/school/events'
     | '/school/leaderboard'
     | '/school/messages'
-    | '/school/settings'
     | '/school/updates'
     | '/school/users'
     | '/admin/allowlist'
@@ -654,7 +642,6 @@ export interface FileRouteTypes {
     | '/_authenticated/_admin/school/events'
     | '/_authenticated/_admin/school/leaderboard'
     | '/_authenticated/_admin/school/messages'
-    | '/_authenticated/_admin/school/settings'
     | '/_authenticated/_admin/school/updates'
     | '/_authenticated/_admin/school/users'
     | '/_authenticated/_superadmin/admin/allowlist'
@@ -1002,13 +989,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSchoolUpdatesRouteImport
       parentRoute: typeof AuthenticatedAdminSchoolRoute
     }
-    '/_authenticated/_admin/school/settings': {
-      id: '/_authenticated/_admin/school/settings'
-      path: '/settings'
-      fullPath: '/school/settings'
-      preLoaderRoute: typeof AuthenticatedAdminSchoolSettingsRouteImport
-      parentRoute: typeof AuthenticatedAdminSchoolRoute
-    }
     '/_authenticated/_admin/school/messages': {
       id: '/_authenticated/_admin/school/messages'
       path: '/messages'
@@ -1074,7 +1054,6 @@ interface AuthenticatedAdminSchoolRouteChildren {
   AuthenticatedAdminSchoolEventsRoute: typeof AuthenticatedAdminSchoolEventsRoute
   AuthenticatedAdminSchoolLeaderboardRoute: typeof AuthenticatedAdminSchoolLeaderboardRoute
   AuthenticatedAdminSchoolMessagesRoute: typeof AuthenticatedAdminSchoolMessagesRoute
-  AuthenticatedAdminSchoolSettingsRoute: typeof AuthenticatedAdminSchoolSettingsRoute
   AuthenticatedAdminSchoolUpdatesRoute: typeof AuthenticatedAdminSchoolUpdatesRoute
   AuthenticatedAdminSchoolUsersRoute: typeof AuthenticatedAdminSchoolUsersRoute
 }
@@ -1090,8 +1069,6 @@ const AuthenticatedAdminSchoolRouteChildren: AuthenticatedAdminSchoolRouteChildr
       AuthenticatedAdminSchoolLeaderboardRoute,
     AuthenticatedAdminSchoolMessagesRoute:
       AuthenticatedAdminSchoolMessagesRoute,
-    AuthenticatedAdminSchoolSettingsRoute:
-      AuthenticatedAdminSchoolSettingsRoute,
     AuthenticatedAdminSchoolUpdatesRoute: AuthenticatedAdminSchoolUpdatesRoute,
     AuthenticatedAdminSchoolUsersRoute: AuthenticatedAdminSchoolUsersRoute,
   }

@@ -1,5 +1,6 @@
 "use client";
 
+import { ASSEMBLY_ICONS } from "./assemblyIcons";
 import { useEffect, useState } from "react";
 import { m } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
@@ -121,13 +122,17 @@ const HouseStatisticsSlide = ({ schoolId, onBack }: HouseStatisticsSlideProps) =
       </button>
 
       <div className="mb-8 text-center">
-        <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10">
-          <span className="text-3xl">&#x1F4CA;</span>
-        </div>
+        <img
+          src={ASSEMBLY_ICONS["house-stats"]}
+          alt=""
+          width={64}
+          height={64}
+          className="mx-auto mb-3"
+        />
         <h2 className="text-4xl font-extrabold uppercase tracking-widest text-white">
           House Statistics
         </h2>
-        <p className="mt-1 text-sm uppercase tracking-wider" style={{ color: "#FF6B2B" }}>
+        <p className="mt-1 text-sm uppercase tracking-wider" style={{ color: "#DB4FDB" }}>
           7-Day &#183; {termName} &#183; Lifetime
         </p>
       </div>

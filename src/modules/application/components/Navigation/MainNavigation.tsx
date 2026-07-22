@@ -37,6 +37,10 @@ import { SchoolMessageService } from "@/models/schoolMessages/services/SchoolMes
 import { EventService } from "@/models/events/services/EventService";
 import { toast } from "sonner";
 
+// How many nav items render inline on desktop before the rest collapse into
+// the three-line "More" dropdown. Keeps the bar from ever overflowing.
+const MAX_INLINE_NAV_ITEMS = 5;
+
 const MainNavigation = () => {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const router = useRouter();
@@ -61,7 +65,6 @@ const MainNavigation = () => {
         { href: "/school/events", label: "Challenges", icon: Calendar },
         { href: "/school/updates", label: "Announcements", icon: MessageSquare },
         { href: "/school/leaderboard", label: "Leaderboard", icon: Trophy },
-        { href: "/school/settings", label: "Settings", icon: Settings },
       ];
     } else if (userRole === Role.SUPER_ADMIN) {
       return [
@@ -202,9 +205,10 @@ const MainNavigation = () => {
             </Badge>
           </div>
 
-          {/* Desktop Navigation - Left aligned after logo */}
-          <div className="hidden lg:flex items-center gap-1 overflow-x-auto scrollbar-hide">
-            {navItems.map((item) => {
+          {/* Desktop Navigation — first items inline, the rest behind a
+              three-line "More" menu so the bar never scrolls horizontally. */}
+          <div className="hidden lg:flex items-center gap-1">
+            {navItems.slice(0, MAX_INLINE_NAV_ITEMS).map((item) => {
               const IconComponent = item.icon;
               const isSchoolDashboard =
                 pathname === "/admin" && !!(searchParams as { schoolId?: string }).schoolId;
@@ -234,6 +238,50 @@ const MainNavigation = () => {
                 </Button>
               );
             })}
+
+            {navItems.length > MAX_INLINE_NAV_ITEMS && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className={cn(
+                      "gap-2 text-white hover:bg-white/20 hover:text-white",
+                      navItems.slice(MAX_INLINE_NAV_ITEMS).some((item) => pathname === item.href) &&
+                        "bg-white/20 text-white",
+                    )}
+                  >
+                    <Menu size={16} />
+                    More
+                    {navItems
+                      .slice(MAX_INLINE_NAV_ITEMS)
+                      .some(
+                        (item) =>
+                          (item.href === "/school/events" && pendingEventsCount > 0) ||
+                          (item.href === "/school/updates" && unreadMessagesCount > 0),
+                      ) && <span className="w-2 h-2 bg-red-400 rounded-full shrink-0" />}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-56">
+                  {navItems.slice(MAX_INLINE_NAV_ITEMS).map((item) => {
+                    const IconComponent = item.icon;
+                    return (
+                      <DropdownMenuItem key={item.href} asChild>
+                        <Link to={item.href} className="flex items-center gap-2">
+                          <IconComponent size={16} />
+                          {item.label}
+                          {item.href === "/school/events" && pendingEventsCount > 0 && (
+                            <span className="w-2 h-2 bg-red-400 rounded-full shrink-0" />
+                          )}
+                          {item.href === "/school/updates" && unreadMessagesCount > 0 && (
+                            <span className="w-2 h-2 bg-blue-400 rounded-full shrink-0" />
+                          )}
+                        </Link>
+                      </DropdownMenuItem>
+                    );
+                  })}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
         </div>
 
