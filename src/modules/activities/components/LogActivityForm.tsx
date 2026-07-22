@@ -302,16 +302,13 @@ const LogActivityForm = ({
   const searchParams = useSearch({ strict: false });
   const [challenges, setChallenges] = useState<EventInterface[]>([]);
   const [preselectedChallengeId, setPreselectedChallengeId] = useState<string | null>(null);
-  // Proof photo + share-to-feed — parity with the create wizard so editing an
-  // activity doesn't silently drop this capability.
+  // Proof photo — parity with the create wizard so editing an activity
+  // doesn't silently drop this capability. Proof is private evidence only.
   const [proofFile, setProofFile] = useState<File | null>(null);
   const [proofPreview, setProofPreview] = useState<string | null>(
     editingActivity?.proof_image_url ?? null,
   );
   const [proofRemoved, setProofRemoved] = useState(false);
-  const [shareToFeed, setShareToFeed] = useState<boolean>(
-    editingActivity?.is_shared_to_feed ?? false,
-  );
 
   const handleProofSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -325,7 +322,6 @@ const LogActivityForm = ({
     setProofFile(null);
     setProofPreview(null);
     setProofRemoved(true);
-    setShareToFeed(false);
   };
 
   useEffect(() => {
@@ -412,7 +408,6 @@ const LogActivityForm = ({
           custom_activity_name: customActivityName,
           proof_image_url: proofUrl ?? null,
           proof_image_storage_path: proofPath ?? null,
-          is_shared_to_feed: shareToFeed && !!proofUrl,
           created_at:
             values.activity_date !== getNZDateString()
               ? createNZDate(values.activity_date)
@@ -644,7 +639,8 @@ const LogActivityForm = ({
                 <div className="space-y-2 pt-2">
                   <p className="text-sm font-medium text-gray-700">Proof (optional)</p>
                   <p className="text-xs text-gray-400">
-                    Attach a screenshot or photo for context — Strava, gym machine, team practice.
+                    Attach a screenshot for context — Strava, gym machine, watch summary. Only you
+                    and your school admin can see it.
                   </p>
                   {proofPreview ? (
                     <div className="relative inline-block">
@@ -674,20 +670,6 @@ const LogActivityForm = ({
                     </label>
                   )}
                 </div>
-
-                {proofPreview && (
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={shareToFeed}
-                      onChange={(e) => setShareToFeed(e.target.checked)}
-                      className="w-4 h-4 rounded border-gray-300 text-[#D103D1] focus:ring-[#D103D1]"
-                    />
-                    <span className="text-sm text-gray-600">
-                      Share to school feed (requires admin approval)
-                    </span>
-                  </label>
-                )}
 
                 <div className="flex gap-4 pt-4">
                   <Button

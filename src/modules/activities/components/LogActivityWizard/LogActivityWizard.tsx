@@ -51,7 +51,6 @@ const defaultState = (): WizardState => ({
   participationType: "solo",
   notes: "",
   proofImageFile: null,
-  shareToFeed: false,
 });
 
 const LogActivityWizard = ({
@@ -186,8 +185,6 @@ const LogActivityWizard = ({
           data.activityDate !== getNZDateString() ? createNZDate(data.activityDate) : undefined,
         proof_image_url: proofUrl,
         proof_image_storage_path: proofPath,
-        is_shared_to_feed: data.shareToFeed && !!proofUrl,
-        feed_approved: false,
       });
 
       setSucceeded(true);

@@ -10,8 +10,6 @@ import ChallengeSlide from "./ChallengeSlide";
 import HouseBadgeSlide from "./HouseBadgeSlide";
 import HouseStatisticsSlide from "./HouseStatisticsSlide";
 import SchoolLeaderboardSlide from "./SchoolLeaderboardSlide";
-import WinnersGallerySlide from "./WinnersGallerySlide";
-import SocialFeedSlide from "./SocialFeedSlide";
 import { UserInterface } from "@/models/users/interfaces/UserInterface";
 import { EventInterface } from "@/models/events/interfaces/EventInterface";
 
@@ -23,9 +21,7 @@ type Slide =
   | "challenge"
   | "house-badges"
   | "house-stats"
-  | "school-leaderboard"
-  | "winners-gallery"
-  | "school-feed";
+  | "school-leaderboard";
 
 interface AssemblyPresentationContentProps {
   schoolId: string;
@@ -130,14 +126,6 @@ const AssemblyPresentationContent = ({
 
         {activeSlide === "school-leaderboard" && (
           <SchoolLeaderboardSlide schoolId={schoolId} onBack={() => setActiveSlide("menu")} />
-        )}
-
-        {activeSlide === "winners-gallery" && (
-          <WinnersGallerySlide schoolId={schoolId} onBack={() => setActiveSlide("menu")} />
-        )}
-
-        {activeSlide === "school-feed" && (
-          <SocialFeedSlide schoolId={schoolId} onBack={() => setActiveSlide("menu")} />
         )}
       </div>
     </LazyMotion>

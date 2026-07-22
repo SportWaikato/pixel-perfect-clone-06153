@@ -8,9 +8,7 @@ type Slide =
   | "challenge"
   | "house-badges"
   | "house-stats"
-  | "school-leaderboard"
-  | "winners-gallery"
-  | "school-feed";
+  | "school-leaderboard";
 
 interface AssemblyMenuProps {
   onSelect: (slide: Slide) => void;
@@ -18,13 +16,10 @@ interface AssemblyMenuProps {
   schoolId?: string;
 }
 
+// Ordered to match the natural assembly run-sheet: individual shout-outs →
+// house results → stats & badges → inter-school → next challenge → finish on
+// the spot prize draw. Winners gallery lives in the admin dashboard, not here.
 const cards = [
-  {
-    id: "leaderboard" as Slide,
-    title: "HOUSE LEADERBOARD",
-    subtitle: "Top houses",
-    icon: "/assembly/icon-house-leaderboard.svg",
-  },
   {
     id: "top-scorers" as Slide,
     title: "TOP SCORERS BY HOUSE",
@@ -32,22 +27,10 @@ const cards = [
     icon: "/assembly/icon-top-scorers.svg",
   },
   {
-    id: "prize-draw" as Slide,
-    title: "SPOT PRIZE DRAW",
-    subtitle: "Who will be the winner?",
-    icon: "/assembly/icon-prize-draw.svg",
-  },
-  {
-    id: "challenge" as Slide,
-    title: "YOUR NEXT CHALLENGE",
-    subtitle: null,
-    icon: "/assembly/icon-this-week-challenge.svg",
-  },
-  {
-    id: "house-badges" as Slide,
-    title: "HOUSE BADGES",
-    subtitle: "This term's achievements",
-    icon: "/assembly/icon-house-badges.svg",
+    id: "leaderboard" as Slide,
+    title: "HOUSE LEADERBOARD",
+    subtitle: "Top houses",
+    icon: "/assembly/icon-house-leaderboard.svg",
   },
   {
     id: "house-stats" as Slide,
@@ -56,22 +39,28 @@ const cards = [
     icon: "/assembly/icon-house-stats.svg",
   },
   {
+    id: "house-badges" as Slide,
+    title: "HOUSE BADGES",
+    subtitle: "This term's achievements",
+    icon: "/assembly/icon-house-badges.svg",
+  },
+  {
     id: "school-leaderboard" as Slide,
     title: "SCHOOL LEADERBOARD",
     subtitle: "Inter-school rankings",
     icon: "/assembly/icon-school-leaderboard.svg",
   },
   {
-    id: "winners-gallery" as Slide,
-    title: "WINNERS GALLERY",
-    subtitle: "Past spot prize winners",
-    icon: "/assembly/icon-winners-gallery.svg",
+    id: "challenge" as Slide,
+    title: "YOUR NEXT CHALLENGE",
+    subtitle: null,
+    icon: "/assembly/icon-this-week-challenge.svg",
   },
   {
-    id: "school-feed" as Slide,
-    title: "SCHOOL FEED",
-    subtitle: "This week's top moments",
-    icon: "/assembly/icon-school-feed.svg",
+    id: "prize-draw" as Slide,
+    title: "SPOT PRIZE DRAW",
+    subtitle: "Who will be the winner?",
+    icon: "/assembly/icon-prize-draw.svg",
   },
 ];
 

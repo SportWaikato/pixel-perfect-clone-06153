@@ -8,7 +8,6 @@ export interface WizardState {
   participationType: "solo" | "with_others";
   notes: string;
   proofImageFile: File | null;
-  shareToFeed: boolean;
 }
 
 export const STEP_LABELS: Record<number, string> = {

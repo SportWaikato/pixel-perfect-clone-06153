@@ -22,7 +22,6 @@ import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as AuthenticatedSurveyRouteImport } from './routes/_authenticated/survey'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedLeaderboardRouteImport } from './routes/_authenticated/leaderboard'
-import { Route as AuthenticatedFeedRouteImport } from './routes/_authenticated/feed'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedChallengesRouteImport } from './routes/_authenticated/challenges'
 import { Route as AuthenticatedAnnouncementsRouteImport } from './routes/_authenticated/announcements'
@@ -57,7 +56,6 @@ import { Route as AuthenticatedAdminSchoolUpdatesRouteImport } from './routes/_a
 import { Route as AuthenticatedAdminSchoolSettingsRouteImport } from './routes/_authenticated/_admin/school.settings'
 import { Route as AuthenticatedAdminSchoolMessagesRouteImport } from './routes/_authenticated/_admin/school.messages'
 import { Route as AuthenticatedAdminSchoolLeaderboardRouteImport } from './routes/_authenticated/_admin/school.leaderboard'
-import { Route as AuthenticatedAdminSchoolFeedRouteImport } from './routes/_authenticated/_admin/school.feed'
 import { Route as AuthenticatedAdminSchoolEventsRouteImport } from './routes/_authenticated/_admin/school.events'
 import { Route as AuthenticatedAdminSchoolAssemblyRouteImport } from './routes/_authenticated/_admin/school.assembly'
 import { Route as AuthenticatedAdminSchoolActivityRouteImport } from './routes/_authenticated/_admin/school.activity'
@@ -130,11 +128,6 @@ const AuthenticatedLeaderboardRoute =
     path: '/leaderboard',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedFeedRoute = AuthenticatedFeedRouteImport.update({
-  id: '/feed',
-  path: '/feed',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -331,12 +324,6 @@ const AuthenticatedAdminSchoolLeaderboardRoute =
     path: '/leaderboard',
     getParentRoute: () => AuthenticatedAdminSchoolRoute,
   } as any)
-const AuthenticatedAdminSchoolFeedRoute =
-  AuthenticatedAdminSchoolFeedRouteImport.update({
-    id: '/feed',
-    path: '/feed',
-    getParentRoute: () => AuthenticatedAdminSchoolRoute,
-  } as any)
 const AuthenticatedAdminSchoolEventsRoute =
   AuthenticatedAdminSchoolEventsRouteImport.update({
     id: '/events',
@@ -386,7 +373,6 @@ export interface FileRoutesByFullPath {
   '/announcements': typeof AuthenticatedAnnouncementsRoute
   '/challenges': typeof AuthenticatedChallengesRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/feed': typeof AuthenticatedFeedRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/survey': typeof AuthenticatedSurveyRoute
@@ -401,7 +387,6 @@ export interface FileRoutesByFullPath {
   '/school/activity': typeof AuthenticatedAdminSchoolActivityRoute
   '/school/assembly': typeof AuthenticatedAdminSchoolAssemblyRoute
   '/school/events': typeof AuthenticatedAdminSchoolEventsRoute
-  '/school/feed': typeof AuthenticatedAdminSchoolFeedRoute
   '/school/leaderboard': typeof AuthenticatedAdminSchoolLeaderboardRoute
   '/school/messages': typeof AuthenticatedAdminSchoolMessagesRoute
   '/school/settings': typeof AuthenticatedAdminSchoolSettingsRoute
@@ -440,7 +425,6 @@ export interface FileRoutesByTo {
   '/announcements': typeof AuthenticatedAnnouncementsRoute
   '/challenges': typeof AuthenticatedChallengesRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/feed': typeof AuthenticatedFeedRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/survey': typeof AuthenticatedSurveyRoute
@@ -454,7 +438,6 @@ export interface FileRoutesByTo {
   '/school/activity': typeof AuthenticatedAdminSchoolActivityRoute
   '/school/assembly': typeof AuthenticatedAdminSchoolAssemblyRoute
   '/school/events': typeof AuthenticatedAdminSchoolEventsRoute
-  '/school/feed': typeof AuthenticatedAdminSchoolFeedRoute
   '/school/leaderboard': typeof AuthenticatedAdminSchoolLeaderboardRoute
   '/school/messages': typeof AuthenticatedAdminSchoolMessagesRoute
   '/school/settings': typeof AuthenticatedAdminSchoolSettingsRoute
@@ -496,7 +479,6 @@ export interface FileRoutesById {
   '/_authenticated/announcements': typeof AuthenticatedAnnouncementsRoute
   '/_authenticated/challenges': typeof AuthenticatedChallengesRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
-  '/_authenticated/feed': typeof AuthenticatedFeedRoute
   '/_authenticated/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/survey': typeof AuthenticatedSurveyRoute
@@ -511,7 +493,6 @@ export interface FileRoutesById {
   '/_authenticated/_admin/school/activity': typeof AuthenticatedAdminSchoolActivityRoute
   '/_authenticated/_admin/school/assembly': typeof AuthenticatedAdminSchoolAssemblyRoute
   '/_authenticated/_admin/school/events': typeof AuthenticatedAdminSchoolEventsRoute
-  '/_authenticated/_admin/school/feed': typeof AuthenticatedAdminSchoolFeedRoute
   '/_authenticated/_admin/school/leaderboard': typeof AuthenticatedAdminSchoolLeaderboardRoute
   '/_authenticated/_admin/school/messages': typeof AuthenticatedAdminSchoolMessagesRoute
   '/_authenticated/_admin/school/settings': typeof AuthenticatedAdminSchoolSettingsRoute
@@ -552,7 +533,6 @@ export interface FileRouteTypes {
     | '/announcements'
     | '/challenges'
     | '/dashboard'
-    | '/feed'
     | '/leaderboard'
     | '/profile'
     | '/survey'
@@ -567,7 +547,6 @@ export interface FileRouteTypes {
     | '/school/activity'
     | '/school/assembly'
     | '/school/events'
-    | '/school/feed'
     | '/school/leaderboard'
     | '/school/messages'
     | '/school/settings'
@@ -606,7 +585,6 @@ export interface FileRouteTypes {
     | '/announcements'
     | '/challenges'
     | '/dashboard'
-    | '/feed'
     | '/leaderboard'
     | '/profile'
     | '/survey'
@@ -620,7 +598,6 @@ export interface FileRouteTypes {
     | '/school/activity'
     | '/school/assembly'
     | '/school/events'
-    | '/school/feed'
     | '/school/leaderboard'
     | '/school/messages'
     | '/school/settings'
@@ -661,7 +638,6 @@ export interface FileRouteTypes {
     | '/_authenticated/announcements'
     | '/_authenticated/challenges'
     | '/_authenticated/dashboard'
-    | '/_authenticated/feed'
     | '/_authenticated/leaderboard'
     | '/_authenticated/profile'
     | '/_authenticated/survey'
@@ -676,7 +652,6 @@ export interface FileRouteTypes {
     | '/_authenticated/_admin/school/activity'
     | '/_authenticated/_admin/school/assembly'
     | '/_authenticated/_admin/school/events'
-    | '/_authenticated/_admin/school/feed'
     | '/_authenticated/_admin/school/leaderboard'
     | '/_authenticated/_admin/school/messages'
     | '/_authenticated/_admin/school/settings'
@@ -808,13 +783,6 @@ declare module '@tanstack/react-router' {
       path: '/leaderboard'
       fullPath: '/leaderboard'
       preLoaderRoute: typeof AuthenticatedLeaderboardRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/feed': {
-      id: '/_authenticated/feed'
-      path: '/feed'
-      fullPath: '/feed'
-      preLoaderRoute: typeof AuthenticatedFeedRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
@@ -1055,13 +1023,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSchoolLeaderboardRouteImport
       parentRoute: typeof AuthenticatedAdminSchoolRoute
     }
-    '/_authenticated/_admin/school/feed': {
-      id: '/_authenticated/_admin/school/feed'
-      path: '/feed'
-      fullPath: '/school/feed'
-      preLoaderRoute: typeof AuthenticatedAdminSchoolFeedRouteImport
-      parentRoute: typeof AuthenticatedAdminSchoolRoute
-    }
     '/_authenticated/_admin/school/events': {
       id: '/_authenticated/_admin/school/events'
       path: '/events'
@@ -1111,7 +1072,6 @@ interface AuthenticatedAdminSchoolRouteChildren {
   AuthenticatedAdminSchoolActivityRoute: typeof AuthenticatedAdminSchoolActivityRoute
   AuthenticatedAdminSchoolAssemblyRoute: typeof AuthenticatedAdminSchoolAssemblyRoute
   AuthenticatedAdminSchoolEventsRoute: typeof AuthenticatedAdminSchoolEventsRoute
-  AuthenticatedAdminSchoolFeedRoute: typeof AuthenticatedAdminSchoolFeedRoute
   AuthenticatedAdminSchoolLeaderboardRoute: typeof AuthenticatedAdminSchoolLeaderboardRoute
   AuthenticatedAdminSchoolMessagesRoute: typeof AuthenticatedAdminSchoolMessagesRoute
   AuthenticatedAdminSchoolSettingsRoute: typeof AuthenticatedAdminSchoolSettingsRoute
@@ -1126,7 +1086,6 @@ const AuthenticatedAdminSchoolRouteChildren: AuthenticatedAdminSchoolRouteChildr
     AuthenticatedAdminSchoolAssemblyRoute:
       AuthenticatedAdminSchoolAssemblyRoute,
     AuthenticatedAdminSchoolEventsRoute: AuthenticatedAdminSchoolEventsRoute,
-    AuthenticatedAdminSchoolFeedRoute: AuthenticatedAdminSchoolFeedRoute,
     AuthenticatedAdminSchoolLeaderboardRoute:
       AuthenticatedAdminSchoolLeaderboardRoute,
     AuthenticatedAdminSchoolMessagesRoute:
@@ -1277,7 +1236,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAnnouncementsRoute: typeof AuthenticatedAnnouncementsRoute
   AuthenticatedChallengesRoute: typeof AuthenticatedChallengesRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedFeedRoute: typeof AuthenticatedFeedRoute
   AuthenticatedLeaderboardRoute: typeof AuthenticatedLeaderboardRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedSurveyRoute: typeof AuthenticatedSurveyRoute
@@ -1291,7 +1249,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAnnouncementsRoute: AuthenticatedAnnouncementsRoute,
   AuthenticatedChallengesRoute: AuthenticatedChallengesRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
-  AuthenticatedFeedRoute: AuthenticatedFeedRoute,
   AuthenticatedLeaderboardRoute: AuthenticatedLeaderboardRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedSurveyRoute: AuthenticatedSurveyRoute,

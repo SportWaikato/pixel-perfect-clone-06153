@@ -7,7 +7,7 @@ import { ActivityService } from "@/models/activities/services/ActivityService";
 import LogActivityForm from "./LogActivityForm";
 import LogActivityWizard from "./LogActivityWizard/LogActivityWizard";
 import ActivityHistory from "./ActivityHistory";
-import PhotoWallCarousel from "./PhotoWallCarousel";
+import SchoolPulseWall from "@/modules/dashboard/components/SchoolPulseWall";
 import { toast } from "sonner";
 import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
 import PageHeader from "@/modules/application/components/Layout/PageHeader";
@@ -95,7 +95,7 @@ const ActivitiesContent = ({
         icon={Zap}
       />
 
-      {user.school_id && <PhotoWallCarousel schoolId={user.school_id} />}
+      {user.school_id && <SchoolPulseWall schoolId={user.school_id} />}
 
       <Reveal className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
         {editingActivity ? (

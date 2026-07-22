@@ -134,7 +134,8 @@ const Step5Confirm = ({
       <div className="space-y-2">
         <p className="text-sm font-medium text-gray-700">Proof (optional)</p>
         <p className="text-xs text-gray-400">
-          Attach a screenshot or photo for context -- Strava, gym machine, team practice.
+          Attach a screenshot for context — Strava, gym machine, watch summary. Only you and your
+          school admin can see it.
         </p>
         {previewUrl ? (
           <div className="relative inline-block">
@@ -165,20 +166,6 @@ const Step5Confirm = ({
           </label>
         )}
       </div>
-
-      {previewUrl && (
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={data.shareToFeed}
-            onChange={(e) => onUpdate({ shareToFeed: e.target.checked })}
-            className="w-4 h-4 rounded border-gray-300 text-[#D103D1] focus:ring-[#D103D1]"
-          />
-          <span className="text-sm text-gray-600">
-            Share to school feed (requires admin approval)
-          </span>
-        </label>
-      )}
 
       <m.div {...squishyTap}>
         <Button

@@ -9,7 +9,7 @@
  *
  * Bump CACHE_VERSION on any deploy that changes precached files so old caches are dropped.
  */
-const CACHE_VERSION = "v2";
+const CACHE_VERSION = "v3";
 const SHELL_CACHE = `karawhiua-shell-${CACHE_VERSION}`;
 const ASSET_CACHE = `karawhiua-assets-${CACHE_VERSION}`;
 const IMAGE_CACHE = `karawhiua-images-${CACHE_VERSION}`;

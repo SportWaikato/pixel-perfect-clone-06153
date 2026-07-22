@@ -36,7 +36,6 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
         currentMonthMinutes: 0,
         recentActivities: [] as ActivityInterface[],
         pendingSurvey: null,
-        photoActivities: [] as ActivityInterface[],
       };
     }
 
@@ -55,7 +54,6 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
       monthProgress,
       recentActivities,
       pendingSurvey,
-      photoActivities,
     ] = await Promise.all([
       achievementService.getUserAchievements(profile.id),
       achievementService.getAllAchievements(),
@@ -63,15 +61,6 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
       userService.getCurrentMonthProgress(profile.id),
       activityService.getByUserId(profile.id, 3),
       surveyService.shouldShowSurvey(profile.id),
-      activityService.getByUserId(profile.id, 20).then((acts) => {
-        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-        return (acts || []).filter(
-          (a) =>
-            a.proof_image_url &&
-            a.is_shared_to_feed &&
-            a.created_at >= sevenDaysAgo,
-        );
-      }),
     ]);
 
     return {
@@ -82,7 +71,6 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
         (monthProgress as { current_month_minutes?: number } | null)?.current_month_minutes ?? 0,
       recentActivities: recentActivities ?? [],
       pendingSurvey,
-      photoActivities: photoActivities ?? [],
     };
   },
   component: Dashboard,
@@ -97,7 +85,6 @@ function Dashboard() {
     currentMonthMinutes,
     recentActivities,
     pendingSurvey,
-    photoActivities,
   } = Route.useRouteContext();
 
   if (!profile) return null;
@@ -111,7 +98,6 @@ function Dashboard() {
       initialTotalPoints={(userPointsData as { totalFinalPoints: number }).totalFinalPoints}
       initialCurrentMonthMinutes={currentMonthMinutes as number}
       recentActivities={recentActivities as ActivityInterface[]}
-      photoActivities={(photoActivities as ActivityInterface[]) || []}
       pendingSurvey={
         pendingSurvey as {
           survey: import("@/models/surveys/interfaces/SurveyInterface").SurveyInterface;

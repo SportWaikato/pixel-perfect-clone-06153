@@ -80,17 +80,17 @@ const SchoolLeaderboardSlide = ({ schoolId, onBack }: SchoolLeaderboardSlideProp
                   className={`flex items-center gap-4 px-6 py-4 ${i < schools.length - 1 ? "border-b border-white/5" : ""} ${isCurrentSchool ? "bg-white/10" : ""}`}
                 >
                   <span
-                    className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-lg font-extrabold ${isCurrentSchool ? "bg-amber-500/20 text-amber-400" : "bg-white/10 text-white/70"}`}
+                    className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-lg font-extrabold ${isCurrentSchool ? "bg-brand-magenta-bright/20 text-brand-pink" : "bg-white/10 text-white/70"}`}
                   >
                     {school.rank}
                   </span>
                   <div className="min-w-0 flex-1">
                     <p
-                      className={`truncate font-bold ${isCurrentSchool ? "text-amber-400" : "text-white"}`}
+                      className={`truncate font-bold ${isCurrentSchool ? "text-brand-pink" : "text-white"}`}
                     >
                       {school.name}
                       {isCurrentSchool && (
-                        <span className="ml-2 text-xs font-semibold uppercase tracking-wider text-amber-400/70">
+                        <span className="ml-2 text-xs font-semibold uppercase tracking-wider text-brand-pink/70">
                           Your School
                         </span>
                       )}
@@ -105,7 +105,7 @@ const SchoolLeaderboardSlide = ({ schoolId, onBack }: SchoolLeaderboardSlideProp
                   </div>
                   <div className="text-right">
                     <p
-                      className={`text-xl font-extrabold ${isCurrentSchool ? "text-amber-400" : "text-white"}`}
+                      className={`text-xl font-extrabold ${isCurrentSchool ? "text-brand-pink" : "text-white"}`}
                     >
                       {school.pro_rata_score.toFixed(1)}
                     </p>
@@ -116,7 +116,7 @@ const SchoolLeaderboardSlide = ({ schoolId, onBack }: SchoolLeaderboardSlideProp
                       className="h-full rounded-full"
                       style={{
                         width: `${(school.pro_rata_score / maxProRata) * 100}%`,
-                        backgroundColor: isCurrentSchool ? "#F59E0B" : "#7EAB9F",
+                        backgroundColor: isCurrentSchool ? "#e019c3" : "#7EAB9F",
                       }}
                     />
                   </div>
