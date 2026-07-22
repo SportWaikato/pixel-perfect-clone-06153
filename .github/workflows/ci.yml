@@ -31,6 +31,10 @@ jobs:
           else
             FILES=$(git diff --name-only HEAD~1 HEAD -- '*.ts' '*.tsx' 2>/dev/null || echo "")
           fi
+          # GITHUB_OUTPUT is line-oriented: a multi-line value breaks parsing
+          # ("Invalid format ..."), so flatten the list to one line. Deleted
+          # files are excluded so eslint doesn't fail on missing paths.
+          FILES=$(printf '%s\n' "$FILES" | while read -r f; do [ -f "$f" ] && printf '%s ' "$f"; done)
           echo "FILES=$FILES" >> "$GITHUB_OUTPUT"
 
       - name: Lint changed files
