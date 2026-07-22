@@ -66,9 +66,17 @@ interface SchoolManagementContentProps {
   initialSchools: SchoolInterface[];
 }
 
+const COUNTRY_LABELS: Record<string, string> = {
+  NZ: "New Zealand",
+  AU: "Australia",
+};
+
 const SchoolManagementContent = ({ user, initialSchools }: SchoolManagementContentProps) => {
   const schoolService = useMemo(() => new SchoolService(createSupabaseClient()), []);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  // Geographic scope: All schools → one country → one region within it.
+  const [countryFilter, setCountryFilter] = useState<string>("all");
+  const [regionFilter, setRegionFilter] = useState<string>("all");
   const [editingSchool, setEditingSchool] = useState<SchoolInterface | null>(null);
   const [deletingSchool, setDeletingSchool] = useState<SchoolInterface | null>(null);
   const router = useRouter();
@@ -121,11 +129,47 @@ const SchoolManagementContent = ({ user, initialSchools }: SchoolManagementConte
     }
   };
 
-  // Calculate statistics
-  const totalSchools = schools.length;
-  const activeSchools = schools.filter((s) => s.is_active).length;
-  const totalStudents = schools.reduce((sum, s) => sum + s.total_students, 0);
-  const totalPoints = schools.reduce((sum, s) => sum + s.total_points, 0);
+  const countries = useMemo(
+    () => Array.from(new Set(schools.map((s) => s.country || "NZ"))).sort(),
+    [schools],
+  );
+  const regions = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          schools
+            .filter((s) => countryFilter === "all" || (s.country || "NZ") === countryFilter)
+            .map((s) => s.region)
+            .filter((r): r is string => !!r),
+        ),
+      ).sort(),
+    [schools, countryFilter],
+  );
+
+  const scopedSchools = useMemo(
+    () =>
+      filteredSchools.filter(
+        (s) =>
+          (countryFilter === "all" || (s.country || "NZ") === countryFilter) &&
+          (regionFilter === "all" || s.region === regionFilter),
+      ),
+    [filteredSchools, countryFilter, regionFilter],
+  );
+
+  // Calculate statistics for the current scope
+  const scopedAll = useMemo(
+    () =>
+      schools.filter(
+        (s) =>
+          (countryFilter === "all" || (s.country || "NZ") === countryFilter) &&
+          (regionFilter === "all" || s.region === regionFilter),
+      ),
+    [schools, countryFilter, regionFilter],
+  );
+  const totalSchools = scopedAll.length;
+  const activeSchools = scopedAll.filter((s) => s.is_active).length;
+  const totalStudents = scopedAll.reduce((sum, s) => sum + s.total_students, 0);
+  const totalPoints = scopedAll.reduce((sum, s) => sum + s.total_points, 0);
 
   return (
     <div className="p-6 space-y-6">
@@ -146,12 +190,45 @@ const SchoolManagementContent = ({ user, initialSchools }: SchoolManagementConte
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: "Total Schools", value: totalSchools, sub: `${activeSchools} active`, icon: Building2, color: "text-blue-600", bg: "bg-blue-50" },
-          { label: "Total Students", value: totalStudents.toLocaleString(), sub: "Across all schools", icon: Users, color: "text-green-600", bg: "bg-green-50" },
-          { label: "Total Points", value: totalPoints.toLocaleString(), sub: "Platform-wide", icon: TrendingUp, color: "text-purple-600", bg: "bg-purple-50" },
-          { label: "Avg Students", value: totalSchools > 0 ? Math.round(totalStudents / totalSchools) : 0, sub: "Per school", icon: BarChart3, color: "text-pink-600", bg: "bg-pink-50" },
+          {
+            label: "Total Schools",
+            value: totalSchools,
+            sub: `${activeSchools} active`,
+            icon: Building2,
+            color: "text-blue-600",
+            bg: "bg-blue-50",
+          },
+          {
+            label: "Total Students",
+            value: totalStudents.toLocaleString(),
+            sub: "Across all schools",
+            icon: Users,
+            color: "text-green-600",
+            bg: "bg-green-50",
+          },
+          {
+            label: "Total Points",
+            value: totalPoints.toLocaleString(),
+            sub: "Platform-wide",
+            icon: TrendingUp,
+            color: "text-purple-600",
+            bg: "bg-purple-50",
+          },
+          {
+            label: "Avg Students",
+            value: totalSchools > 0 ? Math.round(totalStudents / totalSchools) : 0,
+            sub: "Per school",
+            icon: BarChart3,
+            color: "text-pink-600",
+            bg: "bg-pink-50",
+          },
         ].map((stat, i) => (
-          <m.div key={stat.label} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25, delay: i * 0.05 }}>
+          <m.div
+            key={stat.label}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: i * 0.05 }}
+          >
             <Card className="hover:shadow-md transition-shadow">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">{stat.label}</CardTitle>
@@ -185,8 +262,38 @@ const SchoolManagementContent = ({ user, initialSchools }: SchoolManagementConte
               />
             </div>
             <Badge variant="secondary">
-              {filteredSchools.length} {filteredSchools.length === 1 ? "school" : "schools"}
+              {scopedSchools.length} {scopedSchools.length === 1 ? "school" : "schools"}
             </Badge>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 mt-3">
+            <span className="text-xs font-medium uppercase tracking-wide text-gray-500">Scope</span>
+            <select
+              value={countryFilter}
+              onChange={(e) => {
+                setCountryFilter(e.target.value);
+                setRegionFilter("all");
+              }}
+              className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-sm font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-magenta"
+            >
+              <option value="all">All countries</option>
+              {countries.map((c) => (
+                <option key={c} value={c}>
+                  {COUNTRY_LABELS[c] ?? c}
+                </option>
+              ))}
+            </select>
+            <select
+              value={regionFilter}
+              onChange={(e) => setRegionFilter(e.target.value)}
+              className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-sm font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-magenta"
+            >
+              <option value="all">All regions</option>
+              {regions.map((r) => (
+                <option key={r} value={r}>
+                  {r}
+                </option>
+              ))}
+            </select>
           </div>
         </CardHeader>
       </Card>
@@ -218,19 +325,31 @@ const SchoolManagementContent = ({ user, initialSchools }: SchoolManagementConte
                       Loading schools...
                     </TableCell>
                   </TableRow>
-                ) : filteredSchools.length === 0 ? (
+                ) : scopedSchools.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                       No schools found
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredSchools.map((school) => (
+                  scopedSchools.map((school) => (
                     <TableRow key={school.id}>
                       <TableCell className="font-medium">
                         <div className="flex items-center gap-2">
                           <School className="h-4 w-4 text-muted-foreground" />
-                          {school.name}
+                          <div>
+                            {school.name}
+                            {(school.region || school.country) && (
+                              <p className="text-xs font-normal text-muted-foreground">
+                                {[
+                                  school.region,
+                                  COUNTRY_LABELS[school.country ?? ""] ?? school.country,
+                                ]
+                                  .filter(Boolean)
+                                  .join(" · ")}
+                              </p>
+                            )}
+                          </div>
                         </div>
                       </TableCell>
                       <TableCell>

@@ -6,5 +6,8 @@ export interface HouseInterface {
   color: string;
   school_id: string;
   total_points: number;
+  // Current-term competition points — zeroed and archived each term rollover.
+  // total_points is the lifetime accumulation and is never reset.
+  term_points?: number | null;
   total_kilometers: number;
 }
