@@ -64,7 +64,7 @@ const ALIAS_TO_ACTIVITY: Record<string, AppActivityType> = {
   weightlifting: 'workout_gym',
   hiit: 'workout_gym',
   highintensityintervaltraining: 'workout_gym',
-  boot camp: 'workout_gym',
+  bootcamp: 'workout_gym',
   elliptical: 'workout_gym',
   stairclimbing: 'workout_gym',
   yoga: 'yoga',
