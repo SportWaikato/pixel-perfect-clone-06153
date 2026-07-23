@@ -46,13 +46,13 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
     const surveyService = new SurveyService(supabase);
 
     // Auto-increment year level if school year has changed
+    // @ts-ignore — RPC function not yet in generated types
     supabase.rpc("check_and_increment_year_level", { p_user_id: profile.id })
       .then(({ data: newYear }: any) => {
         if (newYear && newYear !== profile.year_group) {
           profile.year_group = newYear;
         }
-      })
-      .catch(() => {});
+      });
 
     await surveyService.checkAndTriggerSurveys(profile.id, profile.created_at);
 
