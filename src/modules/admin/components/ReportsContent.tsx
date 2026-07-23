@@ -67,7 +67,7 @@ const ReportsContent = ({ user, schools, currentTerm }: ReportsContentProps) => 
   const reportingService = useMemo(() => new ReportingService(createSupabaseClient()), []);
 
   const [selectedSchoolId, setSelectedSchoolId] = useState<string>(
-    isSuperAdmin ? schools[0]?.id || "" : user.school_id,
+    isSuperAdmin ? "" : user.school_id,
   );
   const [startDate, setStartDate] = useState<string>(
     currentTerm?.start_date || new Date(new Date().getFullYear(), 0, 1).toISOString().split("T")[0],
@@ -85,23 +85,47 @@ const ReportsContent = ({ user, schools, currentTerm }: ReportsContentProps) => 
   const [verificationLoaded, setVerificationLoaded] = useState(false);
 
   const fetchReport = useCallback(async () => {
-    if (!selectedSchoolId) return;
+    if (!selectedSchoolId && !isSuperAdmin) return;
     setLoading(true);
     try {
-      const data = await reportingService.getUniqueUserReport(selectedSchoolId, startDate, endDate);
-      setReportData(data);
+      if (selectedSchoolId) {
+        const data = await reportingService.getUniqueUserReport(selectedSchoolId, startDate, endDate);
+        setReportData(data);
+      } else {
+        const allData: UserReport[] = [];
+        for (const s of schools) {
+          const schoolData = await reportingService.getUniqueUserReport(s.id, startDate, endDate);
+          allData.push(...schoolData);
+        }
+        allData.sort((a, b) => (b.total_minutes || 0) - (a.total_minutes || 0));
+        setReportData(allData);
+      }
       setReportLoaded(true);
     } catch (error) {
       notifyAboutError(error);
     } finally {
       setLoading(false);
     }
-  }, [selectedSchoolId, startDate, endDate, reportingService]);
+  }, [selectedSchoolId, startDate, endDate, reportingService, schools, isSuperAdmin]);
 
   const handleExport = async () => {
-    if (!selectedSchoolId) return;
+    if (!selectedSchoolId && !isSuperAdmin) return;
     try {
-      const csv = await reportingService.exportUserReport(selectedSchoolId, startDate, endDate);
+      let csv: string;
+      if (selectedSchoolId) {
+        csv = await reportingService.exportUserReport(selectedSchoolId, startDate, endDate);
+      } else {
+        const parts: string[] = [];
+        const headers =
+          "First Name,Last Name,Username,Email,House,Year Group,Total Minutes,Total Points,Total Activities";
+        parts.push(headers);
+        for (const s of schools) {
+          const schoolCsv = await reportingService.exportUserReport(s.id, startDate, endDate);
+          const rows = schoolCsv.split("\n").slice(1);
+          rows.forEach((r) => parts.push(r));
+        }
+        csv = parts.join("\n");
+      }
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -116,18 +140,27 @@ const ReportsContent = ({ user, schools, currentTerm }: ReportsContentProps) => 
   };
 
   const fetchVerification = useCallback(async () => {
-    if (!selectedSchoolId) return;
+    if (!selectedSchoolId && !isSuperAdmin) return;
     setVerificationLoading(true);
     try {
-      const data = await reportingService.verifySchoolTotals(selectedSchoolId);
-      setVerificationData(data);
+      if (selectedSchoolId) {
+        const data = await reportingService.verifySchoolTotals(selectedSchoolId);
+        setVerificationData(data);
+      } else {
+        const allData: SchoolVerification[] = [];
+        for (const s of schools) {
+          const schoolData = await reportingService.verifySchoolTotals(s.id);
+          allData.push(...schoolData);
+        }
+        setVerificationData(allData);
+      }
       setVerificationLoaded(true);
     } catch (error) {
       notifyAboutError(error);
     } finally {
       setVerificationLoading(false);
     }
-  }, [selectedSchoolId, reportingService]);
+  }, [selectedSchoolId, reportingService, schools, isSuperAdmin]);
 
   const filteredReport = useMemo(() => {
     if (!searchTerm) return reportData;
@@ -173,6 +206,7 @@ const ReportsContent = ({ user, schools, currentTerm }: ReportsContentProps) => 
                     <SelectValue placeholder="Select school" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="">All Schools</SelectItem>
                     {schools.map((s) => (
                       <SelectItem key={s.id} value={s.id}>
                         {s.name}
@@ -181,6 +215,9 @@ const ReportsContent = ({ user, schools, currentTerm }: ReportsContentProps) => 
                   </SelectContent>
                 </Select>
               </div>
+            )}
+            {!isSuperAdmin && !selectedSchoolId && (
+              <p className="text-sm text-gray-500">Your account is not linked to a school.</p>
             )}
             <div className="space-y-1">
               <label className="text-sm font-medium text-gray-700">Start Date</label>
@@ -202,7 +239,7 @@ const ReportsContent = ({ user, schools, currentTerm }: ReportsContentProps) => 
             </div>
             <Button
               onClick={fetchReport}
-              disabled={loading || !selectedSchoolId}
+              disabled={loading || (!selectedSchoolId && !isSuperAdmin)}
               className="gap-2"
               style={{ backgroundColor: "#1B5E4B" }}
             >
