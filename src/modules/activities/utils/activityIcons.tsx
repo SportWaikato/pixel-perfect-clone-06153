@@ -1,14 +1,13 @@
-// Feeling mappings for consistent UI display
 export const FEELING_MAPPINGS = {
-  very_sad: { emoji: "😒", label: "Disappointed" },
-  sad: { emoji: "🫤", label: "Sad" },
-  average: { emoji: "😐", label: "Average" },
-  happy: { emoji: "😊", label: "Happy" },
-  very_happy: { emoji: "😁", label: "Excited" },
+  very_sad: { emoji: "\uD83D\uDE12", label: "Disappointed" },
+  sad: { emoji: "\uD83D\uDE24", label: "Sad" },
+  average: { emoji: "\uD83D\uDE10", label: "Average" },
+  happy: { emoji: "\uD83D\uDE0A", label: "Happy" },
+  very_happy: { emoji: "\uD83D\uDE01", label: "Excited" },
 } as const;
 
 export const getFeelingEmoji = (feeling: string): string => {
-  return FEELING_MAPPINGS[feeling as keyof typeof FEELING_MAPPINGS]?.emoji || "😐";
+  return FEELING_MAPPINGS[feeling as keyof typeof FEELING_MAPPINGS]?.emoji || "\uD83D\uDE10";
 };
 
 export const getFeelingLabel = (feeling: string): string => {
@@ -21,69 +20,87 @@ export const getFeelingDisplay = (feeling: string): string => {
 };
 
 const glyphSrc: Record<string, string> = {
-  walking: "/glyphs/Walking.png",
-  running: "/glyphs/Run.png",
-  cycling: "/glyphs/Cycling.png",
-  swimming: "/glyphs/Swimming.png",
-  team_sports: "/glyphs/Team training.png",
-  gym_fitness: "/glyphs/Gym_Workout.png",
-  dance: "/glyphs/Dance.png",
-  other: "/glyphs/Walking.png",
-
-  run_jog: "/glyphs/Run.png",
-  walk_hike: "/glyphs/Walking.png",
-  bike_cycle: "/glyphs/Cycling.png",
-  team_sport: "/glyphs/Team training.png",
-  solo_sport: "/glyphs/Golf.png",
-  workout_gym: "/glyphs/Gym_Workout.png",
-  skating: "/glyphs/Skateboard.svg",
-  scootering: "/glyphs/Scooter.svg",
-  scooter_skate: "/glyphs/Skateboard.svg", // legacy records — kept resolvable
-  kapa_haka: "/glyphs/Kapa Haka.png",
-  hunting_diving: "/glyphs/Hunting.png",
-  active_games: "/glyphs/Badminton.png",
-  watersports: "/glyphs/Surfing.png",
-  snowsports: "/glyphs/Skiing.png",
-  gamefit_vr: "/glyphs/VR.png",
-  yoga: "/glyphs/YogaPilates.png",
-  ballet: "/glyphs/Ballet.png",
-  bmx: "/glyphs/BMX.png",
-  cricket: "/glyphs/Cricket.png",
-  kayaking: "/glyphs/Kayaking.png",
-  pickleball: "/glyphs/Pickleball.png",
-  rock_climbing: "/glyphs/Rock Climbing.png",
-  snowboarding: "/glyphs/Snowboarding.png",
-  tae_kwon_do: "/glyphs/Tae-Kwon-Do.png",
-  tramping: "/glyphs/Tramping.png",
-  training_practice: "/glyphs/Team training.png",
-  game_day_competition: "/glyphs/Team training.png",
-  something_else: "/glyphs/Walking.png",
-
   rugby: "/glyphs/Rugby.png",
-  soccer: "/glyphs/Soccer.png",
+  netball: "/glyphs/Netball.png",
   basketball: "/glyphs/Basketball.png",
-  volleyball: "/glyphs/Volleyball.png",
+  soccer: "/glyphs/Soccer.png",
   hockey: "/glyphs/Hockey.png",
+  volleyball: "/glyphs/Volleyball.png",
   tennis: "/glyphs/Tennis.png",
+  badminton: "/glyphs/Badminton.png",
+  athletics: "/glyphs/Athletics.png",
   table_tennis: "/glyphs/Table Tennis.png",
   golf: "/glyphs/Golf.png",
   gymnastics: "/glyphs/Gymnastics.png",
   rowing: "/glyphs/Rowing.png",
-  martial_arts: "/glyphs/Karate.png",
+  karate: "/glyphs/Karate.png",
   boxing: "/glyphs/Boxing.png",
   fencing: "/glyphs/Fencing.png",
   archery: "/glyphs/Archery.png",
-  athletics: "/glyphs/Run.png",
   softball: "/glyphs/Softball.png",
   horse_riding: "/glyphs/Horse Riding.png",
   water_polo: "/glyphs/Waterpolo.png",
   ice_skating: "/glyphs/Ice Skating.png",
-  football: "/glyphs/Soccer.png",
+  walk_hike: "/glyphs/Walking.png",
+  run_jog: "/glyphs/Run.png",
+  bike_cycle: "/glyphs/Cycling.png",
+  swimming: "/glyphs/Swimming.png",
   surfing: "/glyphs/Surfing.png",
+  skateboarding: "/glyphs/Skateboarding.png",
+  kayaking: "/glyphs/Kayaking.png",
+  rock_climbing: "/glyphs/Rock Climbing.png",
+  workout_gym: "/glyphs/Gym_Workout.png",
+  yoga: "/glyphs/Yoga_Pilates.png",
+  dance: "/glyphs/Dance.png",
+  kapa_haka: "/glyphs/Kapa Haka.png",
+  hunting: "/glyphs/Hunting.png",
+  skiing: "/glyphs/Skiing.png",
+  snowboarding: "/glyphs/Snowboarding.png",
+  gamefit_vr: "/glyphs/VR.png",
+  bmx: "/glyphs/BMX.png",
+  cricket: "/glyphs/Cricket.png",
+  pickleball: "/glyphs/Pickleball.png",
+  scootering: "/glyphs/Scooter.png",
+  tramping: "/glyphs/Tramping.png",
+  ballet: "/glyphs/Ballet.png",
+  active_games: "/glyphs/Active Games.png",
+  touch_rugby: "/glyphs/Touch Rugby.png",
+  waka_ama: "/glyphs/Waka Ama.png",
+  rugby_league: "/glyphs/Rugby.png",
+  squash: "/glyphs/Squash.png",
+  disc_golf: "/glyphs/Disc Golf.png",
+  surf_lifesaving: "/glyphs/Surf Life-Saving.png",
+  futsal: "/glyphs/Futsal.png",
+  lawn_bowls: "/glyphs/Lawn Bowls.png",
+  triathlon: "/glyphs/Triathalon.png",
+  trail_running: "/glyphs/Trail running.png",
+  tae_kwon_do: "/glyphs/Tae-Kwon-Do.png",
+  something_else: "/glyphs/Something Else.png",
+  survey_completion: "/glyphs/Walking.png",
+
+  // Legacy types — keep resolvable for historical records
+  scooter_skate: "/glyphs/Scooter.png",
+  team_sport: "/glyphs/Team training.png",
+  training_practice: "/glyphs/Team training.png",
+  game_day_competition: "/glyphs/Team training.png",
+  solo_sport: "/glyphs/Golf.png",
+  skating: "/glyphs/Skateboarding.png",
+  hunting_diving: "/glyphs/Hunting.png",
+  watersports: "/glyphs/Surfing.png",
+  snowsports: "/glyphs/Skiing.png",
+  football: "/glyphs/Soccer.png",
+  walking: "/glyphs/Walking.png",
+  running: "/glyphs/Run.png",
+  cycling: "/glyphs/Cycling.png",
+  team_sports: "/glyphs/Team training.png",
+  gym_fitness: "/glyphs/Gym_Workout.png",
+
+  // Lookup helpers for challenge/event icons
+  rugby_union: "/glyphs/Rugby.png",
+  mixed: "/glyphs/Team training.png",
+  other: "/glyphs/Something Else.png",
 };
 
-// Resolves the icon key for a challenge/event, falling back to event_type when no icon is explicitly set.
-// 'mixed' challenges fall back to team_sports (Group glyph).
 export const resolveEventIconType = (event: {
   icon_type?: string | null;
   event_type?: string | null;
@@ -94,86 +111,105 @@ export const resolveEventIconType = (event: {
 };
 
 export const getActivityIcon = (activityType: string, size = 20) => {
-  const src = glyphSrc[activityType] ?? "/glyphs/Walking.png";
+  const src = glyphSrc[activityType] ?? "/glyphs/Something Else.png";
   return <img src={src} width={size} height={size} alt={activityType} className="object-contain" />;
 };
 
 export const getActivityColor = (activityType: string) => {
   switch (activityType) {
-    case "walking":
     case "walk_hike":
     case "tramping":
+    case "trail_running":
+    case "walking":
       return "#0F8061";
-    case "running":
     case "run_jog":
     case "athletics":
+    case "running":
       return "#D103D1";
-    case "cycling":
     case "bike_cycle":
     case "bmx":
+    case "cycling":
       return "#1B5E4B";
     case "swimming":
+    case "surf_lifesaving":
       return "#1B5E4B";
-    case "team_sports":
+    case "rugby":
+    case "netball":
+    case "touch_rugby":
+    case "rugby_league":
     case "team_sport":
     case "training_practice":
     case "game_day_competition":
       return "#DB4FDB";
-    case "gym_fitness":
     case "workout_gym":
+    case "triathlon":
+    case "gym_fitness":
       return "#0F8061";
     case "dance":
     case "kapa_haka":
     case "ballet":
       return "#D103D1";
-    case "solo_sport":
-    case "archery":
-      return "#19AA4B";
-    case "skating":
-    case "scootering":
-    case "scooter_skate":
-    case "ice_skating":
-    case "snowboarding":
-    case "snowsports":
-      return "#00ACEF";
-    case "hunting_diving":
-    case "rock_climbing":
-      return "#1B5E4B";
-    case "active_games":
-    case "pickleball":
-      return "#DB4FDB";
-    case "gamefit_vr":
-      return "#803E93";
-    case "yoga":
-    case "gymnastics":
-    case "tennis":
-      return "#803E93";
-    case "watersports":
-    case "surfing":
-    case "kayaking":
-    case "rowing":
-    case "water_polo":
-      return "#1B5E4B";
-    case "rugby":
-    case "boxing":
-    case "martial_arts":
-    case "tae_kwon_do":
-    case "fencing":
-      return "#EF4250";
-    case "soccer":
-    case "hockey":
-    case "golf":
-    case "horse_riding":
-      return "#19AA4B";
-    case "basketball":
-    case "softball":
     case "cricket":
+    case "softball":
+    case "baseball":
       return "#F6C031";
+    case "basketball":
+    case "netball":
+      return "#F6C031";
+    case "soccer":
+    case "futsal":
+    case "hockey":
+    case "football":
+      return "#19AA4B";
     case "volleyball":
     case "table_tennis":
       return "#00ACEF";
-    case "football":
+    case "tennis":
+    case "pickleball":
+    case "squash":
+    case "badminton":
+      return "#DB4FDB";
+    case "golf":
+    case "disc_golf":
+    case "lawn_bowls":
+      return "#19AA4B";
+    case "gymnastics":
+    case "yoga":
       return "#803E93";
+    case "rowing":
+    case "kayaking":
+    case "waka_ama":
+    case "water_polo":
+      return "#1B5E4B";
+    case "karate":
+    case "boxing":
+    case "fencing":
+    case "tae_kwon_do":
+    case "martial_arts":
+      return "#EF4250";
+    case "archery":
+    case "hunting":
+    case "hunting_diving":
+      return "#1B5E4B";
+    case "horse_riding":
+      return "#19AA4B";
+    case "ice_skating":
+    case "skating":
+    case "skateboarding":
+    case "scootering":
+    case "snowboarding":
+    case "skiing":
+    case "snowsports":
+    case "scooter_skate":
+      return "#00ACEF";
+    case "surfing":
+    case "watersports":
+      return "#1B5E4B";
+    case "rock_climbing":
+      return "#1B5E4B";
+    case "gamefit_vr":
+      return "#803E93";
+    case "active_games":
     case "something_else":
     case "other":
       return "#6B7280";

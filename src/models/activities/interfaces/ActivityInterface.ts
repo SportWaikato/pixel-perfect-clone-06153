@@ -23,12 +23,8 @@ export interface ActivityInterface {
   challenge_points_multiplier?: number;
   base_points?: number;
   final_points?: number;
-  // Proof images are private evidence — visible only to the owner and school
-  // admins for verification. Never surfaced in any public/shared UI.
   proof_image_url?: string | null;
   proof_image_storage_path?: string | null;
-  // Stable id from a health platform (Apple Health / Health Connect) so
-  // wearable re-syncs never import the same workout twice.
   external_id?: string | null;
 
   // Relationships
@@ -40,48 +36,84 @@ export interface ActivityInterface {
   };
 }
 
+// Current activity types — these appear in the picker and the search autocomplete.
+// "Something else?" is always last so users see specific sports first.
 export const ACTIVITY_TYPES = {
-  bike_cycle: "Bike / Cycle",
-  team_sport: "Team Sport",
-  training_practice: "Training / Practice",
-  game_day_competition: "Game Day / Competition",
-  solo_sport: "Solo Sport",
-  workout_gym: "Gym / Workout",
-  skating: "Skating",
-  scootering: "Scootering",
-  walk_hike: "Walk / Hike",
-  kapa_haka: "Kapa Haka",
-  hunting_diving: "Hunting / Diving",
-  run_jog: "Run / Jog",
+  rugby: "Rugby",
+  netball: "Netball",
+  basketball: "Basketball",
+  soccer: "Soccer",
+  hockey: "Hockey",
+  volleyball: "Volleyball",
+  tennis: "Tennis",
+  badminton: "Badminton",
+  athletics: "Athletics",
+  table_tennis: "Table Tennis",
+  golf: "Golf",
+  gymnastics: "Gymnastics",
+  rowing: "Rowing",
+  karate: "Karate",
+  boxing: "Boxing",
+  fencing: "Fencing",
+  archery: "Archery",
+  softball: "Softball",
+  horse_riding: "Horse Riding",
+  water_polo: "Water Polo",
+  ice_skating: "Ice Skating",
+  walk_hike: "Walking",
+  run_jog: "Run",
+  bike_cycle: "Cycling",
   swimming: "Swimming",
-  active_games: "Active Games",
-  dance: "Dance",
-  watersports: "Watersports",
-  snowsports: "Snow Sports",
-  gamefit_vr: "GameFit / VR",
+  surfing: "Surfing",
+  skateboarding: "Skateboarding",
+  kayaking: "Kayaking",
+  rock_climbing: "Rock Climbing",
+  workout_gym: "Gym / Workout",
   yoga: "Yoga",
-  ballet: "Ballet",
+  dance: "Dance",
+  kapa_haka: "Kapa Haka",
+  hunting: "Hunting",
+  skiing: "Skiing",
+  snowboarding: "Snowboarding",
+  gamefit_vr: "VR",
   bmx: "BMX",
   cricket: "Cricket",
-  kayaking: "Kayaking",
   pickleball: "Pickleball",
-  rock_climbing: "Rock Climbing",
-  snowboarding: "Snowboarding",
-  tae_kwon_do: "Tae Kwon Do",
+  scootering: "Scootering",
   tramping: "Tramping",
+  ballet: "Ballet",
+  active_games: "Active Games",
+  touch_rugby: "Touch Rugby",
+  waka_ama: "Waka Ama",
+  rugby_league: "Rugby League",
+  squash: "Squash",
+  disc_golf: "Disc Golf",
+  surf_lifesaving: "Surf Life-Saving",
+  futsal: "Futsal",
+  lawn_bowls: "Lawn Bowls",
+  triathlon: "Triathlon",
+  trail_running: "Trail Running",
+  tae_kwon_do: "Tae Kwon Do",
   something_else: "Something else?",
   survey_completion: "Survey Completed",
 } as const;
 
-// Retired activity types kept only so historical records still resolve to a
-// friendly label + icon. NOT shown in pickers (see SELECTABLE_ACTIVITY_TYPES).
-// `scooter_skate` was split into `skating` + `scootering` on 2026-07-04; existing
-// rows are intentionally left as-is pending a reviewed reclassification decision.
+// Legacy types kept only so historical records resolve to a friendly label + icon.
+// NOT shown in pickers or autocomplete.
 export const LEGACY_ACTIVITY_TYPES = {
   scooter_skate: "Scooter / Skate",
+  team_sport: "Team Sport",
+  training_practice: "Training / Practice",
+  game_day_competition: "Game Day / Competition",
+  solo_sport: "Solo Sport",
+  skating: "Skating",
+  hunting_diving: "Hunting / Diving",
+  watersports: "Watersports",
+  snowsports: "Snow Sports",
+  football: "Football",
 } as const;
 
-// Label lookup across current + legacy types (use for DISPLAY, not for pickers).
+// Label lookup across current + legacy types (use for DISPLAY only, not for pickers).
 export const ALL_ACTIVITY_TYPE_LABELS: Record<string, string> = {
   ...ACTIVITY_TYPES,
   ...LEGACY_ACTIVITY_TYPES,

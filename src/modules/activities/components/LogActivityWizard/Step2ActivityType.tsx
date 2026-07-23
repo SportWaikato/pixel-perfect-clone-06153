@@ -31,7 +31,7 @@ const Step2ActivityType = ({ data, challenges, onChange, recentTypes = [] }: Ste
 
   const popularTypes = useMemo(() => {
     if (recentTypes.length > 0) return recentTypes;
-    return ["run_jog", "bike_cycle", "walk_hike", "skating"];
+    return ["run_jog", "bike_cycle", "walk_hike", "swimming"];
   }, [recentTypes]);
 
   const filteredTypes = useMemo(() => {

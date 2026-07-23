@@ -6,33 +6,83 @@ export const isDevEnv = process.env.NODE_ENV === "development";
 // Activity conversion rates (minutes to kilometers) - Based on PDF conversion rates
 export const ACTIVITY_CONVERSION_RATES = {
   // Original PDF-sourced activity types
-  walking: 0.0006, // 1 minute = 0.0006 km (from PDF: 0.06 miles/10min = 0.06*1.6/10 km/min)
-  running: 0.01, // 1 minute = 0.01 km (moderate running)
-  cycling: 0.016, // 1 minute = 0.016 km (moderate cycling)
-  swimming: 0.008, // 1 minute = 0.008 km
-  team_sports: 0.01, // 1 minute = 0.01 km
-  gym_fitness: 0.006, // 1 minute = 0.006 km
-  dance: 0.008, // 1 minute = 0.008 km
-  other: 0.006, // Default rate
+  walking: 0.0006,
+  running: 0.01,
+  cycling: 0.016,
+  swimming: 0.008,
+  team_sports: 0.01,
+  gym_fitness: 0.006,
+  dance: 0.008,
+  other: 0.006,
 
-  // Extended activity types for NZ context (using similar rates to PDF originals)
-  bike_cycle: 0.016, // Same as cycling
-  team_sport: 0.01, // Same as team_sports
-  solo_sport: 0.01, // Same as team_sports
-  workout_gym: 0.006, // Same as gym_fitness
-  skating: 0.012, // Between cycling and running
-  scootering: 0.012, // Between cycling and running
-  scooter_skate: 0.012, // Legacy — kept so historical records still convert
-  walk_hike: 0.0006, // Same as walking
-  kapa_haka: 0.008, // Same as dance
-  hunting_diving: 0.008, // Similar to swimming
-  run_jog: 0.01, // Same as running
-  active_games: 0.008, // Similar to dance
-  watersports: 0.008, // Similar to swimming
-  snowsports: 0.012, // Between cycling and running
-  gamefit_vr: 0.006, // Same as gym_fitness
-  yoga: 0.008, // Same as dance
-  something_else: 0.006, // Default rate
+  bike_cycle: 0.016,
+  run_jog: 0.01,
+  walk_hike: 0.0006,
+  surfing: 0.008,
+  skiing: 0.012,
+  snowboarding: 0.012,
+  gamefit_vr: 0.006,
+  yoga: 0.008,
+  kapa_haka: 0.008,
+  active_games: 0.008,
+  something_else: 0.006,
+  survey_completion: 0,
+
+  rugby: 0.01,
+  netball: 0.01,
+  basketball: 0.01,
+  soccer: 0.01,
+  hockey: 0.01,
+  volleyball: 0.008,
+  tennis: 0.008,
+  badminton: 0.008,
+  athletics: 0.01,
+  table_tennis: 0.006,
+  golf: 0.008,
+  gymnastics: 0.006,
+  rowing: 0.008,
+  karate: 0.008,
+  boxing: 0.008,
+  fencing: 0.008,
+  archery: 0.006,
+  softball: 0.01,
+  cricket: 0.008,
+  horse_riding: 0.006,
+  water_polo: 0.008,
+  ice_skating: 0.012,
+  skateboarding: 0.012,
+  scootering: 0.012,
+  kayaking: 0.008,
+  rock_climbing: 0.006,
+  workout_gym: 0.006,
+  hunting: 0.008,
+  bmx: 0.016,
+  pickleball: 0.008,
+  tramping: 0.006,
+  ballet: 0.008,
+  touch_rugby: 0.01,
+  waka_ama: 0.008,
+  rugby_league: 0.01,
+  squash: 0.008,
+  disc_golf: 0.008,
+  surf_lifesaving: 0.008,
+  futsal: 0.01,
+  lawn_bowls: 0.006,
+  triathlon: 0.01,
+  trail_running: 0.008,
+  tae_kwon_do: 0.008,
+
+  // Legacy — kept so historical records still convert
+  team_sport: 0.01,
+  solo_sport: 0.01,
+  training_practice: 0.01,
+  game_day_competition: 0.01,
+  skating: 0.012,
+  scooter_skate: 0.012,
+  hunting_diving: 0.008,
+  watersports: 0.008,
+  snowsports: 0.012,
+  football: 0.01,
 } as const;
 
 // Time-based constants
