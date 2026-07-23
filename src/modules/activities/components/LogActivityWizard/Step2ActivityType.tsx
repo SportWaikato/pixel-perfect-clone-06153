@@ -37,10 +37,13 @@ const Step2ActivityType = ({ data, challenges, onChange, recentTypes = [] }: Ste
   const filteredTypes = useMemo(() => {
     if (!searchText.trim()) return [] as [string, string][];
     const search = searchText.toLowerCase();
-    return Object.entries(ACTIVITY_TYPES).filter(([key, label]) => {
+    const results = Object.entries(ACTIVITY_TYPES).filter(([key, label]) => {
       if (key === "survey_completion") return false;
       return label.toLowerCase().includes(search) || key.toLowerCase().includes(search);
     });
+    const somethingElse = results.find(([key]) => key === "something_else");
+    const others = results.filter(([key]) => key !== "something_else");
+    return somethingElse ? [...others, somethingElse] : others;
   }, [searchText]);
 
   const handleSelect = (type: string) => {
@@ -207,12 +210,13 @@ const Step2ActivityType = ({ data, challenges, onChange, recentTypes = [] }: Ste
 
           {/* Search results dropdown */}
           {searchText.trim() && filteredTypes.length > 0 && (
-            <div className="border border-gray-200 rounded-xl bg-white shadow-sm max-h-60 overflow-y-auto divide-y divide-gray-100">
+            <div className="absolute z-50 left-0 right-0 border border-gray-200 rounded-xl bg-white shadow-lg max-h-60 overflow-y-auto divide-y divide-gray-100">
               {filteredTypes.map(([key, label]) => (
                 <button
                   key={key}
                   type="button"
-                  onClick={() => {
+                  onMouseDown={(e) => {
+                    e.preventDefault();
                     handleSelect(key);
                     setSearchText("");
                   }}
