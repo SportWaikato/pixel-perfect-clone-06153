@@ -520,7 +520,7 @@ export class SchoolInsightsService {
     const headers = [
       "First Name", "Last Name", "Gender", "Year Group", "House",
       "Activity Type", "Activity Date", "Duration (min)", "Points",
-      "Context", "Competition Name", "Solo / Team",
+      "Context", "Competition Name", "Location", "Solo / Team",
       "Sport Satisfaction", "Social Sport Satisfaction",
       "Competitive Sport Satisfaction", "Club / Rep Participation",
       "Barriers", "Sports Interested In",
@@ -549,6 +549,7 @@ export class SchoolInsightsService {
         a.house_points_awarded || 0,
         ctxLabels[a.activity_context] || a.activity_context || "",
         a.competition_name || "",
+        a.activity_location || "",
         a.participation_type === "with_others" ? "With Others" : "Solo",
         getSurveyAnswer("satisfied"),
         getSurveyAnswer("social"),

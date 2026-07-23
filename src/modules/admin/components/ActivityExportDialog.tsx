@@ -48,6 +48,7 @@ const ActivityExportDialog = ({ isOpen, onClose }: ActivityExportDialogProps) =>
       "custom_activity_name",
       "activity_context",
       "competition_name",
+      "activity_location",
       "duration_minutes",
       "distance_km",
       "house_points_awarded",
@@ -90,6 +91,7 @@ const ActivityExportDialog = ({ isOpen, onClose }: ActivityExportDialogProps) =>
           row.custom_activity_name,
           row.activity_context,
           row.competition_name,
+          row.activity_location,
           row.duration_minutes,
           row.distance_km,
           row.house_points_awarded,
@@ -144,7 +146,7 @@ const ActivityExportDialog = ({ isOpen, onClose }: ActivityExportDialogProps) =>
         .from("activities")
         .select(
           `
-          id, created_at, activity_type, custom_activity_name, activity_context, competition_name,
+          id, created_at, activity_type, custom_activity_name, activity_context, competition_name, activity_location,
           duration_minutes, distance_km,
           house_points_awarded, base_points, final_points,
           challenge_points_multiplier, feeling, participation_type, description,
@@ -186,6 +188,7 @@ const ActivityExportDialog = ({ isOpen, onClose }: ActivityExportDialogProps) =>
           custom_activity_name: customName || "",
           activity_context: a.activity_context || "",
           competition_name: a.competition_name || "",
+          activity_location: a.activity_location || "",
           duration_minutes: a.duration_minutes || 0,
           distance_km: a.distance_km || 0,
           house_points_awarded: a.house_points_awarded || 0,

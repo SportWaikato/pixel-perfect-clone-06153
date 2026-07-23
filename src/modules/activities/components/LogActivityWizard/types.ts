@@ -6,6 +6,7 @@ export interface WizardState {
   durationMinutes: number;
   activityContext: string;
   competitionName: string;
+  location: string;
   participationType: "solo" | "with_others";
   notes: string;
 }

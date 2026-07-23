@@ -48,6 +48,7 @@ const defaultState = (): WizardState => ({
   durationMinutes: 0,
   activityContext: "training",
   competitionName: "",
+  location: "",
   participationType: "solo",
   notes: "",
 });
@@ -67,6 +68,30 @@ const LogActivityWizard = ({
   const [succeeded, setSucceeded] = useState(false);
   const [challengePreselected, setChallengePreselected] = useState(false);
   const [recentTypes, setRecentTypes] = useState<string[]>([]);
+  const [suggestedLocation, setSuggestedLocation] = useState<string>("");
+
+  useEffect(() => {
+    const loadSuggestedLocation = async () => {
+      if (!data.activityType || !data.activityContext) return;
+      try {
+        const supabase = createSupabaseClient();
+        const { data: last } = await supabase
+          .from("activities")
+          .select("activity_location")
+          .eq("user_id", user.id)
+          .eq("activity_type", data.activityType)
+          .eq("activity_context", data.activityContext)
+          .not("activity_location", "is", null)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        setSuggestedLocation(last?.activity_location || "");
+      } catch {
+        setSuggestedLocation("");
+      }
+    };
+    loadSuggestedLocation();
+  }, [data.activityType, data.activityContext, user.id]);
 
   useEffect(() => {
     const loadRecentTypes = async () => {
@@ -188,6 +213,7 @@ const LogActivityWizard = ({
         distance_km: distance,
         activity_context: data.activityContext as "training" | "casual" | "competition",
         competition_name: data.activityContext === "competition" ? data.competitionName.trim() || null : null,
+        activity_location: data.location || null,
         participation_type: data.participationType,
         description: data.notes,
         input_type: "time",
@@ -242,7 +268,7 @@ const LogActivityWizard = ({
               {step === 3 && (
                 <Step3DateDuration data={data} challenges={challenges} onChange={update} />
               )}
-              {step === 4 && <Step4Feedback data={data} onChange={update} />}
+              {step === 4 && <Step4Feedback data={data} onChange={update} suggestedLocation={suggestedLocation} />}
               {step === 5 && (
                 <Step5Confirm
                   data={data}

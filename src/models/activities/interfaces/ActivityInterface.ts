@@ -16,6 +16,7 @@ export interface ActivityInterface {
   custom_activity_name?: string | null;
   activity_context?: "training" | "casual" | "competition" | null;
   competition_name?: string | null;
+  activity_location?: string | null;
   is_verified: boolean;
   is_rejected: boolean;
   is_flagged?: boolean;

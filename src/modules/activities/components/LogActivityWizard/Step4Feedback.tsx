@@ -5,14 +5,32 @@ import { cn } from "@/modules/common/utils";
 interface Step4FeedbackProps {
   data: WizardState;
   onChange: (updates: Partial<WizardState>) => void;
+  suggestedLocation?: string;
 }
 
-const Step4Feedback = ({ data, onChange }: Step4FeedbackProps) => {
+const LOCATION_SUGGESTIONS = [
+  "School field",
+  "School gym",
+  "School courts",
+  "Clubrooms",
+  "Local park",
+  "Home",
+  "Beach",
+  "Pool",
+  "Gym",
+  "Trail / bush",
+  "Street / road",
+  "Sports complex",
+];
+
+const Step4Feedback = ({ data, onChange, suggestedLocation = "" }: Step4FeedbackProps) => {
   const contexts = [
     { value: "training", label: "Training / Practice", icon: Zap, description: "Structured practice or drill" },
     { value: "casual", label: "For Fun", icon: User, description: "Casual play, just for enjoyment" },
     { value: "competition", label: "Competition", icon: Trophy, description: "Game day, tournament, or match" },
   ];
+
+  const showSuggested = suggestedLocation && !data.location;
 
   return (
     <div className="space-y-6">
@@ -21,6 +39,7 @@ const Step4Feedback = ({ data, onChange }: Step4FeedbackProps) => {
         <p className="text-gray-500 text-sm font-accent">Takes 10 seconds.</p>
       </div>
 
+      {/* Context */}
       <div className="space-y-2">
         <label className="text-sm font-semibold text-gray-700">
           What kind of activity was this? <span className="text-red-500">*</span>
@@ -53,6 +72,7 @@ const Step4Feedback = ({ data, onChange }: Step4FeedbackProps) => {
         </div>
       </div>
 
+      {/* Competition name */}
       {data.activityContext === "competition" && (
         <div className="space-y-2">
           <label className="text-sm font-semibold text-gray-700">
@@ -67,6 +87,40 @@ const Step4Feedback = ({ data, onChange }: Step4FeedbackProps) => {
           />
         </div>
       )}
+
+      {/* Location */}
+      <div className="space-y-2">
+        <label className="text-sm font-semibold text-gray-700">
+          Where did this happen?
+        </label>
+        {showSuggested && (
+          <button
+            type="button"
+            onClick={() => onChange({ location: suggestedLocation })}
+            className="w-full text-left p-3 rounded-xl border-2 border-dashed border-[#1B5E4B]/30 bg-[#1B5E4B]/5 hover:bg-[#1B5E4B]/10 transition-colors"
+          >
+            <span className="text-xs text-gray-500">Previously</span>
+            <p className="text-sm font-medium text-[#1B5E4B]">{suggestedLocation}</p>
+          </button>
+        )}
+        <div className="grid grid-cols-2 gap-1.5">
+          {LOCATION_SUGGESTIONS.map((loc) => (
+            <button
+              key={loc}
+              type="button"
+              onClick={() => onChange({ location: data.location === loc ? "" : loc })}
+              className={cn(
+                "py-2 px-3 rounded-lg border text-xs font-medium transition-all text-left",
+                data.location === loc
+                  ? "border-[#cf04d2] bg-[#1B5E4B]/10 text-[#1B5E4B]"
+                  : "border-gray-200 text-gray-600 hover:border-gray-300",
+              )}
+            >
+              {loc}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {/* Participation */}
       <div className="space-y-2">
