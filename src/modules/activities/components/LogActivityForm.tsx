@@ -597,7 +597,14 @@ const LogActivityForm = ({
                           All Activities
                         </div>
                       )}
-                      {Object.entries(ACTIVITY_TYPES).map(([key, value]) => (
+                      {Object.entries(ACTIVITY_TYPES)
+                        .filter(([key]) => key !== "survey_completion")
+                        .sort(([a], [b]) => {
+                          if (a === "something_else") return 1;
+                          if (b === "something_else") return -1;
+                          return 0;
+                        })
+                        .map(([key, value]) => (
                         <SelectItem key={key} value={key}>
                           {value}
                         </SelectItem>
