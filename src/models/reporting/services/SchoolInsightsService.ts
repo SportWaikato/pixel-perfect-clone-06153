@@ -3,6 +3,7 @@ import { SupabaseClient } from "@supabase/supabase-js";
 export interface SchoolInsightsReport {
   schoolName: string;
   schoolCode: string;
+  rollNumber: number;
   totalStudents: number;
   totalRespondents: number;
   // Satisfaction
@@ -86,6 +87,7 @@ export class SchoolInsightsService {
     return {
       schoolName: schoolData?.name || "",
       schoolCode: schoolData?.code || "",
+      rollNumber: (schoolData as any)?.roll_number || 0,
       totalStudents: activityData.totalStudents || 0,
       totalRespondents: surveyData.totalRespondents || 0,
       competitiveSportSatisfaction: satisfaction.competitive,
@@ -108,7 +110,7 @@ export class SchoolInsightsService {
   private async getSchoolData(schoolId: string) {
     const { data } = await this.supabase
       .from("schools")
-      .select("name, code, region")
+      .select("name, code, region, roll_number")
       .eq("id", schoolId)
       .single();
     return data;
@@ -400,7 +402,9 @@ export class SchoolInsightsService {
 
     lines.push(`${esc(report.schoolName)}`);
     lines.push("School Sport Insights");
+    lines.push(`Total on roll: ${report.rollNumber}`);
     lines.push(`Total participants: n=${esc(report.totalStudents)} (survey respondents: n=${esc(report.totalRespondents)})`);
+    lines.push(`Participation rate: ${report.rollNumber > 0 ? Math.round((report.totalStudents / report.rollNumber) * 100) : 0}%`);
     lines.push("");
 
     lines.push("SATISFACTION");

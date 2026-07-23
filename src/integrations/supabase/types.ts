@@ -65,8 +65,11 @@ export type Database = {
       activities: {
         Row: {
           activity_type: string
+          activity_context: string | null
+          activity_location: string | null
           base_points: number | null
           challenge_points_multiplier: number | null
+          competition_name: string | null
           created_at: string | null
           custom_activity_name: string | null
           description: string | null
@@ -90,8 +93,11 @@ export type Database = {
         }
         Insert: {
           activity_type: string
+          activity_context?: string | null
+          activity_location?: string | null
           base_points?: number | null
           challenge_points_multiplier?: number | null
+          competition_name?: string | null
           created_at?: string | null
           custom_activity_name?: string | null
           description?: string | null
@@ -115,8 +121,11 @@ export type Database = {
         }
         Update: {
           activity_type?: string
+          activity_context?: string | null
+          activity_location?: string | null
           base_points?: number | null
           challenge_points_multiplier?: number | null
+          competition_name?: string | null
           created_at?: string | null
           custom_activity_name?: string | null
           description?: string | null
@@ -1287,6 +1296,7 @@ export type Database = {
           created_at: string | null
           current_streak: number | null
           first_name: string
+          gender: string | null
           house_id: string | null
           house_rank: number | null
           id: string
@@ -1317,6 +1327,7 @@ export type Database = {
           created_at?: string | null
           current_streak?: number | null
           first_name: string
+          gender?: string | null
           house_id?: string | null
           house_rank?: number | null
           id: string
