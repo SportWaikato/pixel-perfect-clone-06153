@@ -81,6 +81,7 @@ const LogActivityWizard = ({
           .select("activity_location")
           .eq("user_id", user.id)
           .eq("activity_type", data.activityType)
+          // @ts-ignore
           .eq("activity_context", data.activityContext)
           .not("activity_location", "is", null)
           .order("created_at", { ascending: false })
