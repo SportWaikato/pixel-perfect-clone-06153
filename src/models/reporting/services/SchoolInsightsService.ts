@@ -392,4 +392,78 @@ export class SchoolInsightsService {
       };
     });
   }
+
+  async exportSchoolInsightsCSV(schoolId: string, startDate?: string, endDate?: string): Promise<string> {
+    const report = await this.getSchoolInsights(schoolId, startDate, endDate);
+    const lines: string[] = [];
+    const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+
+    lines.push(`${esc(report.schoolName)}`);
+    lines.push("School Sport Insights");
+    lines.push(`Total participants: n=${esc(report.totalStudents)} (survey respondents: n=${esc(report.totalRespondents)})`);
+    lines.push("");
+
+    lines.push("SATISFACTION");
+    lines.push(`Competitive Sport Satisfaction,${esc(report.competitiveSportSatisfaction.satisfiedPercent + "%")}`);
+    lines.push(`Social Sport Satisfaction,${esc(report.socialSportSatisfaction.satisfiedPercent + "%")}`);
+    lines.push("");
+
+    lines.push("CLUB / REPRESENTATIVE PARTICIPATION");
+    lines.push(`Play for club or rep team,${esc(report.clubRepParticipation.clubPercentage + "%")}`);
+    lines.push(`Play for representative team,${esc(report.clubRepParticipation.repPercentage + "%")}`);
+    lines.push(`Club only,${esc(report.clubRepParticipation.clubCount)}`);
+    lines.push(`Rep only,${esc(report.clubRepParticipation.repCount)}`);
+    lines.push(`Both club and rep,${esc(report.clubRepParticipation.bothCount)}`);
+    lines.push(`Neither,${esc(report.clubRepParticipation.noneCount)}`);
+    lines.push("");
+
+    lines.push("TOP ACTIVITIES LOGGED");
+    lines.push("Sport,Count,%");
+    for (const a of report.topLoggedActivities) {
+      lines.push(`${esc(a.name)},${a.count},${a.percentage}%`);
+    }
+    lines.push("");
+
+    lines.push("TOP PREFERRED SPORTS (from survey)");
+    lines.push("Sport,Count,%");
+    for (const a of report.topPreferredSports) {
+      lines.push(`${esc(a.name)},${a.count},${a.percentage}%`);
+    }
+    lines.push("");
+
+    lines.push("TOP BARRIERS TO PARTICIPATION");
+    lines.push("Barrier,Count,%");
+    for (const b of report.topBarriers) {
+      lines.push(`${esc(b.name)},${b.count},${b.percentage}%`);
+    }
+    lines.push("");
+
+    lines.push("ACTIVITY CONTEXT BREAKDOWN");
+    lines.push("Context,Count");
+    for (const [key, count] of Object.entries(report.activityContextBreakdown)) {
+      lines.push(`${esc(key)},${count}`);
+    }
+    lines.push("");
+
+    lines.push("SOLO VS TEAM BREAKDOWN");
+    lines.push("Type,Count");
+    for (const [key, count] of Object.entries(report.soloVsTeamBreakdown)) {
+      lines.push(`${esc(key)},${count}`);
+    }
+    lines.push("");
+
+    lines.push("TERM TRENDS");
+    lines.push("Term,Minutes,Activities,Unique Students");
+    for (const t of report.termActivityTrends) {
+      lines.push(`${esc(t.term)},${t.minutes},${t.activities},${t.uniqueStudents}`);
+    }
+    lines.push("");
+
+    lines.push("OVERALL STATS");
+    lines.push(`Total Minutes,${report.totalMinutes}`);
+    lines.push(`Total Activities,${report.totalActivities}`);
+    lines.push(`Average Minutes Per Student,${report.averageMinutesPerStudent}`);
+
+    return lines.join("\n");
+  }
 }

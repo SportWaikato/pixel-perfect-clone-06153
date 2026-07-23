@@ -37,6 +37,7 @@ import {
 } from "@/modules/application/components/DesignSystem/ui/tabs";
 import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
 import { ReportingService } from "@/models/reporting/services/ReportingService";
+import { SchoolInsightsService } from "@/models/reporting/services/SchoolInsightsService";
 import { isSuperAdmin as checkIsSuperAdmin } from "@/modules/auth/utils/roleUtils";
 import { toast } from "sonner";
 import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
@@ -136,6 +137,27 @@ const ReportsContent = ({ user, schools, currentTerm }: ReportsContentProps) => 
       link.click();
       URL.revokeObjectURL(url);
       toast.success("Report exported successfully");
+    } catch (error) {
+      notifyAboutError(error);
+    }
+  };
+
+  const handleInsightsExport = async () => {
+    if (!selectedSchoolId || selectedSchoolId === ALL_SCHOOLS) {
+      toast.error("Select a single school for insights export");
+      return;
+    }
+    try {
+      const insightsService = new SchoolInsightsService(createSupabaseClient());
+      const csv = await insightsService.exportSchoolInsightsCSV(selectedSchoolId, startDate, endDate);
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `school-insights-${startDate}-to-${endDate}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
+      toast.success("School insights exported");
     } catch (error) {
       notifyAboutError(error);
     }
@@ -322,6 +344,15 @@ const ReportsContent = ({ user, schools, currentTerm }: ReportsContentProps) => 
                 <Button variant="outline" onClick={handleExport} className="gap-2">
                   <Download size={16} />
                   Export CSV
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={handleInsightsExport}
+                  className="gap-2"
+                  style={{ color: "#1B5E4B", borderColor: "#1B5E4B" }}
+                >
+                  <Download size={16} />
+                  School Insights
                 </Button>
               </div>
 
