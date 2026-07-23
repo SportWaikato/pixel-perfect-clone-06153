@@ -239,7 +239,7 @@ const ReportsContent = ({ user, schools, currentTerm }: ReportsContentProps) => 
             </div>
             <Button
               onClick={fetchReport}
-              disabled={loading || (!selectedSchoolId && !isSuperAdmin)}
+            disabled={loading}
               className="gap-2"
               style={{ backgroundColor: "#1B5E4B" }}
             >
