@@ -111,6 +111,7 @@ const AdminDashboardContent = ({
             icon: School,
             color: "text-blue-600",
             bg: "bg-blue-50",
+            to: "/admin/schools",
           },
           {
             label: "Total Students",
@@ -119,6 +120,7 @@ const AdminDashboardContent = ({
             icon: Users,
             color: "text-green-600",
             bg: "bg-green-50",
+            to: "/admin/users",
           },
           {
             label: "Activities",
@@ -127,6 +129,7 @@ const AdminDashboardContent = ({
             icon: Activity,
             color: "text-purple-600",
             bg: "bg-purple-50",
+            to: "/admin/reports",
           },
           {
             label: "Total Time",
@@ -135,6 +138,7 @@ const AdminDashboardContent = ({
             icon: Clock,
             color: "text-orange-600",
             bg: "bg-orange-50",
+            to: "/admin/reports",
           },
           {
             label: "Top Activity",
@@ -143,6 +147,7 @@ const AdminDashboardContent = ({
             icon: TrendingUp,
             color: "text-pink-600",
             bg: "bg-pink-50",
+            to: "/admin/reports",
           },
         ].map((stat, i) => (
           <m.div
@@ -150,7 +155,8 @@ const AdminDashboardContent = ({
             {...statCardSpring}
             transition={{ ...statCardSpring.transition, delay: i * 0.05 }}
           >
-            <Card className="hover:shadow-md transition-shadow">
+            <Link to={stat.to} className="block">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">{stat.label}</CardTitle>
                 <div className={`p-1.5 rounded-lg ${stat.bg}`}>
@@ -162,6 +168,7 @@ const AdminDashboardContent = ({
                 <p className="text-xs text-muted-foreground mt-1">{stat.sub}</p>
               </CardContent>
             </Card>
+            </Link>
           </m.div>
         ))}
       </div>
