@@ -5,16 +5,21 @@ import {
 import {
   getActivityIcon,
   getActivityColor,
-  getFeelingEmoji,
 } from "@/modules/activities/utils/activityIcons";
 import { EventInterface } from "@/models/events/interfaces/EventInterface";
 import { UserInterface } from "@/models/users/interfaces/UserInterface";
 import { WizardState, EVENT_TYPE_TO_ACTIVITY_TYPE } from "./types";
 import { Button } from "@/modules/application/components/DesignSystem/ui/button";
-import { Zap, Users, User } from "lucide-react";
+import { Zap, Users, User, Trophy } from "lucide-react";
 import { format } from "date-fns";
 import { m } from "framer-motion";
 import { squishyTap } from "@/modules/application/components/animations/tactile";
+
+const CONTEXT_LABELS: Record<string, { label: string; icon: typeof Zap }> = {
+  training: { label: "Training / Practice", icon: Zap },
+  casual: { label: "For Fun", icon: User },
+  competition: { label: "Competition", icon: Trophy },
+};
 
 interface Step5ConfirmProps {
   data: WizardState;
@@ -53,6 +58,8 @@ const Step5Confirm = ({
   })();
 
   const iconColor = getActivityColor(displayType);
+  const ctx = CONTEXT_LABELS[data.activityContext];
+  const CtxIcon = ctx?.icon || Zap;
 
   return (
     <div className="space-y-6">
@@ -80,10 +87,17 @@ const Step5Confirm = ({
                 ` · ${format(new Date(`${data.activityDate}T12:00:00`), "MMM d, yyyy")}`}
             </p>
           </div>
-          {data.feeling && <span className="text-2xl">{getFeelingEmoji(data.feeling)}</span>}
         </div>
 
         <div className="flex items-center gap-2 text-sm text-gray-500">
+          <div className="flex items-center gap-1.5">
+            <CtxIcon size={14} />
+            <span>{ctx?.label || data.activityContext}</span>
+          </div>
+          {data.activityContext === "competition" && data.competitionName && (
+            <span className="text-xs text-gray-400">· {data.competitionName}</span>
+          )}
+          <span className="mx-1 text-gray-300">|</span>
           {data.participationType === "with_others" ? (
             <>
               <Users size={14} /> With others

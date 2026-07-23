@@ -4,7 +4,8 @@ export interface WizardState {
   customActivityName: string;
   activityDate: string;
   durationMinutes: number;
-  feeling: string;
+  activityContext: string;
+  competitionName: string;
   participationType: "solo" | "with_others";
   notes: string;
 }

@@ -46,7 +46,8 @@ const defaultState = (): WizardState => ({
   customActivityName: "",
   activityDate: getNZDateString(),
   durationMinutes: 0,
-  feeling: "",
+  activityContext: "training",
+  competitionName: "",
   participationType: "solo",
   notes: "",
 });
@@ -65,6 +66,31 @@ const LogActivityWizard = ({
   const [pointsEarned, setPointsEarned] = useState(0);
   const [succeeded, setSucceeded] = useState(false);
   const [challengePreselected, setChallengePreselected] = useState(false);
+  const [recentTypes, setRecentTypes] = useState<string[]>([]);
+
+  useEffect(() => {
+    const loadRecentTypes = async () => {
+      try {
+        const supabase = createSupabaseClient();
+        const activityService = new ActivityService(supabase);
+        const userActivities = await activityService.getByUserId(user.id, 50);
+        const typeCounts: Record<string, number> = {};
+        userActivities.forEach((a) => {
+          const key = a.activity_type;
+          typeCounts[key] = (typeCounts[key] || 0) + 1;
+        });
+        const sorted = Object.entries(typeCounts)
+          .sort(([, a], [, b]) => b - a)
+          .map(([type]) => type)
+          .filter((t) => t !== "survey_completion" && t !== "something_else")
+          .slice(0, 4);
+        setRecentTypes(sorted);
+      } catch {
+        // silently fail
+      }
+    };
+    loadRecentTypes();
+  }, [user.id]);
 
   useEffect(() => {
     const challengeFromUrl = (searchParams as { challenge?: string }).challenge;
@@ -93,7 +119,7 @@ const LogActivityWizard = ({
   const canAdvance = () => {
     if (step === 2 && !data.activityType) return false;
     if (step === 3 && (!data.activityDate || data.durationMinutes <= 0)) return false;
-    if (step === 4 && !data.feeling) return false;
+    if (step === 4 && !data.activityContext) return false;
     return true;
   };
 
@@ -160,7 +186,8 @@ const LogActivityWizard = ({
         activity_type: finalType,
         duration_minutes: data.durationMinutes,
         distance_km: distance,
-        feeling: data.feeling as "happy" | "average" | "sad",
+        activity_context: data.activityContext as "training" | "casual" | "competition",
+        competition_name: data.activityContext === "competition" ? data.competitionName.trim() || null : null,
         participation_type: data.participationType,
         description: data.notes,
         input_type: "time",
@@ -210,7 +237,7 @@ const LogActivityWizard = ({
                 <Step1Challenge data={data} challenges={challenges} onChange={update} />
               )}
               {step === 2 && (
-                <Step2ActivityType data={data} challenges={challenges} onChange={update} />
+                <Step2ActivityType data={data} challenges={challenges} onChange={update} recentTypes={recentTypes} />
               )}
               {step === 3 && (
                 <Step3DateDuration data={data} challenges={challenges} onChange={update} />

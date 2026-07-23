@@ -1,33 +1,27 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import { ACTIVITY_TYPES } from "@/models/activities/interfaces/ActivityInterface";
 import { getActivityIcon, getActivityColor } from "@/modules/activities/utils/activityIcons";
 import { WizardState, EVENT_TYPE_TO_ACTIVITY_TYPE } from "./types";
 import { EventInterface } from "@/models/events/interfaces/EventInterface";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/modules/application/components/DesignSystem/ui/select";
+import { SelectItem } from "@/modules/application/components/DesignSystem/ui/select";
 import { Input } from "@/modules/application/components/DesignSystem/ui/input";
 import { Button } from "@/modules/application/components/DesignSystem/ui/button";
 import { m } from "framer-motion";
 import { squishyTap } from "@/modules/application/components/animations/tactile";
-import { Camera, Loader2, CheckCircle2 } from "lucide-react";
+import { Camera, Loader2, CheckCircle2, Search } from "lucide-react";
 import { toast } from "sonner";
-
-const FEATURED_TYPES = ["run_jog", "bike_cycle", "walk_hike", "skating"] as const;
 
 interface Step2ActivityTypeProps {
   data: WizardState;
   challenges: EventInterface[];
   onChange: (updates: Partial<WizardState>) => void;
+  recentTypes?: string[];
 }
 
-const Step2ActivityType = ({ data, challenges, onChange }: Step2ActivityTypeProps) => {
+const Step2ActivityType = ({ data, challenges, onChange, recentTypes = [] }: Step2ActivityTypeProps) => {
   const [scanning, setScanning] = useState(false);
   const [scannedData, setScannedData] = useState<{ activity_type: string; duration_minutes: number } | null>(null);
+  const [searchText, setSearchText] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
 
   const selectedChallenge = challenges.find((c) => c.id === data.eventId);
@@ -35,12 +29,27 @@ const Step2ActivityType = ({ data, challenges, onChange }: Step2ActivityTypeProp
     ? EVENT_TYPE_TO_ACTIVITY_TYPE[selectedChallenge.event_type]
     : null;
 
+  const popularTypes = useMemo(() => {
+    if (recentTypes.length > 0) return recentTypes;
+    return ["run_jog", "bike_cycle", "walk_hike", "skating"];
+  }, [recentTypes]);
+
+  const filteredTypes = useMemo(() => {
+    if (!searchText.trim()) return [] as [string, string][];
+    const search = searchText.toLowerCase();
+    return Object.entries(ACTIVITY_TYPES).filter(([key, label]) => {
+      if (key === "survey_completion") return false;
+      return label.toLowerCase().includes(search) || key.toLowerCase().includes(search);
+    });
+  }, [searchText]);
+
   const handleSelect = (type: string) => {
     if (lockedType) return;
     onChange({
       activityType: type,
       customActivityName: type !== "something_else" ? "" : data.customActivityName,
     });
+    setSearchText("");
   };
 
   const handleScanScreenshot = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,9 +90,31 @@ const Step2ActivityType = ({ data, challenges, onChange }: Step2ActivityTypeProp
     }
   };
 
-  const remainingTypes = Object.entries(ACTIVITY_TYPES).filter(
-    ([key]) => !FEATURED_TYPES.includes(key as (typeof FEATURED_TYPES)[number]),
-  );
+  const renderActivityButton = (type: string, label: string, idx?: number) => {
+    const isSelected = data.activityType === type;
+    const color = getActivityColor(type);
+    return (
+      <m.button
+        key={type}
+        type="button"
+        onClick={() => handleSelect(type)}
+        className={`p-4 rounded-2xl border flex flex-col items-center gap-2 ${
+          isSelected
+            ? "border-[#cf04d2] bg-[#1B5E4B]/5 shadow-sm"
+            : "border-gray-200 bg-white hover:border-gray-300"
+        }`}
+        {...squishyTap}
+      >
+        <div
+          className="w-12 h-12 rounded-xl flex items-center justify-center"
+          style={{ backgroundColor: `${color}18`, color }}
+        >
+          {getActivityIcon(type, 38)}
+        </div>
+        <span className="text-sm font-medium text-gray-800">{label}</span>
+      </m.button>
+    );
+  };
 
   return (
     <div className="space-y-4">
@@ -163,58 +194,62 @@ const Step2ActivityType = ({ data, challenges, onChange }: Step2ActivityTypeProp
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-3">
-            {FEATURED_TYPES.map((type) => {
-              const isSelected = data.activityType === type;
-              const color = getActivityColor(type);
-              return (
-                <m.button
-                  key={type}
+          {/* Search box */}
+          <div className="relative">
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Input
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              placeholder="Search activities or select from your favourites below..."
+              className="pl-9 rounded-xl border-2 border-gray-200 focus:border-[#1B5E4B]/40"
+            />
+          </div>
+
+          {/* Search results dropdown */}
+          {searchText.trim() && filteredTypes.length > 0 && (
+            <div className="border border-gray-200 rounded-xl bg-white shadow-sm max-h-60 overflow-y-auto divide-y divide-gray-100">
+              {filteredTypes.map(([key, label]) => (
+                <button
+                  key={key}
                   type="button"
-                  onClick={() => handleSelect(type)}
-                  className={`p-4 rounded-2xl border flex flex-col items-center gap-2 ${
-                    isSelected
-                      ? "border-[#cf04d2] bg-[#1B5E4B]/5 shadow-sm"
-                      : "border-gray-200 bg-white hover:border-gray-300"
-                  }`}
-                  {...squishyTap}
+                  onClick={() => {
+                    handleSelect(key);
+                    setSearchText("");
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 text-left"
                 >
                   <div
-                    className="w-12 h-12 rounded-xl flex items-center justify-center"
-                    style={{ backgroundColor: `${color}18`, color }}
+                    className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                    style={{ backgroundColor: `${getActivityColor(key)}18` }}
                   >
-                    {getActivityIcon(type, 38)}
+                    {getActivityIcon(key, 20)}
                   </div>
-                  <span className="text-sm font-medium text-gray-800">
-                    {ACTIVITY_TYPES[type as keyof typeof ACTIVITY_TYPES]}
-                  </span>
-                </m.button>
-              );
-            })}
-          </div>
+                  <span className="text-sm font-medium text-gray-800">{label}</span>
+                </button>
+              ))}
+            </div>
+          )}
 
-          <div>
-            <Select
-              value={
-                FEATURED_TYPES.includes(data.activityType as (typeof FEATURED_TYPES)[number])
-                  ? ""
-                  : data.activityType
-              }
-              onValueChange={(val) => handleSelect(val)}
-            >
-              <SelectTrigger className="w-full rounded-xl border-[3px] border-gray-200">
-                <SelectValue placeholder="Something else?" />
-              </SelectTrigger>
-              <SelectContent>
-                {remainingTypes.map(([key, label]) => (
-                  <SelectItem key={key} value={key}>
-                    {label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          {searchText.trim() && filteredTypes.length === 0 && (
+            <p className="text-sm text-gray-400 text-center py-4">No activities match &quot;{searchText}&quot;</p>
+          )}
 
+          {/* Top 4 popular activities (shown when not searching) */}
+          {!searchText.trim() && (
+            <>
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                {recentTypes.length > 0 ? "Your Favourites" : "Popular"}
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                {popularTypes.map((type) => {
+                  const label = ACTIVITY_TYPES[type as keyof typeof ACTIVITY_TYPES] || type;
+                  return renderActivityButton(type, label);
+                })}
+              </div>
+            </>
+          )}
+
+          {/* "Something else" custom input */}
           {data.activityType === "something_else" && (
             <div>
               <label className="text-sm font-medium text-gray-700 mb-1 block">

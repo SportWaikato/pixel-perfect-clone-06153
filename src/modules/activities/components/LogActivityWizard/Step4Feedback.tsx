@@ -1,5 +1,4 @@
-import { User, Users } from "lucide-react";
-import { FEELING_MAPPINGS } from "@/modules/activities/utils/activityIcons";
+import { User, Users, Zap, Trophy } from "lucide-react";
 import { WizardState } from "./types";
 import { cn } from "@/modules/common/utils";
 
@@ -9,11 +8,11 @@ interface Step4FeedbackProps {
 }
 
 const Step4Feedback = ({ data, onChange }: Step4FeedbackProps) => {
-  const feelings = Object.entries(FEELING_MAPPINGS).map(([value, mapping]) => ({
-    value,
-    emoji: mapping.emoji,
-    label: mapping.label,
-  }));
+  const contexts = [
+    { value: "training", label: "Training / Practice", icon: Zap, description: "Structured practice or drill" },
+    { value: "casual", label: "For Fun", icon: User, description: "Casual play, just for enjoyment" },
+    { value: "competition", label: "Competition", icon: Trophy, description: "Game day, tournament, or match" },
+  ];
 
   return (
     <div className="space-y-6">
@@ -22,30 +21,52 @@ const Step4Feedback = ({ data, onChange }: Step4FeedbackProps) => {
         <p className="text-gray-500 text-sm font-accent">Takes 10 seconds.</p>
       </div>
 
-      {/* Mood */}
       <div className="space-y-2">
-        <label className="text-sm text-gray-700 font-accent text-base">
-          How did it feel? <span className="text-red-500">*</span>
+        <label className="text-sm font-semibold text-gray-700">
+          What kind of activity was this? <span className="text-red-500">*</span>
         </label>
-        <div className="flex gap-2">
-          {feelings.map((f) => (
-            <button
-              key={f.value}
-              type="button"
-              onClick={() => onChange({ feeling: f.value })}
-              title={f.label}
-              className={cn(
-                "flex-1 py-2.5 rounded-xl border text-2xl transition-all duration-150 hover:scale-110",
-                data.feeling === f.value
-                  ? "border-[#cf04d2] bg-[#1B5E4B]/5 scale-110"
-                  : "border-gray-200 bg-white hover:border-gray-300",
-              )}
-            >
-              {f.emoji}
-            </button>
-          ))}
+        <div className="flex flex-col gap-2">
+          {contexts.map((ctx) => {
+            const IconComponent = ctx.icon;
+            return (
+              <button
+                key={ctx.value}
+                type="button"
+                onClick={() => onChange({ activityContext: ctx.value, competitionName: ctx.value !== "competition" ? "" : data.competitionName })}
+                className={cn(
+                  "w-full p-3 rounded-xl border-2 transition-all duration-150 text-left",
+                  data.activityContext === ctx.value
+                    ? "border-[#cf04d2] bg-[#1B5E4B]/5"
+                    : "border-gray-200 bg-white hover:border-gray-300",
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  <IconComponent size={18} className={data.activityContext === ctx.value ? "text-[#1B5E4B]" : "text-gray-500"} />
+                  <div>
+                    <p className="font-medium text-sm">{ctx.label}</p>
+                    <p className="text-xs text-gray-500">{ctx.description}</p>
+                  </div>
+                </div>
+              </button>
+            );
+          })}
         </div>
       </div>
+
+      {data.activityContext === "competition" && (
+        <div className="space-y-2">
+          <label className="text-sm font-semibold text-gray-700">
+            Which competition or event? <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            value={data.competitionName}
+            onChange={(e) => onChange({ competitionName: e.target.value })}
+            placeholder="e.g. School Athletics Day, Winter Tournament Week"
+            className="w-full py-3 px-4 bg-[#1B5E4B]/5 text-gray-900 border border-gray-200 rounded-xl focus:border-[#cf04d2] focus:outline-none text-sm placeholder:text-gray-400"
+          />
+        </div>
+      )}
 
       {/* Participation */}
       <div className="space-y-2">
