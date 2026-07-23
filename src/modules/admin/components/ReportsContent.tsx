@@ -62,12 +62,14 @@ function getTermName(term: SchoolTermInterface | null): string {
   return `Term ${term.term_number} ${term.year}`;
 }
 
+const ALL_SCHOOLS = "__all__";
+
 const ReportsContent = ({ user, schools, currentTerm }: ReportsContentProps) => {
   const isSuperAdmin = checkIsSuperAdmin(user);
   const reportingService = useMemo(() => new ReportingService(createSupabaseClient()), []);
 
   const [selectedSchoolId, setSelectedSchoolId] = useState<string>(
-    isSuperAdmin ? "" : user.school_id,
+    isSuperAdmin ? ALL_SCHOOLS : user.school_id,
   );
   const [startDate, setStartDate] = useState<string>(
     currentTerm?.start_date || new Date(new Date().getFullYear(), 0, 1).toISOString().split("T")[0],
@@ -85,10 +87,10 @@ const ReportsContent = ({ user, schools, currentTerm }: ReportsContentProps) => 
   const [verificationLoaded, setVerificationLoaded] = useState(false);
 
   const fetchReport = useCallback(async () => {
-    if (!selectedSchoolId && !isSuperAdmin) return;
+    if (!selectedSchoolId) return;
     setLoading(true);
     try {
-      if (selectedSchoolId) {
+      if (selectedSchoolId !== ALL_SCHOOLS) {
         const data = await reportingService.getUniqueUserReport(selectedSchoolId, startDate, endDate);
         setReportData(data);
       } else {
@@ -106,13 +108,13 @@ const ReportsContent = ({ user, schools, currentTerm }: ReportsContentProps) => 
     } finally {
       setLoading(false);
     }
-  }, [selectedSchoolId, startDate, endDate, reportingService, schools, isSuperAdmin]);
+  }, [selectedSchoolId, startDate, endDate, reportingService, schools]);
 
   const handleExport = async () => {
-    if (!selectedSchoolId && !isSuperAdmin) return;
+    if (!selectedSchoolId) return;
     try {
       let csv: string;
-      if (selectedSchoolId) {
+      if (selectedSchoolId !== ALL_SCHOOLS) {
         csv = await reportingService.exportUserReport(selectedSchoolId, startDate, endDate);
       } else {
         const parts: string[] = [];
@@ -140,10 +142,10 @@ const ReportsContent = ({ user, schools, currentTerm }: ReportsContentProps) => 
   };
 
   const fetchVerification = useCallback(async () => {
-    if (!selectedSchoolId && !isSuperAdmin) return;
+    if (!selectedSchoolId) return;
     setVerificationLoading(true);
     try {
-      if (selectedSchoolId) {
+      if (selectedSchoolId !== ALL_SCHOOLS) {
         const data = await reportingService.verifySchoolTotals(selectedSchoolId);
         setVerificationData(data);
       } else {
@@ -206,7 +208,7 @@ const ReportsContent = ({ user, schools, currentTerm }: ReportsContentProps) => 
                     <SelectValue placeholder="Select school" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Schools</SelectItem>
+                    <SelectItem value={ALL_SCHOOLS}>All Schools</SelectItem>
                     {schools.map((s) => (
                       <SelectItem key={s.id} value={s.id}>
                         {s.name}
