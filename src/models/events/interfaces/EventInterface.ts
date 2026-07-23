@@ -35,7 +35,9 @@ export interface EventInterface {
   target_schools?: string[] | null;
   badge_achievement_id?: string;
   points_multiplier?: number;
+  max_points?: number | null;
   challenge_points?: number | null;
+  survey_id?: string | null;
   youtube_video_url?: string | null;
   event_image_url?: string | null;
   event_image_storage_path?: string | null;

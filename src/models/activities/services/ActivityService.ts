@@ -86,16 +86,22 @@ export class ActivityService {
     if (activityData.event_id) {
       const { data: event } = await this.supabaseClient
         .from("events")
-        .select("name, points_multiplier, challenge_points")
+        .select("name, points_multiplier, challenge_points, max_points")
         .eq("id", activityData.event_id)
         .single();
 
       if (event?.challenge_points) {
-        pointsCalculation = calculateFixedChallengePoints(basePoints, event.challenge_points);
+        const capped = event?.max_points ? Math.min(event.challenge_points, event.max_points) : event.challenge_points;
+        pointsCalculation = calculateFixedChallengePoints(basePoints, capped);
         housePoints = basePoints;
       } else {
         const eventMultiplier = event?.points_multiplier || 1.0;
-        pointsCalculation = calculatePointsWithMultiplier(basePoints, eventMultiplier);
+        const capped = event.max_points ? basePoints * eventMultiplier : undefined;
+        if (capped !== undefined) {
+          pointsCalculation = calculatePointsWithMultiplier(Math.min(basePoints, event.max_points!), eventMultiplier);
+        } else {
+          pointsCalculation = calculatePointsWithMultiplier(basePoints, eventMultiplier);
+        }
       }
     }
 

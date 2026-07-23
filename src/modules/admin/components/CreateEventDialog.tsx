@@ -62,6 +62,7 @@ interface CreateEventFormValues {
   end_date: string;
   target_hours: number | null | undefined;
   challenge_points: number | null | undefined;
+  max_points: number | null | undefined;
   youtube_video_url: string;
   is_assembly: boolean;
   shouldCreateBadge: boolean;
@@ -208,6 +209,18 @@ const CreateEventFormInner = ({
           <p className="mt-1 text-xs text-gray-500">
             When set, students earn exactly this many points per activity in this challenge — no
             per-minute calculation.
+          </p>
+        </div>
+
+        <div>
+          <FormikInputField
+            name="max_points"
+            label="Max Points Per Activity (optional)"
+            type="number"
+            placeholder="e.g. 50"
+          />
+          <p className="mt-1 text-xs text-gray-500">
+            Cap the points a student can earn per activity. Set to 50 for a standard cap.
           </p>
         </div>
 
@@ -460,6 +473,7 @@ const CreateEventDialog = ({
     end_date: "",
     target_hours: null,
     challenge_points: null,
+    max_points: null,
     youtube_video_url: "",
     is_assembly: false,
     shouldCreateBadge: false,
@@ -522,6 +536,7 @@ const CreateEventDialog = ({
         end_date: values.end_date,
         target_minutes: values.target_hours ? Number(values.target_hours) * 60 : undefined,
         challenge_points: values.challenge_points ? Number(values.challenge_points) : null,
+        max_points: values.max_points ? Number(values.max_points) : null,
         target_schools: normalizedTargetSchools,
         youtube_video_url: values.youtube_video_url || undefined,
         is_assembly: values.is_assembly,

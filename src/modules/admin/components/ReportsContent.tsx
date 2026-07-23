@@ -50,6 +50,7 @@ import {
   ShieldAlert,
   CheckCircle,
   XCircle,
+  Trophy,
 } from "lucide-react";
 
 interface ReportsContentProps {
@@ -86,6 +87,11 @@ const ReportsContent = ({ user, schools, currentTerm }: ReportsContentProps) => 
   const [verificationData, setVerificationData] = useState<SchoolVerification[]>([]);
   const [verificationLoading, setVerificationLoading] = useState(false);
   const [verificationLoaded, setVerificationLoaded] = useState(false);
+
+  const [challengeStats, setChallengeStats] = useState<
+    { id: string; name: string; participant_count: number; activity_count: number }[]
+  >([]);
+  const [challengeStatsLoading, setChallengeStatsLoading] = useState(false);
 
   const fetchReport = useCallback(async () => {
     if (!selectedSchoolId) return;
@@ -166,6 +172,48 @@ const ReportsContent = ({ user, schools, currentTerm }: ReportsContentProps) => 
       notifyAboutError(error);
     }
   };
+
+  const fetchChallengeStats = useCallback(async () => {
+    setChallengeStatsLoading(true);
+    try {
+      const supabase = createSupabaseClient();
+      const { data, error } = await supabase
+        .from("events")
+        .select("id, name, participant_count")
+        .eq("approval_status", "approved")
+        .order("participant_count", { ascending: false });
+      if (error) throw error;
+
+      const eventIds = (data || []).map((e) => e.id);
+      const { data: counts } = await supabase
+        .from("activities")
+        .select("event_id")
+        .in("event_id", eventIds)
+        .gte("created_at", `${startDate}T00:00:00`)
+        .lte("created_at", `${endDate}T23:59:59`)
+        .is("is_rejected", false);
+
+      const activityCounts: Record<string, number> = {};
+      for (const a of counts || []) {
+        if (a.event_id) {
+          activityCounts[a.event_id] = (activityCounts[a.event_id] || 0) + 1;
+        }
+      }
+
+      setChallengeStats(
+        (data || []).map((e) => ({
+          id: e.id,
+          name: e.name,
+          participant_count: e.participant_count || 0,
+          activity_count: activityCounts[e.id] || 0,
+        })),
+      );
+    } catch (error) {
+      notifyAboutError(error);
+    } finally {
+      setChallengeStatsLoading(false);
+    }
+  }, [startDate, endDate]);
 
   const fetchVerification = useCallback(async () => {
     if (!selectedSchoolId) return;
@@ -283,6 +331,10 @@ const ReportsContent = ({ user, schools, currentTerm }: ReportsContentProps) => 
           <TabsTrigger value="report" className="gap-2">
             <FileText size={16} />
             User Report
+          </TabsTrigger>
+          <TabsTrigger value="challenge" className="gap-2" onClick={fetchChallengeStats}>
+            <Trophy size={16} />
+            Challenges
           </TabsTrigger>
           <TabsTrigger value="verification" className="gap-2">
             <ShieldCheck size={16} />
@@ -559,6 +611,53 @@ const ReportsContent = ({ user, schools, currentTerm }: ReportsContentProps) => 
               <CardContent className="flex items-center justify-center py-16 gap-3">
                 <Loader2 className="h-6 w-6 animate-spin" style={{ color: "#00ACEF" }} />
                 <span className="text-gray-500">Verifying data...</span>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent value="challenge" className="space-y-4">
+          {challengeStats.length > 0 ? (
+            <Card>
+              <CardContent className="pt-6">
+                <p className="text-sm text-gray-500 mb-4">
+                  Approved challenges and their participation within the selected date range.
+                </p>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Challenge</TableHead>
+                        <TableHead className="text-right">Participants</TableHead>
+                        <TableHead className="text-right">Activities Logged</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {challengeStats.map((c) => (
+                        <TableRow key={c.id}>
+                          <TableCell className="font-medium">{c.name}</TableCell>
+                          <TableCell className="text-right">{c.participant_count.toLocaleString()}</TableCell>
+                          <TableCell className="text-right">{c.activity_count.toLocaleString()}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          ) : challengeStatsLoading ? (
+            <Card>
+              <CardContent className="flex items-center justify-center py-16 gap-3">
+                <Loader2 className="h-6 w-6 animate-spin" style={{ color: "#00ACEF" }} />
+                <span className="text-gray-500">Loading challenge stats...</span>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center py-16 text-center gap-3">
+                <Trophy size={40} className="text-gray-300" />
+                <p className="font-medium text-gray-700">No challenges found</p>
+                <p className="text-sm text-gray-500">Approved challenges with activity will appear here.</p>
               </CardContent>
             </Card>
           )}

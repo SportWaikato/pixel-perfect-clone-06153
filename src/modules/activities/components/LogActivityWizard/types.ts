@@ -25,4 +25,5 @@ export const EVENT_TYPE_TO_ACTIVITY_TYPE: Record<string, string> = {
   running: "run_jog",
   cycling: "bike_cycle",
   swimming: "swimming",
+  survey: "survey_completion",
 };
