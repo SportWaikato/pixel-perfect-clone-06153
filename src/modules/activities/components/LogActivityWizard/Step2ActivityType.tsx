@@ -1,9 +1,8 @@
-import { useRef, useState, useEffect, useMemo } from "react";
+import { useRef, useState, useMemo } from "react";
 import { ACTIVITY_TYPES } from "@/models/activities/interfaces/ActivityInterface";
 import { getActivityIcon, getActivityColor } from "@/modules/activities/utils/activityIcons";
 import { WizardState, EVENT_TYPE_TO_ACTIVITY_TYPE } from "./types";
 import { EventInterface } from "@/models/events/interfaces/EventInterface";
-import { SelectItem } from "@/modules/application/components/DesignSystem/ui/select";
 import { Input } from "@/modules/application/components/DesignSystem/ui/input";
 import { Button } from "@/modules/application/components/DesignSystem/ui/button";
 import { m } from "framer-motion";
@@ -28,6 +27,11 @@ const Step2ActivityType = ({ data, challenges, onChange, recentTypes = [] }: Ste
   const lockedType = selectedChallenge
     ? EVENT_TYPE_TO_ACTIVITY_TYPE[selectedChallenge.event_type]
     : null;
+
+  const popularTypes = useMemo(() => {
+    if (recentTypes.length > 0) return recentTypes;
+    return ["run_jog", "bike_cycle", "walk_hike", "swimming"];
+  }, [recentTypes]);
 
   const allActivityTypes = useMemo(() => {
     const entries = Object.entries(ACTIVITY_TYPES).filter(([key]) => key !== "survey_completion");
@@ -210,9 +214,9 @@ const Step2ActivityType = ({ data, challenges, onChange, recentTypes = [] }: Ste
             />
           </div>
 
-          {/* Search results — displayed as a normal block list (not absolute) so clicks always register */}
+          {/* Search results — inline block list (not absolute) */}
           {searchText.trim() && filteredTypes.length > 0 && (
-            <div className="border border-gray-200 rounded-xl bg-white shadow-sm max-h-60 overflow-y-auto divide-y divide-gray-100">
+            <div className="border border-gray-200 rounded-xl bg-white shadow-sm max-h-52 overflow-y-auto divide-y divide-gray-100">
               {filteredTypes.map(([key, label]) => (
                 <button
                   key={key}
@@ -236,45 +240,22 @@ const Step2ActivityType = ({ data, challenges, onChange, recentTypes = [] }: Ste
           )}
 
           {searchText.trim() && filteredTypes.length === 0 && (
-            <p className="text-sm text-gray-400 text-center py-4">No activities match &quot;{searchText}&quot;</p>
+            <p className="text-sm text-gray-400 text-center py-3">No activities match &quot;{searchText}&quot;</p>
           )}
 
-          {/* Top 4 favourites (shown only when NOT searching and user has history) */}
-          {!searchText.trim() && recentTypes.length > 0 && (
+          {/* Top 4 favourites — always visible when NOT searching */}
+          {!searchText.trim() && (
             <>
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Your Favourites</p>
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                {recentTypes.length > 0 ? "Your Favourites" : "Popular"}
+              </p>
               <div className="grid grid-cols-2 gap-3">
-                {recentTypes.map((type) => {
+                {popularTypes.map((type) => {
                   const label = ACTIVITY_TYPES[type as keyof typeof ACTIVITY_TYPES] || type;
                   return renderActivityButton(type, label);
                 })}
               </div>
             </>
-          )}
-
-          {/* Scrollable full activity list (shown when not searching) */}
-          {!searchText.trim() && (
-            <div className="border border-gray-200 rounded-xl bg-white max-h-64 overflow-y-auto">
-              {allActivityTypes.map(([key, label]) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => handleSelect(key)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 text-left border-b border-gray-50 last:border-b-0${data.activityType === key ? " bg-[#1B5E4B]/5" : ""}`}
-                >
-                  <div
-                    className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                    style={{ backgroundColor: `${getActivityColor(key)}18` }}
-                  >
-                    {getActivityIcon(key, 20)}
-                  </div>
-                  <span className="text-sm font-medium text-gray-800">{label}</span>
-                  {data.activityType === key && (
-                    <span className="ml-auto text-xs text-[#1B5E4B] font-medium">Selected</span>
-                  )}
-                </button>
-              ))}
-            </div>
           )}
 
           {/* "Something else" custom input */}
