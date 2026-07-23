@@ -5,7 +5,11 @@ import {
   getUserInitials,
   computeGroupRejectableIds,
 } from "./activityUtils";
-import { ActivityInterface } from "@/models/activities/interfaces/ActivityInterface";
+import {
+  ActivityInterface,
+  ACTIVITY_TYPES,
+} from "@/models/activities/interfaces/ActivityInterface";
+import { UserInterface } from "@/models/users/interfaces/UserInterface";
 
 // Minimal activity factory for these tests
 function makeActivity(
@@ -69,7 +73,8 @@ describe("getActivityDisplayName", () => {
       created_at: JAN15_UTC_AFTERNOON,
       activity_type: "run_jog",
     });
-    expect(getActivityDisplayName(a)).toBe("Run / Jog");
+    // Assert against the source of truth so a label rename can't drift this test.
+    expect(getActivityDisplayName(a)).toBe(ACTIVITY_TYPES.run_jog);
   });
 
   it('falls back to replace("_", " ") for unknown type not in ACTIVITY_TYPES', () => {
@@ -95,7 +100,7 @@ describe("getUserInitials", () => {
       id: "1",
       user_id: "u1",
       created_at: JAN15_UTC_AFTERNOON,
-      user: { first_name: "Jane", last_name: "Smith" } as any,
+      user: { first_name: "Jane", last_name: "Smith" } as unknown as UserInterface,
     });
     expect(getUserInitials(a)).toBe("JS");
   });
@@ -105,7 +110,7 @@ describe("getUserInitials", () => {
       id: "1",
       user_id: "u1",
       created_at: JAN15_UTC_AFTERNOON,
-      user: { first_name: "", last_name: "Smith" } as any,
+      user: { first_name: "", last_name: "Smith" } as unknown as UserInterface,
     });
     expect(getUserInitials(a)).toBe("S");
   });
@@ -115,7 +120,7 @@ describe("getUserInitials", () => {
       id: "1",
       user_id: "u1",
       created_at: JAN15_UTC_AFTERNOON,
-      user: { first_name: "Jane", last_name: "" } as any,
+      user: { first_name: "Jane", last_name: "" } as unknown as UserInterface,
     });
     expect(getUserInitials(a)).toBe("J");
   });
