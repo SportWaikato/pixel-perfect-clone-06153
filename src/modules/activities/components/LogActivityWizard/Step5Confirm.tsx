@@ -1,4 +1,3 @@
-import { useState, useRef } from "react";
 import {
   ACTIVITY_TYPES,
   ALL_ACTIVITY_TYPE_LABELS,
@@ -12,7 +11,7 @@ import { EventInterface } from "@/models/events/interfaces/EventInterface";
 import { UserInterface } from "@/models/users/interfaces/UserInterface";
 import { WizardState, EVENT_TYPE_TO_ACTIVITY_TYPE } from "./types";
 import { Button } from "@/modules/application/components/DesignSystem/ui/button";
-import { Zap, Users, User, Camera, X } from "lucide-react";
+import { Zap, Users, User } from "lucide-react";
 import { format } from "date-fns";
 import { m } from "framer-motion";
 import { squishyTap } from "@/modules/application/components/animations/tactile";
@@ -34,9 +33,6 @@ const Step5Confirm = ({
   onSubmit,
   onUpdate,
 }: Step5ConfirmProps) => {
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
   const selectedChallenge = challenges.find((c) => c.id === data.eventId);
   const lockedType = selectedChallenge
     ? EVENT_TYPE_TO_ACTIVITY_TYPE[selectedChallenge.event_type]
@@ -57,20 +53,6 @@ const Step5Confirm = ({
   })();
 
   const iconColor = getActivityColor(displayType);
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      onUpdate({ proofImageFile: file as unknown as WizardState["proofImageFile"] });
-      setPreviewUrl(URL.createObjectURL(file));
-    }
-  };
-
-  const handleRemoveFile = () => {
-    onUpdate({ proofImageFile: null });
-    setPreviewUrl(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  };
 
   return (
     <div className="space-y-6">
@@ -127,43 +109,6 @@ const Step5Confirm = ({
         <p className="text-gray-500 text-sm mt-1 font-accent text-lg">points earned</p>
         {user.house_id && (
           <p className="text-xs text-gray-400 mt-0.5">Contributing to your house</p>
-        )}
-      </div>
-
-      {/* Proof photo (optional) */}
-      <div className="space-y-2">
-        <p className="text-sm font-medium text-gray-700">Proof (optional)</p>
-        <p className="text-xs text-gray-400">
-          Attach a screenshot for context — Strava, gym machine, watch summary. Only you and your
-          school admin can see it.
-        </p>
-        {previewUrl ? (
-          <div className="relative inline-block">
-            <img
-              src={previewUrl}
-              alt="Proof preview"
-              className="w-24 h-24 object-cover rounded-xl border border-gray-200"
-            />
-            <button
-              type="button"
-              onClick={handleRemoveFile}
-              className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600"
-            >
-              <X size={10} />
-            </button>
-          </div>
-        ) : (
-          <label className="flex items-center gap-2 cursor-pointer text-sm text-[#1B5E4B] font-medium hover:underline">
-            <Camera size={16} />
-            Add proof photo
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/jpeg,image/jpg,image/png,image/webp"
-              className="hidden"
-              onChange={handleFileSelect}
-            />
-          </label>
         )}
       </div>
 

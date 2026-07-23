@@ -7,7 +7,6 @@ export interface WizardState {
   feeling: string;
   participationType: "solo" | "with_others";
   notes: string;
-  proofImageFile: File | null;
 }
 
 export const STEP_LABELS: Record<number, string> = {

@@ -47,7 +47,6 @@ const NAME_TO_FILENAME: Record<string, string> = {
   "30 hour club": "Ka Pai Half Century.png",
   "50 hour club": "Ka Pai Half Century.png",
   "80 hour club": "100 Hour Club.png",
-  "big blue sea": "Connect with Nature.png",
   "bring your mate": "Bring your mate.png",
   "#bring your mate": "Bring your mate.png",
   "challenge accepted": "Challenge Accepted.png",

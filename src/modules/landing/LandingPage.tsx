@@ -372,6 +372,14 @@ const LandingPage = () => {
           <img src="/KarawhiuaWordmark.png" alt="Karawhiua" className="h-6 w-auto opacity-80" />
           <p>A Sport Waikato programme. Karawhiua — Go For It!</p>
           <p>Movement data is used only to run the programme and is never sold.</p>
+          <div className="mt-3 flex gap-4 text-xs">
+            <Link to="/privacy" className="underline underline-offset-2 hover:text-brand-dark">
+              Privacy Policy
+            </Link>
+            <Link to="/terms" className="underline underline-offset-2 hover:text-brand-dark">
+              Terms of Service
+            </Link>
+          </div>
         </div>
       </footer>
     </div>

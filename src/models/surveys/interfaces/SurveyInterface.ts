@@ -3,7 +3,8 @@ export type SurveyType =
   | "behaviour_change"
   | "challenge_completion"
   | "end_of_year"
-  | "movement_measures";
+  | "movement_measures"
+  | "school_insights";
 export type QuestionType = "multi_select" | "single_select" | "rank_order" | "free_text";
 export type SurveyStatus = "pending" | "completed" | "dismissed";
 

@@ -18,8 +18,13 @@ export const logActivitySchema = object().shape({
     .min(1, "Duration must be at least 1 minute")
     .max(MAX_ACTIVITY_DURATION_MINUTES, ACTIVITY_LIMIT_ERROR)
     .required("Enter duration in minutes"),
-  feeling: string().required("Select how you felt"),
   participation_type: string().required("Select participation type"),
+  activity_context: string().required("Select a context"),
+  competition_name: string().when("activity_context", {
+    is: "competition",
+    then: (schema) => schema.trim().min(2, "Enter competition name"),
+    otherwise: (schema) => schema.notRequired().nullable(),
+  }),
   description: string(),
   event_id: string().nullable(),
   custom_activity_name: string()

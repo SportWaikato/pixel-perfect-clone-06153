@@ -14,6 +14,8 @@ export interface ActivityInterface {
   input_type: "distance" | "time";
   description?: string;
   custom_activity_name?: string | null;
+  activity_context?: "training" | "casual" | "competition" | null;
+  competition_name?: string | null;
   is_verified: boolean;
   is_rejected: boolean;
   is_flagged?: boolean;

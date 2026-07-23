@@ -34,6 +34,7 @@ const SURVEY_TYPE_LABELS: Record<SurveyType, string> = {
   challenge_completion: "Challenge Completion",
   end_of_year: "End of Year",
   movement_measures: "Movement Measures",
+  school_insights: "School Sport Insights",
 };
 
 const AdminSurveysContent = ({ surveys, results }: AdminSurveysContentProps) => {

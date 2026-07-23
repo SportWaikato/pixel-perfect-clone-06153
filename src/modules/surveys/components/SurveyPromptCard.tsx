@@ -19,6 +19,7 @@ const SURVEY_DESCRIPTIONS: Record<SurveyType, string> = {
   challenge_completion: "What do you think about creating challenges?",
   end_of_year: "Reflect on your year with Karawhiua",
   movement_measures: "Help Sport Waikato understand how you move",
+  school_insights: "Help Sport Waikato understand your sport experience",
 };
 
 const SurveyPromptCard = ({

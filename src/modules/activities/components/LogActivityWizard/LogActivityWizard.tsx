@@ -5,7 +5,6 @@ import { EventInterface } from "@/models/events/interfaces/EventInterface";
 import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
 import { ActivityService } from "@/models/activities/services/ActivityService";
 import { EventService } from "@/models/events/services/EventService";
-import { StorageService } from "@/models/storage/services/StorageService";
 import {
   calculateDistanceFromTime,
   ACTIVITY_CONVERSION_RATES,
@@ -50,7 +49,6 @@ const defaultState = (): WizardState => ({
   feeling: "",
   participationType: "solo",
   notes: "",
-  proofImageFile: null,
 });
 
 const LogActivityWizard = ({
@@ -158,16 +156,6 @@ const LogActivityWizard = ({
       })();
       setPointsEarned(pts);
 
-      let proofPath: string | undefined;
-      if (data.proofImageFile) {
-        const storageService = new StorageService(supabase);
-        const uploaded = await storageService.uploadActivityProofImage(
-          data.proofImageFile,
-          user.id,
-        );
-        proofPath = uploaded.storage_path;
-      }
-
       await activityService.create({
         activity_type: finalType,
         duration_minutes: data.durationMinutes,
@@ -184,7 +172,6 @@ const LogActivityWizard = ({
             : undefined,
         created_at:
           data.activityDate !== getNZDateString() ? createNZDate(data.activityDate) : undefined,
-        proof_image_storage_path: proofPath,
       });
 
       setSucceeded(true);

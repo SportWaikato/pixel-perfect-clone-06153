@@ -5,7 +5,6 @@ import { EventInterface } from "@/models/events/interfaces/EventInterface";
 import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
 import { ActivityService } from "@/models/activities/services/ActivityService";
 import LogActivityForm from "./LogActivityForm";
-import LogActivityWizard from "./LogActivityWizard/LogActivityWizard";
 import ActivityHistory from "./ActivityHistory";
 import SchoolPulseWall from "@/modules/dashboard/components/SchoolPulseWall";
 import { toast } from "sonner";
@@ -106,11 +105,7 @@ const ActivitiesContent = ({
             onCancelEdit={handleCancelEdit}
           />
         ) : (
-          <LogActivityWizard
-            user={user}
-            initialChallenges={initialChallenges}
-            onActivityAdded={handleActivityAdded}
-          />
+          <LogActivityForm user={user} onActivityAdded={handleActivityAdded} />
         )}
         <ActivityHistory
           activities={activities}

@@ -9,8 +9,10 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RegisterSchoolRouteImport } from './routes/register-school'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -62,6 +64,11 @@ import { Route as AuthenticatedSuperadminAdminSchoolsIndexRouteImport } from './
 import { Route as AuthenticatedSuperadminAdminSchoolsPendingRouteImport } from './routes/_authenticated/_superadmin/admin.schools.pending'
 import { Route as AuthenticatedAdminAdminAssemblyPresentRouteImport } from './routes/_authenticated/_admin/admin_.assembly_.present'
 
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -70,6 +77,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const RegisterSchoolRoute = RegisterSchoolRouteImport.update({
   id: '/register-school',
   path: '/register-school',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -359,8 +371,10 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
   '/onboarding': typeof OnboardingRoute
+  '/privacy': typeof PrivacyRoute
   '/register-school': typeof RegisterSchoolRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/terms': typeof TermsRoute
   '/achievements': typeof AuthenticatedAchievementsRoute
   '/activities': typeof AuthenticatedActivitiesRoute
   '/announcements': typeof AuthenticatedAnnouncementsRoute
@@ -410,8 +424,10 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
   '/onboarding': typeof OnboardingRoute
+  '/privacy': typeof PrivacyRoute
   '/register-school': typeof RegisterSchoolRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/terms': typeof TermsRoute
   '/achievements': typeof AuthenticatedAchievementsRoute
   '/activities': typeof AuthenticatedActivitiesRoute
   '/announcements': typeof AuthenticatedAnnouncementsRoute
@@ -461,8 +477,10 @@ export interface FileRoutesById {
   '/auth': typeof AuthRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
   '/onboarding': typeof OnboardingRoute
+  '/privacy': typeof PrivacyRoute
   '/register-school': typeof RegisterSchoolRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/terms': typeof TermsRoute
   '/_authenticated/_admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/_superadmin': typeof AuthenticatedSuperadminRouteWithChildren
   '/_authenticated/achievements': typeof AuthenticatedAchievementsRoute
@@ -516,8 +534,10 @@ export interface FileRouteTypes {
     | '/auth'
     | '/forgot-password'
     | '/onboarding'
+    | '/privacy'
     | '/register-school'
     | '/reset-password'
+    | '/terms'
     | '/achievements'
     | '/activities'
     | '/announcements'
@@ -567,8 +587,10 @@ export interface FileRouteTypes {
     | '/auth'
     | '/forgot-password'
     | '/onboarding'
+    | '/privacy'
     | '/register-school'
     | '/reset-password'
+    | '/terms'
     | '/achievements'
     | '/activities'
     | '/announcements'
@@ -617,8 +639,10 @@ export interface FileRouteTypes {
     | '/auth'
     | '/forgot-password'
     | '/onboarding'
+    | '/privacy'
     | '/register-school'
     | '/reset-password'
+    | '/terms'
     | '/_authenticated/_admin'
     | '/_authenticated/_superadmin'
     | '/_authenticated/achievements'
@@ -672,8 +696,10 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRouteWithChildren
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   OnboardingRoute: typeof OnboardingRoute
+  PrivacyRoute: typeof PrivacyRoute
   RegisterSchoolRoute: typeof RegisterSchoolRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  TermsRoute: typeof TermsRoute
   InviteTokenRoute: typeof InviteTokenRoute
   JoinCodeRoute: typeof JoinCodeRoute
   SchoolsSchoolIdSignupRoute: typeof SchoolsSchoolIdSignupRoute
@@ -681,6 +707,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -693,6 +726,13 @@ declare module '@tanstack/react-router' {
       path: '/register-school'
       fullPath: '/register-school'
       preLoaderRoute: typeof RegisterSchoolRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding': {
@@ -1250,8 +1290,10 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRouteWithChildren,
   ForgotPasswordRoute: ForgotPasswordRoute,
   OnboardingRoute: OnboardingRoute,
+  PrivacyRoute: PrivacyRoute,
   RegisterSchoolRoute: RegisterSchoolRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  TermsRoute: TermsRoute,
   InviteTokenRoute: InviteTokenRoute,
   JoinCodeRoute: JoinCodeRoute,
   SchoolsSchoolIdSignupRoute: SchoolsSchoolIdSignupRoute,

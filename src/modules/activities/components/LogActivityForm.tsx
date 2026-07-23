@@ -27,12 +27,11 @@ import {
 } from "@/models/application/constants/applicationConstants";
 import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
 import { ActivityService } from "@/models/activities/services/ActivityService";
-import { StorageService } from "@/models/storage/services/StorageService";
 import { EventService } from "@/models/events/services/EventService";
 import { toast } from "sonner";
 import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
-import { Plus, Minus, User, Users, Zap, Camera, X } from "lucide-react";
-import { FEELING_MAPPINGS } from "@/modules/activities/utils/activityIcons";
+import { Plus, Minus, User, Users, Zap, Trophy } from "lucide-react";
+import { getActivityIcon, getActivityColor } from "@/modules/activities/utils/activityIcons";
 import { subDays } from "date-fns";
 import { formatEventDate } from "@/modules/common/utils/dateUtils";
 import { format as formatTz, toZonedTime } from "date-fns-tz";
@@ -164,33 +163,57 @@ const ParticipationTypeSelector = ({ name, label }: { name: string; label: strin
   );
 };
 
-// Custom emoji feeling selector component
-const EmojiFeeling = ({ name, label }: { name: string; label: string }) => {
+// Custom activity context selector - replaces feeling emoji
+const ActivityContextSelector = ({ name, label }: { name: string; label: string }) => {
   const [field, meta, helpers] = useField(name);
+  const { values } = useFormikContext<any>();
 
-  const feelings = Object.entries(FEELING_MAPPINGS).map(([value, mapping]) => ({
-    value,
-    emoji: (mapping as { emoji: string; label: string }).emoji,
-    label: (mapping as { emoji: string; label: string }).label,
-  }));
+  const contexts = [
+    {
+      value: "training",
+      icon: Zap,
+      label: "Training / Practice",
+      description: "Structured practice or drill",
+    },
+    {
+      value: "casual",
+      icon: User,
+      label: "For Fun",
+      description: "Casual play, just for enjoyment",
+    },
+    {
+      value: "competition",
+      icon: Trophy,
+      label: "Competition",
+      description: "Game day, tournament, or match",
+    },
+  ];
 
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium text-[#1B5E4B]">{label}</label>
-      <div className="flex gap-1 sm:gap-2 justify-start">
-        {feelings.map((feeling) => (
+      <div className="flex flex-col gap-2">
+        {contexts.map((ctx) => (
           <button
-            key={feeling.value}
+            key={ctx.value}
             type="button"
-            onClick={() => helpers.setValue(feeling.value)}
-            className={`p-2 sm:p-3 rounded-xl border-2 transition-all duration-150 hover:scale-110 ${
-              field.value === feeling.value
-                ? "border-[#1B5E4B] bg-[#1B5E4B]/10 scale-110"
-                : "border-gray-300 hover:border-[#1B5E4B]/50"
+            onClick={() => helpers.setValue(ctx.value)}
+            className={`w-full p-3 rounded-xl border-2 transition-all duration-150 text-left ${
+              field.value === ctx.value
+                ? "border-[#1B5E4B] bg-[#1B5E4B]/10"
+                : "border-gray-300 hover:border-[#1B5E4B]/50 bg-white"
             }`}
-            title={feeling.label}
           >
-            <span className="text-xl sm:text-2xl">{feeling.emoji}</span>
+            <div className="flex items-center gap-3">
+              <ctx.icon
+                size={18}
+                className={field.value === ctx.value ? "text-[#1B5E4B]" : "text-gray-500"}
+              />
+              <div>
+                <p className="font-medium text-sm">{ctx.label}</p>
+                <p className="text-xs text-gray-500">{ctx.description}</p>
+              </div>
+            </div>
           </button>
         ))}
       </div>
@@ -302,50 +325,7 @@ const LogActivityForm = ({
   const searchParams = useSearch({ strict: false });
   const [challenges, setChallenges] = useState<EventInterface[]>([]);
   const [preselectedChallengeId, setPreselectedChallengeId] = useState<string | null>(null);
-  // Proof photo — parity with the create wizard so editing an activity
-  // doesn't silently drop this capability. Proof is private evidence only:
-  // stored in the private activity-proofs bucket and viewed via signed URL.
-  const [proofFile, setProofFile] = useState<File | null>(null);
-  const [proofPreview, setProofPreview] = useState<string | null>(
-    editingActivity?.proof_image_url ?? null,
-  );
-  const [proofRemoved, setProofRemoved] = useState(false);
-
-  useEffect(() => {
-    // Legacy rows carry a public proof_image_url; new rows only a storage
-    // path that needs signing before it can render.
-    if (
-      editingActivity?.proof_image_storage_path &&
-      !editingActivity.proof_image_url &&
-      !proofFile &&
-      !proofRemoved
-    ) {
-      const storageService = new StorageService(createSupabaseClient());
-      storageService
-        .getActivityProofSignedUrl(editingActivity.proof_image_storage_path)
-        .then(setProofPreview)
-        .catch(() => {});
-    }
-  }, [
-    editingActivity?.proof_image_storage_path,
-    editingActivity?.proof_image_url,
-    proofFile,
-    proofRemoved,
-  ]);
-
-  const handleProofSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setProofFile(file);
-    setProofRemoved(false);
-    setProofPreview(URL.createObjectURL(file));
-  };
-
-  const handleProofRemove = () => {
-    setProofFile(null);
-    setProofPreview(null);
-    setProofRemoved(true);
-  };
+  const [recentTypes, setRecentTypes] = useState<string[]>([]);
 
   useEffect(() => {
     const loadChallenges = async () => {
@@ -369,7 +349,6 @@ const LogActivityForm = ({
 
         setChallenges(availableChallenges);
 
-        // Check for pre-selected challenge from URL
         const challengeFromUrl = (searchParams as { challenge?: string }).challenge;
         if (challengeFromUrl && availableChallenges.some((c) => c.id === challengeFromUrl)) {
           setPreselectedChallengeId(challengeFromUrl);
@@ -381,6 +360,30 @@ const LogActivityForm = ({
 
     loadChallenges();
   }, [user.id, searchParams]);
+
+  useEffect(() => {
+    const loadRecentTypes = async () => {
+      try {
+        const supabase = createSupabaseClient();
+        const activityService = new ActivityService(supabase);
+        const userActivities = await activityService.getByUserId(user.id, 50);
+        const typeCounts: Record<string, number> = {};
+        userActivities.forEach((a) => {
+          const key = a.activity_type;
+          typeCounts[key] = (typeCounts[key] || 0) + 1;
+        });
+        const sorted = Object.entries(typeCounts)
+          .sort(([, a], [, b]) => b - a)
+          .map(([type]) => type)
+          .filter((t) => t !== "survey_completion" && t !== "something_else")
+          .slice(0, 4);
+        setRecentTypes(sorted);
+      } catch {
+        // silently fail – recent types are a nice-to-have
+      }
+    };
+    loadRecentTypes();
+  }, [user.id]);
 
   const calculateDistance = (activityType: string, durationMinutes: number): number => {
     return calculateDistanceFromTime(
@@ -405,32 +408,20 @@ const LogActivityForm = ({
           : null;
 
       if (editingActivity) {
-        // Resolve proof photo: upload a newly-chosen file, clear if removed,
-        // otherwise leave the existing proof untouched.
-        let proofUrl = editingActivity.proof_image_url ?? undefined;
-        let proofPath = editingActivity.proof_image_storage_path ?? undefined;
-        if (proofFile) {
-          const storageService = new StorageService(supabase);
-          const uploaded = await storageService.uploadActivityProofImage(proofFile, user.id);
-          proofUrl = undefined;
-          proofPath = uploaded.storage_path;
-        } else if (proofRemoved) {
-          proofUrl = undefined;
-          proofPath = undefined;
-        }
-
         // Update existing activity
         const activityData = {
           activity_type: values.activity_type,
           duration_minutes: Number(values.duration_minutes),
           distance_km: finalDistance,
-          feeling: values.feeling,
           participation_type: values.participation_type,
+          activity_context: values.activity_context,
+          competition_name:
+            values.activity_context === "competition"
+              ? values.competition_name?.trim() || null
+              : null,
           description: values.description,
           event_id: values.event_id || null,
           custom_activity_name: customActivityName,
-          proof_image_url: proofUrl ?? null,
-          proof_image_storage_path: proofPath ?? null,
           created_at:
             values.activity_date !== getNZDateString()
               ? createNZDate(values.activity_date)
@@ -450,8 +441,12 @@ const LogActivityForm = ({
           activity_type: values.activity_type,
           duration_minutes: Number(values.duration_minutes),
           distance_km: finalDistance,
-          feeling: values.feeling,
           participation_type: values.participation_type,
+          activity_context: values.activity_context,
+          competition_name:
+            values.activity_context === "competition"
+              ? values.competition_name?.trim() || null
+              : null,
           description: values.description,
           input_type: "time" as const,
           user_id: user.id,
@@ -518,8 +513,9 @@ const LogActivityForm = ({
                 )
               : getNZDateString(),
             duration_minutes: editingActivity?.duration_minutes || 0,
-            feeling: editingActivity?.feeling || "",
             participation_type: editingActivity?.participation_type || "solo",
+            activity_context: editingActivity?.activity_context || "training",
+            competition_name: editingActivity?.competition_name || "",
             description: editingActivity?.description || "",
             event_id: editingActivity?.event_id || preselectedChallengeId || "",
             custom_activity_name: editingActivity?.custom_activity_name || "",
@@ -551,21 +547,63 @@ const LogActivityForm = ({
                     <p className="text-xs text-gray-400">Activity type set by challenge</p>
                   </div>
                 ) : (
-                  <FormikSelectField
-                    name="activity_type"
-                    label="Activity Type"
-                    onValueChange={(value, { form }) => {
-                      if (value !== "something_else") {
-                        form.setFieldValue("custom_activity_name", "");
-                      }
-                    }}
-                  >
-                    {Object.entries(ACTIVITY_TYPES).map(([key, value]) => (
-                      <SelectItem key={key} value={key}>
-                        {value}
-                      </SelectItem>
-                    ))}
-                  </FormikSelectField>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-[#1B5E4B]">Activity Type</label>
+                    {recentTypes.length > 0 && (
+                      <div className="grid grid-cols-4 gap-2">
+                        {recentTypes.map((type) => (
+                          <Field name="activity_type">
+                            {({ form }: any) => (
+                              <button
+                                key={type}
+                                type="button"
+                                onClick={() => {
+                                  form.setFieldValue("activity_type", type);
+                                  if (type !== "something_else") {
+                                    form.setFieldValue("custom_activity_name", "");
+                                  }
+                                }}
+                                className={`p-2 rounded-xl border-2 flex flex-col items-center gap-1 transition-all ${
+                                  values.activity_type === type
+                                    ? "border-[#cf04d2] bg-[#1B5E4B]/10"
+                                    : "border-gray-200 bg-white hover:border-gray-300"
+                                }`}
+                              >
+                                <div
+                                  className="w-8 h-8 rounded-lg flex items-center justify-center"
+                                  style={{ backgroundColor: `${getActivityColor(type)}18` }}
+                                >
+                                  {getActivityIcon(type, 24)}
+                                </div>
+                                <span className="text-[10px] leading-tight font-medium text-gray-700 text-center">
+                                  {ACTIVITY_TYPES[type as keyof typeof ACTIVITY_TYPES]}
+                                </span>
+                              </button>
+                            )}
+                          </Field>
+                        ))}
+                      </div>
+                    )}
+                    <FormikSelectField
+                      name="activity_type"
+                      onValueChange={(value, { form }) => {
+                        if (value !== "something_else") {
+                          form.setFieldValue("custom_activity_name", "");
+                        }
+                      }}
+                    >
+                      {recentTypes.length > 0 && (
+                        <div className="px-2 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                          All Activities
+                        </div>
+                      )}
+                      {Object.entries(ACTIVITY_TYPES).map(([key, value]) => (
+                        <SelectItem key={key} value={key}>
+                          {value}
+                        </SelectItem>
+                      ))}
+                    </FormikSelectField>
+                  </div>
                 )}
 
                 {values.activity_type === "something_else" && (
@@ -647,9 +685,20 @@ const LogActivityForm = ({
                   )}
                 </div>
 
-                <EmojiFeeling name="feeling" label="How did you feel?" />
+                <ActivityContextSelector
+                  name="activity_context"
+                  label="What kind of activity was this?"
+                />
 
-                <ParticipationTypeSelector name="participation_type" label="Participation Type" />
+                {values.activity_context === "competition" && (
+                  <FormikInputField
+                    name="competition_name"
+                    label="Which competition or event?"
+                    placeholder="e.g. School Athletics Day, Winter Tournament Week"
+                  />
+                )}
+
+                <ParticipationTypeSelector name="participation_type" label="Solo or Team?" />
 
                 <FormikTextareaField
                   name="description"
@@ -657,42 +706,6 @@ const LogActivityForm = ({
                   placeholder="Add any details about your activity..."
                   rows={3}
                 />
-
-                {/* Proof photo (optional) — parity with the create wizard */}
-                <div className="space-y-2 pt-2">
-                  <p className="text-sm font-medium text-gray-700">Proof (optional)</p>
-                  <p className="text-xs text-gray-400">
-                    Attach a screenshot for context — Strava, gym machine, watch summary. Only you
-                    and your school admin can see it.
-                  </p>
-                  {proofPreview ? (
-                    <div className="relative inline-block">
-                      <img
-                        src={proofPreview}
-                        alt="Proof preview"
-                        className="w-24 h-24 object-cover rounded-xl border border-gray-200"
-                      />
-                      <button
-                        type="button"
-                        onClick={handleProofRemove}
-                        className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600"
-                      >
-                        <X size={10} />
-                      </button>
-                    </div>
-                  ) : (
-                    <label className="flex items-center gap-2 cursor-pointer text-sm text-[#1B5E4B] font-medium hover:underline w-fit">
-                      <Camera size={16} />
-                      Add proof photo
-                      <input
-                        type="file"
-                        accept="image/jpeg,image/jpg,image/png,image/webp"
-                        className="hidden"
-                        onChange={handleProofSelect}
-                      />
-                    </label>
-                  )}
-                </div>
 
                 <div className="flex gap-4 pt-4">
                   <Button

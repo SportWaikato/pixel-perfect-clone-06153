@@ -8,20 +8,13 @@ import {
   DialogFooter,
 } from "@/modules/application/components/DesignSystem/ui/dialog";
 import { Button } from "@/modules/application/components/DesignSystem/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/modules/application/components/DesignSystem/ui/select";
 import { Label } from "@/modules/application/components/DesignSystem/ui/label";
 import { createSupabaseClient } from "@/models/supabase/services/SupabaseClient";
 import { ActivityService } from "@/models/activities/services/ActivityService";
 import { Download, Calendar, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { notifyAboutError } from "@/modules/application/utils/notifyAboutError";
-import { format, startOfMonth, endOfMonth, subMonths } from "date-fns";
+import { format, subMonths } from "date-fns";
 import {
   ACTIVITY_TYPES,
   ALL_ACTIVITY_TYPE_LABELS,
@@ -33,25 +26,13 @@ interface ActivityExportDialogProps {
 }
 
 const ActivityExportDialog = ({ isOpen, onClose }: ActivityExportDialogProps) => {
-  const currentMonth = format(new Date(), "yyyy-MM");
-  const [selectedMonth, setSelectedMonth] = useState<string>(currentMonth);
+  const today = format(new Date(), "yyyy-MM-dd");
+  const oneMonthAgo = format(subMonths(new Date(), 1), "yyyy-MM-dd");
+  const [startDate, setStartDate] = useState(oneMonthAgo);
+  const [endDate, setEndDate] = useState(today);
   const [isExporting, setIsExporting] = useState(false);
 
   const activityService = new ActivityService(createSupabaseClient());
-
-  const getMonthOptions = () => {
-    const options = [];
-    const today = new Date();
-    for (let i = 0; i < 12; i++) {
-      const date = subMonths(today, i);
-      const value = format(date, "yyyy-MM");
-      const label = format(date, "MMMM yyyy");
-      options.push({ value, label });
-    }
-    return options;
-  };
-
-  const monthOptions = getMonthOptions();
 
   const convertToCSV = (rows: any[]): string => {
     if (rows.length === 0) return "No data available for the selected period";
@@ -64,6 +45,9 @@ const ActivityExportDialog = ({ isOpen, onClose }: ActivityExportDialogProps) =>
       "year_group",
       "activity_type",
       "activity_type_label",
+      "custom_activity_name",
+      "activity_context",
+      "competition_name",
       "duration_minutes",
       "distance_km",
       "house_points_awarded",
@@ -71,9 +55,8 @@ const ActivityExportDialog = ({ isOpen, onClose }: ActivityExportDialogProps) =>
       "final_points",
       "challenge_multiplier",
       "event_name",
-      "feeling",
       "participation_type",
-      "description",
+      "notes",
       "activity_date",
       "current_streak",
       "total_user_points",
@@ -104,6 +87,9 @@ const ActivityExportDialog = ({ isOpen, onClose }: ActivityExportDialogProps) =>
           row.year_group,
           row.activity_type,
           row.activity_type_label,
+          row.custom_activity_name,
+          row.activity_context,
+          row.competition_name,
           row.duration_minutes,
           row.distance_km,
           row.house_points_awarded,
@@ -111,9 +97,8 @@ const ActivityExportDialog = ({ isOpen, onClose }: ActivityExportDialogProps) =>
           row.final_points,
           row.challenge_multiplier,
           row.event_name,
-          row.feeling,
           row.participation_type,
-          row.description,
+          row.notes,
           row.activity_date,
           row.current_streak,
           row.total_user_points,
@@ -122,7 +107,9 @@ const ActivityExportDialog = ({ isOpen, onClose }: ActivityExportDialogProps) =>
           row.weekly_active_days,
           row.actual_meets_6hr_guideline,
           row.movement_location,
-        ].map(escapeCSV).join(","),
+        ]
+          .map(escapeCSV)
+          .join(","),
       ),
     ].join("\n");
   };
@@ -141,21 +128,24 @@ const ActivityExportDialog = ({ isOpen, onClose }: ActivityExportDialogProps) =>
   };
 
   const handleExport = async () => {
-    if (!selectedMonth) {
-      toast.error("Please select a month to export");
+    if (!startDate || !endDate) {
+      toast.error("Please select both start and end dates");
+      return;
+    }
+    if (startDate > endDate) {
+      toast.error("Start date must be before end date");
       return;
     }
     setIsExporting(true);
     try {
-      const [year, month] = selectedMonth.split("-").map(Number);
-      const startDate = startOfMonth(new Date(year, month - 1));
-      const endDate = endOfMonth(new Date(year, month - 1));
       const supabase = createSupabaseClient();
 
       const { data: activities, error } = await supabase
         .from("activities")
-        .select(`
-          id, created_at, activity_type, duration_minutes, distance_km,
+        .select(
+          `
+          id, created_at, activity_type, custom_activity_name, activity_context, competition_name,
+          duration_minutes, distance_km,
           house_points_awarded, base_points, final_points,
           challenge_points_multiplier, feeling, participation_type, description,
           user_id,
@@ -164,9 +154,10 @@ const ActivityExportDialog = ({ isOpen, onClose }: ActivityExportDialogProps) =>
             school:schools(name, code, region)
           ),
           event:events(name)
-        `)
-        .gte("created_at", startDate.toISOString())
-        .lte("created_at", endDate.toISOString())
+        `,
+        )
+        .gte("created_at", `${startDate}T00:00:00`)
+        .lte("created_at", `${endDate}T23:59:59`)
         .is("is_rejected", false)
         .order("created_at", { ascending: false });
 
@@ -175,8 +166,14 @@ const ActivityExportDialog = ({ isOpen, onClose }: ActivityExportDialogProps) =>
       const rows = (activities || []).map((a: any) => {
         const user = a.user;
         const school = user?.school;
-        const weeklyMinutes = (user?.total_minutes || 0);
+        const weeklyMinutes = user?.total_minutes || 0;
         const meets6hr = weeklyMinutes >= 360;
+        const customName = a.custom_activity_name;
+        const activityLabel =
+          a.activity_type === "something_else" && customName
+            ? customName
+            : ALL_ACTIVITY_TYPE_LABELS[a.activity_type as keyof typeof ACTIVITY_TYPES] ||
+              a.activity_type;
 
         return {
           student_id_anonymised: a.user_id ? a.user_id.toString().slice(0, 8) + "..." : "",
@@ -185,7 +182,10 @@ const ActivityExportDialog = ({ isOpen, onClose }: ActivityExportDialogProps) =>
           region: school?.region || "",
           year_group: user?.year_group || "",
           activity_type: a.activity_type,
-          activity_type_label: ALL_ACTIVITY_TYPE_LABELS[a.activity_type as keyof typeof ACTIVITY_TYPES] || a.activity_type,
+          activity_type_label: activityLabel,
+          custom_activity_name: customName || "",
+          activity_context: a.activity_context || "",
+          competition_name: a.competition_name || "",
           duration_minutes: a.duration_minutes || 0,
           distance_km: a.distance_km || 0,
           house_points_awarded: a.house_points_awarded || 0,
@@ -193,9 +193,8 @@ const ActivityExportDialog = ({ isOpen, onClose }: ActivityExportDialogProps) =>
           final_points: a.final_points || 0,
           challenge_multiplier: a.challenge_points_multiplier || 1,
           event_name: a.event?.name || "",
-          feeling: a.feeling || "",
           participation_type: a.participation_type || "",
-          description: a.description || "",
+          notes: a.description || "",
           activity_date: format(new Date(a.created_at), "yyyy-MM-dd"),
           current_streak: user?.current_streak || 0,
           total_user_points: user?.total_points || 0,
@@ -208,7 +207,7 @@ const ActivityExportDialog = ({ isOpen, onClose }: ActivityExportDialogProps) =>
       });
 
       const csv = convertToCSV(rows);
-      const filename = `karawhiua-movement-export-${selectedMonth}.csv`;
+      const filename = `karawhiua-movement-export-${startDate}-to-${endDate}.csv`;
       downloadCSV(csv, filename);
       toast.success(`Exported ${rows.length} activity records`);
       onClose();
@@ -228,29 +227,35 @@ const ActivityExportDialog = ({ isOpen, onClose }: ActivityExportDialogProps) =>
             Export Movement Data
           </DialogTitle>
           <DialogDescription>
-            Download a CSV of all activity records for a selected month. Includes school, region, and calculated fields.
+            Download a CSV of all activity records for a custom date range. Includes school, region,
+            and calculated fields.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label>Select Month</Label>
-            <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-              <SelectTrigger>
-                <Calendar className="w-4 h-4 mr-2" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {monthOptions.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label>Start Date</Label>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              max={endDate}
+              className="w-full py-2 px-3 bg-white text-gray-900 border border-gray-300 rounded-lg focus:border-[#1B5E4B]/40 focus:outline-none"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>End Date</Label>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              min={startDate}
+              max={today}
+              className="w-full py-2 px-3 bg-white text-gray-900 border border-gray-300 rounded-lg focus:border-[#1B5E4B]/40 focus:outline-none"
+            />
           </div>
           <p className="text-xs text-gray-500">
-            Export includes: student ID (anonymised), school, region, year group, activity type, duration, points, event, streak, weekly stats, and 6+ hour guideline status.
+            Export includes: student ID (anonymised), school, region, year group, activity type, custom activity name, context, competition, duration, points, event, notes, streak, weekly stats, and 6+ hour guideline status.
           </p>
         </div>
 
@@ -259,7 +264,11 @@ const ActivityExportDialog = ({ isOpen, onClose }: ActivityExportDialogProps) =>
             Cancel
           </Button>
           <Button onClick={handleExport} disabled={isExporting} className="gap-2">
-            {isExporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+            {isExporting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Download className="h-4 w-4" />
+            )}
             {isExporting ? "Exporting..." : "Export CSV"}
           </Button>
         </DialogFooter>
