@@ -94,14 +94,15 @@ export class ActivityService {
         const capped = event?.max_points ? Math.min(event.challenge_points, event.max_points) : event.challenge_points;
         pointsCalculation = calculateFixedChallengePoints(basePoints, capped);
         housePoints = basePoints;
-      } else {
-        const eventMultiplier = event?.points_multiplier || 1.0;
-        const capped = event.max_points ? basePoints * eventMultiplier : undefined;
-        if (capped !== undefined) {
-          pointsCalculation = calculatePointsWithMultiplier(Math.min(basePoints, event.max_points!), eventMultiplier);
+      } else if (event) {
+        const eventMultiplier = event.points_multiplier || 1.0;
+        if (event.max_points) {
+          pointsCalculation = calculatePointsWithMultiplier(Math.min(basePoints, event.max_points), eventMultiplier);
         } else {
           pointsCalculation = calculatePointsWithMultiplier(basePoints, eventMultiplier);
         }
+      } else {
+        pointsCalculation = calculatePointsWithMultiplier(basePoints);
       }
     }
 
