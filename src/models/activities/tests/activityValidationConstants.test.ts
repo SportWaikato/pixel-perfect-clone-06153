@@ -17,8 +17,8 @@ describe("logActivitySchema matches server-side constants (drift prevention)", (
     activity_type: "walking",
     activity_date: new Date(Date.now() - 60_000), // 1 minute ago, avoids max(new Date()) boundary
     duration_minutes: 60,
-    feeling: "happy",
     participation_type: "solo",
+    activity_context: "training",
   };
 
   it("rejects duration > MAX_ACTIVITY_DURATION_MINUTES", async () => {
