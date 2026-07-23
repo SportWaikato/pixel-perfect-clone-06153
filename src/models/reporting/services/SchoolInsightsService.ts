@@ -29,7 +29,7 @@ export interface SchoolInsightsReport {
 }
 
 interface SatisfactionBreakdown {
-  satisfiedCount: number;    // "Extremely satisfied" + "Very satisfied"
+  satisfiedCount: number; // "Extremely satisfied" + "Very satisfied"
   satisfiedPercent: number;
   totalResponses: number;
 }
@@ -40,8 +40,8 @@ interface ClubParticipationBreakdown {
   bothCount: number;
   noneCount: number;
   totalResponses: number;
-  clubPercentage: number;    // Any club or rep
-  repPercentage: number;     // Any rep
+  clubPercentage: number; // Any club or rep
+  repPercentage: number; // Any rep
 }
 
 interface ActivityFrequency {
@@ -59,6 +59,13 @@ interface TermTrend {
   uniqueStudents: number;
 }
 
+interface SurveyAnswer {
+  userId: string;
+  questionText: string;
+  surveyType: string;
+  answer: unknown;
+}
+
 export class SchoolInsightsService {
   private supabase: SupabaseClient;
 
@@ -66,7 +73,11 @@ export class SchoolInsightsService {
     this.supabase = supabase;
   }
 
-  async getSchoolInsights(schoolId: string, startDate?: string, endDate?: string): Promise<SchoolInsightsReport> {
+  async getSchoolInsights(
+    schoolId: string,
+    startDate?: string,
+    endDate?: string,
+  ): Promise<SchoolInsightsReport> {
     const today = new Date().toISOString().split("T")[0];
     const from = startDate || `${new Date().getFullYear()}-01-01`;
     const to = endDate || today;
@@ -87,6 +98,7 @@ export class SchoolInsightsService {
     return {
       schoolName: schoolData?.name || "",
       schoolCode: schoolData?.code || "",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       rollNumber: (schoolData as any)?.roll_number || 0,
       totalStudents: activityData.totalStudents || 0,
       totalRespondents: surveyData.totalRespondents || 0,
@@ -119,15 +131,24 @@ export class SchoolInsightsService {
   private async getActivityData(schoolId: string, from: string, to: string) {
     const { data: activities } = await this.supabase
       .from("activities")
-      .select(`
+      .select(
+        `
         id, activity_type, custom_activity_name, duration_minutes,
         participation_type, activity_context, created_at, user_id
-      `)
+      `,
+      )
       .eq("is_rejected", false)
       .gte("created_at", `${from}T00:00:00`)
       .lte("created_at", `${to}T23:59:59`);
 
-    if (!activities) return { totalStudents: 0, totalMinutes: 0, totalActivities: 0, rawActivityTypes: [], raw: [] };
+    if (!activities)
+      return {
+        totalStudents: 0,
+        totalMinutes: 0,
+        totalActivities: 0,
+        rawActivityTypes: [],
+        raw: [],
+      };
 
     const { data: schoolUsers } = await this.supabase
       .from("users")
@@ -164,13 +185,15 @@ export class SchoolInsightsService {
 
     const { data: responses } = await this.supabase
       .from("survey_responses")
-      .select(`
+      .select(
+        `
         answer, user_id,
         question:survey_questions!survey_responses_question_id_fkey(
           id, question_text, survey_id,
           survey:surveys(survey_type, name)
         )
-      `)
+      `,
+      )
       .in("user_id", userIds);
 
     if (!responses) return { totalRespondents: 0, answers: [] };
@@ -181,14 +204,16 @@ export class SchoolInsightsService {
       totalRespondents: respondentIds.size,
       answers: responses.map((r) => ({
         userId: r.user_id,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         questionText: (r.question as any)?.question_text || "",
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         surveyType: (r.question as any)?.survey?.survey_type || "",
         answer: r.answer,
       })),
     };
   }
 
-  private calculateSatisfaction(surveyData: { totalRespondents: number; answers: any[] }) {
+  private calculateSatisfaction(surveyData: { totalRespondents: number; answers: SurveyAnswer[] }) {
     const competitive = {
       satisfiedCount: 0,
       satisfiedPercent: 0,
@@ -226,7 +251,9 @@ export class SchoolInsightsService {
     return { competitive, social };
   }
 
-  private calculateClubParticipation(surveyData: { answers: any[] }): ClubParticipationBreakdown {
+  private calculateClubParticipation(surveyData: {
+    answers: SurveyAnswer[];
+  }): ClubParticipationBreakdown {
     const result: ClubParticipationBreakdown = {
       clubCount: 0,
       repCount: 0,
@@ -263,13 +290,13 @@ export class SchoolInsightsService {
     return result;
   }
 
-  private calculateTopActivities(
-    activityData: { rawActivityTypes: Array<{ type: string; name: string }> },
-  ): ActivityFrequency[] {
+  private calculateTopActivities(activityData: {
+    rawActivityTypes: Array<{ type: string; name: string }>;
+  }): ActivityFrequency[] {
     const freq: Record<string, number> = {};
     let total = 0;
-    for (const a of (activityData.rawActivityTypes || [])) {
-      const label = a.type === "something_else" ? (a.name || "Other") : a.type;
+    for (const a of activityData.rawActivityTypes || []) {
+      const label = a.type === "something_else" ? a.name || "Other" : a.type;
       freq[label] = (freq[label] || 0) + 1;
       total++;
     }
@@ -284,9 +311,7 @@ export class SchoolInsightsService {
       }));
   }
 
-  private calculateTopPreferences(
-    surveyData: { answers: any[] },
-  ): ActivityFrequency[] {
+  private calculateTopPreferences(surveyData: { answers: SurveyAnswer[] }): ActivityFrequency[] {
     const freq: Record<string, number> = {};
     let total = 0;
 
@@ -313,9 +338,7 @@ export class SchoolInsightsService {
       }));
   }
 
-  private calculateTopBarriers(
-    surveyData: { answers: any[] },
-  ): ActivityFrequency[] {
+  private calculateTopBarriers(surveyData: { answers: SurveyAnswer[] }): ActivityFrequency[] {
     const freq: Record<string, number> = {};
     let total = 0;
 
@@ -342,11 +365,11 @@ export class SchoolInsightsService {
       }));
   }
 
-  private calculateActivityContext(
-    activityData: { rawActivityTypes: Array<{ context: string }> },
-  ): Record<string, number> {
+  private calculateActivityContext(activityData: {
+    rawActivityTypes: Array<{ context: string }>;
+  }): Record<string, number> {
     const breakdown: Record<string, number> = {};
-    for (const a of (activityData.rawActivityTypes || [])) {
+    for (const a of activityData.rawActivityTypes || []) {
       if (a.context) {
         breakdown[a.context] = (breakdown[a.context] || 0) + 1;
       }
@@ -354,11 +377,11 @@ export class SchoolInsightsService {
     return breakdown;
   }
 
-  private calculateTeamBreakdown(
-    activityData: { rawActivityTypes: Array<{ participation: string }> },
-  ): Record<string, number> {
+  private calculateTeamBreakdown(activityData: {
+    rawActivityTypes: Array<{ participation: string }>;
+  }): Record<string, number> {
     const breakdown: Record<string, number> = {};
-    for (const a of (activityData.rawActivityTypes || [])) {
+    for (const a of activityData.rawActivityTypes || []) {
       if (a.participation) {
         const key = a.participation === "with_others" ? "Team / With Others" : "Solo";
         breakdown[key] = (breakdown[key] || 0) + 1;
@@ -367,9 +390,9 @@ export class SchoolInsightsService {
     return breakdown;
   }
 
-  private calculateTermTrends(
-    activityData: { raw: Array<{ duration_minutes: number; created_at: string; user_id: string }> },
-  ): TermTrend[] {
+  private calculateTermTrends(activityData: {
+    raw: Array<{ duration_minutes: number; created_at: string; user_id: string }>;
+  }): TermTrend[] {
     const year = new Date().getFullYear();
     const terms: { label: string; start: string; end: string }[] = [
       { label: "Term 1", start: `${year}-01-27`, end: `${year}-04-11` },
@@ -395,7 +418,11 @@ export class SchoolInsightsService {
     });
   }
 
-  async exportSchoolInsightsCSV(schoolId: string, startDate?: string, endDate?: string): Promise<string> {
+  async exportSchoolInsightsCSV(
+    schoolId: string,
+    startDate?: string,
+    endDate?: string,
+  ): Promise<string> {
     const report = await this.getSchoolInsights(schoolId, startDate, endDate);
     const lines: string[] = [];
     const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
@@ -403,18 +430,30 @@ export class SchoolInsightsService {
     lines.push(`${esc(report.schoolName)}`);
     lines.push("School Sport Insights");
     lines.push(`Total on roll: ${report.rollNumber}`);
-    lines.push(`Total participants: n=${esc(report.totalStudents)} (survey respondents: n=${esc(report.totalRespondents)})`);
-    lines.push(`Participation rate: ${report.rollNumber > 0 ? Math.round((report.totalStudents / report.rollNumber) * 100) : 0}%`);
+    lines.push(
+      `Total participants: n=${esc(report.totalStudents)} (survey respondents: n=${esc(report.totalRespondents)})`,
+    );
+    lines.push(
+      `Participation rate: ${report.rollNumber > 0 ? Math.round((report.totalStudents / report.rollNumber) * 100) : 0}%`,
+    );
     lines.push("");
 
     lines.push("SATISFACTION");
-    lines.push(`Competitive Sport Satisfaction,${esc(report.competitiveSportSatisfaction.satisfiedPercent + "%")}`);
-    lines.push(`Social Sport Satisfaction,${esc(report.socialSportSatisfaction.satisfiedPercent + "%")}`);
+    lines.push(
+      `Competitive Sport Satisfaction,${esc(report.competitiveSportSatisfaction.satisfiedPercent + "%")}`,
+    );
+    lines.push(
+      `Social Sport Satisfaction,${esc(report.socialSportSatisfaction.satisfiedPercent + "%")}`,
+    );
     lines.push("");
 
     lines.push("CLUB / REPRESENTATIVE PARTICIPATION");
-    lines.push(`Play for club or rep team,${esc(report.clubRepParticipation.clubPercentage + "%")}`);
-    lines.push(`Play for representative team,${esc(report.clubRepParticipation.repPercentage + "%")}`);
+    lines.push(
+      `Play for club or rep team,${esc(report.clubRepParticipation.clubPercentage + "%")}`,
+    );
+    lines.push(
+      `Play for representative team,${esc(report.clubRepParticipation.repPercentage + "%")}`,
+    );
     lines.push(`Club only,${esc(report.clubRepParticipation.clubCount)}`);
     lines.push(`Rep only,${esc(report.clubRepParticipation.repCount)}`);
     lines.push(`Both club and rep,${esc(report.clubRepParticipation.bothCount)}`);
@@ -466,7 +505,7 @@ export class SchoolInsightsService {
     lines.push("OVERALL STATS");
     lines.push(`Total Minutes,${report.totalMinutes}`);
     lines.push(`Total Activities,${report.totalActivities}`);
-      lines.push(`Average Minutes Per Student,${report.averageMinutesPerStudent}`);
+    lines.push(`Average Minutes Per Student,${report.averageMinutesPerStudent}`);
 
     return lines.join("\n");
   }
@@ -495,21 +534,26 @@ export class SchoolInsightsService {
 
     const { data: surveyResponses } = await this.supabase
       .from("survey_responses")
-      .select(`
+      .select(
+        `
         user_id, answer,
         question:survey_questions!survey_responses_question_id_fkey(
           question_text,
           survey:surveys(survey_type)
         )
-      `)
+      `,
+      )
       .in("user_id", userIds);
 
     const userMap = new Map((users || []).map((u) => [u.id, u]));
     const surveyByUser: Record<string, Record<string, string>> = {};
-    for (const r of (surveyResponses || [])) {
+    for (const r of surveyResponses || []) {
       if (!surveyByUser[r.user_id]) surveyByUser[r.user_id] = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const q = (r.question as any)?.question_text || "";
-      const ans = Array.isArray(r.answer) ? (r.answer as string[]).join("; ") : String(r.answer || "");
+      const ans = Array.isArray(r.answer)
+        ? (r.answer as string[]).join("; ")
+        : String(r.answer || "");
       surveyByUser[r.user_id][q] = ans;
     }
 
@@ -522,17 +566,30 @@ export class SchoolInsightsService {
     };
 
     const headers = [
-      "First Name", "Last Name", "Gender", "Year Group", "House",
-      "Activity Type", "Activity Date", "Duration (min)", "Points",
-      "Context", "Competition Name", "Location", "Solo / Team",
-      "Sport Satisfaction", "Social Sport Satisfaction",
-      "Competitive Sport Satisfaction", "Club / Rep Participation",
-      "Barriers", "Sports Interested In",
+      "First Name",
+      "Last Name",
+      "Gender",
+      "Year Group",
+      "House",
+      "Activity Type",
+      "Activity Date",
+      "Duration (min)",
+      "Points",
+      "Context",
+      "Competition Name",
+      "Location",
+      "Solo / Team",
+      "Sport Satisfaction",
+      "Social Sport Satisfaction",
+      "Competitive Sport Satisfaction",
+      "Club / Rep Participation",
+      "Barriers",
+      "Sports Interested In",
     ];
 
     const lines: string[] = [headers.map(esc).join(",")];
 
-    for (const a of (activities || [])) {
+    for (const a of activities || []) {
       const u = userMap.get(a.user_id);
       const sv = surveyByUser[a.user_id] || {};
 
@@ -546,6 +603,7 @@ export class SchoolInsightsService {
         u?.last_name || "",
         u?.gender || "",
         u?.year_group || "",
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (u as any)?.house?.name || "",
         a.activity_type,
         (a.created_at || "").slice(0, 10),

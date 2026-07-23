@@ -92,7 +92,11 @@ const ReportsContent = ({ user, schools, currentTerm }: ReportsContentProps) => 
     setLoading(true);
     try {
       if (selectedSchoolId !== ALL_SCHOOLS) {
-        const data = await reportingService.getUniqueUserReport(selectedSchoolId, startDate, endDate);
+        const data = await reportingService.getUniqueUserReport(
+          selectedSchoolId,
+          startDate,
+          endDate,
+        );
         setReportData(data);
       } else {
         const allData: UserReport[] = [];
@@ -184,7 +188,7 @@ const ReportsContent = ({ user, schools, currentTerm }: ReportsContentProps) => 
     } finally {
       setVerificationLoading(false);
     }
-  }, [selectedSchoolId, reportingService, schools, isSuperAdmin]);
+  }, [selectedSchoolId, reportingService, schools]);
 
   const filteredReport = useMemo(() => {
     if (!searchTerm) return reportData;
@@ -263,7 +267,7 @@ const ReportsContent = ({ user, schools, currentTerm }: ReportsContentProps) => 
             </div>
             <Button
               onClick={fetchReport}
-            disabled={loading}
+              disabled={loading}
               className="gap-2"
               style={{ backgroundColor: "#1B5E4B" }}
             >
