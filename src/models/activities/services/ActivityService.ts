@@ -99,11 +99,13 @@ export class ActivityService {
       }
     }
 
-    // Create the activity with challenge points data
+    // Create the activity with challenge points data.
+    // feeling defaults to "average" — it's a required column but the UI no longer collects it.
     const { data: activity, error: activityError } = await this.supabaseClient
       .from(TABLE_NAME)
       .insert({
         ...activityData,
+        feeling: activityData.feeling || "average",
         custom_activity_name: activityData.custom_activity_name || null,
         house_points_awarded: housePoints,
         ...pointsCalculation,
@@ -322,9 +324,10 @@ export class ActivityService {
       }
     }
 
-    // Update the activity
+    // Update the activity. Keep existing feeling if not provided.
     const updateData = {
       ...activityData,
+      feeling: activityData.feeling || existingActivity.feeling,
       custom_activity_name: activityData.custom_activity_name || null,
       ...(pointsCalculation && {
         house_points_awarded: housePoints,
