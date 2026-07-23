@@ -15,6 +15,7 @@ export interface UserInterface {
   house_id?: string | null;
   year_group?: string;
   class?: string;
+  gender?: string;
   is_admin: boolean;
   is_active: boolean; // For user suspension/activation
   is_deleted?: boolean; // Soft-delete; hides user from all regular lists

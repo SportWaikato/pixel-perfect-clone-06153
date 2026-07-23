@@ -462,7 +462,103 @@ export class SchoolInsightsService {
     lines.push("OVERALL STATS");
     lines.push(`Total Minutes,${report.totalMinutes}`);
     lines.push(`Total Activities,${report.totalActivities}`);
-    lines.push(`Average Minutes Per Student,${report.averageMinutesPerStudent}`);
+      lines.push(`Average Minutes Per Student,${report.averageMinutesPerStudent}`);
+
+    return lines.join("\n");
+  }
+
+  async exportDetailedCSV(schoolId: string, startDate?: string, endDate?: string): Promise<string> {
+    const today = new Date().toISOString().split("T")[0];
+    const from = startDate || `${new Date().getFullYear()}-01-01`;
+    const to = endDate || today;
+
+    const { data: users } = await this.supabase
+      .from("users")
+      .select("id, first_name, last_name, gender, year_group, house:houses(name)")
+      .eq("school_id", schoolId)
+      .is("is_deleted", false);
+
+    const userIds = (users || []).map((u) => u.id);
+
+    const { data: activities } = await this.supabase
+      .from("activities")
+      .select("*")
+      .in("user_id", userIds)
+      .is("is_rejected", false)
+      .gte("created_at", `${from}T00:00:00`)
+      .lte("created_at", `${to}T23:59:59`)
+      .order("created_at", { ascending: false });
+
+    const { data: surveyResponses } = await this.supabase
+      .from("survey_responses")
+      .select(`
+        user_id, answer,
+        question:survey_questions!survey_responses_question_id_fkey(
+          question_text,
+          survey:surveys(survey_type)
+        )
+      `)
+      .in("user_id", userIds);
+
+    const userMap = new Map((users || []).map((u) => [u.id, u]));
+    const surveyByUser: Record<string, Record<string, string>> = {};
+    for (const r of (surveyResponses || [])) {
+      if (!surveyByUser[r.user_id]) surveyByUser[r.user_id] = {};
+      const q = (r.question as any)?.question_text || "";
+      const ans = Array.isArray(r.answer) ? (r.answer as string[]).join("; ") : String(r.answer || "");
+      surveyByUser[r.user_id][q] = ans;
+    }
+
+    const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+
+    const ctxLabels: Record<string, string> = {
+      training: "Training / Practice",
+      casual: "For Fun",
+      competition: "Competition",
+    };
+
+    const headers = [
+      "First Name", "Last Name", "Gender", "Year Group", "House",
+      "Activity Type", "Activity Date", "Duration (min)", "Points",
+      "Context", "Competition Name", "Solo / Team",
+      "Sport Satisfaction", "Social Sport Satisfaction",
+      "Competitive Sport Satisfaction", "Club / Rep Participation",
+      "Barriers", "Sports Interested In",
+    ];
+
+    const lines: string[] = [headers.map(esc).join(",")];
+
+    for (const a of (activities || [])) {
+      const u = userMap.get(a.user_id);
+      const sv = surveyByUser[a.user_id] || {};
+
+      const getSurveyAnswer = (keyword: string) => {
+        const key = Object.keys(sv).find((k) => k.toLowerCase().includes(keyword));
+        return key ? sv[key] : "";
+      };
+
+      const row = [
+        u?.first_name || "",
+        u?.last_name || "",
+        u?.gender || "",
+        u?.year_group || "",
+        (u as any)?.house?.name || "",
+        a.activity_type,
+        (a.created_at || "").slice(0, 10),
+        a.duration_minutes || 0,
+        a.house_points_awarded || 0,
+        ctxLabels[a.activity_context] || a.activity_context || "",
+        a.competition_name || "",
+        a.participation_type === "with_others" ? "With Others" : "Solo",
+        getSurveyAnswer("satisfied"),
+        getSurveyAnswer("social"),
+        getSurveyAnswer("competitive"),
+        getSurveyAnswer("club"),
+        getSurveyAnswer("stops"),
+        getSurveyAnswer("interested"),
+      ];
+      lines.push(row.map(esc).join(","));
+    }
 
     return lines.join("\n");
   }

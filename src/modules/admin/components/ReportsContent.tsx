@@ -149,15 +149,15 @@ const ReportsContent = ({ user, schools, currentTerm }: ReportsContentProps) => 
     }
     try {
       const insightsService = new SchoolInsightsService(createSupabaseClient());
-      const csv = await insightsService.exportSchoolInsightsCSV(selectedSchoolId, startDate, endDate);
+      const csv = await insightsService.exportDetailedCSV(selectedSchoolId, startDate, endDate);
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `school-insights-${startDate}-to-${endDate}.csv`;
+      link.download = `school-insights-detailed-${startDate}-to-${endDate}.csv`;
       link.click();
       URL.revokeObjectURL(url);
-      toast.success("School insights exported");
+      toast.success("Detailed school insights exported");
     } catch (error) {
       notifyAboutError(error);
     }
