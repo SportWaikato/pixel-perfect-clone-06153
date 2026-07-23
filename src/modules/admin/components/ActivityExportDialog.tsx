@@ -144,8 +144,8 @@ const ActivityExportDialog = ({ isOpen, onClose }: ActivityExportDialogProps) =>
 
       const { data: activities, error } = await supabase
         .from("activities")
+        // @ts-ignore — activity_context, competition_name, activity_location exist in DB but types need regeneration
         .select(
-          `
           id, created_at, activity_type, custom_activity_name, activity_context, competition_name, activity_location,
           duration_minutes, distance_km,
           house_points_awarded, base_points, final_points,

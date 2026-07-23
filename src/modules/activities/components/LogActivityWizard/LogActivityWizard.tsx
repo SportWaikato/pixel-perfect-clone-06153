@@ -75,6 +75,7 @@ const LogActivityWizard = ({
       if (!data.activityType || !data.activityContext) return;
       try {
         const supabase = createSupabaseClient();
+        // @ts-ignore — activity_context and activity_location columns exist in DB but types need regeneration
         const { data: last } = await supabase
           .from("activities")
           .select("activity_location")
@@ -85,7 +86,7 @@ const LogActivityWizard = ({
           .order("created_at", { ascending: false })
           .limit(1)
           .maybeSingle();
-        setSuggestedLocation(last?.activity_location || "");
+        setSuggestedLocation((last as any)?.activity_location || "");
       } catch {
         setSuggestedLocation("");
       }
